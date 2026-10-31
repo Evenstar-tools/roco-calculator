@@ -1,0 +1,1281 @@
+{
+  "eventId": "bone-dragon-claw-on-glass-lord-162",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "engine": "Current Web S5 overlay -> UI selectSpirit/selectFourSkill -> buildBalanceComparison",
+  "cliBoundary": "Ordinary compact CLI omits per-owner S5 level; this adapter uses the actual Web level pipeline.",
+  "versions": {
+    "data": "s4-2026-09-10",
+    "rules": "s4-2026-09-10"
+  },
+  "defaultPresets": {
+    "attacker": {
+      "spirit": "寂灭骨龙",
+      "spiritId": "spirit_2c2d72d3c0bbe704",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "不朽"
+      ],
+      "skills": [
+        {
+          "id": "skill_c9d031d10d97fac6",
+          "name": "诡刺",
+          "cost": 0,
+          "basePower": 40
+        },
+        {
+          "id": "skill_9d7e8cf644d86b9c",
+          "name": "坟场搏击",
+          "cost": 4,
+          "basePower": 180
+        },
+        {
+          "id": "skill_e746a8a9e4a70693",
+          "name": "龙吼",
+          "cost": 1,
+          "basePower": 60
+        },
+        {
+          "id": "skill_223a2e5113de216f",
+          "name": "幻象",
+          "cost": 1,
+          "basePower": 60
+        }
+      ]
+    },
+    "defender": {
+      "spirit": "琉璃君主",
+      "spiritId": "spirit_preview_s5_boss-glass-jellyfish",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "深层侵蚀"
+      ],
+      "skills": [
+        null,
+        null,
+        null,
+        null
+      ]
+    }
+  },
+  "selectedSkills": [
+    {
+      "side": "attacker",
+      "skill": "龙之利爪",
+      "skillId": "skill_4e7ea56f297e105f",
+      "index": 0,
+      "presentInDefaultFour": false,
+      "reason": "Select the observed action for damage replay; preserve other default slots."
+    },
+    {
+      "side": "defender",
+      "skill": "血气",
+      "skillId": "skill_5b4d21e36f02d1c9",
+      "index": 0,
+      "presentInDefaultFour": false,
+      "reason": "Select the observed action for damage replay; preserve other default slots."
+    }
+  ],
+  "uiDefaultBaseline": {
+    "label": "Actual UI spirit-selection defaults with observed action selected; includes default trait controls/levels",
+    "evidence": [],
+    "state": {
+      "schemaVersion": 1,
+      "versions": {
+        "data": "s4-2026-09-10",
+        "rules": "s4-2026-09-10"
+      },
+      "mode": "four",
+      "calculationOptions": {
+        "includeNegativeStatusSettlement": false
+      },
+      "marks": {
+        "attacker": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        },
+        "defender": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        }
+      },
+      "negativeStatuses": {
+        "attacker": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        },
+        "defender": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        }
+      },
+      "sides": {
+        "attacker": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              {
+                "context": {},
+                "hitCount": 1,
+                "overrides": {},
+                "skillId": "skill_4e7ea56f297e105f"
+              },
+              "skill_9d7e8cf644d86b9c",
+              "skill_e746a8a9e4a70693",
+              "skill_223a2e5113de216f"
+            ],
+            "single": "skill_c9d031d10d97fac6"
+          },
+          "spiritId": "spirit_2c2d72d3c0bbe704",
+          "traitValues": {}
+        },
+        "defender": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              {
+                "context": {},
+                "hitCount": 1,
+                "overrides": {},
+                "skillId": "skill_5b4d21e36f02d1c9"
+              },
+              null,
+              null,
+              null
+            ],
+            "single": null
+          },
+          "spiritId": "spirit_preview_s5_boss-glass-jellyfish",
+          "traitValues": {}
+        }
+      },
+      "directions": {
+        "forward": {
+          "selectedSkillIndex": 0,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {
+            "defenderTrait.defenderTraitS5SkillUsed.f2f43502": false,
+            "defenderTrait.defenderTraitS5PoisonMarkStacks.8ec2b27d": 0,
+            "negativeStatusUseCountsBySlot": {}
+          },
+          "overrides": {}
+        },
+        "reverse": {
+          "selectedSkillIndex": 0,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {
+            "attackerTrait.attackerTraitS5SkillUsed.f2f43502": false,
+            "attackerTrait.attackerTraitS5PoisonMarkStacks.8ec2b27d": 0,
+            "negativeStatusUseCountsBySlot": {}
+          },
+          "overrides": {}
+        }
+      }
+    },
+    "result": {
+      "skillId": "skill_4e7ea56f297e105f",
+      "skillName": "龙之利爪",
+      "status": "exact",
+      "skillCost": 3,
+      "resolvedPower": 130,
+      "staticPower": 130,
+      "displayPower": 162,
+      "hitCount": 1,
+      "hitDamages": [
+        183
+      ],
+      "totalDamage": 183,
+      "hpPercent": 40.75723830734967,
+      "combatPanel": {
+        "attacker": {
+          "magicalAttack": 148,
+          "physicalAttack": 244,
+          "speed": 159
+        },
+        "defender": {
+          "magicalDefense": 243,
+          "physicalDefense": 195,
+          "speed": 198
+        }
+      },
+      "gainSummary": "",
+      "formulaSteps": [
+        {
+          "label": "攻击面板",
+          "input": "physicalAttack",
+          "before": 244,
+          "after": 244,
+          "value": "244",
+          "source": "panel-stat"
+        },
+        {
+          "label": "基础威力",
+          "input": 130,
+          "before": 130,
+          "after": 130,
+          "value": "130",
+          "source": {
+            "title": "模块:Pets/data/Skills",
+            "url": "https://wiki.biligame.com/nrc/index.php?oldid=7273",
+            "revision": 7273,
+            "fetchedAt": "2026-09-09T16:57:54.897Z",
+            "sha256": "ed9132e1a3fd7f0cf287c8acbeb57e830ba0cfe2dc1f11946a72ef6329772f33"
+          }
+        },
+        {
+          "label": "固定威力增加",
+          "input": 0,
+          "before": 130,
+          "after": 130,
+          "value": "130",
+          "source": "default"
+        },
+        {
+          "label": "继承迸发固定威力",
+          "input": 0,
+          "before": 130,
+          "after": 130,
+          "value": "130",
+          "source": "default"
+        },
+        {
+          "label": "印记固定威力",
+          "input": 0,
+          "before": 130,
+          "after": 130,
+          "value": "130",
+          "source": "default"
+        },
+        {
+          "label": "特性固定威力",
+          "input": 0,
+          "before": 130,
+          "after": 130,
+          "value": "130",
+          "source": "default"
+        },
+        {
+          "label": "技能威力百分比",
+          "input": [],
+          "before": 130,
+          "after": 130,
+          "value": "130",
+          "source": "default"
+        },
+        {
+          "label": "本系",
+          "input": 1.25,
+          "before": 130,
+          "after": 162.5,
+          "value": "162.5",
+          "source": "automatic"
+        },
+        {
+          "label": "属性克制",
+          "input": [
+            "水",
+            "毒"
+          ],
+          "before": 162.5,
+          "after": 162.5,
+          "value": "162.5",
+          "source": {
+            "title": "BWIKI 精灵详情页属性克制",
+            "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+            "revision": null,
+            "fetchedAt": "2026-07-23T13:54:31.332Z",
+            "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+          }
+        },
+        {
+          "label": "攻防等级",
+          "input": 1,
+          "before": 162.5,
+          "after": 162.5,
+          "value": "162.5",
+          "source": "direction-state"
+        },
+        {
+          "label": "其他威力乘区",
+          "input": 1,
+          "before": 162.5,
+          "after": 162.5,
+          "value": "162.5",
+          "source": "direction-state"
+        },
+        {
+          "label": "显示威力",
+          "input": {
+            "method": "floor"
+          },
+          "before": 162.5,
+          "after": 162,
+          "value": "162",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "等级系数与攻防比",
+          "input": {
+            "level": 60,
+            "coefficient": 0.9024390243902439,
+            "attackerStat": 244,
+            "calculationPower": 162.5,
+            "damageReductionMultiplier": 1,
+            "defenderDefense": 195,
+            "displayedPower": 162,
+            "roundedNumerator": 35782,
+            "unroundedNumerator": 35781.707317073175,
+            "unroundedOneHit": 183.4974358974359
+          },
+          "before": 35781.707317073175,
+          "after": 183,
+          "value": "183",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "减伤、连击与最终倍率",
+          "input": {
+            "damageReductionMultiplier": 1,
+            "hitCount": 1,
+            "finalDamageMultiplier": 1,
+            "oneHitAfterFinal": 183
+          },
+          "before": 183,
+          "after": 183,
+          "value": "183",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "星陨追加伤害",
+          "input": {
+            "stacks": 0,
+            "power": 0
+          },
+          "before": 183,
+          "after": 0,
+          "value": "0",
+          "source": "reviewed-rule:starfall-v1"
+        }
+      ],
+      "warnings": []
+    },
+    "cli": {
+      "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/bone-dragon-claw-on-glass-lord-162-ui-default.cli-input.json",
+      "ok": true,
+      "engine": {
+        "productVersion": "2.2.8",
+        "serverId": "cn",
+        "availability": "verified",
+        "dataVersion": "s4-2026-09-10",
+        "rulesVersion": "s4-2026-09-10",
+        "snapshotVersion": 2
+      },
+      "inputDigest": "sha256:14af042251e87ad98244c7d8aad11ee10ce20cc6808b59b9cf91ff6b86733ff5",
+      "result": {
+        "skillId": "skill_4e7ea56f297e105f",
+        "skillName": "龙之利爪",
+        "status": "exact",
+        "reason": null,
+        "totalDamage": 183,
+        "hpPercent": 40.75723830734967,
+        "lethal": false,
+        "hitCount": 1,
+        "displayPower": 162,
+        "effectivePower": 162,
+        "typeLabel": "龙",
+        "typeMultiplier": 1,
+        "warnings": [],
+        "postAttackEffects": null,
+        "markSettlements": [],
+        "traitSettlements": []
+      },
+      "matchesWebDamage": true
+    },
+    "panels": {
+      "attacker": {
+        "physicalAttack": 244,
+        "magicalAttack": 148,
+        "speed": 159,
+        "hp": 425,
+        "physicalDefense": 207,
+        "magicalDefense": 182
+      },
+      "defender": {
+        "physicalAttack": 134,
+        "magicalAttack": 187,
+        "speed": 198,
+        "hp": 449,
+        "physicalDefense": 195,
+        "magicalDefense": 243
+      }
+    }
+  },
+  "localReplayOnlySkills": [],
+  "expectedDamage": 73,
+  "steps": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "evidence": [],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                {
+                  "context": {},
+                  "hitCount": 1,
+                  "overrides": {},
+                  "skillId": "skill_4e7ea56f297e105f"
+                },
+                "skill_9d7e8cf644d86b9c",
+                "skill_e746a8a9e4a70693",
+                "skill_223a2e5113de216f"
+              ],
+              "single": "skill_c9d031d10d97fac6"
+            },
+            "spiritId": "spirit_2c2d72d3c0bbe704",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                {
+                  "context": {},
+                  "hitCount": 1,
+                  "overrides": {},
+                  "skillId": "skill_5b4d21e36f02d1c9"
+                },
+                null,
+                null,
+                null
+              ],
+              "single": null
+            },
+            "spiritId": "spirit_preview_s5_boss-glass-jellyfish",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "defenderTrait.defenderTraitS5SkillUsed.f2f43502": false,
+              "defenderTrait.defenderTraitS5PoisonMarkStacks.8ec2b27d": 0,
+              "negativeStatusUseCountsBySlot": {}
+            },
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "attackerTrait.attackerTraitS5SkillUsed.f2f43502": false,
+              "attackerTrait.attackerTraitS5PoisonMarkStacks.8ec2b27d": 0,
+              "negativeStatusUseCountsBySlot": {}
+            },
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_4e7ea56f297e105f",
+        "skillName": "龙之利爪",
+        "status": "exact",
+        "skillCost": 3,
+        "resolvedPower": 130,
+        "staticPower": 130,
+        "displayPower": 162,
+        "hitCount": 1,
+        "hitDamages": [
+          183
+        ],
+        "totalDamage": 183,
+        "hpPercent": 40.75723830734967,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 148,
+            "physicalAttack": 244,
+            "speed": 159
+          },
+          "defender": {
+            "magicalDefense": 243,
+            "physicalDefense": 195,
+            "speed": 198
+          }
+        },
+        "gainSummary": "",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "physicalAttack",
+            "before": 244,
+            "after": 244,
+            "value": "244",
+            "source": "panel-stat"
+          },
+          {
+            "label": "基础威力",
+            "input": 130,
+            "before": 130,
+            "after": 130,
+            "value": "130",
+            "source": {
+              "title": "模块:Pets/data/Skills",
+              "url": "https://wiki.biligame.com/nrc/index.php?oldid=7273",
+              "revision": 7273,
+              "fetchedAt": "2026-09-09T16:57:54.897Z",
+              "sha256": "ed9132e1a3fd7f0cf287c8acbeb57e830ba0cfe2dc1f11946a72ef6329772f33"
+            }
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 130,
+            "after": 130,
+            "value": "130",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 130,
+            "after": 130,
+            "value": "130",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 130,
+            "after": 130,
+            "value": "130",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 130,
+            "after": 130,
+            "value": "130",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 130,
+            "after": 130,
+            "value": "130",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 130,
+            "after": 162.5,
+            "value": "162.5",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "水",
+              "毒"
+            ],
+            "before": 162.5,
+            "after": 162.5,
+            "value": "162.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 162.5,
+            "after": 162.5,
+            "value": "162.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 162.5,
+            "after": 162.5,
+            "value": "162.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 162.5,
+            "after": 162,
+            "value": "162",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 244,
+              "calculationPower": 162.5,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 195,
+              "displayedPower": 162,
+              "roundedNumerator": 35782,
+              "unroundedNumerator": 35781.707317073175,
+              "unroundedOneHit": 183.4974358974359
+            },
+            "before": 35781.707317073175,
+            "after": 183,
+            "value": "183",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 183
+            },
+            "before": 183,
+            "after": 183,
+            "value": "183",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 183,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/bone-dragon-claw-on-glass-lord-162-step-0.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:14af042251e87ad98244c7d8aad11ee10ce20cc6808b59b9cf91ff6b86733ff5",
+        "result": {
+          "skillId": "skill_4e7ea56f297e105f",
+          "skillName": "龙之利爪",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 183,
+          "hpPercent": 40.75723830734967,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 162,
+          "effectivePower": 162,
+          "typeLabel": "龙",
+          "typeMultiplier": 1,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 244,
+          "magicalAttack": 148,
+          "speed": 159,
+          "hp": 425,
+          "physicalDefense": 207,
+          "magicalDefense": 182
+        },
+        "defender": {
+          "physicalAttack": 134,
+          "magicalAttack": 187,
+          "speed": 198,
+          "hp": 449,
+          "physicalDefense": 195,
+          "magicalDefense": 243
+        }
+      }
+    },
+    {
+      "label": "视频君主已使用应对血气：按资料减伤60%（倍率0.4）",
+      "evidence": [
+        {
+          "frame": "local-only:browser-frames/hd-158.png",
+          "time": 159.09832,
+          "fact": "琉璃君主使用2耗应对血气；寂灭骨龙使用龙之利爪"
+        },
+        {
+          "database": "s4-2026-09-10",
+          "skillId": "skill_5b4d21e36f02d1c9",
+          "fact": "血气description减伤60%"
+        }
+      ],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                {
+                  "context": {},
+                  "hitCount": 1,
+                  "overrides": {},
+                  "skillId": "skill_4e7ea56f297e105f"
+                },
+                "skill_9d7e8cf644d86b9c",
+                "skill_e746a8a9e4a70693",
+                "skill_223a2e5113de216f"
+              ],
+              "single": "skill_c9d031d10d97fac6"
+            },
+            "spiritId": "spirit_2c2d72d3c0bbe704",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                {
+                  "context": {},
+                  "hitCount": 1,
+                  "overrides": {},
+                  "skillId": "skill_5b4d21e36f02d1c9"
+                },
+                null,
+                null,
+                null
+              ],
+              "single": null
+            },
+            "spiritId": "spirit_preview_s5_boss-glass-jellyfish",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 0.4,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "defenderTrait.defenderTraitS5SkillUsed.f2f43502": false,
+              "defenderTrait.defenderTraitS5PoisonMarkStacks.8ec2b27d": 0,
+              "negativeStatusUseCountsBySlot": {}
+            },
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "attackerTrait.attackerTraitS5SkillUsed.f2f43502": false,
+              "attackerTrait.attackerTraitS5PoisonMarkStacks.8ec2b27d": 0,
+              "negativeStatusUseCountsBySlot": {}
+            },
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_4e7ea56f297e105f",
+        "skillName": "龙之利爪",
+        "status": "exact",
+        "skillCost": 3,
+        "resolvedPower": 130,
+        "staticPower": 130,
+        "displayPower": 162,
+        "hitCount": 1,
+        "hitDamages": [
+          73
+        ],
+        "totalDamage": 73,
+        "hpPercent": 16.258351893095767,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 148,
+            "physicalAttack": 244,
+            "speed": 159
+          },
+          "defender": {
+            "magicalDefense": 243,
+            "physicalDefense": 195,
+            "speed": 198
+          }
+        },
+        "gainSummary": "",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "physicalAttack",
+            "before": 244,
+            "after": 244,
+            "value": "244",
+            "source": "panel-stat"
+          },
+          {
+            "label": "基础威力",
+            "input": 130,
+            "before": 130,
+            "after": 130,
+            "value": "130",
+            "source": {
+              "title": "模块:Pets/data/Skills",
+              "url": "https://wiki.biligame.com/nrc/index.php?oldid=7273",
+              "revision": 7273,
+              "fetchedAt": "2026-09-09T16:57:54.897Z",
+              "sha256": "ed9132e1a3fd7f0cf287c8acbeb57e830ba0cfe2dc1f11946a72ef6329772f33"
+            }
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 130,
+            "after": 130,
+            "value": "130",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 130,
+            "after": 130,
+            "value": "130",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 130,
+            "after": 130,
+            "value": "130",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 130,
+            "after": 130,
+            "value": "130",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 130,
+            "after": 130,
+            "value": "130",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 130,
+            "after": 162.5,
+            "value": "162.5",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "水",
+              "毒"
+            ],
+            "before": 162.5,
+            "after": 162.5,
+            "value": "162.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 162.5,
+            "after": 162.5,
+            "value": "162.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 162.5,
+            "after": 162.5,
+            "value": "162.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 162.5,
+            "after": 162,
+            "value": "162",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 244,
+              "calculationPower": 162.5,
+              "damageReductionMultiplier": 0.4,
+              "defenderDefense": 195,
+              "displayedPower": 162,
+              "roundedNumerator": 35782,
+              "unroundedNumerator": 35781.707317073175,
+              "unroundedOneHit": 73.39897435897437
+            },
+            "before": 35781.707317073175,
+            "after": 73,
+            "value": "73",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 0.4,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 73
+            },
+            "before": 73,
+            "after": 73,
+            "value": "73",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 73,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/bone-dragon-claw-on-glass-lord-162-step-1.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:296d55272e429b0fb6aac73dabfb5156a2c802da0b259cc5f71a1bd700711d19",
+        "result": {
+          "skillId": "skill_4e7ea56f297e105f",
+          "skillName": "龙之利爪",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 73,
+          "hpPercent": 16.258351893095767,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 162,
+          "effectivePower": 162,
+          "typeLabel": "龙",
+          "typeMultiplier": 1,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 244,
+          "magicalAttack": 148,
+          "speed": 159,
+          "hp": 425,
+          "physicalDefense": 207,
+          "magicalDefense": 182
+        },
+        "defender": {
+          "physicalAttack": 134,
+          "magicalAttack": 187,
+          "speed": 198,
+          "hp": 449,
+          "physicalDefense": 195,
+          "magicalDefense": 243
+        }
+      }
+    }
+  ],
+  "comparison": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "status": "exact",
+      "actualDamage": 183,
+      "expectedDamage": 73,
+      "delta": 110
+    },
+    {
+      "label": "视频君主已使用应对血气：按资料减伤60%（倍率0.4）",
+      "status": "exact",
+      "actualDamage": 73,
+      "expectedDamage": 73,
+      "delta": 0
+    }
+  ]
+}

@@ -1,0 +1,442 @@
+{
+  "eventId": "segment070-02-status-parasitism",
+  "engine": "Existing calculateNegativeStatusSettlement; compact CLI has no status-settlement input. Product unchanged.",
+  "source": {
+    "video": "BV1SNxq6REfb",
+    "frames": [
+      "local-only:frame0155.png",
+      "local-only:frame0165.png",
+      "local-only:frame0166.png"
+    ],
+    "observedDamage": 16,
+    "observedHealing": 6,
+    "sourceHP": "439/445",
+    "targetHP": null,
+    "targetVariant": "晶石蜗 exact appearance unconfirmed"
+  },
+  "baseline": {
+    "input": {
+      "attacker": {
+        "currentHp": 451,
+        "maxHp": 451
+      },
+      "defender": {
+        "currentHp": 381,
+        "maxHp": 381,
+        "types": [
+          "光",
+          "地"
+        ]
+      },
+      "statuses": {
+        "parasitism": 0
+      }
+    },
+    "result": {
+      "added": {
+        "burn": 0,
+        "freeze": 0,
+        "parasitism": 0,
+        "poison": 0,
+        "electrified": 0
+      },
+      "breakdown": [
+        {
+          "damage": 0,
+          "healing": 0,
+          "id": "burn",
+          "immune": false,
+          "label": "灼烧",
+          "multiplier": 1,
+          "stacks": 0,
+          "triggerCount": 1
+        },
+        {
+          "damage": 0,
+          "healing": 0,
+          "id": "poison",
+          "immune": false,
+          "label": "中毒",
+          "multiplier": 1,
+          "stacks": 0,
+          "triggerCount": 1
+        },
+        {
+          "damage": 0,
+          "healing": 0,
+          "id": "parasitism",
+          "immune": false,
+          "label": "寄生",
+          "multiplier": 1,
+          "stacks": 0,
+          "triggerCount": 1
+        }
+      ],
+      "combinedHpLoss": 0,
+      "directDamage": 0,
+      "freeze": {
+        "immune": false,
+        "label": "冻结",
+        "lethal": false,
+        "stacks": 0,
+        "thresholdHp": 0,
+        "thresholdPercent": 0
+      },
+      "lethal": false,
+      "nextStacks": {
+        "burn": 0,
+        "freeze": 0,
+        "parasitism": 0,
+        "poison": 0,
+        "electrified": 0
+      },
+      "outcome": "剩余 381 HP",
+      "remainingHp": 381,
+      "skipped": null,
+      "stacks": {
+        "burn": 0,
+        "freeze": 0,
+        "parasitism": 0,
+        "poison": 0,
+        "electrified": 0
+      },
+      "statusDamage": 0,
+      "actualStatusDamage": 0,
+      "maxHp": 381,
+      "totalHealing": 0,
+      "traitHealing": 0
+    }
+  },
+  "visibleAdjustment": {
+    "input": {
+      "attacker": {
+        "currentHp": 439,
+        "maxHp": 445
+      },
+      "defender": {
+        "currentHp": 381,
+        "maxHp": 381,
+        "types": [
+          "光",
+          "地"
+        ]
+      },
+      "statuses": {
+        "parasitism": 2
+      }
+    },
+    "evidence": "外附传播 card2层寄生; frame0165寄生白16/green6 and source439/445.",
+    "result": {
+      "added": {
+        "burn": 0,
+        "freeze": 0,
+        "parasitism": 0,
+        "poison": 0,
+        "electrified": 0
+      },
+      "breakdown": [
+        {
+          "damage": 0,
+          "healing": 0,
+          "id": "burn",
+          "immune": false,
+          "label": "灼烧",
+          "multiplier": 1,
+          "stacks": 0,
+          "triggerCount": 1
+        },
+        {
+          "damage": 0,
+          "healing": 0,
+          "id": "poison",
+          "immune": false,
+          "label": "中毒",
+          "multiplier": 1,
+          "stacks": 0,
+          "triggerCount": 1
+        },
+        {
+          "damage": 15,
+          "healing": 6,
+          "id": "parasitism",
+          "immune": false,
+          "label": "寄生",
+          "multiplier": 1,
+          "stacks": 2,
+          "triggerCount": 1
+        }
+      ],
+      "combinedHpLoss": 15,
+      "directDamage": 0,
+      "freeze": {
+        "immune": false,
+        "label": "冻结",
+        "lethal": false,
+        "stacks": 0,
+        "thresholdHp": 0,
+        "thresholdPercent": 0
+      },
+      "lethal": false,
+      "nextStacks": {
+        "burn": 0,
+        "freeze": 0,
+        "parasitism": 2,
+        "poison": 0,
+        "electrified": 0
+      },
+      "outcome": "剩余 366 HP",
+      "remainingHp": 366,
+      "skipped": null,
+      "stacks": {
+        "burn": 0,
+        "freeze": 0,
+        "parasitism": 2,
+        "poison": 0,
+        "electrified": 0
+      },
+      "statusDamage": 15,
+      "actualStatusDamage": 15,
+      "maxHp": 381,
+      "totalHealing": 6,
+      "traitHealing": 0
+    }
+  },
+  "comparison": {
+    "parasitismDamage": {
+      "actual": 15,
+      "expected": 16,
+      "delta": -1
+    },
+    "sourceHealing": {
+      "actual": 6,
+      "expected": 6,
+      "delta": 0
+    }
+  },
+  "uncertainties": [
+    "The target maxHP is obscured;381 is the selected current database/default UI reference for a crystal-snail appearance, not measured video HP.",
+    "No amount is added to direct skill damage; parasitism and capped source healing are separate settlement events.",
+    "Any target maxHP400–424 at this status/type multiplier would produce16, but no such maxHP has been asserted as observed."
+  ],
+  "legalHpCandidates": {
+    "method": "Same existing 晶石蜗 lotus-corundum reference; actual Web panel pipeline; HP-up nature silent,HP IV integer0–60; existing negative-status settlement.",
+    "candidates": [
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 24,
+        "maxHp": 400,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 25,
+        "maxHp": 401,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 26,
+        "maxHp": 402,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 27,
+        "maxHp": 404,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 28,
+        "maxHp": 405,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 29,
+        "maxHp": 405,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 30,
+        "maxHp": 406,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 31,
+        "maxHp": 407,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 32,
+        "maxHp": 408,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 33,
+        "maxHp": 410,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 34,
+        "maxHp": 411,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 35,
+        "maxHp": 412,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 36,
+        "maxHp": 412,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 37,
+        "maxHp": 413,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 38,
+        "maxHp": 414,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 39,
+        "maxHp": 416,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 40,
+        "maxHp": 417,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 41,
+        "maxHp": 418,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 42,
+        "maxHp": 419,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 43,
+        "maxHp": 419,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 44,
+        "maxHp": 420,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 45,
+        "maxHp": 422,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 46,
+        "maxHp": 423,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      },
+      {
+        "natureId": "silent",
+        "natureName": "沉默",
+        "hpIv": 47,
+        "maxHp": 424,
+        "damage": 16,
+        "healing": 6,
+        "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+      }
+    ]
+  }
+}

@@ -1,0 +1,1629 @@
+{
+  "eventId": "segment000-rip-458",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "engine": "Current Web S5 overlay -> UI selectSpirit/selectFourSkill -> buildBalanceComparison",
+  "cliBoundary": "Ordinary compact CLI omits per-owner S5 level; this adapter uses the actual Web level pipeline.",
+  "versions": {
+    "data": "s4-2026-09-10",
+    "rules": "s4-2026-09-10"
+  },
+  "defaultPresets": {
+    "attacker": {
+      "spirit": "阿瓦鲨（柠檬鲨的样子）",
+      "spiritId": "spirit_preview_s5_awa-shark-lemon",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "换牙"
+      ],
+      "skills": [
+        {
+          "id": "skill_preview_s5_refill",
+          "name": "续杯",
+          "cost": 2,
+          "basePower": null
+        },
+        {
+          "id": "skill_preview_s5_rip-current",
+          "name": "离岸流",
+          "cost": 5,
+          "basePower": 125
+        },
+        {
+          "id": "skill_d457bb1dce36b046",
+          "name": "洗礼",
+          "cost": 1,
+          "basePower": 0
+        },
+        {
+          "id": "skill_e374eb2120614c3e",
+          "name": "叠浪",
+          "cost": 3,
+          "basePower": 10
+        }
+      ]
+    },
+    "defender": {
+      "spirit": "权杖-V",
+      "spiritId": "spirit_befdd756d3d8b3dd",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "机械变式"
+      ],
+      "skills": [
+        {
+          "id": "skill_87c9f33eaa047cf1",
+          "name": "离子震荡",
+          "cost": 3,
+          "basePower": 90
+        },
+        {
+          "id": "skill_74a47a4ef535a1d3",
+          "name": "械斗",
+          "cost": 1,
+          "basePower": 45
+        },
+        {
+          "id": "skill_57aa4992dbed882e",
+          "name": "磁暴",
+          "cost": 2,
+          "basePower": 70
+        },
+        {
+          "id": "skill_6eac3d616ee2580a",
+          "name": "钢铁洪流",
+          "cost": 3,
+          "basePower": 70
+        }
+      ]
+    }
+  },
+  "selectedSkills": [
+    {
+      "side": "attacker",
+      "skill": "离岸流",
+      "skillId": "skill_preview_s5_rip-current",
+      "index": 1,
+      "presentInDefaultFour": true,
+      "reason": "Select the observed action for damage replay; preserve other default slots."
+    }
+  ],
+  "uiDefaultBaseline": {
+    "label": "Actual UI spirit-selection defaults with observed action selected; includes default trait controls/levels",
+    "evidence": [],
+    "state": {
+      "schemaVersion": 1,
+      "versions": {
+        "data": "s4-2026-09-10",
+        "rules": "s4-2026-09-10"
+      },
+      "mode": "four",
+      "calculationOptions": {
+        "includeNegativeStatusSettlement": false
+      },
+      "marks": {
+        "attacker": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        },
+        "defender": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        }
+      },
+      "negativeStatuses": {
+        "attacker": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        },
+        "defender": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        }
+      },
+      "sides": {
+        "attacker": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_preview_s5_refill",
+              "skill_preview_s5_rip-current",
+              "skill_d457bb1dce36b046",
+              "skill_e374eb2120614c3e"
+            ],
+            "single": "skill_preview_s5_refill"
+          },
+          "spiritId": "spirit_preview_s5_awa-shark-lemon",
+          "traitValues": {}
+        },
+        "defender": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_87c9f33eaa047cf1",
+              "skill_74a47a4ef535a1d3",
+              "skill_57aa4992dbed882e",
+              "skill_6eac3d616ee2580a"
+            ],
+            "single": "skill_87c9f33eaa047cf1"
+          },
+          "spiritId": "spirit_befdd756d3d8b3dd",
+          "traitValues": {}
+        }
+      },
+      "directions": {
+        "forward": {
+          "selectedSkillIndex": 1,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {},
+          "overrides": {}
+        },
+        "reverse": {
+          "selectedSkillIndex": 0,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {},
+          "overrides": {}
+        }
+      }
+    },
+    "result": {
+      "skillId": "skill_preview_s5_rip-current",
+      "skillName": "离岸流",
+      "status": "exact",
+      "skillCost": 5,
+      "resolvedPower": 125,
+      "staticPower": 125,
+      "displayPower": 312,
+      "hitCount": 1,
+      "hitDamages": [
+        257
+      ],
+      "totalDamage": 257,
+      "hpPercent": 64.8989898989899,
+      "combatPanel": {
+        "attacker": {
+          "magicalAttack": 144,
+          "physicalAttack": 222,
+          "speed": 198
+        },
+        "defender": {
+          "magicalDefense": 243,
+          "physicalDefense": 243,
+          "speed": 176
+        }
+      },
+      "gainSummary": "",
+      "formulaSteps": [
+        {
+          "label": "攻击面板",
+          "input": "physicalAttack",
+          "before": 222,
+          "after": 222,
+          "value": "222",
+          "source": "panel-stat"
+        },
+        {
+          "label": "水系技能永久减耗",
+          "input": 0,
+          "before": 5,
+          "after": 5,
+          "source": "official-video:BV1SNxq6REfb:2026-10-31"
+        },
+        {
+          "label": "基础威力",
+          "input": 125,
+          "before": 125,
+          "after": 125,
+          "value": "125",
+          "source": "snapshot-skill"
+        },
+        {
+          "label": "固定威力增加",
+          "input": 0,
+          "before": 125,
+          "after": 125,
+          "value": "125",
+          "source": "default"
+        },
+        {
+          "label": "继承迸发固定威力",
+          "input": 0,
+          "before": 125,
+          "after": 125,
+          "value": "125",
+          "source": "default"
+        },
+        {
+          "label": "印记固定威力",
+          "input": 0,
+          "before": 125,
+          "after": 125,
+          "value": "125",
+          "source": "default"
+        },
+        {
+          "label": "特性固定威力",
+          "input": 0,
+          "before": 125,
+          "after": 125,
+          "value": "125",
+          "source": "default"
+        },
+        {
+          "label": "技能威力百分比",
+          "input": [],
+          "before": 125,
+          "after": 125,
+          "value": "125",
+          "source": "default"
+        },
+        {
+          "label": "本系",
+          "input": 1.25,
+          "before": 125,
+          "after": 156.25,
+          "value": "156.25",
+          "source": "automatic"
+        },
+        {
+          "label": "属性克制",
+          "input": [
+            "机械"
+          ],
+          "before": 156.25,
+          "after": 312.5,
+          "value": "312.5",
+          "source": {
+            "title": "BWIKI 精灵详情页属性克制",
+            "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+            "revision": null,
+            "fetchedAt": "2026-07-23T13:54:31.332Z",
+            "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+          }
+        },
+        {
+          "label": "攻防等级",
+          "input": 1,
+          "before": 312.5,
+          "after": 312.5,
+          "value": "312.5",
+          "source": "direction-state"
+        },
+        {
+          "label": "其他威力乘区",
+          "input": 1,
+          "before": 312.5,
+          "after": 312.5,
+          "value": "312.5",
+          "source": "direction-state"
+        },
+        {
+          "label": "显示威力",
+          "input": {
+            "method": "floor"
+          },
+          "before": 312.5,
+          "after": 312,
+          "value": "312",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "等级系数与攻防比",
+          "input": {
+            "level": 60,
+            "coefficient": 0.9024390243902439,
+            "attackerStat": 222,
+            "calculationPower": 312.5,
+            "damageReductionMultiplier": 1,
+            "defenderDefense": 243,
+            "displayedPower": 312,
+            "roundedNumerator": 62607,
+            "unroundedNumerator": 62606.707317073175,
+            "unroundedOneHit": 257.641975308642
+          },
+          "before": 62606.707317073175,
+          "after": 257,
+          "value": "257",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "减伤、连击与最终倍率",
+          "input": {
+            "damageReductionMultiplier": 1,
+            "hitCount": 1,
+            "finalDamageMultiplier": 1,
+            "oneHitAfterFinal": 257
+          },
+          "before": 257,
+          "after": 257,
+          "value": "257",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "星陨追加伤害",
+          "input": {
+            "stacks": 0,
+            "power": 0
+          },
+          "before": 257,
+          "after": 0,
+          "value": "0",
+          "source": "reviewed-rule:starfall-v1"
+        }
+      ],
+      "warnings": []
+    },
+    "cli": {
+      "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-rip-458/segment000-rip-458-ui-default.cli-input.json",
+      "ok": true,
+      "engine": {
+        "productVersion": "2.2.8",
+        "serverId": "cn",
+        "availability": "verified",
+        "dataVersion": "s4-2026-09-10",
+        "rulesVersion": "s4-2026-09-10",
+        "snapshotVersion": 2
+      },
+      "inputDigest": "sha256:4cebecc03ac0bf95a465498615c82b9caaf669eaa8a3440fe59a3892f106fd2d",
+      "result": {
+        "skillId": "skill_preview_s5_rip-current",
+        "skillName": "离岸流",
+        "status": "exact",
+        "reason": null,
+        "totalDamage": 257,
+        "hpPercent": 64.8989898989899,
+        "lethal": false,
+        "hitCount": 1,
+        "displayPower": 312,
+        "effectivePower": 312,
+        "typeLabel": "水",
+        "typeMultiplier": 2,
+        "warnings": [],
+        "postAttackEffects": null,
+        "markSettlements": [],
+        "traitSettlements": []
+      },
+      "matchesWebDamage": true
+    },
+    "panels": {
+      "attacker": {
+        "physicalAttack": 222,
+        "magicalAttack": 144,
+        "speed": 198,
+        "hp": 430,
+        "physicalDefense": 225,
+        "magicalDefense": 190
+      },
+      "defender": {
+        "physicalAttack": 209,
+        "magicalAttack": 200,
+        "speed": 176,
+        "hp": 396,
+        "physicalDefense": 243,
+        "magicalDefense": 243
+      }
+    }
+  },
+  "localReplayOnlySkills": [],
+  "localSkillAliases": {},
+  "isolatedCliProjectRoot": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-rip-458",
+  "expectedDamage": 458,
+  "steps": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "evidence": [],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_preview_s5_refill",
+                "skill_preview_s5_rip-current",
+                "skill_d457bb1dce36b046",
+                "skill_e374eb2120614c3e"
+              ],
+              "single": "skill_preview_s5_refill"
+            },
+            "spiritId": "spirit_preview_s5_awa-shark-lemon",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_87c9f33eaa047cf1",
+                "skill_74a47a4ef535a1d3",
+                "skill_57aa4992dbed882e",
+                "skill_6eac3d616ee2580a"
+              ],
+              "single": "skill_87c9f33eaa047cf1"
+            },
+            "spiritId": "spirit_befdd756d3d8b3dd",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 1,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_preview_s5_rip-current",
+        "skillName": "离岸流",
+        "status": "exact",
+        "skillCost": 5,
+        "resolvedPower": 125,
+        "staticPower": 125,
+        "displayPower": 312,
+        "hitCount": 1,
+        "hitDamages": [
+          257
+        ],
+        "totalDamage": 257,
+        "hpPercent": 64.8989898989899,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 144,
+            "physicalAttack": 222,
+            "speed": 198
+          },
+          "defender": {
+            "magicalDefense": 243,
+            "physicalDefense": 243,
+            "speed": 176
+          }
+        },
+        "gainSummary": "",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "physicalAttack",
+            "before": 222,
+            "after": 222,
+            "value": "222",
+            "source": "panel-stat"
+          },
+          {
+            "label": "水系技能永久减耗",
+            "input": 0,
+            "before": 5,
+            "after": 5,
+            "source": "official-video:BV1SNxq6REfb:2026-10-31"
+          },
+          {
+            "label": "基础威力",
+            "input": 125,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "snapshot-skill"
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 125,
+            "after": 156.25,
+            "value": "156.25",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "机械"
+            ],
+            "before": 156.25,
+            "after": 312.5,
+            "value": "312.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 312.5,
+            "after": 312.5,
+            "value": "312.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 312.5,
+            "after": 312.5,
+            "value": "312.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 312.5,
+            "after": 312,
+            "value": "312",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 222,
+              "calculationPower": 312.5,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 243,
+              "displayedPower": 312,
+              "roundedNumerator": 62607,
+              "unroundedNumerator": 62606.707317073175,
+              "unroundedOneHit": 257.641975308642
+            },
+            "before": 62606.707317073175,
+            "after": 257,
+            "value": "257",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 257
+            },
+            "before": 257,
+            "after": 257,
+            "value": "257",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 257,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-rip-458/segment000-rip-458-step-0.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:4cebecc03ac0bf95a465498615c82b9caaf669eaa8a3440fe59a3892f106fd2d",
+        "result": {
+          "skillId": "skill_preview_s5_rip-current",
+          "skillName": "离岸流",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 257,
+          "hpPercent": 64.8989898989899,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 312,
+          "effectivePower": 312,
+          "typeLabel": "水",
+          "typeMultiplier": 2,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 222,
+          "magicalAttack": 144,
+          "speed": 198,
+          "hp": 430,
+          "physicalDefense": 225,
+          "magicalDefense": 190
+        },
+        "defender": {
+          "physicalAttack": 209,
+          "magicalAttack": 200,
+          "speed": 176,
+          "hp": 396,
+          "physicalDefense": 243,
+          "magicalDefense": 243
+        }
+      }
+    },
+    {
+      "label": "实帧阿瓦鲨脚下绿色双攻图标各5：双攻能力等级+5（+50%），其他配置保持普通全60",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0095.png",
+          "fact": "两枚绿色物攻/魔攻图标各5，60级HP430/430"
+        }
+      ],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_preview_s5_refill",
+                "skill_preview_s5_rip-current",
+                "skill_d457bb1dce36b046",
+                "skill_e374eb2120614c3e"
+              ],
+              "single": "skill_preview_s5_refill"
+            },
+            "spiritId": "spirit_preview_s5_awa-shark-lemon",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_87c9f33eaa047cf1",
+                "skill_74a47a4ef535a1d3",
+                "skill_57aa4992dbed882e",
+                "skill_6eac3d616ee2580a"
+              ],
+              "single": "skill_87c9f33eaa047cf1"
+            },
+            "spiritId": "spirit_befdd756d3d8b3dd",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 1,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {
+              "attackLevelStage": 5
+            }
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_preview_s5_rip-current",
+        "skillName": "离岸流",
+        "status": "exact",
+        "skillCost": 5,
+        "resolvedPower": 125,
+        "staticPower": 125,
+        "displayPower": 468,
+        "hitCount": 1,
+        "hitDamages": [
+          386
+        ],
+        "totalDamage": 386,
+        "hpPercent": 97.47474747474747,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 216,
+            "physicalAttack": 333,
+            "speed": 198
+          },
+          "defender": {
+            "magicalDefense": 243,
+            "physicalDefense": 243,
+            "speed": 176
+          }
+        },
+        "gainSummary": "未记录",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "physicalAttack",
+            "before": 222,
+            "after": 333,
+            "value": "333",
+            "source": "panel-stat"
+          },
+          {
+            "label": "水系技能永久减耗",
+            "input": 0,
+            "before": 5,
+            "after": 5,
+            "source": "official-video:BV1SNxq6REfb:2026-10-31"
+          },
+          {
+            "label": "基础威力",
+            "input": 125,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "snapshot-skill"
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 125,
+            "after": 156.25,
+            "value": "156.25",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "机械"
+            ],
+            "before": 156.25,
+            "after": 312.5,
+            "value": "312.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1.5,
+            "before": 312.5,
+            "after": 468.75,
+            "value": "468.75",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 468.75,
+            "after": 468.75,
+            "value": "468.75",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 468.75,
+            "after": 468,
+            "value": "468",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 333,
+              "calculationPower": 312.5,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 243,
+              "displayedPower": 468,
+              "roundedNumerator": 93910,
+              "unroundedNumerator": 93910.06097560975,
+              "unroundedOneHit": 386.46090534979425
+            },
+            "before": 93910.06097560975,
+            "after": 386,
+            "value": "386",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 386
+            },
+            "before": 386,
+            "after": 386,
+            "value": "386",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 386,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-rip-458/segment000-rip-458-step-1.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:ed69438d5bdababbddc4e77e5825eb09804fa00e05bfd697e292acacaa294510",
+        "result": {
+          "skillId": "skill_preview_s5_rip-current",
+          "skillName": "离岸流",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 386,
+          "hpPercent": 97.47474747474747,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 468,
+          "effectivePower": 468,
+          "typeLabel": "水",
+          "typeMultiplier": 2,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 222,
+          "magicalAttack": 144,
+          "speed": 198,
+          "hp": 430,
+          "physicalDefense": 225,
+          "magicalDefense": 190
+        },
+        "defender": {
+          "physicalAttack": 209,
+          "magicalAttack": 200,
+          "speed": 176,
+          "hp": 396,
+          "physicalDefense": 243,
+          "magicalDefense": 243
+        }
+      }
+    },
+    {
+      "label": "候选复现，未确证视频性格个体：普通/大胆",
+      "evidence": [
+        {
+          "kind": "inference_only",
+          "fact": "仅约束可读等级/HP和伤害；未公开性格和相关攻防个体不是官方配置"
+        },
+        {
+          "kind": "measured_hp_constraint",
+          "hp": {
+            "attacker": 430
+          }
+        },
+        {
+          "kind": "search_scope",
+          "fact": "All31 natures deduplicated by relevant HP and attack/defense multipliers; related attack/defense IV integers0..60; HP IV0..60 constrained by visible HP where supplied; no formula change; IV candidate not official"
+        }
+      ],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_preview_s5_refill",
+                "skill_preview_s5_rip-current",
+                "skill_d457bb1dce36b046",
+                "skill_e374eb2120614c3e"
+              ],
+              "single": "skill_preview_s5_refill"
+            },
+            "spiritId": "spirit_preview_s5_awa-shark-lemon",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 22,
+              "magicalDefense": 60
+            },
+            "nature": "bold",
+            "skills": {
+              "four": [
+                "skill_87c9f33eaa047cf1",
+                "skill_74a47a4ef535a1d3",
+                "skill_57aa4992dbed882e",
+                "skill_6eac3d616ee2580a"
+              ],
+              "single": "skill_87c9f33eaa047cf1"
+            },
+            "spiritId": "spirit_befdd756d3d8b3dd",
+            "traitValues": {},
+            "natureId": "bold"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 1,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {
+              "attackLevelStage": 5
+            }
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_preview_s5_rip-current",
+        "skillName": "离岸流",
+        "status": "exact",
+        "skillCost": 5,
+        "resolvedPower": 125,
+        "staticPower": 125,
+        "displayPower": 468,
+        "hitCount": 1,
+        "hitDamages": [
+          458
+        ],
+        "totalDamage": 458,
+        "hpPercent": 115.65656565656566,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 216,
+            "physicalAttack": 333,
+            "speed": 198
+          },
+          "defender": {
+            "magicalDefense": 243,
+            "physicalDefense": 205,
+            "speed": 176
+          }
+        },
+        "gainSummary": "未记录",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "physicalAttack",
+            "before": 222,
+            "after": 333,
+            "value": "333",
+            "source": "panel-stat"
+          },
+          {
+            "label": "水系技能永久减耗",
+            "input": 0,
+            "before": 5,
+            "after": 5,
+            "source": "official-video:BV1SNxq6REfb:2026-10-31"
+          },
+          {
+            "label": "基础威力",
+            "input": 125,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "snapshot-skill"
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 125,
+            "after": 125,
+            "value": "125",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 125,
+            "after": 156.25,
+            "value": "156.25",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "机械"
+            ],
+            "before": 156.25,
+            "after": 312.5,
+            "value": "312.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1.5,
+            "before": 312.5,
+            "after": 468.75,
+            "value": "468.75",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 468.75,
+            "after": 468.75,
+            "value": "468.75",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 468.75,
+            "after": 468,
+            "value": "468",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 333,
+              "calculationPower": 312.5,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 205,
+              "displayedPower": 468,
+              "roundedNumerator": 93910,
+              "unroundedNumerator": 93910.06097560975,
+              "unroundedOneHit": 458.0975609756098
+            },
+            "before": 93910.06097560975,
+            "after": 458,
+            "value": "458",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 458
+            },
+            "before": 458,
+            "after": 458,
+            "value": "458",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 458,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-rip-458/segment000-rip-458-step-2.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:f10d251584b218c2a3644a1139cbb4b3d566c622a7e37578ca01558cf7fffd18",
+        "result": {
+          "skillId": "skill_preview_s5_rip-current",
+          "skillName": "离岸流",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 458,
+          "hpPercent": 115.65656565656566,
+          "lethal": true,
+          "hitCount": 1,
+          "displayPower": 468,
+          "effectivePower": 468,
+          "typeLabel": "水",
+          "typeMultiplier": 2,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 222,
+          "magicalAttack": 144,
+          "speed": 198,
+          "hp": 430,
+          "physicalDefense": 225,
+          "magicalDefense": 190
+        },
+        "defender": {
+          "physicalAttack": 241,
+          "magicalAttack": 200,
+          "speed": 176,
+          "hp": 396,
+          "physicalDefense": 205,
+          "magicalDefense": 243
+        }
+      }
+    }
+  ],
+  "comparison": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "status": "exact",
+      "actualDamage": 257,
+      "expectedDamage": 458,
+      "delta": -201
+    },
+    {
+      "label": "实帧阿瓦鲨脚下绿色双攻图标各5：双攻能力等级+5（+50%），其他配置保持普通全60",
+      "status": "exact",
+      "actualDamage": 386,
+      "expectedDamage": 458,
+      "delta": -72
+    },
+    {
+      "label": "候选复现，未确证视频性格个体：普通/大胆",
+      "status": "exact",
+      "actualDamage": 458,
+      "expectedDamage": 458,
+      "delta": 0
+    }
+  ]
+}

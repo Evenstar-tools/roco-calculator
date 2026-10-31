@@ -1,0 +1,887 @@
+{
+  "eventId": "grand-grass-148",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "engine": "Current Web S5 overlay -> UI selectSpirit/selectFourSkill -> buildBalanceComparison",
+  "cliBoundary": "Ordinary compact CLI omits per-owner S5 level; this adapter uses the actual Web level pipeline.",
+  "versions": {
+    "data": "s4-2026-09-10",
+    "rules": "s4-2026-09-10"
+  },
+  "defaultPresets": {
+    "attacker": {
+      "spirit": "格兰球",
+      "spiritId": "spirit_8de88e249e9a78f0",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "生长"
+      ],
+      "skills": [
+        {
+          "id": "skill_preview_s5_vascular-restructure",
+          "name": "维管束重构",
+          "cost": 4,
+          "basePower": 110
+        },
+        {
+          "id": "skill_bc2ab677d4357232",
+          "name": "藤绞",
+          "cost": 4,
+          "basePower": 80
+        },
+        {
+          "id": "skill_eb0439cab3a96c58",
+          "name": "棘突",
+          "cost": 3,
+          "basePower": 100
+        },
+        {
+          "id": "skill_e6645e5c0ad42b90",
+          "name": "倾泻",
+          "cost": 3,
+          "basePower": 70
+        }
+      ]
+    },
+    "defender": {
+      "spirit": "龙鱼",
+      "spiritId": "spirit_97b704a0026aab99",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "洄游"
+      ],
+      "skills": [
+        {
+          "id": "skill_b893649e98a29dfb",
+          "name": "潮涌",
+          "cost": 2,
+          "basePower": 80
+        },
+        {
+          "id": "skill_73b5f31fbe72092d",
+          "name": "角击",
+          "cost": 2,
+          "basePower": 80
+        },
+        {
+          "id": "skill_9403fd3a6850b653",
+          "name": "先发制人",
+          "cost": 2,
+          "basePower": 55
+        },
+        {
+          "id": "skill_ae54736ec243485b",
+          "name": "水幕冲击",
+          "cost": 3,
+          "basePower": 100
+        }
+      ]
+    }
+  },
+  "selectedSkills": [
+    {
+      "side": "attacker",
+      "skill": "维管束重构",
+      "skillId": "skill_preview_s5_vascular-restructure",
+      "index": 0,
+      "presentInDefaultFour": true,
+      "reason": "Select the observed action for damage replay; preserve other default slots."
+    }
+  ],
+  "uiDefaultBaseline": {
+    "label": "Actual UI spirit-selection defaults with observed action selected; includes default trait controls/levels",
+    "evidence": [],
+    "state": {
+      "schemaVersion": 1,
+      "versions": {
+        "data": "s4-2026-09-10",
+        "rules": "s4-2026-09-10"
+      },
+      "mode": "four",
+      "calculationOptions": {
+        "includeNegativeStatusSettlement": false
+      },
+      "marks": {
+        "attacker": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        },
+        "defender": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        }
+      },
+      "negativeStatuses": {
+        "attacker": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        },
+        "defender": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        }
+      },
+      "sides": {
+        "attacker": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_preview_s5_vascular-restructure",
+              "skill_bc2ab677d4357232",
+              "skill_eb0439cab3a96c58",
+              "skill_e6645e5c0ad42b90"
+            ],
+            "single": "skill_preview_s5_vascular-restructure"
+          },
+          "spiritId": "spirit_8de88e249e9a78f0",
+          "traitValues": {}
+        },
+        "defender": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_b893649e98a29dfb",
+              "skill_73b5f31fbe72092d",
+              "skill_9403fd3a6850b653",
+              "skill_ae54736ec243485b"
+            ],
+            "single": "skill_b893649e98a29dfb"
+          },
+          "spiritId": "spirit_97b704a0026aab99",
+          "traitValues": {}
+        }
+      },
+      "directions": {
+        "forward": {
+          "selectedSkillIndex": 0,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {},
+          "overrides": {}
+        },
+        "reverse": {
+          "selectedSkillIndex": 0,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {},
+          "overrides": {}
+        }
+      }
+    },
+    "result": {
+      "skillId": "skill_preview_s5_vascular-restructure",
+      "skillName": "维管束重构",
+      "status": "exact",
+      "skillCost": 4,
+      "resolvedPower": 110,
+      "staticPower": 110,
+      "displayPower": 137,
+      "hitCount": 1,
+      "hitDamages": [
+        137
+      ],
+      "totalDamage": 137,
+      "hpPercent": 36.82795698924731,
+      "combatPanel": {
+        "attacker": {
+          "magicalAttack": 229,
+          "physicalAttack": 150,
+          "speed": 159
+        },
+        "defender": {
+          "magicalDefense": 207,
+          "physicalDefense": 203,
+          "speed": 242
+        }
+      },
+      "gainSummary": "",
+      "formulaSteps": [
+        {
+          "label": "攻击面板",
+          "input": "magicalAttack",
+          "before": 229,
+          "after": 229,
+          "value": "229",
+          "source": "panel-stat"
+        },
+        {
+          "label": "基础威力",
+          "input": 110,
+          "before": 110,
+          "after": 110,
+          "value": "110",
+          "source": {
+            "kind": "official-video-local-replay-only-not-in-product",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "frame": "local-only:dense/frame-0294.png"
+          }
+        },
+        {
+          "label": "固定威力增加",
+          "input": 0,
+          "before": 110,
+          "after": 110,
+          "value": "110",
+          "source": "default"
+        },
+        {
+          "label": "继承迸发固定威力",
+          "input": 0,
+          "before": 110,
+          "after": 110,
+          "value": "110",
+          "source": "default"
+        },
+        {
+          "label": "印记固定威力",
+          "input": 0,
+          "before": 110,
+          "after": 110,
+          "value": "110",
+          "source": "default"
+        },
+        {
+          "label": "特性固定威力",
+          "input": 0,
+          "before": 110,
+          "after": 110,
+          "value": "110",
+          "source": "default"
+        },
+        {
+          "label": "技能威力百分比",
+          "input": [],
+          "before": 110,
+          "after": 110,
+          "value": "110",
+          "source": "default"
+        },
+        {
+          "label": "本系",
+          "input": 1.25,
+          "before": 110,
+          "after": 137.5,
+          "value": "137.5",
+          "source": "automatic"
+        },
+        {
+          "label": "属性克制",
+          "input": [
+            "水",
+            "龙"
+          ],
+          "before": 137.5,
+          "after": 137.5,
+          "value": "137.5",
+          "source": {
+            "title": "BWIKI 精灵详情页属性克制",
+            "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+            "revision": null,
+            "fetchedAt": "2026-07-23T13:54:31.332Z",
+            "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+          }
+        },
+        {
+          "label": "攻防等级",
+          "input": 1,
+          "before": 137.5,
+          "after": 137.5,
+          "value": "137.5",
+          "source": "direction-state"
+        },
+        {
+          "label": "其他威力乘区",
+          "input": 1,
+          "before": 137.5,
+          "after": 137.5,
+          "value": "137.5",
+          "source": "direction-state"
+        },
+        {
+          "label": "显示威力",
+          "input": {
+            "method": "floor"
+          },
+          "before": 137.5,
+          "after": 137,
+          "value": "137",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "等级系数与攻防比",
+          "input": {
+            "level": 60,
+            "coefficient": 0.9024390243902439,
+            "attackerStat": 229,
+            "calculationPower": 137.5,
+            "damageReductionMultiplier": 1,
+            "defenderDefense": 207,
+            "displayedPower": 137,
+            "roundedNumerator": 28416,
+            "unroundedNumerator": 28415.548780487807,
+            "unroundedOneHit": 137.2753623188406
+          },
+          "before": 28415.548780487807,
+          "after": 137,
+          "value": "137",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "减伤、连击与最终倍率",
+          "input": {
+            "damageReductionMultiplier": 1,
+            "hitCount": 1,
+            "finalDamageMultiplier": 1,
+            "oneHitAfterFinal": 137
+          },
+          "before": 137,
+          "after": 137,
+          "value": "137",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "星陨追加伤害",
+          "input": {
+            "stacks": 0,
+            "power": 0
+          },
+          "before": 137,
+          "after": 0,
+          "value": "0",
+          "source": "reviewed-rule:starfall-v1"
+        }
+      ],
+      "warnings": []
+    },
+    "cli": {
+      "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/grand-grass-148/grand-grass-148-ui-default.cli-input.json",
+      "ok": true,
+      "engine": {
+        "productVersion": "2.2.8",
+        "serverId": "cn",
+        "availability": "verified",
+        "dataVersion": "s4-2026-09-10",
+        "rulesVersion": "s4-2026-09-10",
+        "snapshotVersion": 2
+      },
+      "inputDigest": "sha256:70f8939e39773e152ad1d155e2bafc78d8d7e379c499b0029c7da8121c12bc0a",
+      "result": {
+        "skillId": "skill_preview_s5_vascular-restructure",
+        "skillName": "维管束重构",
+        "status": "exact",
+        "reason": null,
+        "totalDamage": 137,
+        "hpPercent": 36.82795698924731,
+        "lethal": false,
+        "hitCount": 1,
+        "displayPower": 137,
+        "effectivePower": 137,
+        "typeLabel": "草",
+        "typeMultiplier": 1,
+        "warnings": [],
+        "postAttackEffects": null,
+        "markSettlements": [],
+        "traitSettlements": []
+      },
+      "matchesWebDamage": true
+    },
+    "panels": {
+      "attacker": {
+        "physicalAttack": 150,
+        "magicalAttack": 229,
+        "speed": 159,
+        "hp": 405,
+        "physicalDefense": 181,
+        "magicalDefense": 216
+      },
+      "defender": {
+        "physicalAttack": 206,
+        "magicalAttack": 213,
+        "speed": 242,
+        "hp": 372,
+        "physicalDefense": 203,
+        "magicalDefense": 207
+      }
+    }
+  },
+  "localReplayOnlySkills": [
+    {
+      "id": "skill_preview_s5_vascular-restructure",
+      "name": "维管束重构",
+      "type": "草",
+      "category": "magical",
+      "cost": 4,
+      "basePower": 110,
+      "description": "造成魔伤，自己累计回复至少40%生命后，每次使用本技能可回复3能量。",
+      "iconUrl": "local-only:/assets/skills/skill_preview_s5_vascular-restructure.png",
+      "evidence": {
+        "kind": "official-video-local-replay-only-not-in-product",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "frame": "local-only:dense/frame-0294.png"
+      },
+      "localAliasId": "skill_local_video_grand-grass-148",
+      "localReplayOnly": true,
+      "notInProduct": false,
+      "localModelNotInProduct": true,
+      "replayModelScope": "仅算实帧参数对应的基础伤害，不结算待实现附加效果",
+      "omittedPendingEffects": "累计回复生命阈值对应的能量回复尚未接入。",
+      "provenance": {
+        "basePower": {
+          "kind": "official-video-local-replay-only-not-in-product",
+          "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+          "frame": "local-only:dense/frame-0294.png"
+        },
+        "description": {
+          "kind": "official-video-local-replay-only-not-in-product",
+          "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+          "frame": "local-only:dense/frame-0294.png"
+        }
+      }
+    }
+  ],
+  "localSkillAliases": {
+    "skill_local_video_grand-grass-148": "skill_preview_s5_vascular-restructure"
+  },
+  "isolatedCliProjectRoot": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/grand-grass-148",
+  "expectedDamage": 158,
+  "steps": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "evidence": [],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_preview_s5_vascular-restructure",
+                "skill_bc2ab677d4357232",
+                "skill_eb0439cab3a96c58",
+                "skill_e6645e5c0ad42b90"
+              ],
+              "single": "skill_preview_s5_vascular-restructure"
+            },
+            "spiritId": "spirit_8de88e249e9a78f0",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_b893649e98a29dfb",
+                "skill_73b5f31fbe72092d",
+                "skill_9403fd3a6850b653",
+                "skill_ae54736ec243485b"
+              ],
+              "single": "skill_b893649e98a29dfb"
+            },
+            "spiritId": "spirit_97b704a0026aab99",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_preview_s5_vascular-restructure",
+        "skillName": "维管束重构",
+        "status": "exact",
+        "skillCost": 4,
+        "resolvedPower": 110,
+        "staticPower": 110,
+        "displayPower": 137,
+        "hitCount": 1,
+        "hitDamages": [
+          137
+        ],
+        "totalDamage": 137,
+        "hpPercent": 36.82795698924731,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 229,
+            "physicalAttack": 150,
+            "speed": 159
+          },
+          "defender": {
+            "magicalDefense": 207,
+            "physicalDefense": 203,
+            "speed": 242
+          }
+        },
+        "gainSummary": "",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "magicalAttack",
+            "before": 229,
+            "after": 229,
+            "value": "229",
+            "source": "panel-stat"
+          },
+          {
+            "label": "基础威力",
+            "input": 110,
+            "before": 110,
+            "after": 110,
+            "value": "110",
+            "source": {
+              "kind": "official-video-local-replay-only-not-in-product",
+              "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+              "frame": "local-only:dense/frame-0294.png"
+            }
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 110,
+            "after": 110,
+            "value": "110",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 110,
+            "after": 110,
+            "value": "110",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 110,
+            "after": 110,
+            "value": "110",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 110,
+            "after": 110,
+            "value": "110",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 110,
+            "after": 110,
+            "value": "110",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 110,
+            "after": 137.5,
+            "value": "137.5",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "水",
+              "龙"
+            ],
+            "before": 137.5,
+            "after": 137.5,
+            "value": "137.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 137.5,
+            "after": 137.5,
+            "value": "137.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 137.5,
+            "after": 137.5,
+            "value": "137.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 137.5,
+            "after": 137,
+            "value": "137",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 229,
+              "calculationPower": 137.5,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 207,
+              "displayedPower": 137,
+              "roundedNumerator": 28416,
+              "unroundedNumerator": 28415.548780487807,
+              "unroundedOneHit": 137.2753623188406
+            },
+            "before": 28415.548780487807,
+            "after": 137,
+            "value": "137",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 137
+            },
+            "before": 137,
+            "after": 137,
+            "value": "137",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 137,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/grand-grass-148/grand-grass-148-step-0.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:70f8939e39773e152ad1d155e2bafc78d8d7e379c499b0029c7da8121c12bc0a",
+        "result": {
+          "skillId": "skill_preview_s5_vascular-restructure",
+          "skillName": "维管束重构",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 137,
+          "hpPercent": 36.82795698924731,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 137,
+          "effectivePower": 137,
+          "typeLabel": "草",
+          "typeMultiplier": 1,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 150,
+          "magicalAttack": 229,
+          "speed": 159,
+          "hp": 405,
+          "physicalDefense": 181,
+          "magicalDefense": 216
+        },
+        "defender": {
+          "physicalAttack": 206,
+          "magicalAttack": 213,
+          "speed": 242,
+          "hp": 372,
+          "physicalDefense": 203,
+          "magicalDefense": 207
+        }
+      }
+    }
+  ],
+  "comparison": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "status": "exact",
+      "actualDamage": 137,
+      "expectedDamage": 158,
+      "delta": -21
+    }
+  ]
+}

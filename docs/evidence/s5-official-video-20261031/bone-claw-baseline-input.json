@@ -1,0 +1,33 @@
+{
+  "eventId": "bone-dragon-claw-on-glass-lord-162",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "attacker": "寂灭骨龙",
+  "defender": "琉璃君主",
+  "skill": "龙之利爪",
+  "opponentSkill": "血气",
+  "expectedDamage": 73,
+  "knownAdjustments": [
+    {
+      "label": "视频君主已使用应对血气：按资料减伤60%（倍率0.4）",
+      "evidence": [
+        {
+          "frame": "local-only:browser-frames/hd-158.png",
+          "time": 159.09832,
+          "fact": "琉璃君主使用2耗应对血气；寂灭骨龙使用龙之利爪"
+        },
+        {
+          "database": "s4-2026-09-10",
+          "skillId": "skill_5b4d21e36f02d1c9",
+          "fact": "血气description减伤60%"
+        }
+      ],
+      "patch": {
+        "directions": {
+          "forward": {
+            "reduction": 0.4
+          }
+        }
+      }
+    }
+  ]
+}

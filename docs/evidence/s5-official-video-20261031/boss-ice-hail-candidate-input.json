@@ -1,0 +1,71 @@
+{
+  "eventId": "boss-ice-hail-on-abyss-187",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "attacker": "圣冠布鲁斯",
+  "defender": "深渊罗隐",
+  "skill": "冰雹",
+  "expectedDamage": 726,
+  "knownAdjustments": [
+    {
+      "label": "视频圣冠布鲁斯当前HP276（最大359）",
+      "evidence": [
+        {
+          "frame": "local-only:dense/frame-0371.png",
+          "fact": "HP276/359"
+        }
+      ],
+      "patch": {
+        "directions": {
+          "reverse": {
+            "currentHp": 276
+          }
+        }
+      }
+    },
+    {
+      "label": "候选：烈冰钻手填敌方技能总耗30（视频携带技能未显示，非事实）",
+      "evidence": [
+        {
+          "kind": "candidate-only",
+          "fact": "总耗影响威力，视频未提供；此处仅给可复现配置"
+        }
+      ],
+      "patch": {
+        "directions": {
+          "forward": {
+            "context": {
+              "negativeStatusUseCountsBySlot": {},
+              "attackerTrait.enemyTotalSkillCostAuto.b8bf204a": false,
+              "attackerTrait.enemyTotalSkillCost.a943af23": 30
+            }
+          },
+          "reverse": {
+            "context": {
+              "defenderTrait.enemyTotalSkillCostAuto.b8bf204a": false,
+              "defenderTrait.enemyTotalSkillCost.a943af23": 30
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "候选：深渊罗隐物防个体40（视频未给，非事实）",
+      "evidence": [
+        {
+          "kind": "candidate-only",
+          "fact": "保持普通性格，单项物防个体候选"
+        }
+      ],
+      "patch": {
+        "sides": {
+          "defender": {
+            "displayIvs": {
+              "physicalDefense": 40
+            }
+          }
+        }
+      }
+    }
+  ],
+  "candidateOnly": true
+}

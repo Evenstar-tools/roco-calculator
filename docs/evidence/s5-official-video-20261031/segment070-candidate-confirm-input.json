@@ -1,0 +1,297 @@
+[
+  {
+    "eventId": "segment070-01-geyser",
+    "attacker": "沙咔蟹",
+    "defender": "罗隐",
+    "skill": "间歇泉",
+    "expectedDamage": 384,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    },
+    "knownAdjustments": [
+      {
+        "label": "CANDIDATE ONLY: unknown natures and relevant IVs; not measured video configuration",
+        "evidence": [
+          "Numerical fit only, selected from bounded relevant-stat search. No official build or nature/IV shown. Visible earlier conditions remain applied."
+        ],
+        "patch": {
+          "sides": {
+            "attacker": {
+              "nature": "bold",
+              "natureId": "bold",
+              "displayIvs": {
+                "physicalAttack": 60
+              }
+            },
+            "defender": {
+              "nature": "neutral",
+              "natureId": "neutral",
+              "displayIvs": {
+                "physicalDefense": 0
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "eventId": "segment070-03-blueshift",
+    "attacker": "圆环鲸羽",
+    "defender": "海豹船长",
+    "skill": "蓝移",
+    "expectedDamage": 368,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    },
+    "knownAdjustments": [
+      {
+        "label": "CANDIDATE ONLY: unknown natures and relevant IVs; not measured video configuration",
+        "evidence": [
+          "Numerical fit only, selected from bounded relevant-stat search. No official build or nature/IV shown. Visible earlier conditions remain applied."
+        ],
+        "patch": {
+          "sides": {
+            "attacker": {
+              "nature": "smart",
+              "natureId": "smart",
+              "displayIvs": {
+                "magicalAttack": 60
+              }
+            },
+            "defender": {
+              "nature": "neutral",
+              "natureId": "neutral",
+              "displayIvs": {
+                "magicalDefense": 60
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "eventId": "segment070-05-spiritdisturb",
+    "attacker": "影子剪纸",
+    "defender": "夜枭",
+    "skill": "灵扰",
+    "expectedDamage": 417,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    },
+    "knownAdjustments": [
+      {
+        "label": "Apply visible 地缚灵 dual defense -70% (stage -7) before 灵扰",
+        "evidence": [
+          "frame0209地缚灵 action;frame0216–0217 defense down;frame0220–0222 target two shield red7"
+        ],
+        "patch": {
+          "directions": {
+            "forward": {
+              "overrides": {
+                "defenseLevelStage": -7
+              }
+            }
+          }
+        }
+      },
+      {
+        "label": "CANDIDATE ONLY: unknown natures and relevant IVs; not measured video configuration",
+        "evidence": [
+          "Numerical fit only, selected from bounded relevant-stat search. No official build or nature/IV shown. Visible earlier conditions remain applied."
+        ],
+        "patch": {
+          "sides": {
+            "attacker": {
+              "nature": "neutral",
+              "natureId": "neutral",
+              "displayIvs": {
+                "physicalAttack": 60
+              }
+            },
+            "defender": {
+              "nature": "neutral",
+              "natureId": "neutral",
+              "displayIvs": {
+                "physicalDefense": 24
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "eventId": "segment070-06-flower",
+    "attacker": "花衣蝶",
+    "defender": "刨雪鹅",
+    "skill": "花香",
+    "expectedDamage": 11,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    },
+    "opponentSkill": "热桥",
+    "knownAdjustments": [
+      {
+        "label": "Apply visibly successful 热桥 80% reduction",
+        "evidence": [
+          "frame0227花香;0228应对热桥;0231/0232减伤11;0238target魔防下降"
+        ],
+        "patch": {
+          "directions": {
+            "forward": {
+              "reduction": 0.2
+            }
+          }
+        }
+      },
+      {
+        "label": "CANDIDATE ONLY: unknown natures and relevant IVs; not measured video configuration",
+        "evidence": [
+          "Numerical fit only, selected from bounded relevant-stat search. No official build or nature/IV shown. Visible earlier conditions remain applied."
+        ],
+        "patch": {
+          "sides": {
+            "attacker": {
+              "nature": "neutral",
+              "natureId": "neutral",
+              "displayIvs": {
+                "magicalAttack": 0
+              }
+            },
+            "defender": {
+              "nature": "naughty",
+              "natureId": "naughty",
+              "displayIvs": {
+                "magicalDefense": 60
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "eventId": "segment070-07-freeze",
+    "attacker": "刨雪鹅",
+    "defender": "花衣蝶",
+    "skill": "冷冻",
+    "expectedDamage": 270,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    },
+    "knownAdjustments": [
+      {
+        "label": "CANDIDATE ONLY: unknown natures and relevant IVs; not measured video configuration",
+        "evidence": [
+          "Numerical fit only, selected from bounded relevant-stat search. No official build or nature/IV shown. Visible earlier conditions remain applied."
+        ],
+        "patch": {
+          "sides": {
+            "attacker": {
+              "nature": "bold",
+              "natureId": "bold",
+              "displayIvs": {
+                "physicalAttack": 60
+              }
+            },
+            "defender": {
+              "nature": "neutral",
+              "natureId": "neutral",
+              "displayIvs": {
+                "physicalDefense": 60
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "eventId": "segment070-08-poison",
+    "attacker": "滴廿豚",
+    "defender": "菊花梨",
+    "skill": "投毒",
+    "expectedDamage": 253,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    },
+    "knownAdjustments": [
+      {
+        "label": "CANDIDATE ONLY: unknown natures and relevant IVs; not measured video configuration",
+        "evidence": [
+          "Numerical fit only, selected from bounded relevant-stat search. No official build or nature/IV shown. Visible earlier conditions remain applied."
+        ],
+        "patch": {
+          "sides": {
+            "attacker": {
+              "nature": "neutral",
+              "natureId": "neutral",
+              "displayIvs": {
+                "physicalAttack": 60
+              }
+            },
+            "defender": {
+              "nature": "neutral",
+              "natureId": "neutral",
+              "displayIvs": {
+                "physicalDefense": 38
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "eventId": "segment070-09-claws",
+    "attacker": "翼龙",
+    "defender": "寂灭骨龙",
+    "skill": "龙之爪牙",
+    "expectedDamage": 300,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    },
+    "knownAdjustments": [
+      {
+        "label": "CANDIDATE ONLY: unknown natures and relevant IVs; not measured video configuration",
+        "evidence": [
+          "Numerical fit only, selected from bounded relevant-stat search. No official build or nature/IV shown. Visible earlier conditions remain applied."
+        ],
+        "patch": {
+          "sides": {
+            "attacker": {
+              "nature": "bold",
+              "natureId": "bold",
+              "displayIvs": {
+                "physicalAttack": 0
+              }
+            },
+            "defender": {
+              "nature": "steady",
+              "natureId": "steady",
+              "displayIvs": {
+                "physicalDefense": 0
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+]

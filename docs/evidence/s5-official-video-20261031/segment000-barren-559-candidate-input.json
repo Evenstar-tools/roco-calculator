@@ -1,0 +1,76 @@
+{
+  "eventId": "segment000-barren-559",
+  "attacker": "冥古龙",
+  "defender": "寂灭骨龙",
+  "skill": "荒芜之噬",
+  "expectedDamage": 559,
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "knownAdjustments": [
+    {
+      "label": "实帧确认冥古龙当前等级79，保持其他标准60/普通/IV60条件",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0046.png",
+          "fact": "左HUD冥古龙79级；未猜性格个体"
+        }
+      ],
+      "patch": {
+        "directions": {
+          "forward": {
+            "context": {
+              "attackerTrait.attackerTraitS5BattleLevel.3d741017": 79,
+              "attackerTraitS5BattleLevel": 79
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "候选复现，未确证视频性格个体：普通/大胆",
+      "evidence": [
+        {
+          "kind": "inference_only",
+          "fact": "仅约束可读等级/HP和伤害；未公开性格和相关攻防个体不是官方配置"
+        },
+        {
+          "kind": "measured_hp_constraint",
+          "hp": {
+            "attacker": 497
+          }
+        },
+        {
+          "kind": "search_scope",
+          "fact": "All31 natures deduplicated by relevant HP and attack/defense multipliers; related attack/defense IV integers0..60; HP IV0..60 constrained by visible HP where supplied; no formula change; IV candidate not official"
+        }
+      ],
+      "patch": {
+        "sides": {
+          "attacker": {
+            "nature": "neutral",
+            "natureId": "neutral",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 57,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            }
+          },
+          "defender": {
+            "nature": "bold",
+            "natureId": "bold",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 13,
+              "magicalDefense": 60
+            }
+          }
+        }
+      }
+    }
+  ]
+}

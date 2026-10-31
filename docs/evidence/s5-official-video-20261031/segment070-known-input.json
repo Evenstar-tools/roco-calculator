@@ -1,0 +1,160 @@
+[
+  {
+    "eventId": "segment070-01-geyser",
+    "attacker": "沙咔蟹",
+    "defender": "罗隐",
+    "skill": "间歇泉",
+    "expectedDamage": 384,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    }
+  },
+  {
+    "eventId": "segment070-02-mudshot",
+    "attacker": "晶石蜗（莲花刚玉的样子）",
+    "defender": "沙咔蟹",
+    "skill": "泥巴喷射",
+    "expectedDamage": 6,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build.",
+      "variantCaveat": "HUD only says 晶石蜗. Lotus corundum is an unconfirmed visual candidate and must not be reported as proven identity."
+    },
+    "opponentSkill": "外附传播",
+    "knownAdjustments": [
+      {
+        "label": "Apply visibly successful 外附传播 80% reduction",
+        "evidence": [
+          "frame0155 action3应对外附传播,frame0158/0159减伤抵抗6"
+        ],
+        "patch": {
+          "directions": {
+            "forward": {
+              "reduction": 0.2
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "eventId": "segment070-03-blueshift",
+    "attacker": "圆环鲸羽",
+    "defender": "海豹船长",
+    "skill": "蓝移",
+    "expectedDamage": 368,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    }
+  },
+  {
+    "eventId": "segment070-04-fruit",
+    "attacker": "冬虫夏瓜",
+    "defender": "嗜波螺",
+    "skill": "果粒",
+    "expectedDamage": 328,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    }
+  },
+  {
+    "eventId": "segment070-05-spiritdisturb",
+    "attacker": "影子剪纸",
+    "defender": "夜枭",
+    "skill": "灵扰",
+    "expectedDamage": 417,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    },
+    "knownAdjustments": [
+      {
+        "label": "Apply visible 地缚灵 dual defense -70% (stage -7) before 灵扰",
+        "evidence": [
+          "frame0209地缚灵 action;frame0216–0217 defense down;frame0220–0222 target two shield red7"
+        ],
+        "patch": {
+          "directions": {
+            "forward": {
+              "overrides": {
+                "defenseLevelStage": -7
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "eventId": "segment070-06-flower",
+    "attacker": "花衣蝶",
+    "defender": "刨雪鹅",
+    "skill": "花香",
+    "expectedDamage": 11,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    },
+    "opponentSkill": "热桥",
+    "knownAdjustments": [
+      {
+        "label": "Apply visibly successful 热桥 80% reduction",
+        "evidence": [
+          "frame0227花香;0228应对热桥;0231/0232减伤11;0238target魔防下降"
+        ],
+        "patch": {
+          "directions": {
+            "forward": {
+              "reduction": 0.2
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "eventId": "segment070-07-freeze",
+    "attacker": "刨雪鹅",
+    "defender": "花衣蝶",
+    "skill": "冷冻",
+    "expectedDamage": 270,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    }
+  },
+  {
+    "eventId": "segment070-08-poison",
+    "attacker": "滴廿豚",
+    "defender": "菊花梨",
+    "skill": "投毒",
+    "expectedDamage": 253,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    }
+  },
+  {
+    "eventId": "segment070-09-claws",
+    "attacker": "翼龙",
+    "defender": "寂灭骨龙",
+    "skill": "龙之爪牙",
+    "expectedDamage": 300,
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "range": "70–145 seconds",
+      "videoConfiguration": "Only visible species/action, levels and HUD values are proven; default reference is not claimed to be actual video build."
+    }
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "eventId": "segment000-barren-559",
+  "attacker": "冥古龙",
+  "defender": "寂灭骨龙",
+  "skill": "荒芜之噬",
+  "expectedDamage": 559,
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "knownAdjustments": [
+    {
+      "label": "实帧确认冥古龙当前等级79，保持其他标准60/普通/IV60条件",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0046.png",
+          "fact": "左HUD冥古龙79级；未猜性格个体"
+        }
+      ],
+      "patch": {
+        "directions": {
+          "forward": {
+            "context": {
+              "attackerTrait.attackerTraitS5BattleLevel.3d741017": 79,
+              "attackerTraitS5BattleLevel": 79
+            }
+          }
+        }
+      }
+    }
+  ]
+}

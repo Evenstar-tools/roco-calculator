@@ -1,0 +1,26 @@
+{
+  "eventId": "boss-ice-hail-on-abyss-187",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "attacker": "圣冠布鲁斯",
+  "defender": "深渊罗隐",
+  "skill": "冰雹",
+  "expectedDamage": 726,
+  "knownAdjustments": [
+    {
+      "label": "视频圣冠布鲁斯当前HP276（最大359）",
+      "evidence": [
+        {
+          "frame": "local-only:dense/frame-0371.png",
+          "fact": "HP276/359"
+        }
+      ],
+      "patch": {
+        "directions": {
+          "reverse": {
+            "currentHp": 276
+          }
+        }
+      }
+    }
+  ]
+}

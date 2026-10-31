@@ -1,0 +1,1359 @@
+{
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "boundary": "S4 core plus local S5 overlay; candidates do not establish actual builds; guarded historical skills are isolated base-damage models.",
+  "events": [
+    {
+      "id": "segment000-crimson-539",
+      "timeSeconds": 11.502066,
+      "attacker": "冥古龙",
+      "defender": "寂灭骨龙",
+      "skill": "深红龙击",
+      "video": 539,
+      "default": 545,
+      "visible": 545,
+      "candidate": 539,
+      "candidateDescription": "仅候选：冥古龙99级/HP487，逞强，生命IV23、物攻IV2；寂灭骨龙普通、物防IV59；其余IV60。非视频官方配置。",
+      "resultFile": "segment000-crimson-539-evidence-result.json",
+      "candidateResultFile": "segment000-crimson-539-candidate-result.json",
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0023.png",
+          "videoBeforeScreenshotSeconds": 11.502066,
+          "videoAfterScreenshotSeconds": 11.655569,
+          "fact": "冥古龙使出了5耗深红龙击"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0024.png",
+          "videoBeforeScreenshotSeconds": 12.016818,
+          "videoAfterScreenshotSeconds": 12.236664,
+          "fact": "克制539；99级487/487"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0025.png",
+          "videoBeforeScreenshotSeconds": 12.520205,
+          "videoAfterScreenshotSeconds": 12.668522,
+          "fact": "同一539浮字"
+        }
+      ],
+      "visibleDescription": "实帧确认冥古龙当前等级99，保持其他标准60/普通/IV60条件",
+      "defaultNote": null,
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "segment000-barren-559",
+      "timeSeconds": 19.598286,
+      "attacker": "冥古龙",
+      "defender": "寂灭骨龙",
+      "skill": "荒芜之噬",
+      "video": 559,
+      "default": 616,
+      "visible": 460,
+      "candidate": 559,
+      "candidateDescription": "仅候选：冥古龙79级/HP497，普通，生命IV60、物攻IV57；寂灭骨龙大胆、物防IV13；其余IV60。两段冥古各自配置，不跨剪辑强制相同。",
+      "resultFile": "segment000-barren-559-evidence-result.json",
+      "candidateResultFile": "segment000-barren-559-candidate-result.json",
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0039.png",
+          "videoBeforeScreenshotSeconds": 19.598286,
+          "videoAfterScreenshotSeconds": 19.79614,
+          "fact": "冥古龙79级497/497"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0046.png",
+          "videoBeforeScreenshotSeconds": 23.018795,
+          "videoAfterScreenshotSeconds": 23.165241,
+          "fact": "克制559"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0047.png",
+          "videoBeforeScreenshotSeconds": 23.530233,
+          "videoAfterScreenshotSeconds": 23.70694,
+          "fact": "同一559浮字"
+        }
+      ],
+      "visibleDescription": "实帧确认冥古龙当前等级79，保持其他标准60/普通/IV60条件",
+      "defaultNote": null,
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "segment000-silver-228",
+      "timeSeconds": 30.527363,
+      "attacker": "地绡银龙",
+      "defender": "晶石蜗",
+      "skill": "碎银",
+      "video": 228,
+      "default": 135,
+      "visible": 135,
+      "candidate": 228,
+      "candidateDescription": "仅候选：地绡银龙60级/HP443，沉默，生命IV54、魔攻IV60；晶石蜗莲花刚玉候选形态、普通、魔防IV56；防方携带等价交换、点亮、反击拳、防反，均来自既有学习面且非地系，偏振自动不触发本次地系40%减伤。已删除手动偏振0减伤覆盖并重放228，CLI/Web一致。视频未展示此技能组，其余IV60。",
+      "resultFile": "segment000-silver-228-baseline-result.json",
+      "candidateResultFile": "segment000-silver-228-candidate-result.json",
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0061.png",
+          "videoBeforeScreenshotSeconds": 30.527363,
+          "videoAfterScreenshotSeconds": 30.710339,
+          "fact": "60级地绡银龙443/443对60级晶石蜗"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0064.png",
+          "videoBeforeScreenshotSeconds": 32.036407,
+          "videoAfterScreenshotSeconds": 32.177998,
+          "fact": "动画浮字52"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0065.png",
+          "videoBeforeScreenshotSeconds": 32.506071,
+          "videoAfterScreenshotSeconds": 32.633945,
+          "fact": "动画浮字104"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0068.png",
+          "videoBeforeScreenshotSeconds": 34.055362,
+          "videoAfterScreenshotSeconds": 34.231163,
+          "fact": "最终228"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0069.png",
+          "videoBeforeScreenshotSeconds": 34.515926,
+          "videoAfterScreenshotSeconds": 34.705869,
+          "fact": "同一228浮字"
+        }
+      ],
+      "visibleDescription": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "defaultNote": null,
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "segment000-overcharge-253",
+      "timeSeconds": 37.028035,
+      "attacker": "龙嵴金脉",
+      "defender": "翠顶夫人",
+      "skill": "过充电",
+      "video": 253,
+      "default": 212,
+      "visible": 212,
+      "candidate": 253,
+      "candidateDescription": "仅候选：龙嵴金脉普通、全IV60，HP468；翠顶夫人大胆、物防IV20，其余IV60。脚下两枚红12为盾形防御图标，不当作攻击聚能层数。",
+      "resultFile": "segment000-overcharge-253-baseline-result.json",
+      "candidateResultFile": "segment000-overcharge-253-candidate-result.json",
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0074.png",
+          "videoBeforeScreenshotSeconds": 37.028035,
+          "videoAfterScreenshotSeconds": 37.185791,
+          "fact": "60级龙嵴金脉468/468；头顶红字魔法防御；脚下两红色盾形12"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0077.png",
+          "videoBeforeScreenshotSeconds": 38.502261,
+          "videoAfterScreenshotSeconds": 38.648447,
+          "fact": "克制51动画中间值"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0079.png",
+          "videoBeforeScreenshotSeconds": 39.526528,
+          "videoAfterScreenshotSeconds": 39.678358,
+          "fact": "克制156动画中间值"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0081.png",
+          "videoBeforeScreenshotSeconds": 40.517018,
+          "videoAfterScreenshotSeconds": 40.69127,
+          "fact": "最终克制253"
+        }
+      ],
+      "visibleDescription": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "defaultNote": null,
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "segment000-rip-458",
+      "timeSeconds": 47.540652,
+      "attacker": "阿瓦鲨",
+      "defender": "权杖-V",
+      "skill": "离岸流",
+      "video": 458,
+      "default": 257,
+      "visible": 386,
+      "candidate": 458,
+      "candidateDescription": "已见绿色双攻图标各5，双攻+50%；在此基础仅候选：阿瓦鲨柠檬样子候选形态、普通全IV60、HP430；权杖-V大胆、物防IV22，其余IV60。",
+      "resultFile": "segment000-rip-458-evidence-result.json",
+      "candidateResultFile": "segment000-rip-458-candidate-result.json",
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0095.png",
+          "videoBeforeScreenshotSeconds": 47.540652,
+          "videoAfterScreenshotSeconds": 47.735836,
+          "fact": "阿瓦鲨60级430/430，脚下绿色双攻图标各5"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0099.png",
+          "videoBeforeScreenshotSeconds": 49.5274,
+          "videoAfterScreenshotSeconds": 49.673018,
+          "fact": "克制458"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0103.png",
+          "videoBeforeScreenshotSeconds": 51.52277,
+          "videoAfterScreenshotSeconds": 51.694265,
+          "fact": "权杖-V力竭文字"
+        }
+      ],
+      "visibleDescription": "实帧阿瓦鲨脚下绿色双攻图标各5：双攻能力等级+5（+50%），其他配置保持普通全60",
+      "defaultNote": null,
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "segment000-eggshell-120",
+      "timeSeconds": 60.046262,
+      "attacker": "蹦床松鼠",
+      "defender": "鸡麻麻",
+      "skill": "音波弹",
+      "video": 120,
+      "default": 64,
+      "visible": 100,
+      "candidate": 120,
+      "candidateDescription": "已见蛋壳减伤60%及4击30、HP425→305；在此基础仅候选：双方普通，鸡麻麻魔防IV6、生命IV60，其余IV60；蹦床松鼠全IV60。",
+      "resultFile": "segment000-eggshell-120-evidence-result.json",
+      "candidateResultFile": "segment000-eggshell-120-candidate-result.json",
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0120.png",
+          "videoBeforeScreenshotSeconds": 60.046262,
+          "videoAfterScreenshotSeconds": 60.20148,
+          "fact": "蹦床松鼠使出了音波弹；鸡麻麻425/425并使用蛋壳"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0124.png",
+          "videoBeforeScreenshotSeconds": 62.015113,
+          "videoAfterScreenshotSeconds": 62.171334,
+          "fact": "首个30浮字；命中前HP425"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0125.png",
+          "videoBeforeScreenshotSeconds": 62.514755,
+          "videoAfterScreenshotSeconds": 62.703932,
+          "fact": "命中后HP395"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0127.png",
+          "videoBeforeScreenshotSeconds": 63.515418,
+          "videoAfterScreenshotSeconds": 63.688738,
+          "fact": "第二次后HP365"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0129.png",
+          "videoBeforeScreenshotSeconds": 64.502035,
+          "videoAfterScreenshotSeconds": 64.669551,
+          "fact": "第三次后HP335"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0130.png",
+          "videoBeforeScreenshotSeconds": 65.032058,
+          "videoAfterScreenshotSeconds": 65.186674,
+          "fact": "第四次后HP305"
+        }
+      ],
+      "visibleDescription": "实际蛋壳应对：减伤60%即伤害倍率0.4，音波弹共4次30伤害",
+      "defaultNote": "UI默认1段",
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "segment070-01-geyser",
+      "timeSeconds": 72.532518,
+      "attacker": "沙咔蟹",
+      "defender": "罗隐",
+      "skill": "间歇泉",
+      "video": 384,
+      "default": 281,
+      "visible": 281,
+      "candidate": 384,
+      "candidateDescription": "攻击方：大胆性格、物攻个体60；防御方：普通性格、物防个体0",
+      "resultFile": "segment070-known-result.json",
+      "candidateResultFile": "segment070-candidate-confirm-result.json",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0145.png",
+          "capture": {
+            "file": "local-only:frame-0145.png",
+            "before": 72.532518,
+            "after": 72.6726
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0146.png",
+          "capture": {
+            "file": "local-only:frame-0146.png",
+            "before": 73.038166,
+            "after": 73.18432
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0147.png",
+          "capture": {
+            "file": "local-only:frame-0147.png",
+            "before": 73.54738,
+            "after": 73.65998
+          }
+        }
+      ],
+      "visibleDescription": "行动字幕4耗间歇泉；卡每有1层减益能耗-1。",
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": true
+    },
+    {
+      "id": "segment070-02-mudshot",
+      "timeSeconds": 77.035466,
+      "attacker": "晶石蜗（具体样子未在HUD标出）",
+      "defender": "沙咔蟹",
+      "skill": "泥巴喷射",
+      "video": 6,
+      "default": 33,
+      "visible": 6,
+      "candidate": null,
+      "candidateDescription": null,
+      "resultFile": "segment070-known-result.json",
+      "candidateResultFile": null,
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0154.png",
+          "capture": {
+            "file": "local-only:frame-0154.png",
+            "before": 77.035466,
+            "after": 77.205829
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0155.png",
+          "capture": {
+            "file": "local-only:frame-0155.png",
+            "before": 77.531091,
+            "after": 77.681705
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0158.png",
+          "capture": {
+            "file": "local-only:frame-0158.png",
+            "before": 79.029894,
+            "after": 79.23877
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0159.png",
+          "capture": {
+            "file": "local-only:frame-0159.png",
+            "before": 79.511082,
+            "after": 79.710588
+          }
+        }
+      ],
+      "visibleDescription": "敌方先使泥巴喷射，沙咔蟹3耗应对外附传播；卡减伤80%；前445/445，后439/445。",
+      "classification": "可见条件一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "segment070-03-blueshift",
+      "timeSeconds": 84.039375,
+      "attacker": "圆环鲸羽",
+      "defender": "海豹船长",
+      "skill": "蓝移",
+      "video": 368,
+      "default": 317,
+      "visible": 317,
+      "candidate": 368,
+      "candidateDescription": "攻击方：聪明性格、魔攻个体60；防御方：普通性格、魔防个体60",
+      "resultFile": "segment070-known-result.json",
+      "candidateResultFile": "segment070-candidate-confirm-result.json",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0168.png",
+          "capture": {
+            "file": "local-only:frame-0168.png",
+            "before": 84.039375,
+            "after": 84.238093
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0171.png",
+          "capture": {
+            "file": "local-only:frame-0171.png",
+            "before": 85.51538,
+            "after": 85.627626
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0173.png",
+          "capture": {
+            "file": "local-only:frame-0173.png",
+            "before": 86.501062,
+            "after": 86.646963
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0174.png",
+          "capture": {
+            "file": "local-only:frame-0174.png",
+            "before": 87.055498,
+            "after": 87.203649
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0175.png",
+          "capture": {
+            "file": "local-only:frame-0175.png",
+            "before": 87.506232,
+            "after": 87.66057
+          }
+        }
+      ],
+      "visibleDescription": "只发生一次攻击；浮字74→295→368为同一次数字滚动，最后368；未把滚动中间数字相加。；技能卡使敌方至少4层星陨后，每次使用加1层；历史层数未显示清楚，局部基础模型未附加星陨。",
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": true
+    },
+    {
+      "id": "segment070-04-fruit",
+      "timeSeconds": 95.507313,
+      "attacker": "冬虫夏瓜",
+      "defender": "嗜波螺",
+      "skill": "果粒",
+      "video": 328,
+      "default": 328,
+      "visible": 328,
+      "candidate": null,
+      "candidateDescription": null,
+      "resultFile": "segment070-known-result.json",
+      "candidateResultFile": null,
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0191.png",
+          "capture": {
+            "file": "local-only:frame-0191.png",
+            "before": 95.507313,
+            "after": 95.703205
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0193.png",
+          "capture": {
+            "file": "local-only:frame-0193.png",
+            "before": 96.529616,
+            "after": 96.706699
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0194.png",
+          "capture": {
+            "file": "local-only:frame-0194.png",
+            "before": 97.098162,
+            "after": 97.255921
+          }
+        }
+      ],
+      "visibleDescription": "同帧两排164，技能卡2连击；后续夏蛰演示不能反向作为此前果粒奉献增益。",
+      "classification": "默认一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "segment070-05-spiritdisturb",
+      "timeSeconds": 104.533658,
+      "attacker": "影子剪纸",
+      "defender": "夜枭",
+      "skill": "灵扰",
+      "video": 417,
+      "default": 219,
+      "visible": 372,
+      "candidate": 417,
+      "candidateDescription": "攻击方：普通性格、物攻个体60；防御方：普通性格、物防个体24",
+      "resultFile": "segment070-known-result.json",
+      "candidateResultFile": "segment070-candidate-confirm-result.json",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0209.png",
+          "capture": {
+            "file": "local-only:frame-0209.png",
+            "before": 104.533658,
+            "after": 104.686156
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0216.png",
+          "capture": {
+            "file": "local-only:frame-0216.png",
+            "before": 108.048872,
+            "after": 108.20498
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0217.png",
+          "capture": {
+            "file": "local-only:frame-0217.png",
+            "before": 108.507494,
+            "after": 108.703766
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0220.png",
+          "capture": {
+            "file": "local-only:frame-0220.png",
+            "before": 110.035375,
+            "after": 110.199975
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0221.png",
+          "capture": {
+            "file": "local-only:frame-0221.png",
+            "before": 110.532799,
+            "after": 110.710005
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0222.png",
+          "capture": {
+            "file": "local-only:frame-0222.png",
+            "before": 111.045059,
+            "after": 111.223557
+          }
+        },
+        {
+          "file": "local-only:dense/fine-spirit-057.png",
+          "capture": {
+            "file": "local-only:fine-spirit-057.png",
+            "before": 109.953609,
+            "after": 110.075646
+          }
+        },
+        {
+          "file": "local-only:dense/fine-spirit-060.png",
+          "capture": {
+            "file": "local-only:fine-spirit-060.png",
+            "before": 110.328582,
+            "after": 110.482468
+          }
+        },
+        {
+          "file": "local-only:dense/fine-spirit-062.png",
+          "capture": {
+            "file": "local-only:fine-spirit-062.png",
+            "before": 110.62242,
+            "after": 110.742722
+          }
+        },
+        {
+          "file": "local-only:dense/fine-spirit-064.png",
+          "capture": {
+            "file": "local-only:fine-spirit-064.png",
+            "before": 110.893336,
+            "after": 111.03518
+          }
+        }
+      ],
+      "visibleDescription": "先地缚灵，目标物防/魔防各降70%，目标脚下两种红盾各7层。；技能卡3连击；连续139浮字伴随攻击动作，两排旧/新数字重叠。；蓝色2层图标含义未认定，未擅自增加速度或其他减益。",
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "segment070-06-flower",
+      "timeSeconds": 113.53394,
+      "attacker": "花衣蝶",
+      "defender": "刨雪鹅",
+      "skill": "花香",
+      "video": 11,
+      "default": 62,
+      "visible": 12,
+      "candidate": 11,
+      "candidateDescription": "攻击方：普通性格、魔攻个体0；防御方：调皮性格、魔防个体60",
+      "resultFile": "segment070-known-result.json",
+      "candidateResultFile": "segment070-candidate-confirm-result.json",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0227.png",
+          "capture": {
+            "file": "local-only:frame-0227.png",
+            "before": 113.53394,
+            "after": 113.708904
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0228.png",
+          "capture": {
+            "file": "local-only:frame-0228.png",
+            "before": 114.001939,
+            "after": 114.157349
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0231.png",
+          "capture": {
+            "file": "local-only:frame-0231.png",
+            "before": 115.503257,
+            "after": 115.657604
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0232.png",
+          "capture": {
+            "file": "local-only:frame-0232.png",
+            "before": 116.037692,
+            "after": 116.183789
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0238.png",
+          "capture": {
+            "file": "local-only:frame-0238.png",
+            "before": 119.050174,
+            "after": 119.224017
+          }
+        }
+      ],
+      "visibleDescription": "行动字幕为花香；刨雪鹅2耗应对热桥；减伤80%；应对成功后目标魔防-60%。；绿色11伴随减伤提示，随后HP437→426，属于承伤数字，未当回血。",
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "segment070-07-freeze",
+      "timeSeconds": 120.037036,
+      "attacker": "刨雪鹅",
+      "defender": "花衣蝶",
+      "skill": "冷冻",
+      "video": 270,
+      "default": 235,
+      "visible": 235,
+      "candidate": 270,
+      "candidateDescription": "攻击方：大胆性格、物攻个体60；防御方：普通性格、物防个体60",
+      "resultFile": "segment070-known-result.json",
+      "candidateResultFile": "segment070-candidate-confirm-result.json",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0240.png",
+          "capture": {
+            "file": "local-only:frame-0240.png",
+            "before": 120.037036,
+            "after": 120.196531
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0241.png",
+          "capture": {
+            "file": "local-only:frame-0241.png",
+            "before": 120.50608,
+            "after": 120.660604
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0242.png",
+          "capture": {
+            "file": "local-only:frame-0242.png",
+            "before": 121.032508,
+            "after": 121.173506
+          }
+        }
+      ],
+      "visibleDescription": "技能卡明确冰物理4耗100；魔防-60%不会增加这次物理伤害。；该段开始自身437/437，与前段426/437有剪辑复位，未跨段串HP。；冻结次数/敌方能耗历史未模拟。",
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": true
+    },
+    {
+      "id": "segment070-08-poison",
+      "timeSeconds": 127.512724,
+      "attacker": "滴廿豚",
+      "defender": "菊花梨",
+      "skill": "投毒",
+      "video": 253,
+      "default": 237,
+      "visible": 237,
+      "candidate": 253,
+      "candidateDescription": "攻击方：普通性格、物攻个体60；防御方：普通性格、物防个体38",
+      "resultFile": "segment070-known-result.json",
+      "candidateResultFile": "segment070-candidate-confirm-result.json",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0255.png",
+          "capture": {
+            "file": "local-only:frame-0255.png",
+            "before": 127.512724,
+            "after": 127.702629
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0259.png",
+          "capture": {
+            "file": "local-only:frame-0259.png",
+            "before": 129.523372,
+            "after": 129.698268
+          }
+        },
+        {
+          "file": "local-only:dense/frame-0260.png",
+          "capture": {
+            "file": "local-only:frame-0260.png",
+            "before": 130.045347,
+            "after": 130.191682
+          }
+        }
+      ],
+      "visibleDescription": "此前混合态随机施加10层属性减益，实际随机分配未展示完整；未擅自指定防御减益。；技能卡投毒90威力，至少2次中毒后每次命中中毒目标威力+25；历史中毒次数未确认。",
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "segment070-09-claws",
+      "timeSeconds": 141.069381,
+      "attacker": "翼龙",
+      "defender": "寂灭骨龙",
+      "skill": "龙之爪牙",
+      "video": 300,
+      "default": 295,
+      "visible": 295,
+      "candidate": 300,
+      "candidateDescription": "攻击方：大胆性格、物攻个体0；防御方：稳重性格、物防个体0",
+      "resultFile": "segment070-known-result.json",
+      "candidateResultFile": "segment070-candidate-confirm-result.json",
+      "evidence": [
+        {
+          "file": "local-only:dense/fine-claw-022.png",
+          "capture": {
+            "file": "local-only:fine-claw-022.png",
+            "before": 141.069381,
+            "after": 141.272216
+          }
+        },
+        {
+          "file": "local-only:dense/fine-claw-024.png",
+          "capture": {
+            "file": "local-only:fine-claw-024.png",
+            "before": 141.503322,
+            "after": 141.631173
+          }
+        },
+        {
+          "file": "local-only:dense/fine-claw-026.png",
+          "capture": {
+            "file": "local-only:fine-claw-026.png",
+            "before": 141.868819,
+            "after": 142.078077
+          }
+        },
+        {
+          "file": "local-only:dense/fine-claw-028.png",
+          "capture": {
+            "file": "local-only:fine-claw-028.png",
+            "before": 142.284313,
+            "after": 142.45055
+          }
+        },
+        {
+          "file": "local-only:dense/fine-claw-031.png",
+          "capture": {
+            "file": "local-only:fine-claw-031.png",
+            "before": 142.892403,
+            "after": 143.011132
+          }
+        },
+        {
+          "file": "local-only:dense/fine-claw-035.png",
+          "capture": {
+            "file": "local-only:fine-claw-035.png",
+            "before": 143.620291,
+            "after": 143.814567
+          }
+        }
+      ],
+      "visibleDescription": "技能卡5连击；fine帧每次新斩击各浮60，旧数字有残留。；前一片段伊兰亚龙画龙点睛的能力增益未跨精灵/剪辑转移给翼龙。",
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "butterfly-love-146",
+      "timeSeconds": 145.160284,
+      "attacker": "化蝶（平常的样子）",
+      "defender": "龙鱼",
+      "skill": "恋恋不舍",
+      "video": 127,
+      "default": 172,
+      "visible": 172,
+      "candidate": 127,
+      "candidateDescription": "化蝶魔攻个体20，再将龙鱼设为警惕性格；其余个体60、双方60级。两项均未在视频证实。",
+      "resultFile": "butterfly-love-146-result.json",
+      "candidateResultFile": "butterfly-love-146-candidate-result.json",
+      "evidence": [
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0290.png",
+          "time": 145.160284
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0292.png",
+          "time": 146.318079
+        }
+      ],
+      "visibleDescription": "",
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": true
+    },
+    {
+      "id": "grand-grass-148",
+      "timeSeconds": 147.204811,
+      "attacker": "格兰球",
+      "defender": "龙鱼",
+      "skill": "维管束重构",
+      "video": 158,
+      "default": 137,
+      "visible": 137,
+      "candidate": 158,
+      "candidateDescription": "格兰球聪明性格；其余默认。性格未在视频证实。",
+      "resultFile": "grand-grass-148-result.json",
+      "candidateResultFile": "grand-grass-148-candidate-result.json",
+      "evidence": [
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0294.png",
+          "time": 147.204811
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0295.png",
+          "time": 147.691214
+        }
+      ],
+      "visibleDescription": "",
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": true
+    },
+    {
+      "id": "bone-dragon-claw-on-glass-lord-162",
+      "timeSeconds": 159.237376,
+      "attacker": "寂灭骨龙",
+      "defender": "琉璃君主",
+      "skill": "龙之利爪",
+      "video": 73,
+      "default": 183,
+      "visible": 73,
+      "candidate": null,
+      "candidateDescription": null,
+      "resultFile": "bone-claw-baseline-result.json",
+      "candidateResultFile": null,
+      "evidence": [
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0318.png",
+          "time": 159.237376
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0324.png",
+          "time": 162.165027
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0325.png",
+          "time": 162.678864
+        }
+      ],
+      "visibleDescription": "视频约159.10秒：琉璃君主2耗应对血气、寂灭骨龙使用龙之利爪，骨龙中毒2层；约162.00秒君主被命中时出现蓝色护盾球。原始帧仅本地保留。",
+      "classification": "可见条件一致",
+      "productHistoryGuard": false
+    },
+    {
+      "id": "boss-ice-hail-on-abyss-187",
+      "timeSeconds": 184.720468,
+      "attacker": "圣冠布鲁斯",
+      "defender": "深渊罗隐",
+      "skill": "冰雹",
+      "video": 726,
+      "default": 314,
+      "visible": 314,
+      "candidate": 726,
+      "candidateDescription": "烈冰钻手动敌方总耗30，再将深渊罗隐物防个体40；其余普通/60。两项均未在视频证实。",
+      "resultFile": "boss-ice-hail-result.json",
+      "candidateResultFile": "boss-ice-hail-candidate-result.json",
+      "evidence": [
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0369.png",
+          "time": 184.720468
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0371.png",
+          "time": 185.638383
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0373.png",
+          "time": 186.695591
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0377.png",
+          "time": 188.644791
+        }
+      ],
+      "visibleDescription": "视频约185.82秒烈冰钻说明：敌方携带技能总能耗每点使攻击威力+10%，总能耗大于15时速度+75。原始帧仅本地保留。",
+      "classification": "未证实配置候选一致",
+      "productHistoryGuard": false
+    }
+  ],
+  "statusSettlement": {
+    "eventId": "segment070-02-status-parasitism",
+    "engine": "Existing calculateNegativeStatusSettlement; compact CLI has no status-settlement input. Product unchanged.",
+    "source": {
+      "video": "BV1SNxq6REfb",
+      "frames": [
+        "local-only:frame0155.png",
+        "local-only:frame0165.png",
+        "local-only:frame0166.png"
+      ],
+      "observedDamage": 16,
+      "observedHealing": 6,
+      "sourceHP": "439/445",
+      "targetHP": null,
+      "targetVariant": "晶石蜗 exact appearance unconfirmed"
+    },
+    "baseline": {
+      "input": {
+        "attacker": {
+          "currentHp": 451,
+          "maxHp": 451
+        },
+        "defender": {
+          "currentHp": 381,
+          "maxHp": 381,
+          "types": [
+            "光",
+            "地"
+          ]
+        },
+        "statuses": {
+          "parasitism": 0
+        }
+      },
+      "result": {
+        "added": {
+          "burn": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0,
+          "electrified": 0
+        },
+        "breakdown": [
+          {
+            "damage": 0,
+            "healing": 0,
+            "id": "burn",
+            "immune": false,
+            "label": "灼烧",
+            "multiplier": 1,
+            "stacks": 0,
+            "triggerCount": 1
+          },
+          {
+            "damage": 0,
+            "healing": 0,
+            "id": "poison",
+            "immune": false,
+            "label": "中毒",
+            "multiplier": 1,
+            "stacks": 0,
+            "triggerCount": 1
+          },
+          {
+            "damage": 0,
+            "healing": 0,
+            "id": "parasitism",
+            "immune": false,
+            "label": "寄生",
+            "multiplier": 1,
+            "stacks": 0,
+            "triggerCount": 1
+          }
+        ],
+        "combinedHpLoss": 0,
+        "directDamage": 0,
+        "freeze": {
+          "immune": false,
+          "label": "冻结",
+          "lethal": false,
+          "stacks": 0,
+          "thresholdHp": 0,
+          "thresholdPercent": 0
+        },
+        "lethal": false,
+        "nextStacks": {
+          "burn": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0,
+          "electrified": 0
+        },
+        "outcome": "剩余 381 HP",
+        "remainingHp": 381,
+        "skipped": null,
+        "stacks": {
+          "burn": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0,
+          "electrified": 0
+        },
+        "statusDamage": 0,
+        "actualStatusDamage": 0,
+        "maxHp": 381,
+        "totalHealing": 0,
+        "traitHealing": 0
+      }
+    },
+    "visibleAdjustment": {
+      "input": {
+        "attacker": {
+          "currentHp": 439,
+          "maxHp": 445
+        },
+        "defender": {
+          "currentHp": 381,
+          "maxHp": 381,
+          "types": [
+            "光",
+            "地"
+          ]
+        },
+        "statuses": {
+          "parasitism": 2
+        }
+      },
+      "evidence": "外附传播 card2层寄生; frame0165寄生白16/green6 and source439/445.",
+      "result": {
+        "added": {
+          "burn": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0,
+          "electrified": 0
+        },
+        "breakdown": [
+          {
+            "damage": 0,
+            "healing": 0,
+            "id": "burn",
+            "immune": false,
+            "label": "灼烧",
+            "multiplier": 1,
+            "stacks": 0,
+            "triggerCount": 1
+          },
+          {
+            "damage": 0,
+            "healing": 0,
+            "id": "poison",
+            "immune": false,
+            "label": "中毒",
+            "multiplier": 1,
+            "stacks": 0,
+            "triggerCount": 1
+          },
+          {
+            "damage": 15,
+            "healing": 6,
+            "id": "parasitism",
+            "immune": false,
+            "label": "寄生",
+            "multiplier": 1,
+            "stacks": 2,
+            "triggerCount": 1
+          }
+        ],
+        "combinedHpLoss": 15,
+        "directDamage": 0,
+        "freeze": {
+          "immune": false,
+          "label": "冻结",
+          "lethal": false,
+          "stacks": 0,
+          "thresholdHp": 0,
+          "thresholdPercent": 0
+        },
+        "lethal": false,
+        "nextStacks": {
+          "burn": 0,
+          "freeze": 0,
+          "parasitism": 2,
+          "poison": 0,
+          "electrified": 0
+        },
+        "outcome": "剩余 366 HP",
+        "remainingHp": 366,
+        "skipped": null,
+        "stacks": {
+          "burn": 0,
+          "freeze": 0,
+          "parasitism": 2,
+          "poison": 0,
+          "electrified": 0
+        },
+        "statusDamage": 15,
+        "actualStatusDamage": 15,
+        "maxHp": 381,
+        "totalHealing": 6,
+        "traitHealing": 0
+      }
+    },
+    "comparison": {
+      "parasitismDamage": {
+        "actual": 15,
+        "expected": 16,
+        "delta": -1
+      },
+      "sourceHealing": {
+        "actual": 6,
+        "expected": 6,
+        "delta": 0
+      }
+    },
+    "uncertainties": [
+      "The target maxHP is obscured;381 is the selected current database/default UI reference for a crystal-snail appearance, not measured video HP.",
+      "No amount is added to direct skill damage; parasitism and capped source healing are separate settlement events.",
+      "Any target maxHP400–424 at this status/type multiplier would produce16, but no such maxHP has been asserted as observed."
+    ],
+    "legalHpCandidates": {
+      "method": "Same existing 晶石蜗 lotus-corundum reference; actual Web panel pipeline; HP-up nature silent,HP IV integer0–60; existing negative-status settlement.",
+      "candidates": [
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 24,
+          "maxHp": 400,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 25,
+          "maxHp": 401,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 26,
+          "maxHp": 402,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 27,
+          "maxHp": 404,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 28,
+          "maxHp": 405,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 29,
+          "maxHp": 405,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 30,
+          "maxHp": 406,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 31,
+          "maxHp": 407,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 32,
+          "maxHp": 408,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 33,
+          "maxHp": 410,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 34,
+          "maxHp": 411,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 35,
+          "maxHp": 412,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 36,
+          "maxHp": 412,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 37,
+          "maxHp": 413,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 38,
+          "maxHp": 414,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 39,
+          "maxHp": 416,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 40,
+          "maxHp": 417,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 41,
+          "maxHp": 418,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 42,
+          "maxHp": 419,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 43,
+          "maxHp": 419,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 44,
+          "maxHp": 420,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 45,
+          "maxHp": 422,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 46,
+          "maxHp": 423,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        },
+        {
+          "natureId": "silent",
+          "natureName": "沉默",
+          "hpIv": 47,
+          "maxHp": 424,
+          "damage": 16,
+          "healing": 6,
+          "classification": "Unproven legal candidate only; actual target HP/nature/IV hidden."
+        }
+      ]
+    }
+  },
+  "sourceSegments": [
+    "segment-000-070.json",
+    "segment-070-145.json",
+    "segment-145-212.json"
+  ],
+  "archive": {
+    "archivedAt": "2026-11-01",
+    "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+    "sourceReleasePin": "f554e39e80a38589dd9f766df5e78e585da028d4",
+    "mainReleaseCommit": "e57a2bd7a88134231170abc65e6a0cfb206892f0",
+    "ciRunUrl": "https://github.com/Evenstar-tools/roco-calculator/actions/runs/41208331883",
+    "rawFrameStorage": "local-only: original frames are not committed; use source URL and timestamps.",
+    "pathPolicy": "Local original evidence and generated files use local-only: markers; no workstation absolute paths are preserved.",
+    "damageClassificationCounts": {
+      "defaultMatch": 1,
+      "visibleConditionsMatch": 2,
+      "unconfirmedConfigurationCandidate": 16
+    },
+    "historicalBaselineNote": "Original results keep their generation-time inputs. The bone-claw replay used the old glass-sovereign HP panel449. Current user-confirmed HP base141 is a later configuration and is not retrospectively substituted into this result."
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "eventId": "butterfly-love-146",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "attacker": "化蝶（平常的样子）",
+  "defender": "龙鱼",
+  "skill": "skill_local_video_butterfly-love-146",
+  "expectedDamage": 127,
+  "localSkills": [
+    {
+      "id": "skill_local_video_butterfly-love-146",
+      "name": "恋恋不舍",
+      "type": "萌",
+      "category": "magical",
+      "cost": 4,
+      "basePower": 110,
+      "description": "造成魔伤，使敌方获得至少3次减益后，本技能威力永久+30。",
+      "evidence": {
+        "kind": "official-video-local-replay-only-not-in-product",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "frame": "local-only:dense/frame-0290.png"
+      }
+    }
+  ],
+  "knownAdjustments": [
+    {
+      "label": "候选：化蝶魔攻个体20（视频未给，非事实）",
+      "evidence": [
+        {
+          "kind": "candidate-only",
+          "fact": "枚举命中配置之一，不代表视频实际配置"
+        }
+      ],
+      "patch": {
+        "sides": {
+          "attacker": {
+            "displayIvs": {
+              "magicalAttack": 20
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "候选：龙鱼警惕性格（视频未给，非事实）",
+      "evidence": [
+        {
+          "kind": "candidate-only",
+          "fact": "魔防上升性格枚举之一，不代表视频实际配置"
+        }
+      ],
+      "patch": {
+        "sides": {
+          "defender": {
+            "nature": "vigilant"
+          }
+        }
+      }
+    }
+  ],
+  "identityEvidence": {
+    "frame": "local-only:dense/frame-0292.png",
+    "fact": "视频圆耳外形与现有平常形态原图吻合；其默认满HP253也与视频253/253吻合；不使用HP独立推定个体"
+  },
+  "candidateOnly": true
+}

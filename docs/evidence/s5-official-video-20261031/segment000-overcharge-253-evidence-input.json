@@ -1,0 +1,9 @@
+{
+  "eventId": "segment000-overcharge-253",
+  "attacker": "龙嵴金脉",
+  "defender": "翠顶夫人",
+  "skill": "过充电",
+  "expectedDamage": 253,
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "knownAdjustments": []
+}

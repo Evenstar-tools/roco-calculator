@@ -1,0 +1,556 @@
+{
+  "source": {
+    "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+    "title": "《洛克王国：世界》S5赛季新技能与首领化展示"
+  },
+  "segmentSeconds": [
+    145,
+    212
+  ],
+  "status": "complete-audited-and-replayed",
+  "reviewBoundary": "只记录本次实际打开画面；未把相邻剪辑推定为同一连续回合，不从伤害反推性格或个体。",
+  "inspectedFrames": [
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/hd-148.png",
+      "time": 149.020883
+    },
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/extra-151.png",
+      "time": 152.063483
+    },
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/extra-155.png",
+      "time": 155.825401
+    },
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/hd-158.png",
+      "time": 159.09832
+    },
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/extra-161.png",
+      "time": 162.003085
+    },
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/hd-168.png",
+      "time": 169.016078
+    },
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/hd-178.png",
+      "time": 179.09353
+    },
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/extra-181.png",
+      "time": 182.064132
+    },
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/extra-183.png",
+      "time": 183.873729
+    },
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/extra-185.png",
+      "time": 185.82023
+    },
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/hd-188.png",
+      "time": 188.865949
+    },
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/hd-198.png",
+      "time": 198.761277
+    },
+    {
+      "file": "local-only:_work/s5-official-video-20261031/browser-frames/hd-208.png",
+      "time": 208.862986
+    }
+  ],
+  "events": [
+    {
+      "id": "butterfly-love-146",
+      "kind": "skill-damage",
+      "attacker": {
+        "name": "化蝶（平常的样子）",
+        "displayName": "化蝶",
+        "level": 60,
+        "hpBefore": 253,
+        "hpMax": 253
+      },
+      "defender": {
+        "name": "龙鱼",
+        "level": 60,
+        "hpBefore": null,
+        "hpAfter": null,
+        "hpMax": null
+      },
+      "skill": {
+        "name": "恋恋不舍",
+        "cost": 4,
+        "power": 110,
+        "type": "萌",
+        "category": "magical",
+        "description": "造成魔伤，使敌方获得至少3次减益后，本技能威力永久+30。",
+        "localReplayOnly": false,
+        "notInProduct": false,
+        "productId": "skill_preview_s5_lovesick",
+        "replayModelLocalOnly": true,
+        "currentProductCalculationStatus": "unsupported",
+        "currentProductPendingReason": "减益施加次数对应的永久威力增长尚未接入。"
+      },
+      "damage": {
+        "value": 127,
+        "hitCountShown": 1,
+        "label": "克制",
+        "basis": "frame0291/0292连续两帧粉色飘字127一致；不是浮字滚动的中间值。"
+      },
+      "evidence": [
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0290.png",
+          "time": 145.160284
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0292.png",
+          "time": 146.318079
+        }
+      ],
+      "knownConditions": [],
+      "missing": [
+        "双方实际性格与个体",
+        "攻击前完整历史/永久成长是否触发",
+        "龙鱼HP读数被水印遮挡"
+      ],
+      "calculation": {
+        "inputFile": "butterfly-love-146-input.json",
+        "resultFile": "butterfly-love-146-result.json",
+        "uiDefaultDamage": 172,
+        "referenceBaselineDamage": 172,
+        "observedDamage": 127,
+        "candidateSearchFile": "tail-candidate-search.json",
+        "currentProductStatus": "metadata-recorded; attached-effects-pending",
+        "postIntakeVerificationFile": "post-product-intake-replay-check.json"
+      },
+      "replayReadiness": "candidate-reproduced-actual-nature-ivs-cost-unconfirmed",
+      "replay": {
+        "uiDefaultDamage": 172,
+        "reference60Damage": 172,
+        "afterKnownConditionsDamage": 172,
+        "videoDamage": 127,
+        "knownConditionsMatch": false,
+        "candidateOnlyDamage": 127,
+        "candidateMatch": true,
+        "candidateDescription": "化蝶魔攻个体20，再将龙鱼设为警惕性格；其余个体60、双方60级。两项均未在视频证实。",
+        "resultFile": "butterfly-love-146-result.json",
+        "candidateResultFile": "butterfly-love-146-candidate-result.json",
+        "cli60AndWebMatchForAllSteps": true,
+        "currentProductDefaultResult": {
+          "status": "unsupported",
+          "totalDamage": null,
+          "reason": "减益施加次数对应的永久威力增长尚未接入。"
+        },
+        "uiDefaultDamageScope": "已存隔离基础伤害模型的默认值；当前产品完整效果受pending守门，不能称作当前产品可算结果。",
+        "basis": "同名本地产品实体已补录，隔离模型保留产品ID、旧局部IDalias，只覆盖实证基础参数并暂去pending；不结算尚未支持的附加效果。"
+      },
+      "firstReplayHistory": {
+        "productMetadataExistedAtFirstReplay": false,
+        "localAliasId": "skill_local_video_butterfly-love-146",
+        "scope": "首次读取实帧时尚未产品录入，只在隔离snapshot补基础参数；这段历史保留，不表示当前产品仍缺实体。"
+      }
+    },
+    {
+      "id": "grand-grass-148",
+      "kind": "skill-damage",
+      "attacker": {
+        "name": "格兰球",
+        "displayName": "格兰球",
+        "level": 60,
+        "hpBefore": 329,
+        "hpMax": 329
+      },
+      "defender": {
+        "name": "龙鱼",
+        "level": 60,
+        "hpBefore": null,
+        "hpAfter": null,
+        "hpMax": null
+      },
+      "skill": {
+        "name": "维管束重构",
+        "cost": 4,
+        "power": 110,
+        "type": "草",
+        "category": "magical",
+        "description": "造成魔伤，自己累计回复至少40%生命后，每次使用本技能可回复3能量。",
+        "localReplayOnly": false,
+        "notInProduct": false,
+        "productId": "skill_preview_s5_vascular-restructure",
+        "replayModelLocalOnly": true,
+        "currentProductCalculationStatus": "unsupported",
+        "currentProductPendingReason": "累计回复生命阈值对应的能量回复尚未接入。"
+      },
+      "damage": {
+        "value": 158,
+        "hitCountShown": 1,
+        "label": null,
+        "basis": "直接命中飘字；绿字158在草系攻击目标上，不是使用者治疗"
+      },
+      "evidence": [
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0294.png",
+          "time": 147.204811
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0295.png",
+          "time": 147.691214
+        }
+      ],
+      "knownConditions": [],
+      "missing": [
+        "双方实际性格与个体",
+        "攻击前累计回复生命阈值及能量回复历史未确认",
+        "龙鱼HP读数被水印遮挡"
+      ],
+      "calculation": {
+        "inputFile": "grand-grass-148-input.json",
+        "resultFile": "grand-grass-148-result.json",
+        "uiDefaultDamage": 137,
+        "referenceBaselineDamage": 137,
+        "observedDamage": 158,
+        "candidateSearchFile": "tail-candidate-search.json",
+        "currentProductStatus": "metadata-recorded; attached-effects-pending",
+        "postIntakeVerificationFile": "post-product-intake-replay-check.json"
+      },
+      "replayReadiness": "candidate-reproduced-actual-nature-ivs-cost-unconfirmed",
+      "replay": {
+        "uiDefaultDamage": 137,
+        "reference60Damage": 137,
+        "afterKnownConditionsDamage": 137,
+        "videoDamage": 158,
+        "knownConditionsMatch": false,
+        "candidateOnlyDamage": 158,
+        "candidateMatch": true,
+        "candidateDescription": "格兰球聪明性格；其余默认。性格未在视频证实。",
+        "resultFile": "grand-grass-148-result.json",
+        "candidateResultFile": "grand-grass-148-candidate-result.json",
+        "cli60AndWebMatchForAllSteps": true,
+        "currentProductDefaultResult": {
+          "status": "unsupported",
+          "totalDamage": null,
+          "reason": "累计回复生命阈值对应的能量回复尚未接入。"
+        },
+        "uiDefaultDamageScope": "已存隔离基础伤害模型的默认值；当前产品完整效果受pending守门，不能称作当前产品可算结果。",
+        "basis": "同名本地产品实体已补录，隔离模型保留产品ID、旧局部IDalias，只覆盖实证基础参数并暂去pending；不结算尚未支持的附加效果。"
+      },
+      "firstReplayHistory": {
+        "productMetadataExistedAtFirstReplay": false,
+        "localAliasId": "skill_local_video_grand-grass-148",
+        "scope": "首次读取实帧时尚未产品录入，只在隔离snapshot补基础参数；这段历史保留，不表示当前产品仍缺实体。"
+      }
+    },
+    {
+      "id": "bone-dragon-claw-on-glass-lord-162",
+      "kind": "skill-damage",
+      "attacker": {
+        "name": "寂灭骨龙",
+        "level": 60,
+        "hpBefore": null,
+        "hpMax": null
+      },
+      "defender": {
+        "name": "琉璃君主",
+        "level": 60,
+        "hpBefore": 533,
+        "hpAfter": 460,
+        "hpMax": 533,
+        "hpDuringAnimation": 463
+      },
+      "skill": {
+        "name": "龙之利爪",
+        "cost": null,
+        "power": null,
+        "sourceBoundary": "本段画面只显示技能名称；复算采用既有数据库龙之利爪3耗、130威力，不声称本段展示了该参数面板。"
+      },
+      "damage": {
+        "value": 73,
+        "hitCountShown": 1,
+        "label": "减伤",
+        "basis": "frame0324直接飘字73；frame0325动画结束顶栏460/533，533-460=73"
+      },
+      "knownConditions": [
+        {
+          "fact": "琉璃君主行动公告为“2应对！血气”",
+          "frame": {
+            "file": "local-only:_work/s5-official-video-20261031/browser-frames/hd-158.png",
+            "time": 159.09832
+          }
+        },
+        {
+          "fact": "寂灭骨龙行动公告为“龙之利爪”",
+          "frame": {
+            "file": "local-only:_work/s5-official-video-20261031/browser-frames/hd-158.png",
+            "time": 159.09832
+          }
+        },
+        {
+          "fact": "寂灭骨龙身边中毒图标计数2",
+          "frame": {
+            "file": "local-only:_work/s5-official-video-20261031/browser-frames/hd-158.png",
+            "time": 159.09832
+          }
+        },
+        {
+          "fact": "君主被龙之利爪命中时出现蓝色护盾球",
+          "frame": {
+            "file": "local-only:_work/s5-official-video-20261031/browser-frames/extra-161.png",
+            "time": 162.003085
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0318.png",
+          "time": 159.237376
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0324.png",
+          "time": 162.165027
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0325.png",
+          "time": 162.678864
+        }
+      ],
+      "missing": [
+        "双方性格、六项个体",
+        "完整能力等级与此前回合历史",
+        "对方完整四技能与特性控制状态"
+      ],
+      "replayReadiness": "reproduced-with-observed-condition",
+      "calculation": {
+        "inputFile": "bone-claw-baseline-input.json",
+        "resultFile": "bone-claw-baseline-result.json",
+        "baseline": {
+          "nature": "普通",
+          "ivs": "six stats60",
+          "levels": [
+            60,
+            60
+          ],
+          "damage": 183
+        },
+        "knownAdjustment": {
+          "fact": "视频159.098320琉璃君主已使用应对血气，现有资料减伤60%",
+          "damageReductionMultiplier": 0.4,
+          "damage": 73
+        },
+        "matchesObservedDamage": true,
+        "cli60MatchesWeb": true,
+        "boundary": "这组默认性格个体可复现73；不据此宣称视频实际性格个体已知，也未反推最终HP。"
+      },
+      "replay": {
+        "uiDefaultDamage": 183,
+        "reference60Damage": 183,
+        "afterKnownConditionsDamage": 73,
+        "videoDamage": 73,
+        "knownConditionsMatch": true,
+        "candidateOnlyDamage": null,
+        "candidateMatch": false,
+        "candidateDescription": null,
+        "resultFile": "bone-claw-baseline-result.json",
+        "candidateResultFile": null,
+        "cli60AndWebMatchForAllSteps": true
+      }
+    },
+    {
+      "id": "boss-ice-hail-on-abyss-187",
+      "kind": "skill-damage",
+      "attacker": {
+        "name": "圣冠布鲁斯",
+        "level": 60,
+        "hpBefore": 276,
+        "hpMax": 359
+      },
+      "defender": {
+        "name": "深渊罗隐",
+        "level": 60,
+        "hpBefore": null,
+        "hpAfter": 0,
+        "hpMax": null
+      },
+      "skill": {
+        "name": "冰雹",
+        "cost": 4,
+        "power": 105,
+        "costSource": {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0371.png",
+          "time": 185.638383
+        },
+        "powerSource": "current s4 database skill_318b4ef58316547b; not shown by this video panel"
+      },
+      "damage": {
+        "value": 726,
+        "hitCountShown": 1,
+        "label": "克制",
+        "basis": "frame0373/0374直接蓝字726"
+      },
+      "knownConditions": [
+        {
+          "fact": "烈冰钻说明：敌方携带技能总能耗每有1点，自己攻击时威力+10%；敌方总能耗大于15，自己速度+75",
+          "frame": {
+            "file": "local-only:_work/s5-official-video-20261031/browser-frames/extra-185.png",
+            "time": 185.82023
+          }
+        }
+      ],
+      "evidence": [
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0369.png",
+          "time": 184.720468
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0371.png",
+          "time": 185.638383
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0373.png",
+          "time": 186.695591
+        },
+        {
+          "file": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0377.png",
+          "time": 188.644791
+        }
+      ],
+      "missing": [
+        "敌方原始HP被水印遮挡",
+        "敌方携带四技能/当前总耗",
+        "双方实际性格与个体",
+        "实际攻击/防御阶段与此前完整回合"
+      ],
+      "replayReadiness": "candidate-reproduced-actual-nature-ivs-cost-unconfirmed",
+      "replay": {
+        "uiDefaultDamage": 314,
+        "reference60Damage": 314,
+        "afterKnownConditionsDamage": 314,
+        "videoDamage": 726,
+        "knownConditionsMatch": false,
+        "candidateOnlyDamage": 726,
+        "candidateMatch": true,
+        "candidateDescription": "烈冰钻手动敌方总耗30，再将深渊罗隐物防个体40；其余普通/60。两项均未在视频证实。",
+        "resultFile": "boss-ice-hail-result.json",
+        "candidateResultFile": "boss-ice-hail-candidate-result.json",
+        "cli60AndWebMatchForAllSteps": true
+      },
+      "calculation": {
+        "baseline314": true,
+        "knownHPAdjustmentStill314": true,
+        "candidateExampleDamage": 726
+      }
+    }
+  ],
+  "nonDamageCoverage": [
+    {
+      "rangeApprox": [
+        149.163,
+        157.711
+      ],
+      "observation": "转场、新首领化标题与琉璃君主召唤动画"
+    },
+    {
+      "rangeApprox": [
+        163.683,
+        184.688
+      ],
+      "observation": "君主互动乘骑、圣冠布鲁斯召唤动画"
+    },
+    {
+      "rangeApprox": [
+        188.139,
+        190.667
+      ],
+      "observation": "深渊罗隐力竭/魔力损耗，无新增伤害飘字"
+    },
+    {
+      "rangeApprox": [
+        191.199,
+        211.195
+      ],
+      "observation": "圣冠布鲁斯互动乘骑与11月5日正式开启片尾"
+    }
+  ],
+  "followupFramesNeeded": [],
+  "calculation": {
+    "runner": "replay-s5-web.mjs",
+    "batchRunner": "run-tail-replays.mjs",
+    "summaryFile": "tail-replay-summary.json",
+    "candidateSearchFile": "tail-candidate-search.json",
+    "engineBoundary": "首次使用现有S4核心与Web S5 overlay，在隔离snapshot补当时缺少的两技能基础对象。后续本地产品已补实体与参数；隔离重放保留产品ID、旧IDalias，只算基础伤害并记录被省略的pending效果。CLI60逐项交叉验证；非60使用Web真实等级pipeline。",
+    "postProductIntakeVerificationFile": "post-product-intake-replay-check.json",
+    "metadataCaveat": "历史候选结果defaultPresets.displayIvs曾受共享引用影响；收尾已按独立uiDefaultBaseline.state修复3份受影响JSON默认摘要并标记metadataRepair，runner也已改为structuredClone。未改变计算输入、公式或伤害结果，无需重跑计算。"
+  },
+  "coverage": {
+    "sourceSamplingSeconds": 0.5,
+    "contactSheets": [
+      "local-only:tail-contact-1.jpg",
+      "local-only:tail-contact-2.jpg",
+      "local-only:tail-contact-3.jpg"
+    ],
+    "contactSheetSamplingSeconds": 1,
+    "fullSizeAttackFramesInspected": [
+      290,
+      292,
+      293,
+      294,
+      295,
+      296,
+      297,
+      298,
+      315,
+      318,
+      321,
+      324,
+      325,
+      327,
+      329,
+      331,
+      333,
+      367,
+      369,
+      371,
+      373,
+      375,
+      377,
+      379,
+      381,
+      383,
+      385,
+      387
+    ],
+    "lastSourceTimestamp": 211.194995,
+    "boundary": "整段1秒接触表读回，所有伤害窗口再读全尺寸实帧；不使用0000/0090/0286失败seek帧，均不在本段。"
+  },
+  "classificationSummary": {
+    "damageEventCount": 4,
+    "matchedUsingObservedConditions": 1,
+    "matchedOnlyWithUnconfirmedCandidateConfigurations": 3,
+    "stillWithoutAnyMatchingCandidate": 0,
+    "claimBoundary": "候选匹配不算已确认还原实际战斗配置；不据伤害反推为唯一性格/个体/技能总耗。",
+    "scope": "四笔基础伤害复算的分类；两新技能的完整产品机制仍pending，候选匹配也不等于实际战斗配置被证实。"
+  },
+  "currentLocalProductStatus": {
+    "sourceFile": "data/reviewed/s5-official-video-20261031.json",
+    "skills": [
+      {
+        "id": "skill_preview_s5_lovesick",
+        "name": "恋恋不舍",
+        "cost": 4,
+        "basePower": 110,
+        "pendingReason": "减益施加次数对应的永久威力增长尚未接入。"
+      },
+      {
+        "id": "skill_preview_s5_vascular-restructure",
+        "name": "维管束重构",
+        "cost": 4,
+        "basePower": 110,
+        "pendingReason": "累计回复生命阈值对应的能量回复尚未接入。"
+      }
+    ],
+    "learningBoundary": "本地产品已补录两技能及其owner学习面；圣冠冰雹/君主血气也已补实证学习面，其他三槽不猜。未据此宣称发布或附加机制完成。"
+  }
+}

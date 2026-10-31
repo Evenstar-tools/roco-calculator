@@ -2,7 +2,7 @@
 
 来源：[《洛克王国：世界》S5赛季新技能与首领化展示](https://www.bilibili.com/video/BV1SNxq6REfb/)，官方洛克王国世界，2026-10-31 18:00，约3分32秒。
 
-本次逐项记录19次技能攻击，另列寄生伤害16与回复6。全片按约半秒采样，剔除4张跳转残帧；灵扰和龙之爪牙另作加密采样，确认分别3次139与5次60。滚动数字、旧浮字残留及能力变化不重复记伤害。
+本次逐项记录19次技能攻击：1次默认配置吻合、2次应用可见条件后吻合、16次仅有未证实的配置候选；另列寄生伤害16与回复6。全片按约半秒采样，剔除4张跳转残帧；灵扰和龙之爪牙另作加密采样，确认分别3次139与5次60。滚动数字、旧浮字残留及能力变化不重复记伤害。
 
 ## 计算口径
 
@@ -10,7 +10,7 @@
 - 再只应用画面能读出的等级、强化、减伤、连击等条件。不同剪辑的HP和强化不串联，不将矿物置换片段的增益带入另一个碎银对局。
 - 最后检索合法性格、相关个体或携带能耗，列出能命中视频数字的候选。候选可能有多解，不能据此认定视频实际配置，也没有回填为官方数据。
 - 使用现有计算核心及Web实际等级投影；数据和规则版本为`s4-2026-09-10`加本地S5覆盖。60级结果与CLI交叉核对；非60级用Web等级流程，普通CLI不支持的等级不冒充已交叉验证。每份结果保留输入、面板、公式步骤和版本。两个入口复用同一核心，这里核对输入及适配一致性，不作为两套独立公式证据。
-- 表中标`*`的技能仍有未实现的历史机制。这里用隔离快照计算已知基础伤害；网页原有守门保留，数值匹配不代表完整历史机制已实现。圣冠、琉璃首领种族值仍采用既有占位基线，官方首领数值尚未确认。
+- 表中标`*`的技能仍有未实现的历史机制。这里用隔离快照计算已知基础伤害；网页原有守门保留，数值匹配不代表完整历史机制已实现。圣冠种族值保留既有占位基线；琉璃君主当前生命种族值141由用户确认，其余沿用原形态，尚不代表官方完整首领种族值。下列历史结果保留生成时输入，不能把旧面板当作当前配置。
 
 ## 全片对照
 
@@ -47,146 +47,147 @@
 - 视频539；默认545；画面条件后545。
 - 已知条件：实帧确认冥古龙当前等级99，保持其他标准60/普通/IV60条件
 - **未证实候选**：仅候选：冥古龙99级/HP487，逞强，生命IV23、物攻IV2；寂灭骨龙普通、物防IV59；其余IV60。非视频官方配置。；结果539。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment000-crimson-539-evidence-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment000-crimson-539-candidate-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment000-crimson-539-evidence-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment000-crimson-539-candidate-result.json)。
 
 ### 0:19 荒芜之噬：冥古龙→寂灭骨龙
 
 - 视频559；默认616；画面条件后460。
 - 已知条件：实帧确认冥古龙当前等级79，保持其他标准60/普通/IV60条件
 - **未证实候选**：仅候选：冥古龙79级/HP497，普通，生命IV60、物攻IV57；寂灭骨龙大胆、物防IV13；其余IV60。两段冥古各自配置，不跨剪辑强制相同。；结果559。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment000-barren-559-evidence-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment000-barren-559-candidate-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment000-barren-559-evidence-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment000-barren-559-candidate-result.json)。
 
 ### 0:30 碎银：地绡银龙→晶石蜗
 
 - 视频228；默认135；画面条件后135。
 - 已知条件：Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)
 - **未证实候选**：仅候选：地绡银龙60级/HP443，沉默，生命IV54、魔攻IV60；晶石蜗莲花刚玉候选形态、普通、魔防IV56；防方携带等价交换、点亮、反击拳、防反，均来自既有学习面且非地系，偏振自动不触发本次地系40%减伤。已删除手动偏振0减伤覆盖并重放228，CLI/Web一致。视频未展示此技能组，其余IV60。；结果228。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment000-silver-228-baseline-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment000-silver-228-candidate-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment000-silver-228-baseline-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment000-silver-228-candidate-result.json)。
 
 ### 0:37 过充电：龙嵴金脉→翠顶夫人
 
 - 视频253；默认212；画面条件后212。
 - 已知条件：Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)
 - **未证实候选**：仅候选：龙嵴金脉普通、全IV60，HP468；翠顶夫人大胆、物防IV20，其余IV60。脚下两枚红12为盾形防御图标，不当作攻击聚能层数。；结果253。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment000-overcharge-253-baseline-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment000-overcharge-253-candidate-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment000-overcharge-253-baseline-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment000-overcharge-253-candidate-result.json)。
 
 ### 0:47 离岸流：阿瓦鲨→权杖-V
 
 - 视频458；默认257；画面条件后386。
 - 已知条件：实帧阿瓦鲨脚下绿色双攻图标各5：双攻能力等级+5（+50%），其他配置保持普通全60
 - **未证实候选**：已见绿色双攻图标各5，双攻+50%；在此基础仅候选：阿瓦鲨柠檬样子候选形态、普通全IV60、HP430；权杖-V大胆、物防IV22，其余IV60。；结果458。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment000-rip-458-evidence-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment000-rip-458-candidate-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment000-rip-458-evidence-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment000-rip-458-candidate-result.json)。
 
 ### 1:00 音波弹：蹦床松鼠→鸡麻麻
 
 - 视频120；默认64；画面条件后100。
 - 已知条件：实际蛋壳应对：减伤60%即伤害倍率0.4，音波弹共4次30伤害
 - **未证实候选**：已见蛋壳减伤60%及4击30、HP425→305；在此基础仅候选：双方普通，鸡麻麻魔防IV6、生命IV60，其余IV60；蹦床松鼠全IV60。；结果120。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment000-eggshell-120-evidence-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment000-eggshell-120-candidate-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment000-eggshell-120-evidence-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment000-eggshell-120-candidate-result.json)。
 
 ### 1:12 间歇泉：沙咔蟹→罗隐
 
 - 视频384；默认281；画面条件后281。
 - 已知条件：行动字幕4耗间歇泉；卡每有1层减益能耗-1。
 - **未证实候选**：攻击方：大胆性格、物攻个体60；防御方：普通性格、物防个体0；结果384。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment070-known-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment070-candidate-confirm-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment070-known-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment070-candidate-confirm-result.json)。
 
 ### 1:17 泥巴喷射：晶石蜗（具体样子未在HUD标出）→沙咔蟹
 
 - 视频6；默认33；画面条件后6。
 - 已知条件：敌方先使泥巴喷射，沙咔蟹3耗应对外附传播；卡减伤80%；前445/445，后439/445。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment070-known-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment070-known-result.json)。
 
 ### 1:24 蓝移：圆环鲸羽→海豹船长
 
 - 视频368；默认317；画面条件后317。
 - 已知条件：只发生一次攻击；浮字74→295→368为同一次数字滚动，最后368；未把滚动中间数字相加。；技能卡使敌方至少4层星陨后，每次使用加1层；历史层数未显示清楚，局部基础模型未附加星陨。
 - **未证实候选**：攻击方：聪明性格、魔攻个体60；防御方：普通性格、魔防个体60；结果368。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment070-known-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment070-candidate-confirm-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment070-known-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment070-candidate-confirm-result.json)。
 
 ### 1:35 果粒：冬虫夏瓜→嗜波螺
 
 - 视频328；默认328；画面条件后328。
 - 已知条件：同帧两排164，技能卡2连击；后续夏蛰演示不能反向作为此前果粒奉献增益。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment070-known-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment070-known-result.json)。
 
 ### 1:44 灵扰：影子剪纸→夜枭
 
 - 视频417；默认219；画面条件后372。
 - 已知条件：先地缚灵，目标物防/魔防各降70%，目标脚下两种红盾各7层。；技能卡3连击；连续139浮字伴随攻击动作，两排旧/新数字重叠。；蓝色2层图标含义未认定，未擅自增加速度或其他减益。
 - **未证实候选**：攻击方：普通性格、物攻个体60；防御方：普通性格、物防个体24；结果417。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment070-known-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment070-candidate-confirm-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment070-known-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment070-candidate-confirm-result.json)。
 
 ### 1:53 花香：花衣蝶→刨雪鹅
 
 - 视频11；默认62；画面条件后12。
 - 已知条件：行动字幕为花香；刨雪鹅2耗应对热桥；减伤80%；应对成功后目标魔防-60%。；绿色11伴随减伤提示，随后HP437→426，属于承伤数字，未当回血。
 - **未证实候选**：攻击方：普通性格、魔攻个体0；防御方：调皮性格、魔防个体60；结果11。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment070-known-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment070-candidate-confirm-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment070-known-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment070-candidate-confirm-result.json)。
 
 ### 2:00 冷冻：刨雪鹅→花衣蝶
 
 - 视频270；默认235；画面条件后235。
 - 已知条件：技能卡明确冰物理4耗100；魔防-60%不会增加这次物理伤害。；该段开始自身437/437，与前段426/437有剪辑复位，未跨段串HP。；冻结次数/敌方能耗历史未模拟。
 - **未证实候选**：攻击方：大胆性格、物攻个体60；防御方：普通性格、物防个体60；结果270。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment070-known-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment070-candidate-confirm-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment070-known-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment070-candidate-confirm-result.json)。
 
 ### 2:07 投毒：滴廿豚→菊花梨
 
 - 视频253；默认237；画面条件后237。
 - 已知条件：此前混合态随机施加10层属性减益，实际随机分配未展示完整；未擅自指定防御减益。；技能卡投毒90威力，至少2次中毒后每次命中中毒目标威力+25；历史中毒次数未确认。
 - **未证实候选**：攻击方：普通性格、物攻个体60；防御方：普通性格、物防个体38；结果253。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment070-known-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment070-candidate-confirm-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment070-known-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment070-candidate-confirm-result.json)。
 
 ### 2:21 龙之爪牙：翼龙→寂灭骨龙
 
 - 视频300；默认295；画面条件后295。
 - 已知条件：技能卡5连击；fine帧每次新斩击各浮60，旧数字有残留。；前一片段伊兰亚龙画龙点睛的能力增益未跨精灵/剪辑转移给翼龙。
 - **未证实候选**：攻击方：大胆性格、物攻个体0；防御方：稳重性格、物防个体0；结果300。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/segment070-known-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/segment070-candidate-confirm-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/segment070-known-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/segment070-candidate-confirm-result.json)。
 
 ### 2:25 恋恋不舍：化蝶（平常的样子）→龙鱼
 
 - 视频127；默认172；画面条件后172。
 - 已知条件：未读出其他影响伤害的可确认条件。
 - **未证实候选**：化蝶魔攻个体20，再将龙鱼设为警惕性格；其余个体60、双方60级。两项均未在视频证实。；结果127。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/butterfly-love-146-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/butterfly-love-146-candidate-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/butterfly-love-146-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/butterfly-love-146-candidate-result.json)。
 
 ### 2:27 维管束重构：格兰球→龙鱼
 
 - 视频158；默认137；画面条件后137。
 - 已知条件：未读出其他影响伤害的可确认条件。
 - **未证实候选**：格兰球聪明性格；其余默认。性格未在视频证实。；结果158。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/grand-grass-148-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/grand-grass-148-candidate-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/grand-grass-148-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/grand-grass-148-candidate-result.json)。
 
 ### 2:39 龙之利爪：寂灭骨龙→琉璃君主
 
 - 视频73；默认183；画面条件后73。
-- 已知条件：{"fact": "琉璃君主行动公告为“2应对！血气”", "frame": {"file": "D:\\codex\\worktrees\\roco-pre-notice-source-20261029\\_work\\s5-official-video-20261031\\browser-frames\\hd-158.png", "time": 159.09832}}；{"fact": "寂灭骨龙行动公告为“龙之利爪”", "frame": {"file": "D:\\codex\\worktrees\\roco-pre-notice-source-20261029\\_work\\s5-official-video-20261031\\browser-frames\\hd-158.png", "time": 159.09832}}；{"fact": "寂灭骨龙身边中毒图标计数2", "frame": {"file": "D:\\codex\\worktrees\\roco-pre-notice-source-20261029\\_work\\s5-official-video-20261031\\browser-frames\\hd-158.png", "time": 159.09832}}；{"fact": "君主被龙之利爪命中时出现蓝色护盾球", "frame": {"file": "D:\\codex\\worktrees\\roco-pre-notice-source-20261029\\_work\\s5-official-video-20261031\\browser-frames\\extra-161.png", "time": 162.003085}}
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/bone-claw-baseline-result.json)。
+- 已知条件：视频约159.10秒可见琉璃君主使用“2应对！血气”、寂灭骨龙使用“龙之利爪”且有2层中毒；约162.00秒君主被命中时出现蓝色护盾球。原始帧仅本地保留，时间与来源见归档 JSON。
+- 此回放生成时琉璃君主生命面板为449，183→73是当时输入下的结果。之后生命种族值按用户确认改为141，其余沿用原形态；调整依据记录为视频约162秒满血533及沉默／生命个体60候选。旧回放不因此改写，也不表示当前面板仍为449。
+- [逐步结果](../evidence/s5-official-video-20261031/bone-claw-baseline-result.json)。
 
 ### 3:04 冰雹：圣冠布鲁斯→深渊罗隐
 
 - 视频726；默认314；画面条件后314。
-- 已知条件：{"fact": "烈冰钻说明：敌方携带技能总能耗每有1点，自己攻击时威力+10%；敌方总能耗大于15，自己速度+75", "frame": {"file": "D:\\codex\\worktrees\\roco-pre-notice-source-20261029\\_work\\s5-official-video-20261031\\browser-frames\\extra-185.png", "time": 185.82023}}
+- 已知条件：视频约185.82秒的烈冰钻说明为敌方携带技能总能耗每1点使攻击威力+10%，总能耗大于15时速度+75。原始帧仅本地保留，来源与时间见归档 JSON。
 - **未证实候选**：烈冰钻手动敌方总耗30，再将深渊罗隐物防个体40；其余普通/60。两项均未在视频证实。；结果726。
-- [逐步结果](../../_work/s5-official-video-20261031/damage-replay/boss-ice-hail-result.json)。
-- [候选输入及公式结果](../../_work/s5-official-video-20261031/damage-replay/boss-ice-hail-candidate-result.json)。
+- [逐步结果](../evidence/s5-official-video-20261031/boss-ice-hail-result.json)。
+- [候选输入及公式结果](../evidence/s5-official-video-20261031/boss-ice-hail-candidate-result.json)。
 
 ## 寄生与回复
 
@@ -195,21 +196,22 @@
 | 晶石蜗2层寄生承伤 | 16 | 0 | 默认候选形态381HP，结算15 | 同形态沉默性格、生命个体24–47，对应400–424HP，结算16 |
 | 沙咔蟹寄生回复 | 6 | 0 | 439/445只缺6HP，回复受上限截为6 | 上述合法生命候选仍回复6 |
 
-晶石蜗具体样子和最大HP未从HUD确认，莲花刚玉仅为回放候选，不将400–424HP写成实测。寄生与回复独立结算，不加进泥巴喷射的直接伤害。[状态输入、结算与合法生命候选](../../_work/s5-official-video-20261031/damage-replay/segment070-status-result.json)。
+晶石蜗具体样子和最大HP未从HUD确认，莲花刚玉仅为回放候选，不将400–424HP写成实测。寄生与回复独立结算，不加进泥巴喷射的直接伤害。[状态输入、结算与合法生命候选](../evidence/s5-official-video-20261031/segment070-status-result.json)。
 
-## 本地修复与验证
+## 修复、验证与上线
 
 - 补齐逐帧新读出的蓝移、冷冻、果粒面板；恋恋不舍与维管束重构录入演示精灵、默认配置及官方像素图标。圣冠的冰雹、琉璃君主的血气放入已确认默认槽，其他未知槽留空。
 - 修复烈冰钻已知自动携带能耗被错误守门、摘要未显示派生值的问题。实际网页圣冠对深渊默认携带总耗8，显示威力+80%，冰雹314。视频726仍需额外配置候选，314不被改成726。
 - 受影响数据、计算守门、特性摘要、状态与预设检查通过，生产预览构建通过；浅色1440px网页确认图标加载和无横向溢出。
-- 本地验收入口：`http://127.0.0.1:4244/pre/`。[实际网页截图](../../output/playwright/s5-official-video-20261031/known-cost-replay.png)。本轮未提交、未推送、未部署，未同步小程序。
+- 已上线 [S5抢先版](https://rococalc.top/pre/)。固定源码 `f554e39e80a38589dd9f766df5e78e585da028d4`，主线发布提交 `e57a2bd7a88134231170abc65e6a0cfb206892f0`；[CI 41208331883](https://github.com/Evenstar-tools/roco-calculator/actions/runs/41208331883)成功。线上已回查布鲁斯加速勾选、15／16能耗阈值、不重复加速、刷新保留及速度线295／220／192三档。没有同步或发布小程序。
+- 原本地网页截图 `known-cost-replay.png` 仅保存在本地验收目录，未作为仓库图片链接。输入、逐步结果、采样元数据和重放方式已归档到[复现档案](../evidence/s5-official-video-20261031/README.md)。
 
 ## 原始证据与分段记录
 
-- [统一索引](../../_work/s5-official-video-20261031/damage-replay/complete-replay-index.json)。
-- [0–70秒事实与计算](../../_work/s5-official-video-20261031/damage-replay/segment-000-070.json)。
-- [70–145秒事实与计算](../../_work/s5-official-video-20261031/damage-replay/segment-070-145.json)。
-- [145–212秒事实与计算](../../_work/s5-official-video-20261031/damage-replay/segment-145-212.json)。
-- [全片采样索引](../../_work/s5-official-video-20261031/damage-replay/dense/index.json)，[灵扰加密帧](../../_work/s5-official-video-20261031/damage-replay/dense/fine-spirit-index.json)，[龙之爪牙加密帧](../../_work/s5-official-video-20261031/damage-replay/dense/fine-claw-index.json)。
+- [统一索引](../evidence/s5-official-video-20261031/complete-replay-index.json)。
+- [0–70秒事实与计算](../evidence/s5-official-video-20261031/segment-000-070.json)。
+- [70–145秒事实与计算](../evidence/s5-official-video-20261031/segment-070-145.json)。
+- [145–212秒事实与计算](../evidence/s5-official-video-20261031/segment-145-212.json)。
+- [全片采样索引](../evidence/s5-official-video-20261031/dense/index.json)，[灵扰加密帧](../evidence/s5-official-video-20261031/dense/fine-spirit-index.json)，[龙之爪牙加密帧](../evidence/s5-official-video-20261031/dense/fine-claw-index.json)。
 
-原始帧截图保留于上述索引所在目录。密集采样frame-0000、0015、0090、0286为跳转残帧，已标记排除；灵扰加密初段停帧也不用于逐击计数。
+上述索引归档时间戳和本地原帧标记，原始帧仅保存在本地，未入库。JSON 中 `local-only:` 不代表可打开的仓库文件；可按官号视频与时间戳重新核对。密集采样frame-0000、0015、0090、0286为跳转残帧，已标记排除；灵扰加密初段停帧也不用于逐击计数。

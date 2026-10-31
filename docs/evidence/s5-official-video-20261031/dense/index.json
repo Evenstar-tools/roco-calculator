@@ -1,0 +1,2136 @@
+[
+  {
+    "file": "local-only:dense/frame-0000.png",
+    "before": 0,
+    "after": 0,
+    "paused": false,
+    "warning": "No decoded playback progress at seek boundary: verify visible video timestamp before using this image as evidence"
+  },
+  {
+    "file": "local-only:dense/frame-0001.png",
+    "before": 0.52408,
+    "after": 0.612029,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0002.png",
+    "before": 1.016339,
+    "after": 1.133063,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0003.png",
+    "before": 1.502253,
+    "after": 1.608271,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0004.png",
+    "before": 2.005076,
+    "after": 2.166841,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0005.png",
+    "before": 2.515024,
+    "after": 2.702432,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0006.png",
+    "before": 3.017521,
+    "after": 3.224803,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0007.png",
+    "before": 3.503758,
+    "after": 3.680271,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0008.png",
+    "before": 4.010602,
+    "after": 4.174598,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0009.png",
+    "before": 4.53343,
+    "after": 4.70487,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0010.png",
+    "before": 5.020527,
+    "after": 5.202914,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0011.png",
+    "before": 5.512012,
+    "after": 5.708064,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0012.png",
+    "before": 6.000769,
+    "after": 6.132537,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0013.png",
+    "before": 6.506755,
+    "after": 6.666347,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0014.png",
+    "before": 7.022377,
+    "after": 7.167926,
+    "paused": false
+  },
+  {
+    "file": "local-only:dense/frame-0015.png",
+    "before": 7.827838,
+    "after": 7.835914,
+    "warning": "Stale decoded frame after seek: visible actor and timestamp differ from adjacent frames; exclude from evidence"
+  },
+  {
+    "file": "local-only:dense/frame-0016.png",
+    "before": 8.003757,
+    "after": 8.135483
+  },
+  {
+    "file": "local-only:dense/frame-0017.png",
+    "before": 8.508515,
+    "after": 8.658349
+  },
+  {
+    "file": "local-only:dense/frame-0018.png",
+    "before": 9.003586,
+    "after": 9.163776
+  },
+  {
+    "file": "local-only:dense/frame-0019.png",
+    "before": 9.539026,
+    "after": 9.67569
+  },
+  {
+    "file": "local-only:dense/frame-0020.png",
+    "before": 10.022429,
+    "after": 10.184538
+  },
+  {
+    "file": "local-only:dense/frame-0021.png",
+    "before": 10.503144,
+    "after": 10.671348
+  },
+  {
+    "file": "local-only:dense/frame-0022.png",
+    "before": 11.008886,
+    "after": 11.214987
+  },
+  {
+    "file": "local-only:dense/frame-0023.png",
+    "before": 11.502066,
+    "after": 11.655569
+  },
+  {
+    "file": "local-only:dense/frame-0024.png",
+    "before": 12.016818,
+    "after": 12.236664
+  },
+  {
+    "file": "local-only:dense/frame-0025.png",
+    "before": 12.520205,
+    "after": 12.668522
+  },
+  {
+    "file": "local-only:dense/frame-0026.png",
+    "before": 13.006021,
+    "after": 13.16612
+  },
+  {
+    "file": "local-only:dense/frame-0027.png",
+    "before": 13.532843,
+    "after": 13.686692
+  },
+  {
+    "file": "local-only:dense/frame-0028.png",
+    "before": 14.045235,
+    "after": 14.19084
+  },
+  {
+    "file": "local-only:dense/frame-0029.png",
+    "before": 14.517842,
+    "after": 14.66599
+  },
+  {
+    "file": "local-only:dense/frame-0030.png",
+    "before": 15.018594,
+    "after": 15.210438
+  },
+  {
+    "file": "local-only:dense/frame-0031.png",
+    "before": 15.500117,
+    "after": 15.661201
+  },
+  {
+    "file": "local-only:dense/frame-0032.png",
+    "before": 16.000281,
+    "after": 16.168889
+  },
+  {
+    "file": "local-only:dense/frame-0033.png",
+    "before": 16.539697,
+    "after": 16.721549
+  },
+  {
+    "file": "local-only:dense/frame-0034.png",
+    "before": 17.021343,
+    "after": 17.211044
+  },
+  {
+    "file": "local-only:dense/frame-0035.png",
+    "before": 17.515684,
+    "after": 17.70895
+  },
+  {
+    "file": "local-only:dense/frame-0036.png",
+    "before": 18.028514,
+    "after": 18.213509
+  },
+  {
+    "file": "local-only:dense/frame-0037.png",
+    "before": 18.524218,
+    "after": 18.709032
+  },
+  {
+    "file": "local-only:dense/frame-0038.png",
+    "before": 19.003073,
+    "after": 19.141225
+  },
+  {
+    "file": "local-only:dense/frame-0039.png",
+    "before": 19.598286,
+    "after": 19.79614
+  },
+  {
+    "file": "local-only:dense/frame-0040.png",
+    "before": 20.031284,
+    "after": 20.186562
+  },
+  {
+    "file": "local-only:dense/frame-0041.png",
+    "before": 20.53044,
+    "after": 20.672275
+  },
+  {
+    "file": "local-only:dense/frame-0042.png",
+    "before": 21.00235,
+    "after": 21.156572
+  },
+  {
+    "file": "local-only:dense/frame-0043.png",
+    "before": 21.531388,
+    "after": 21.700551
+  },
+  {
+    "file": "local-only:dense/frame-0044.png",
+    "before": 22.004875,
+    "after": 22.176611
+  },
+  {
+    "file": "local-only:dense/frame-0045.png",
+    "before": 22.514334,
+    "after": 22.689387
+  },
+  {
+    "file": "local-only:dense/frame-0046.png",
+    "before": 23.018795,
+    "after": 23.165241
+  },
+  {
+    "file": "local-only:dense/frame-0047.png",
+    "before": 23.530233,
+    "after": 23.70694
+  },
+  {
+    "file": "local-only:dense/frame-0048.png",
+    "before": 24.032013,
+    "after": 24.233782
+  },
+  {
+    "file": "local-only:dense/frame-0049.png",
+    "before": 24.524862,
+    "after": 24.708987
+  },
+  {
+    "file": "local-only:dense/frame-0050.png",
+    "before": 25.018322,
+    "after": 25.200286
+  },
+  {
+    "file": "local-only:dense/frame-0051.png",
+    "before": 25.533726,
+    "after": 25.695844
+  },
+  {
+    "file": "local-only:dense/frame-0052.png",
+    "before": 26.001381,
+    "after": 26.168649
+  },
+  {
+    "file": "local-only:dense/frame-0053.png",
+    "before": 26.519211,
+    "after": 26.708284
+  },
+  {
+    "file": "local-only:dense/frame-0054.png",
+    "before": 27.014961,
+    "after": 27.206384
+  },
+  {
+    "file": "local-only:dense/frame-0055.png",
+    "before": 27.514255,
+    "after": 27.655388
+  },
+  {
+    "file": "local-only:dense/frame-0056.png",
+    "before": 28.011317,
+    "after": 28.170421
+  },
+  {
+    "file": "local-only:dense/frame-0057.png",
+    "before": 28.505226,
+    "after": 28.657821
+  },
+  {
+    "file": "local-only:dense/frame-0058.png",
+    "before": 29.014574,
+    "after": 29.166739
+  },
+  {
+    "file": "local-only:dense/frame-0059.png",
+    "before": 29.52504,
+    "after": 29.680314
+  },
+  {
+    "file": "local-only:dense/frame-0060.png",
+    "before": 30.009457,
+    "after": 30.177879
+  },
+  {
+    "file": "local-only:dense/frame-0061.png",
+    "before": 30.527363,
+    "after": 30.710339
+  },
+  {
+    "file": "local-only:dense/frame-0062.png",
+    "before": 31.005261,
+    "after": 31.138402
+  },
+  {
+    "file": "local-only:dense/frame-0063.png",
+    "before": 31.509675,
+    "after": 31.672454
+  },
+  {
+    "file": "local-only:dense/frame-0064.png",
+    "before": 32.036407,
+    "after": 32.177998
+  },
+  {
+    "file": "local-only:dense/frame-0065.png",
+    "before": 32.506071,
+    "after": 32.633945
+  },
+  {
+    "file": "local-only:dense/frame-0066.png",
+    "before": 33.008237,
+    "after": 33.149208
+  },
+  {
+    "file": "local-only:dense/frame-0067.png",
+    "before": 33.529944,
+    "after": 33.698332
+  },
+  {
+    "file": "local-only:dense/frame-0068.png",
+    "before": 34.055362,
+    "after": 34.231163
+  },
+  {
+    "file": "local-only:dense/frame-0069.png",
+    "before": 34.515926,
+    "after": 34.705869
+  },
+  {
+    "file": "local-only:dense/frame-0070.png",
+    "before": 35.035164,
+    "after": 35.188822
+  },
+  {
+    "file": "local-only:dense/frame-0071.png",
+    "before": 35.54063,
+    "after": 35.689168
+  },
+  {
+    "file": "local-only:dense/frame-0072.png",
+    "before": 36.002016,
+    "after": 36.169512
+  },
+  {
+    "file": "local-only:dense/frame-0073.png",
+    "before": 36.516534,
+    "after": 36.705526
+  },
+  {
+    "file": "local-only:dense/frame-0074.png",
+    "before": 37.028035,
+    "after": 37.185791
+  },
+  {
+    "file": "local-only:dense/frame-0075.png",
+    "before": 37.519133,
+    "after": 37.677684
+  },
+  {
+    "file": "local-only:dense/frame-0076.png",
+    "before": 38.032374,
+    "after": 38.202941
+  },
+  {
+    "file": "local-only:dense/frame-0077.png",
+    "before": 38.502261,
+    "after": 38.648447
+  },
+  {
+    "file": "local-only:dense/frame-0078.png",
+    "before": 39.005588,
+    "after": 39.173232
+  },
+  {
+    "file": "local-only:dense/frame-0079.png",
+    "before": 39.526528,
+    "after": 39.678358
+  },
+  {
+    "file": "local-only:dense/frame-0080.png",
+    "before": 40.030275,
+    "after": 40.176577
+  },
+  {
+    "file": "local-only:dense/frame-0081.png",
+    "before": 40.517018,
+    "after": 40.69127
+  },
+  {
+    "file": "local-only:dense/frame-0082.png",
+    "before": 41.008636,
+    "after": 41.168479
+  },
+  {
+    "file": "local-only:dense/frame-0083.png",
+    "before": 41.505506,
+    "after": 41.669246
+  },
+  {
+    "file": "local-only:dense/frame-0084.png",
+    "before": 42.008416,
+    "after": 42.141402
+  },
+  {
+    "file": "local-only:dense/frame-0085.png",
+    "before": 42.522232,
+    "after": 42.690078
+  },
+  {
+    "file": "local-only:dense/frame-0086.png",
+    "before": 43.018484,
+    "after": 43.192444
+  },
+  {
+    "file": "local-only:dense/frame-0087.png",
+    "before": 43.526973,
+    "after": 43.697404
+  },
+  {
+    "file": "local-only:dense/frame-0088.png",
+    "before": 44.01716,
+    "after": 44.180593
+  },
+  {
+    "file": "local-only:dense/frame-0089.png",
+    "before": 44.513913,
+    "after": 44.663534
+  },
+  {
+    "file": "local-only:dense/frame-0090.png",
+    "before": 45.247142,
+    "after": 45.247142,
+    "warning": "No decoded playback progress at seek boundary: verify visible video timestamp before using this image as evidence"
+  },
+  {
+    "file": "local-only:dense/frame-0091.png",
+    "before": 45.539623,
+    "after": 45.6973
+  },
+  {
+    "file": "local-only:dense/frame-0092.png",
+    "before": 46.003389,
+    "after": 46.153075
+  },
+  {
+    "file": "local-only:dense/frame-0093.png",
+    "before": 46.529491,
+    "after": 46.659132
+  },
+  {
+    "file": "local-only:dense/frame-0094.png",
+    "before": 47.040058,
+    "after": 47.198618
+  },
+  {
+    "file": "local-only:dense/frame-0095.png",
+    "before": 47.540652,
+    "after": 47.735836
+  },
+  {
+    "file": "local-only:dense/frame-0096.png",
+    "before": 48.015581,
+    "after": 48.200214
+  },
+  {
+    "file": "local-only:dense/frame-0097.png",
+    "before": 48.50193,
+    "after": 48.647326
+  },
+  {
+    "file": "local-only:dense/frame-0098.png",
+    "before": 49.07683,
+    "after": 49.234029
+  },
+  {
+    "file": "local-only:dense/frame-0099.png",
+    "before": 49.5274,
+    "after": 49.673018
+  },
+  {
+    "file": "local-only:dense/frame-0100.png",
+    "before": 50.002282,
+    "after": 50.17834
+  },
+  {
+    "file": "local-only:dense/frame-0101.png",
+    "before": 50.561529,
+    "after": 50.699725
+  },
+  {
+    "file": "local-only:dense/frame-0102.png",
+    "before": 51.001456,
+    "after": 51.149966
+  },
+  {
+    "file": "local-only:dense/frame-0103.png",
+    "before": 51.52277,
+    "after": 51.694265
+  },
+  {
+    "file": "local-only:dense/frame-0104.png",
+    "before": 52.044275,
+    "after": 52.237383
+  },
+  {
+    "file": "local-only:dense/frame-0105.png",
+    "before": 52.552023,
+    "after": 52.786875
+  },
+  {
+    "file": "local-only:dense/frame-0106.png",
+    "before": 53.053358,
+    "after": 53.235449
+  },
+  {
+    "file": "local-only:dense/frame-0107.png",
+    "before": 53.505899,
+    "after": 53.6615
+  },
+  {
+    "file": "local-only:dense/frame-0108.png",
+    "before": 54.023368,
+    "after": 54.210996
+  },
+  {
+    "file": "local-only:dense/frame-0109.png",
+    "before": 54.510691,
+    "after": 54.632373
+  },
+  {
+    "file": "local-only:dense/frame-0110.png",
+    "before": 55.052415,
+    "after": 55.233666
+  },
+  {
+    "file": "local-only:dense/frame-0111.png",
+    "before": 55.535514,
+    "after": 55.684889
+  },
+  {
+    "file": "local-only:dense/frame-0112.png",
+    "before": 56.038227,
+    "after": 56.198002
+  },
+  {
+    "file": "local-only:dense/frame-0113.png",
+    "before": 56.528518,
+    "after": 56.672426
+  },
+  {
+    "file": "local-only:dense/frame-0114.png",
+    "before": 57.049012,
+    "after": 57.195655
+  },
+  {
+    "file": "local-only:dense/frame-0115.png",
+    "before": 57.515442,
+    "after": 57.697873
+  },
+  {
+    "file": "local-only:dense/frame-0116.png",
+    "before": 58.01198,
+    "after": 58.148742
+  },
+  {
+    "file": "local-only:dense/frame-0117.png",
+    "before": 58.503134,
+    "after": 58.655368
+  },
+  {
+    "file": "local-only:dense/frame-0118.png",
+    "before": 59.032123,
+    "after": 59.201059
+  },
+  {
+    "file": "local-only:dense/frame-0119.png",
+    "before": 59.513784,
+    "after": 59.671065
+  },
+  {
+    "file": "local-only:dense/frame-0120.png",
+    "before": 60.046262,
+    "after": 60.20148
+  },
+  {
+    "file": "local-only:dense/frame-0121.png",
+    "before": 60.537678,
+    "after": 60.706919
+  },
+  {
+    "file": "local-only:dense/frame-0122.png",
+    "before": 61.000381,
+    "after": 61.158904
+  },
+  {
+    "file": "local-only:dense/frame-0123.png",
+    "before": 61.515038,
+    "after": 61.704747
+  },
+  {
+    "file": "local-only:dense/frame-0124.png",
+    "before": 62.015113,
+    "after": 62.171334
+  },
+  {
+    "file": "local-only:dense/frame-0125.png",
+    "before": 62.514755,
+    "after": 62.703932
+  },
+  {
+    "file": "local-only:dense/frame-0126.png",
+    "before": 63.020079,
+    "after": 63.136785
+  },
+  {
+    "file": "local-only:dense/frame-0127.png",
+    "before": 63.515418,
+    "after": 63.688738
+  },
+  {
+    "file": "local-only:dense/frame-0128.png",
+    "before": 64.0111,
+    "after": 64.182958
+  },
+  {
+    "file": "local-only:dense/frame-0129.png",
+    "before": 64.502035,
+    "after": 64.669551
+  },
+  {
+    "file": "local-only:dense/frame-0130.png",
+    "before": 65.032058,
+    "after": 65.186674
+  },
+  {
+    "file": "local-only:dense/frame-0131.png",
+    "before": 65.527679,
+    "after": 65.705984
+  },
+  {
+    "file": "local-only:dense/frame-0132.png",
+    "before": 66.015124,
+    "after": 66.200831
+  },
+  {
+    "file": "local-only:dense/frame-0133.png",
+    "before": 66.531737,
+    "after": 66.67922
+  },
+  {
+    "file": "local-only:dense/frame-0134.png",
+    "before": 67.036551,
+    "after": 67.21506
+  },
+  {
+    "file": "local-only:dense/frame-0135.png",
+    "before": 67.519475,
+    "after": 67.659925
+  },
+  {
+    "file": "local-only:dense/frame-0136.png",
+    "before": 68.008233,
+    "after": 68.169129
+  },
+  {
+    "file": "local-only:dense/frame-0137.png",
+    "before": 68.541906,
+    "after": 68.747405
+  },
+  {
+    "file": "local-only:dense/frame-0138.png",
+    "before": 69.242017,
+    "after": 69.479758
+  },
+  {
+    "file": "local-only:dense/frame-0139.png",
+    "before": 69.546049,
+    "after": 69.672921
+  },
+  {
+    "file": "local-only:dense/frame-0140.png",
+    "before": 70.015838,
+    "after": 70.136845
+  },
+  {
+    "file": "local-only:dense/frame-0141.png",
+    "before": 70.557646,
+    "after": 70.701326
+  },
+  {
+    "file": "local-only:dense/frame-0142.png",
+    "before": 71.028937,
+    "after": 71.200029
+  },
+  {
+    "file": "local-only:dense/frame-0143.png",
+    "before": 71.500538,
+    "after": 71.680942
+  },
+  {
+    "file": "local-only:dense/frame-0144.png",
+    "before": 72.038267,
+    "after": 72.190388
+  },
+  {
+    "file": "local-only:dense/frame-0145.png",
+    "before": 72.532518,
+    "after": 72.6726
+  },
+  {
+    "file": "local-only:dense/frame-0146.png",
+    "before": 73.038166,
+    "after": 73.18432
+  },
+  {
+    "file": "local-only:dense/frame-0147.png",
+    "before": 73.54738,
+    "after": 73.65998
+  },
+  {
+    "file": "local-only:dense/frame-0148.png",
+    "before": 74.015993,
+    "after": 74.182427
+  },
+  {
+    "file": "local-only:dense/frame-0149.png",
+    "before": 74.54123,
+    "after": 74.701668
+  },
+  {
+    "file": "local-only:dense/frame-0150.png",
+    "before": 75.001353,
+    "after": 75.184749
+  },
+  {
+    "file": "local-only:dense/frame-0151.png",
+    "before": 75.53172,
+    "after": 75.69887
+  },
+  {
+    "file": "local-only:dense/frame-0152.png",
+    "before": 76.025254,
+    "after": 76.126828
+  },
+  {
+    "file": "local-only:dense/frame-0153.png",
+    "before": 76.541955,
+    "after": 76.706967
+  },
+  {
+    "file": "local-only:dense/frame-0154.png",
+    "before": 77.035466,
+    "after": 77.205829
+  },
+  {
+    "file": "local-only:dense/frame-0155.png",
+    "before": 77.531091,
+    "after": 77.681705
+  },
+  {
+    "file": "local-only:dense/frame-0156.png",
+    "before": 78.019876,
+    "after": 78.199901
+  },
+  {
+    "file": "local-only:dense/frame-0157.png",
+    "before": 78.50762,
+    "after": 78.704609
+  },
+  {
+    "file": "local-only:dense/frame-0158.png",
+    "before": 79.029894,
+    "after": 79.23877
+  },
+  {
+    "file": "local-only:dense/frame-0159.png",
+    "before": 79.511082,
+    "after": 79.710588
+  },
+  {
+    "file": "local-only:dense/frame-0160.png",
+    "before": 80.01746,
+    "after": 80.208596
+  },
+  {
+    "file": "local-only:dense/frame-0161.png",
+    "before": 80.513306,
+    "after": 80.708444
+  },
+  {
+    "file": "local-only:dense/frame-0162.png",
+    "before": 81.034001,
+    "after": 81.172685
+  },
+  {
+    "file": "local-only:dense/frame-0163.png",
+    "before": 81.623254,
+    "after": 81.77456
+  },
+  {
+    "file": "local-only:dense/frame-0164.png",
+    "before": 82.042152,
+    "after": 82.203396
+  },
+  {
+    "file": "local-only:dense/frame-0165.png",
+    "before": 82.514949,
+    "after": 82.686638
+  },
+  {
+    "file": "local-only:dense/frame-0166.png",
+    "before": 83.006983,
+    "after": 83.175817
+  },
+  {
+    "file": "local-only:dense/frame-0167.png",
+    "before": 83.515023,
+    "after": 83.698385
+  },
+  {
+    "file": "local-only:dense/frame-0168.png",
+    "before": 84.039375,
+    "after": 84.238093
+  },
+  {
+    "file": "local-only:dense/frame-0169.png",
+    "before": 84.502048,
+    "after": 84.644611
+  },
+  {
+    "file": "local-only:dense/frame-0170.png",
+    "before": 85.014635,
+    "after": 85.184272
+  },
+  {
+    "file": "local-only:dense/frame-0171.png",
+    "before": 85.51538,
+    "after": 85.627626
+  },
+  {
+    "file": "local-only:dense/frame-0172.png",
+    "before": 86.016744,
+    "after": 86.204971
+  },
+  {
+    "file": "local-only:dense/frame-0173.png",
+    "before": 86.501062,
+    "after": 86.646963
+  },
+  {
+    "file": "local-only:dense/frame-0174.png",
+    "before": 87.055498,
+    "after": 87.203649
+  },
+  {
+    "file": "local-only:dense/frame-0175.png",
+    "before": 87.506232,
+    "after": 87.66057
+  },
+  {
+    "file": "local-only:dense/frame-0176.png",
+    "before": 88.045995,
+    "after": 88.209934
+  },
+  {
+    "file": "local-only:dense/frame-0177.png",
+    "before": 88.54134,
+    "after": 88.686101
+  },
+  {
+    "file": "local-only:dense/frame-0178.png",
+    "before": 89.059935,
+    "after": 89.222177
+  },
+  {
+    "file": "local-only:dense/frame-0179.png",
+    "before": 89.510243,
+    "after": 89.665045
+  },
+  {
+    "file": "local-only:dense/frame-0180.png",
+    "before": 90.035584,
+    "after": 90.187066
+  },
+  {
+    "file": "local-only:dense/frame-0181.png",
+    "before": 90.52034,
+    "after": 90.660297
+  },
+  {
+    "file": "local-only:dense/frame-0182.png",
+    "before": 91.005305,
+    "after": 91.216397
+  },
+  {
+    "file": "local-only:dense/frame-0183.png",
+    "before": 91.536663,
+    "after": 91.668684
+  },
+  {
+    "file": "local-only:dense/frame-0184.png",
+    "before": 92.019386,
+    "after": 92.206643
+  },
+  {
+    "file": "local-only:dense/frame-0185.png",
+    "before": 92.537932,
+    "after": 92.694935
+  },
+  {
+    "file": "local-only:dense/frame-0186.png",
+    "before": 93.037303,
+    "after": 93.201361
+  },
+  {
+    "file": "local-only:dense/frame-0187.png",
+    "before": 93.531782,
+    "after": 93.676073
+  },
+  {
+    "file": "local-only:dense/frame-0188.png",
+    "before": 94.000888,
+    "after": 94.168111
+  },
+  {
+    "file": "local-only:dense/frame-0189.png",
+    "before": 94.539742,
+    "after": 94.684331
+  },
+  {
+    "file": "local-only:dense/frame-0190.png",
+    "before": 95.061485,
+    "after": 95.227918
+  },
+  {
+    "file": "local-only:dense/frame-0191.png",
+    "before": 95.507313,
+    "after": 95.703205
+  },
+  {
+    "file": "local-only:dense/frame-0192.png",
+    "before": 96.037673,
+    "after": 96.189333
+  },
+  {
+    "file": "local-only:dense/frame-0193.png",
+    "before": 96.529616,
+    "after": 96.706699
+  },
+  {
+    "file": "local-only:dense/frame-0194.png",
+    "before": 97.098162,
+    "after": 97.255921
+  },
+  {
+    "file": "local-only:dense/frame-0195.png",
+    "before": 97.564129,
+    "after": 97.704645
+  },
+  {
+    "file": "local-only:dense/frame-0196.png",
+    "before": 98.030787,
+    "after": 98.150929
+  },
+  {
+    "file": "local-only:dense/frame-0197.png",
+    "before": 98.526622,
+    "after": 98.666214
+  },
+  {
+    "file": "local-only:dense/frame-0198.png",
+    "before": 99.035981,
+    "after": 99.190694
+  },
+  {
+    "file": "local-only:dense/frame-0199.png",
+    "before": 99.555146,
+    "after": 99.69337
+  },
+  {
+    "file": "local-only:dense/frame-0200.png",
+    "before": 100.009795,
+    "after": 100.172311
+  },
+  {
+    "file": "local-only:dense/frame-0201.png",
+    "before": 100.511186,
+    "after": 100.67355
+  },
+  {
+    "file": "local-only:dense/frame-0202.png",
+    "before": 101.027436,
+    "after": 101.1325
+  },
+  {
+    "file": "local-only:dense/frame-0203.png",
+    "before": 101.553188,
+    "after": 101.713663
+  },
+  {
+    "file": "local-only:dense/frame-0204.png",
+    "before": 102.025086,
+    "after": 102.204691
+  },
+  {
+    "file": "local-only:dense/frame-0205.png",
+    "before": 102.552373,
+    "after": 102.726471
+  },
+  {
+    "file": "local-only:dense/frame-0206.png",
+    "before": 103.005763,
+    "after": 103.148746
+  },
+  {
+    "file": "local-only:dense/frame-0207.png",
+    "before": 103.515477,
+    "after": 103.663701
+  },
+  {
+    "file": "local-only:dense/frame-0208.png",
+    "before": 104.044034,
+    "after": 104.239688
+  },
+  {
+    "file": "local-only:dense/frame-0209.png",
+    "before": 104.533658,
+    "after": 104.686156
+  },
+  {
+    "file": "local-only:dense/frame-0210.png",
+    "before": 105.004125,
+    "after": 105.154843
+  },
+  {
+    "file": "local-only:dense/frame-0211.png",
+    "before": 105.535058,
+    "after": 105.708558
+  },
+  {
+    "file": "local-only:dense/frame-0212.png",
+    "before": 106.048418,
+    "after": 106.238014
+  },
+  {
+    "file": "local-only:dense/frame-0213.png",
+    "before": 106.529722,
+    "after": 106.687524
+  },
+  {
+    "file": "local-only:dense/frame-0214.png",
+    "before": 107.023144,
+    "after": 107.195975
+  },
+  {
+    "file": "local-only:dense/frame-0215.png",
+    "before": 107.561343,
+    "after": 107.721427
+  },
+  {
+    "file": "local-only:dense/frame-0216.png",
+    "before": 108.048872,
+    "after": 108.20498
+  },
+  {
+    "file": "local-only:dense/frame-0217.png",
+    "before": 108.507494,
+    "after": 108.703766
+  },
+  {
+    "file": "local-only:dense/frame-0218.png",
+    "before": 109.035713,
+    "after": 109.174846
+  },
+  {
+    "file": "local-only:dense/frame-0219.png",
+    "before": 109.524519,
+    "after": 109.696579
+  },
+  {
+    "file": "local-only:dense/frame-0220.png",
+    "before": 110.035375,
+    "after": 110.199975
+  },
+  {
+    "file": "local-only:dense/frame-0221.png",
+    "before": 110.532799,
+    "after": 110.710005
+  },
+  {
+    "file": "local-only:dense/frame-0222.png",
+    "before": 111.045059,
+    "after": 111.223557
+  },
+  {
+    "file": "local-only:dense/frame-0223.png",
+    "before": 111.555176,
+    "after": 111.741871
+  },
+  {
+    "file": "local-only:dense/frame-0224.png",
+    "before": 112.022801,
+    "after": 112.198389
+  },
+  {
+    "file": "local-only:dense/frame-0225.png",
+    "before": 112.558312,
+    "after": 112.732772
+  },
+  {
+    "file": "local-only:dense/frame-0226.png",
+    "before": 113.118019,
+    "after": 113.255955
+  },
+  {
+    "file": "local-only:dense/frame-0227.png",
+    "before": 113.53394,
+    "after": 113.708904
+  },
+  {
+    "file": "local-only:dense/frame-0228.png",
+    "before": 114.001939,
+    "after": 114.157349
+  },
+  {
+    "file": "local-only:dense/frame-0229.png",
+    "before": 114.504821,
+    "after": 114.664508
+  },
+  {
+    "file": "local-only:dense/frame-0230.png",
+    "before": 115.045522,
+    "after": 115.231281
+  },
+  {
+    "file": "local-only:dense/frame-0231.png",
+    "before": 115.503257,
+    "after": 115.657604
+  },
+  {
+    "file": "local-only:dense/frame-0232.png",
+    "before": 116.037692,
+    "after": 116.183789
+  },
+  {
+    "file": "local-only:dense/frame-0233.png",
+    "before": 116.507993,
+    "after": 116.666026
+  },
+  {
+    "file": "local-only:dense/frame-0234.png",
+    "before": 117.016871,
+    "after": 117.20119
+  },
+  {
+    "file": "local-only:dense/frame-0235.png",
+    "before": 117.517874,
+    "after": 117.688282
+  },
+  {
+    "file": "local-only:dense/frame-0236.png",
+    "before": 118.05092,
+    "after": 118.207484
+  },
+  {
+    "file": "local-only:dense/frame-0237.png",
+    "before": 118.542866,
+    "after": 118.69482
+  },
+  {
+    "file": "local-only:dense/frame-0238.png",
+    "before": 119.050174,
+    "after": 119.224017
+  },
+  {
+    "file": "local-only:dense/frame-0239.png",
+    "before": 119.529499,
+    "after": 119.69196
+  },
+  {
+    "file": "local-only:dense/frame-0240.png",
+    "before": 120.037036,
+    "after": 120.196531
+  },
+  {
+    "file": "local-only:dense/frame-0241.png",
+    "before": 120.50608,
+    "after": 120.660604
+  },
+  {
+    "file": "local-only:dense/frame-0242.png",
+    "before": 121.032508,
+    "after": 121.173506
+  },
+  {
+    "file": "local-only:dense/frame-0243.png",
+    "before": 121.538733,
+    "after": 121.72182
+  },
+  {
+    "file": "local-only:dense/frame-0244.png",
+    "before": 122.014228,
+    "after": 122.165269
+  },
+  {
+    "file": "local-only:dense/frame-0245.png",
+    "before": 122.561175,
+    "after": 122.717613
+  },
+  {
+    "file": "local-only:dense/frame-0246.png",
+    "before": 123.038501,
+    "after": 123.207093
+  },
+  {
+    "file": "local-only:dense/frame-0247.png",
+    "before": 123.515697,
+    "after": 123.701786
+  },
+  {
+    "file": "local-only:dense/frame-0248.png",
+    "before": 124.003258,
+    "after": 124.152745
+  },
+  {
+    "file": "local-only:dense/frame-0249.png",
+    "before": 124.519599,
+    "after": 124.698723
+  },
+  {
+    "file": "local-only:dense/frame-0250.png",
+    "before": 125.008657,
+    "after": 125.19461
+  },
+  {
+    "file": "local-only:dense/frame-0251.png",
+    "before": 125.503062,
+    "after": 125.631582
+  },
+  {
+    "file": "local-only:dense/frame-0252.png",
+    "before": 126.006298,
+    "after": 126.166736
+  },
+  {
+    "file": "local-only:dense/frame-0253.png",
+    "before": 126.507048,
+    "after": 126.684517
+  },
+  {
+    "file": "local-only:dense/frame-0254.png",
+    "before": 127.057043,
+    "after": 127.226565
+  },
+  {
+    "file": "local-only:dense/frame-0255.png",
+    "before": 127.512724,
+    "after": 127.702629
+  },
+  {
+    "file": "local-only:dense/frame-0256.png",
+    "before": 128.031891,
+    "after": 128.166334
+  },
+  {
+    "file": "local-only:dense/frame-0257.png",
+    "before": 128.509456,
+    "after": 128.67417
+  },
+  {
+    "file": "local-only:dense/frame-0258.png",
+    "before": 129.026049,
+    "after": 129.175686
+  },
+  {
+    "file": "local-only:dense/frame-0259.png",
+    "before": 129.523372,
+    "after": 129.698268
+  },
+  {
+    "file": "local-only:dense/frame-0260.png",
+    "before": 130.045347,
+    "after": 130.191682
+  },
+  {
+    "file": "local-only:dense/frame-0261.png",
+    "before": 130.530082,
+    "after": 130.698996
+  },
+  {
+    "file": "local-only:dense/frame-0262.png",
+    "before": 131.043879,
+    "after": 131.246768
+  },
+  {
+    "file": "local-only:dense/frame-0263.png",
+    "before": 131.509321,
+    "after": 131.65519
+  },
+  {
+    "file": "local-only:dense/frame-0264.png",
+    "before": 132.042446,
+    "after": 132.171265
+  },
+  {
+    "file": "local-only:dense/frame-0265.png",
+    "before": 132.536332,
+    "after": 132.741535
+  },
+  {
+    "file": "local-only:dense/frame-0266.png",
+    "before": 133.000913,
+    "after": 133.142197
+  },
+  {
+    "file": "local-only:dense/frame-0267.png",
+    "before": 133.556792,
+    "after": 133.737525
+  },
+  {
+    "file": "local-only:dense/frame-0268.png",
+    "before": 134.012119,
+    "after": 134.177794
+  },
+  {
+    "file": "local-only:dense/frame-0269.png",
+    "before": 134.540272,
+    "after": 134.710225
+  },
+  {
+    "file": "local-only:dense/frame-0270.png",
+    "before": 135.036091,
+    "after": 135.170358
+  },
+  {
+    "file": "local-only:dense/frame-0271.png",
+    "before": 135.513788,
+    "after": 135.647583
+  },
+  {
+    "file": "local-only:dense/frame-0272.png",
+    "before": 136.021691,
+    "after": 136.199039
+  },
+  {
+    "file": "local-only:dense/frame-0273.png",
+    "before": 136.537946,
+    "after": 136.706244
+  },
+  {
+    "file": "local-only:dense/frame-0274.png",
+    "before": 137.009537,
+    "after": 137.170382
+  },
+  {
+    "file": "local-only:dense/frame-0275.png",
+    "before": 137.528704,
+    "after": 137.686449
+  },
+  {
+    "file": "local-only:dense/frame-0276.png",
+    "before": 138.053703,
+    "after": 138.204118
+  },
+  {
+    "file": "local-only:dense/frame-0277.png",
+    "before": 138.511864,
+    "after": 138.702733
+  },
+  {
+    "file": "local-only:dense/frame-0278.png",
+    "before": 139.010767,
+    "after": 139.181038
+  },
+  {
+    "file": "local-only:dense/frame-0279.png",
+    "before": 139.554288,
+    "after": 139.708033
+  },
+  {
+    "file": "local-only:dense/frame-0280.png",
+    "before": 140.005263,
+    "after": 140.28288
+  },
+  {
+    "file": "local-only:dense/frame-0281.png",
+    "before": 140.523576,
+    "after": 140.662956
+  },
+  {
+    "file": "local-only:dense/frame-0282.png",
+    "before": 141.039106,
+    "after": 141.1674
+  },
+  {
+    "file": "local-only:dense/frame-0283.png",
+    "before": 141.545023,
+    "after": 141.716882
+  },
+  {
+    "file": "local-only:dense/frame-0284.png",
+    "before": 142.014399,
+    "after": 142.169949
+  },
+  {
+    "file": "local-only:dense/frame-0285.png",
+    "before": 142.523974,
+    "after": 142.679974
+  },
+  {
+    "file": "local-only:dense/frame-0286.png",
+    "before": 143.196076,
+    "after": 143.196076,
+    "warning": "No decoded playback progress at seek boundary: verify visible video timestamp before using this image as evidence"
+  },
+  {
+    "file": "local-only:dense/frame-0287.png",
+    "before": 143.535216,
+    "after": 143.672608
+  },
+  {
+    "file": "local-only:dense/frame-0288.png",
+    "before": 144.013101,
+    "after": 144.151652
+  },
+  {
+    "file": "local-only:dense/frame-0289.png",
+    "before": 144.546737,
+    "after": 144.709382
+  },
+  {
+    "file": "local-only:dense/frame-0290.png",
+    "before": 145.002676,
+    "after": 145.160284
+  },
+  {
+    "file": "local-only:dense/frame-0291.png",
+    "before": 145.502917,
+    "after": 145.684547
+  },
+  {
+    "file": "local-only:dense/frame-0292.png",
+    "before": 146.036379,
+    "after": 146.318079
+  },
+  {
+    "file": "local-only:dense/frame-0293.png",
+    "before": 146.546415,
+    "after": 146.706756
+  },
+  {
+    "file": "local-only:dense/frame-0294.png",
+    "before": 147.039918,
+    "after": 147.204811
+  },
+  {
+    "file": "local-only:dense/frame-0295.png",
+    "before": 147.540995,
+    "after": 147.691214
+  },
+  {
+    "file": "local-only:dense/frame-0296.png",
+    "before": 148.022935,
+    "after": 148.13418
+  },
+  {
+    "file": "local-only:dense/frame-0297.png",
+    "before": 148.503577,
+    "after": 148.653689
+  },
+  {
+    "file": "local-only:dense/frame-0298.png",
+    "before": 149.001155,
+    "after": 149.163492
+  },
+  {
+    "file": "local-only:dense/frame-0299.png",
+    "before": 149.550181,
+    "after": 149.712116
+  },
+  {
+    "file": "local-only:dense/frame-0300.png",
+    "before": 150.0384,
+    "after": 150.192984
+  },
+  {
+    "file": "local-only:dense/frame-0301.png",
+    "before": 150.523479,
+    "after": 150.659208
+  },
+  {
+    "file": "local-only:dense/frame-0302.png",
+    "before": 151.02897,
+    "after": 151.199258
+  },
+  {
+    "file": "local-only:dense/frame-0303.png",
+    "before": 151.514166,
+    "after": 151.681563
+  },
+  {
+    "file": "local-only:dense/frame-0304.png",
+    "before": 152.045055,
+    "after": 152.213904
+  },
+  {
+    "file": "local-only:dense/frame-0305.png",
+    "before": 152.530155,
+    "after": 152.701551
+  },
+  {
+    "file": "local-only:dense/frame-0306.png",
+    "before": 153.002291,
+    "after": 153.13873
+  },
+  {
+    "file": "local-only:dense/frame-0307.png",
+    "before": 153.500736,
+    "after": 153.664185
+  },
+  {
+    "file": "local-only:dense/frame-0308.png",
+    "before": 154.006074,
+    "after": 154.143487
+  },
+  {
+    "file": "local-only:dense/frame-0309.png",
+    "before": 154.527269,
+    "after": 154.709394
+  },
+  {
+    "file": "local-only:dense/frame-0310.png",
+    "before": 155.010135,
+    "after": 155.202099
+  },
+  {
+    "file": "local-only:dense/frame-0311.png",
+    "before": 155.543491,
+    "after": 155.739273
+  },
+  {
+    "file": "local-only:dense/frame-0312.png",
+    "before": 156.050631,
+    "after": 156.222503
+  },
+  {
+    "file": "local-only:dense/frame-0313.png",
+    "before": 156.516763,
+    "after": 156.667847
+  },
+  {
+    "file": "local-only:dense/frame-0314.png",
+    "before": 157.040599,
+    "after": 157.29845
+  },
+  {
+    "file": "local-only:dense/frame-0315.png",
+    "before": 157.543252,
+    "after": 157.710626
+  },
+  {
+    "file": "local-only:dense/frame-0316.png",
+    "before": 158.028091,
+    "after": 158.19318
+  },
+  {
+    "file": "local-only:dense/frame-0317.png",
+    "before": 158.525819,
+    "after": 158.675219
+  },
+  {
+    "file": "local-only:dense/frame-0318.png",
+    "before": 159.025872,
+    "after": 159.237376
+  },
+  {
+    "file": "local-only:dense/frame-0319.png",
+    "before": 159.518773,
+    "after": 159.673997
+  },
+  {
+    "file": "local-only:dense/frame-0320.png",
+    "before": 160.038838,
+    "after": 160.192193
+  },
+  {
+    "file": "local-only:dense/frame-0321.png",
+    "before": 160.526263,
+    "after": 160.672612
+  },
+  {
+    "file": "local-only:dense/frame-0322.png",
+    "before": 161.02783,
+    "after": 161.185716
+  },
+  {
+    "file": "local-only:dense/frame-0323.png",
+    "before": 161.531076,
+    "after": 161.706677
+  },
+  {
+    "file": "local-only:dense/frame-0324.png",
+    "before": 162.00463,
+    "after": 162.165027
+  },
+  {
+    "file": "local-only:dense/frame-0325.png",
+    "before": 162.516518,
+    "after": 162.678864
+  },
+  {
+    "file": "local-only:dense/frame-0326.png",
+    "before": 163.020787,
+    "after": 163.203877
+  },
+  {
+    "file": "local-only:dense/frame-0327.png",
+    "before": 163.533295,
+    "after": 163.682993
+  },
+  {
+    "file": "local-only:dense/frame-0328.png",
+    "before": 164.012082,
+    "after": 164.171003
+  },
+  {
+    "file": "local-only:dense/frame-0329.png",
+    "before": 164.505226,
+    "after": 164.651506
+  },
+  {
+    "file": "local-only:dense/frame-0330.png",
+    "before": 165.009153,
+    "after": 165.175783
+  },
+  {
+    "file": "local-only:dense/frame-0331.png",
+    "before": 165.526807,
+    "after": 165.687437
+  },
+  {
+    "file": "local-only:dense/frame-0332.png",
+    "before": 166.046997,
+    "after": 166.187597
+  },
+  {
+    "file": "local-only:dense/frame-0333.png",
+    "before": 166.517122,
+    "after": 166.663314
+  },
+  {
+    "file": "local-only:dense/frame-0334.png",
+    "before": 167.0223,
+    "after": 167.176333
+  },
+  {
+    "file": "local-only:dense/frame-0335.png",
+    "before": 167.503636,
+    "after": 167.645147
+  },
+  {
+    "file": "local-only:dense/frame-0336.png",
+    "before": 168.044617,
+    "after": 168.225326
+  },
+  {
+    "file": "local-only:dense/frame-0337.png",
+    "before": 168.581891,
+    "after": 168.728135
+  },
+  {
+    "file": "local-only:dense/frame-0338.png",
+    "before": 169.021724,
+    "after": 169.192903
+  },
+  {
+    "file": "local-only:dense/frame-0339.png",
+    "before": 169.538312,
+    "after": 169.699707
+  },
+  {
+    "file": "local-only:dense/frame-0340.png",
+    "before": 170.051407,
+    "after": 170.22852
+  },
+  {
+    "file": "local-only:dense/frame-0341.png",
+    "before": 170.528233,
+    "after": 170.715316
+  },
+  {
+    "file": "local-only:dense/frame-0342.png",
+    "before": 171.036913,
+    "after": 171.149198
+  },
+  {
+    "file": "local-only:dense/frame-0343.png",
+    "before": 171.547621,
+    "after": 171.7131
+  },
+  {
+    "file": "local-only:dense/frame-0344.png",
+    "before": 172.041778,
+    "after": 172.190857
+  },
+  {
+    "file": "local-only:dense/frame-0345.png",
+    "before": 172.546459,
+    "after": 172.710601
+  },
+  {
+    "file": "local-only:dense/frame-0346.png",
+    "before": 173.008078,
+    "after": 173.152489
+  },
+  {
+    "file": "local-only:dense/frame-0347.png",
+    "before": 173.521928,
+    "after": 173.682575
+  },
+  {
+    "file": "local-only:dense/frame-0348.png",
+    "before": 174.05472,
+    "after": 174.179596
+  },
+  {
+    "file": "local-only:dense/frame-0349.png",
+    "before": 174.530208,
+    "after": 174.692441
+  },
+  {
+    "file": "local-only:dense/frame-0350.png",
+    "before": 175.00049,
+    "after": 175.170403
+  },
+  {
+    "file": "local-only:dense/frame-0351.png",
+    "before": 175.503396,
+    "after": 175.643661
+  },
+  {
+    "file": "local-only:dense/frame-0352.png",
+    "before": 176.03256,
+    "after": 176.196792
+  },
+  {
+    "file": "local-only:dense/frame-0353.png",
+    "before": 176.558776,
+    "after": 176.731866
+  },
+  {
+    "file": "local-only:dense/frame-0354.png",
+    "before": 177.011303,
+    "after": 177.191304
+  },
+  {
+    "file": "local-only:dense/frame-0355.png",
+    "before": 177.515566,
+    "after": 177.675102
+  },
+  {
+    "file": "local-only:dense/frame-0356.png",
+    "before": 178.029518,
+    "after": 178.186358
+  },
+  {
+    "file": "local-only:dense/frame-0357.png",
+    "before": 178.547438,
+    "after": 178.6861
+  },
+  {
+    "file": "local-only:dense/frame-0358.png",
+    "before": 179.057546,
+    "after": 179.201243
+  },
+  {
+    "file": "local-only:dense/frame-0359.png",
+    "before": 179.535458,
+    "after": 179.685844
+  },
+  {
+    "file": "local-only:dense/frame-0360.png",
+    "before": 180.015922,
+    "after": 180.172997
+  },
+  {
+    "file": "local-only:dense/frame-0361.png",
+    "before": 180.534233,
+    "after": 180.675536
+  },
+  {
+    "file": "local-only:dense/frame-0362.png",
+    "before": 181.014591,
+    "after": 181.166064
+  },
+  {
+    "file": "local-only:dense/frame-0363.png",
+    "before": 181.512058,
+    "after": 181.698053
+  },
+  {
+    "file": "local-only:dense/frame-0364.png",
+    "before": 182.036495,
+    "after": 182.185418
+  },
+  {
+    "file": "local-only:dense/frame-0365.png",
+    "before": 182.513885,
+    "after": 182.671658
+  },
+  {
+    "file": "local-only:dense/frame-0366.png",
+    "before": 183.008949,
+    "after": 183.188622
+  },
+  {
+    "file": "local-only:dense/frame-0367.png",
+    "before": 183.550318,
+    "after": 183.687019
+  },
+  {
+    "file": "local-only:dense/frame-0368.png",
+    "before": 184.018594,
+    "after": 184.188322
+  },
+  {
+    "file": "local-only:dense/frame-0369.png",
+    "before": 184.546052,
+    "after": 184.720468
+  },
+  {
+    "file": "local-only:dense/frame-0370.png",
+    "before": 185.052257,
+    "after": 185.195222
+  },
+  {
+    "file": "local-only:dense/frame-0371.png",
+    "before": 185.514143,
+    "after": 185.638383
+  },
+  {
+    "file": "local-only:dense/frame-0372.png",
+    "before": 186.001247,
+    "after": 186.153673
+  },
+  {
+    "file": "local-only:dense/frame-0373.png",
+    "before": 186.537052,
+    "after": 186.695591
+  },
+  {
+    "file": "local-only:dense/frame-0374.png",
+    "before": 187.024699,
+    "after": 187.181344
+  },
+  {
+    "file": "local-only:dense/frame-0375.png",
+    "before": 187.529173,
+    "after": 187.697491
+  },
+  {
+    "file": "local-only:dense/frame-0376.png",
+    "before": 188.005818,
+    "after": 188.13927
+  },
+  {
+    "file": "local-only:dense/frame-0377.png",
+    "before": 188.534478,
+    "after": 188.644791
+  },
+  {
+    "file": "local-only:dense/frame-0378.png",
+    "before": 189.0454,
+    "after": 189.202611
+  },
+  {
+    "file": "local-only:dense/frame-0379.png",
+    "before": 189.539544,
+    "after": 189.695089
+  },
+  {
+    "file": "local-only:dense/frame-0380.png",
+    "before": 190.013681,
+    "after": 190.167369
+  },
+  {
+    "file": "local-only:dense/frame-0381.png",
+    "before": 190.536782,
+    "after": 190.679218
+  },
+  {
+    "file": "local-only:dense/frame-0382.png",
+    "before": 191.05241,
+    "after": 191.19885
+  },
+  {
+    "file": "local-only:dense/frame-0383.png",
+    "before": 191.508789,
+    "after": 191.677497
+  },
+  {
+    "file": "local-only:dense/frame-0384.png",
+    "before": 192.002373,
+    "after": 192.176277
+  },
+  {
+    "file": "local-only:dense/frame-0385.png",
+    "before": 192.52487,
+    "after": 192.686286
+  },
+  {
+    "file": "local-only:dense/frame-0386.png",
+    "before": 193.040728,
+    "after": 193.184437
+  },
+  {
+    "file": "local-only:dense/frame-0387.png",
+    "before": 193.503184,
+    "after": 193.663442
+  },
+  {
+    "file": "local-only:dense/frame-0388.png",
+    "before": 194.044563,
+    "after": 194.223528
+  },
+  {
+    "file": "local-only:dense/frame-0389.png",
+    "before": 194.521113,
+    "after": 194.698801
+  },
+  {
+    "file": "local-only:dense/frame-0390.png",
+    "before": 195.027532,
+    "after": 195.184505
+  },
+  {
+    "file": "local-only:dense/frame-0391.png",
+    "before": 195.511954,
+    "after": 195.654907
+  },
+  {
+    "file": "local-only:dense/frame-0392.png",
+    "before": 196.005415,
+    "after": 196.164405
+  },
+  {
+    "file": "local-only:dense/frame-0393.png",
+    "before": 196.512803,
+    "after": 196.693409
+  },
+  {
+    "file": "local-only:dense/frame-0394.png",
+    "before": 197.042326,
+    "after": 197.195347
+  },
+  {
+    "file": "local-only:dense/frame-0395.png",
+    "before": 197.515123,
+    "after": 197.688425
+  },
+  {
+    "file": "local-only:dense/frame-0396.png",
+    "before": 198.011624,
+    "after": 198.159177
+  },
+  {
+    "file": "local-only:dense/frame-0397.png",
+    "before": 198.518179,
+    "after": 198.689262
+  },
+  {
+    "file": "local-only:dense/frame-0398.png",
+    "before": 199.026255,
+    "after": 199.203532
+  },
+  {
+    "file": "local-only:dense/frame-0399.png",
+    "before": 199.512862,
+    "after": 199.70413
+  },
+  {
+    "file": "local-only:dense/frame-0400.png",
+    "before": 200.044633,
+    "after": 200.22083
+  },
+  {
+    "file": "local-only:dense/frame-0401.png",
+    "before": 200.513065,
+    "after": 200.681744
+  },
+  {
+    "file": "local-only:dense/frame-0402.png",
+    "before": 201.001015,
+    "after": 201.159717
+  },
+  {
+    "file": "local-only:dense/frame-0403.png",
+    "before": 201.541052,
+    "after": 201.73158
+  },
+  {
+    "file": "local-only:dense/frame-0404.png",
+    "before": 202.024257,
+    "after": 202.182444
+  },
+  {
+    "file": "local-only:dense/frame-0405.png",
+    "before": 202.522175,
+    "after": 202.701138
+  },
+  {
+    "file": "local-only:dense/frame-0406.png",
+    "before": 203.011527,
+    "after": 203.198675
+  },
+  {
+    "file": "local-only:dense/frame-0407.png",
+    "before": 203.538088,
+    "after": 203.670175
+  },
+  {
+    "file": "local-only:dense/frame-0408.png",
+    "before": 204.01526,
+    "after": 204.186594
+  },
+  {
+    "file": "local-only:dense/frame-0409.png",
+    "before": 204.527161,
+    "after": 204.703968
+  },
+  {
+    "file": "local-only:dense/frame-0410.png",
+    "before": 205.032014,
+    "after": 205.187303
+  },
+  {
+    "file": "local-only:dense/frame-0411.png",
+    "before": 205.50901,
+    "after": 205.658408
+  },
+  {
+    "file": "local-only:dense/frame-0412.png",
+    "before": 206.016157,
+    "after": 206.151449
+  },
+  {
+    "file": "local-only:dense/frame-0413.png",
+    "before": 206.5026,
+    "after": 206.656141
+  },
+  {
+    "file": "local-only:dense/frame-0414.png",
+    "before": 207.012158,
+    "after": 207.191912
+  },
+  {
+    "file": "local-only:dense/frame-0415.png",
+    "before": 207.541824,
+    "after": 207.724233
+  },
+  {
+    "file": "local-only:dense/frame-0416.png",
+    "before": 208.026507,
+    "after": 208.16439
+  },
+  {
+    "file": "local-only:dense/frame-0417.png",
+    "before": 208.5307,
+    "after": 208.69256
+  },
+  {
+    "file": "local-only:dense/frame-0418.png",
+    "before": 209.036743,
+    "after": 209.165223
+  },
+  {
+    "file": "local-only:dense/frame-0419.png",
+    "before": 209.507865,
+    "after": 209.679017
+  },
+  {
+    "file": "local-only:dense/frame-0420.png",
+    "before": 210.032441,
+    "after": 210.192347
+  },
+  {
+    "file": "local-only:dense/frame-0421.png",
+    "before": 210.538916,
+    "after": 210.673909
+  },
+  {
+    "file": "local-only:dense/frame-0422.png",
+    "before": 211.030818,
+    "after": 211.194995
+  }
+]

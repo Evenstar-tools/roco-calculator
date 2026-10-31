@@ -1,0 +1,1248 @@
+{
+  "eventId": "segment000-overcharge-253",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "engine": "Current Web S5 overlay -> UI selectSpirit/selectFourSkill -> buildBalanceComparison",
+  "cliBoundary": "Ordinary compact CLI omits per-owner S5 level; this adapter uses the actual Web level pipeline.",
+  "versions": {
+    "data": "s4-2026-09-10",
+    "rules": "s4-2026-09-10"
+  },
+  "defaultPresets": {
+    "attacker": {
+      "spirit": "龙嵴金脉",
+      "spiritId": "spirit_preview_s5_gold-vein-dragon",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "储备金"
+      ],
+      "skills": [
+        {
+          "id": "skill_preview_s5_overcharge",
+          "name": "过充电",
+          "cost": 2,
+          "basePower": 65
+        },
+        {
+          "id": "skill_preview_s5_restart",
+          "name": "重启",
+          "cost": 0,
+          "basePower": null
+        },
+        {
+          "id": "skill_d1c28ec80c85cf57",
+          "name": "惊雷",
+          "cost": 5,
+          "basePower": 0
+        },
+        {
+          "id": "skill_0456e96011ecd42f",
+          "name": "交叉闪电",
+          "cost": 3,
+          "basePower": 100
+        }
+      ]
+    },
+    "defender": {
+      "spirit": "翠顶夫人",
+      "spiritId": "spirit_b40543f05ede5824",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "洁癖"
+      ],
+      "skills": [
+        {
+          "id": "skill_8a4510053403d1c5",
+          "name": "鸣叫",
+          "cost": 0,
+          "basePower": 40
+        },
+        {
+          "id": "skill_b893649e98a29dfb",
+          "name": "潮涌",
+          "cost": 2,
+          "basePower": 80
+        },
+        {
+          "id": "skill_9403fd3a6850b653",
+          "name": "先发制人",
+          "cost": 2,
+          "basePower": 55
+        },
+        {
+          "id": "skill_5e7e0f2ae7020f3a",
+          "name": "风矢",
+          "cost": 2,
+          "basePower": 80
+        }
+      ]
+    }
+  },
+  "selectedSkills": [
+    {
+      "side": "attacker",
+      "skill": "过充电",
+      "skillId": "skill_preview_s5_overcharge",
+      "index": 0,
+      "presentInDefaultFour": true,
+      "reason": "Select the observed action for damage replay; preserve other default slots."
+    }
+  ],
+  "uiDefaultBaseline": {
+    "label": "Actual UI spirit-selection defaults with observed action selected; includes default trait controls/levels",
+    "evidence": [],
+    "state": {
+      "schemaVersion": 1,
+      "versions": {
+        "data": "s4-2026-09-10",
+        "rules": "s4-2026-09-10"
+      },
+      "mode": "four",
+      "calculationOptions": {
+        "includeNegativeStatusSettlement": false
+      },
+      "marks": {
+        "attacker": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        },
+        "defender": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        }
+      },
+      "negativeStatuses": {
+        "attacker": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        },
+        "defender": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        }
+      },
+      "sides": {
+        "attacker": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_preview_s5_overcharge",
+              "skill_preview_s5_restart",
+              "skill_d1c28ec80c85cf57",
+              "skill_0456e96011ecd42f"
+            ],
+            "single": "skill_preview_s5_overcharge"
+          },
+          "spiritId": "spirit_preview_s5_gold-vein-dragon",
+          "traitValues": {}
+        },
+        "defender": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_8a4510053403d1c5",
+              "skill_b893649e98a29dfb",
+              "skill_9403fd3a6850b653",
+              "skill_5e7e0f2ae7020f3a"
+            ],
+            "single": "skill_8a4510053403d1c5"
+          },
+          "spiritId": "spirit_b40543f05ede5824",
+          "traitValues": {}
+        }
+      },
+      "directions": {
+        "forward": {
+          "selectedSkillIndex": 0,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {},
+          "overrides": {}
+        },
+        "reverse": {
+          "selectedSkillIndex": 0,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {},
+          "overrides": {}
+        }
+      }
+    },
+    "result": {
+      "skillId": "skill_preview_s5_overcharge",
+      "skillName": "过充电",
+      "status": "exact",
+      "skillCost": 2,
+      "resolvedPower": 65,
+      "staticPower": 65,
+      "displayPower": 243,
+      "hitCount": 1,
+      "hitDamages": [
+        212
+      ],
+      "totalDamage": 212,
+      "hpPercent": 48.8479262672811,
+      "combatPanel": {
+        "attacker": {
+          "magicalAttack": 157,
+          "physicalAttack": 237,
+          "speed": 181
+        },
+        "defender": {
+          "magicalDefense": 200,
+          "physicalDefense": 245,
+          "speed": 220
+        }
+      },
+      "gainSummary": "",
+      "formulaSteps": [
+        {
+          "label": "攻击面板",
+          "input": "physicalAttack",
+          "before": 237,
+          "after": 237,
+          "value": "237",
+          "source": "panel-stat"
+        },
+        {
+          "label": "已聚能至少1次",
+          "input": false,
+          "before": 65,
+          "after": 65,
+          "source": "reviewed-rule:boolean-power-add-v1"
+        },
+        {
+          "label": "基础威力",
+          "input": 65,
+          "before": 65,
+          "after": 65,
+          "value": "65",
+          "source": "snapshot-skill"
+        },
+        {
+          "label": "固定威力增加",
+          "input": 0,
+          "before": 65,
+          "after": 65,
+          "value": "65",
+          "source": "default"
+        },
+        {
+          "label": "继承迸发固定威力",
+          "input": 0,
+          "before": 65,
+          "after": 65,
+          "value": "65",
+          "source": "default"
+        },
+        {
+          "label": "印记固定威力",
+          "input": 0,
+          "before": 65,
+          "after": 65,
+          "value": "65",
+          "source": "default"
+        },
+        {
+          "label": "特性固定威力",
+          "input": 0,
+          "before": 65,
+          "after": 65,
+          "value": "65",
+          "source": "default"
+        },
+        {
+          "label": "技能威力百分比",
+          "input": [],
+          "before": 65,
+          "after": 65,
+          "value": "65",
+          "source": "default"
+        },
+        {
+          "label": "本系",
+          "input": 1.25,
+          "before": 65,
+          "after": 81.25,
+          "value": "81.25",
+          "source": "automatic"
+        },
+        {
+          "label": "属性克制",
+          "input": [
+            "翼",
+            "水"
+          ],
+          "before": 81.25,
+          "after": 243.75,
+          "value": "243.75",
+          "source": {
+            "title": "BWIKI 精灵详情页属性克制",
+            "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+            "revision": null,
+            "fetchedAt": "2026-07-23T13:54:31.332Z",
+            "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+          }
+        },
+        {
+          "label": "攻防等级",
+          "input": 1,
+          "before": 243.75,
+          "after": 243.75,
+          "value": "243.75",
+          "source": "direction-state"
+        },
+        {
+          "label": "其他威力乘区",
+          "input": 1,
+          "before": 243.75,
+          "after": 243.75,
+          "value": "243.75",
+          "source": "direction-state"
+        },
+        {
+          "label": "显示威力",
+          "input": {
+            "method": "floor"
+          },
+          "before": 243.75,
+          "after": 243,
+          "value": "243",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "等级系数与攻防比",
+          "input": {
+            "level": 60,
+            "coefficient": 0.9024390243902439,
+            "attackerStat": 237,
+            "calculationPower": 243.75,
+            "damageReductionMultiplier": 1,
+            "defenderDefense": 245,
+            "displayedPower": 243,
+            "roundedNumerator": 52133,
+            "unroundedNumerator": 52132.7743902439,
+            "unroundedOneHit": 212.78775510204082
+          },
+          "before": 52132.7743902439,
+          "after": 212,
+          "value": "212",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "减伤、连击与最终倍率",
+          "input": {
+            "damageReductionMultiplier": 1,
+            "hitCount": 1,
+            "finalDamageMultiplier": 1,
+            "oneHitAfterFinal": 212
+          },
+          "before": 212,
+          "after": 212,
+          "value": "212",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "星陨追加伤害",
+          "input": {
+            "stacks": 0,
+            "power": 0
+          },
+          "before": 212,
+          "after": 0,
+          "value": "0",
+          "source": "reviewed-rule:starfall-v1"
+        }
+      ],
+      "warnings": []
+    },
+    "cli": {
+      "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-overcharge-253/segment000-overcharge-253-ui-default.cli-input.json",
+      "ok": true,
+      "engine": {
+        "productVersion": "2.2.8",
+        "serverId": "cn",
+        "availability": "verified",
+        "dataVersion": "s4-2026-09-10",
+        "rulesVersion": "s4-2026-09-10",
+        "snapshotVersion": 2
+      },
+      "inputDigest": "sha256:8480cf2fc4da81e98a60b97a6c782e943b98ab2698376d89c0b3eb5fa0644963",
+      "result": {
+        "skillId": "skill_preview_s5_overcharge",
+        "skillName": "过充电",
+        "status": "exact",
+        "reason": null,
+        "totalDamage": 212,
+        "hpPercent": 48.8479262672811,
+        "lethal": false,
+        "hitCount": 1,
+        "displayPower": 243,
+        "effectivePower": 243,
+        "typeLabel": "电",
+        "typeMultiplier": 3,
+        "warnings": [],
+        "postAttackEffects": null,
+        "markSettlements": [],
+        "traitSettlements": []
+      },
+      "matchesWebDamage": true
+    },
+    "panels": {
+      "attacker": {
+        "physicalAttack": 237,
+        "magicalAttack": 157,
+        "speed": 181,
+        "hp": 468,
+        "physicalDefense": 233,
+        "magicalDefense": 190
+      },
+      "defender": {
+        "physicalAttack": 198,
+        "magicalAttack": 188,
+        "speed": 220,
+        "hp": 434,
+        "physicalDefense": 245,
+        "magicalDefense": 200
+      }
+    }
+  },
+  "localReplayOnlySkills": [],
+  "localSkillAliases": {},
+  "isolatedCliProjectRoot": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-overcharge-253",
+  "expectedDamage": 253,
+  "steps": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "evidence": [],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_preview_s5_overcharge",
+                "skill_preview_s5_restart",
+                "skill_d1c28ec80c85cf57",
+                "skill_0456e96011ecd42f"
+              ],
+              "single": "skill_preview_s5_overcharge"
+            },
+            "spiritId": "spirit_preview_s5_gold-vein-dragon",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_8a4510053403d1c5",
+                "skill_b893649e98a29dfb",
+                "skill_9403fd3a6850b653",
+                "skill_5e7e0f2ae7020f3a"
+              ],
+              "single": "skill_8a4510053403d1c5"
+            },
+            "spiritId": "spirit_b40543f05ede5824",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_preview_s5_overcharge",
+        "skillName": "过充电",
+        "status": "exact",
+        "skillCost": 2,
+        "resolvedPower": 65,
+        "staticPower": 65,
+        "displayPower": 243,
+        "hitCount": 1,
+        "hitDamages": [
+          212
+        ],
+        "totalDamage": 212,
+        "hpPercent": 48.8479262672811,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 157,
+            "physicalAttack": 237,
+            "speed": 181
+          },
+          "defender": {
+            "magicalDefense": 200,
+            "physicalDefense": 245,
+            "speed": 220
+          }
+        },
+        "gainSummary": "",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "physicalAttack",
+            "before": 237,
+            "after": 237,
+            "value": "237",
+            "source": "panel-stat"
+          },
+          {
+            "label": "已聚能至少1次",
+            "input": false,
+            "before": 65,
+            "after": 65,
+            "source": "reviewed-rule:boolean-power-add-v1"
+          },
+          {
+            "label": "基础威力",
+            "input": 65,
+            "before": 65,
+            "after": 65,
+            "value": "65",
+            "source": "snapshot-skill"
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 65,
+            "after": 65,
+            "value": "65",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 65,
+            "after": 65,
+            "value": "65",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 65,
+            "after": 65,
+            "value": "65",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 65,
+            "after": 65,
+            "value": "65",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 65,
+            "after": 65,
+            "value": "65",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 65,
+            "after": 81.25,
+            "value": "81.25",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "翼",
+              "水"
+            ],
+            "before": 81.25,
+            "after": 243.75,
+            "value": "243.75",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 243.75,
+            "after": 243.75,
+            "value": "243.75",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 243.75,
+            "after": 243.75,
+            "value": "243.75",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 243.75,
+            "after": 243,
+            "value": "243",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 237,
+              "calculationPower": 243.75,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 245,
+              "displayedPower": 243,
+              "roundedNumerator": 52133,
+              "unroundedNumerator": 52132.7743902439,
+              "unroundedOneHit": 212.78775510204082
+            },
+            "before": 52132.7743902439,
+            "after": 212,
+            "value": "212",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 212
+            },
+            "before": 212,
+            "after": 212,
+            "value": "212",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 212,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-overcharge-253/segment000-overcharge-253-step-0.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:8480cf2fc4da81e98a60b97a6c782e943b98ab2698376d89c0b3eb5fa0644963",
+        "result": {
+          "skillId": "skill_preview_s5_overcharge",
+          "skillName": "过充电",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 212,
+          "hpPercent": 48.8479262672811,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 243,
+          "effectivePower": 243,
+          "typeLabel": "电",
+          "typeMultiplier": 3,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 237,
+          "magicalAttack": 157,
+          "speed": 181,
+          "hp": 468,
+          "physicalDefense": 233,
+          "magicalDefense": 190
+        },
+        "defender": {
+          "physicalAttack": 198,
+          "magicalAttack": 188,
+          "speed": 220,
+          "hp": 434,
+          "physicalDefense": 245,
+          "magicalDefense": 200
+        }
+      }
+    },
+    {
+      "label": "候选复现，未确证视频性格个体：普通/大胆",
+      "evidence": [
+        {
+          "kind": "inference_only",
+          "fact": "仅约束可读等级/HP和伤害；未公开性格和相关攻防个体不是官方配置"
+        },
+        {
+          "kind": "measured_hp_constraint",
+          "hp": {
+            "attacker": 468
+          }
+        },
+        {
+          "kind": "search_scope",
+          "fact": "All31 natures deduplicated by relevant HP and attack/defense multipliers; related attack/defense IV integers0..60; HP IV0..60 constrained by visible HP where supplied; no formula change; IV candidate not official"
+        }
+      ],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_preview_s5_overcharge",
+                "skill_preview_s5_restart",
+                "skill_d1c28ec80c85cf57",
+                "skill_0456e96011ecd42f"
+              ],
+              "single": "skill_preview_s5_overcharge"
+            },
+            "spiritId": "spirit_preview_s5_gold-vein-dragon",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 20,
+              "magicalDefense": 60
+            },
+            "nature": "bold",
+            "skills": {
+              "four": [
+                "skill_8a4510053403d1c5",
+                "skill_b893649e98a29dfb",
+                "skill_9403fd3a6850b653",
+                "skill_5e7e0f2ae7020f3a"
+              ],
+              "single": "skill_8a4510053403d1c5"
+            },
+            "spiritId": "spirit_b40543f05ede5824",
+            "traitValues": {},
+            "natureId": "bold"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_preview_s5_overcharge",
+        "skillName": "过充电",
+        "status": "exact",
+        "skillCost": 2,
+        "resolvedPower": 65,
+        "staticPower": 65,
+        "displayPower": 243,
+        "hitCount": 1,
+        "hitDamages": [
+          253
+        ],
+        "totalDamage": 253,
+        "hpPercent": 58.294930875576036,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 157,
+            "physicalAttack": 237,
+            "speed": 181
+          },
+          "defender": {
+            "magicalDefense": 200,
+            "physicalDefense": 206,
+            "speed": 220
+          }
+        },
+        "gainSummary": "",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "physicalAttack",
+            "before": 237,
+            "after": 237,
+            "value": "237",
+            "source": "panel-stat"
+          },
+          {
+            "label": "已聚能至少1次",
+            "input": false,
+            "before": 65,
+            "after": 65,
+            "source": "reviewed-rule:boolean-power-add-v1"
+          },
+          {
+            "label": "基础威力",
+            "input": 65,
+            "before": 65,
+            "after": 65,
+            "value": "65",
+            "source": "snapshot-skill"
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 65,
+            "after": 65,
+            "value": "65",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 65,
+            "after": 65,
+            "value": "65",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 65,
+            "after": 65,
+            "value": "65",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 65,
+            "after": 65,
+            "value": "65",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 65,
+            "after": 65,
+            "value": "65",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 65,
+            "after": 81.25,
+            "value": "81.25",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "翼",
+              "水"
+            ],
+            "before": 81.25,
+            "after": 243.75,
+            "value": "243.75",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 243.75,
+            "after": 243.75,
+            "value": "243.75",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 243.75,
+            "after": 243.75,
+            "value": "243.75",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 243.75,
+            "after": 243,
+            "value": "243",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 237,
+              "calculationPower": 243.75,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 206,
+              "displayedPower": 243,
+              "roundedNumerator": 52133,
+              "unroundedNumerator": 52132.7743902439,
+              "unroundedOneHit": 253.0728155339806
+            },
+            "before": 52132.7743902439,
+            "after": 253,
+            "value": "253",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 253
+            },
+            "before": 253,
+            "after": 253,
+            "value": "253",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 253,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-overcharge-253/segment000-overcharge-253-step-1.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:cffcefd32a7bbf3cacfe4550b0bfc7fda51cbeb6cae598293700c625eedb5ca4",
+        "result": {
+          "skillId": "skill_preview_s5_overcharge",
+          "skillName": "过充电",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 253,
+          "hpPercent": 58.294930875576036,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 243,
+          "effectivePower": 243,
+          "typeLabel": "电",
+          "typeMultiplier": 3,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 237,
+          "magicalAttack": 157,
+          "speed": 181,
+          "hp": 468,
+          "physicalDefense": 233,
+          "magicalDefense": 190
+        },
+        "defender": {
+          "physicalAttack": 228,
+          "magicalAttack": 188,
+          "speed": 220,
+          "hp": 434,
+          "physicalDefense": 206,
+          "magicalDefense": 200
+        }
+      }
+    }
+  ],
+  "comparison": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "status": "exact",
+      "actualDamage": 212,
+      "expectedDamage": 253,
+      "delta": -41
+    },
+    {
+      "label": "候选复现，未确证视频性格个体：普通/大胆",
+      "status": "exact",
+      "actualDamage": 253,
+      "expectedDamage": 253,
+      "delta": 0
+    }
+  ]
+}

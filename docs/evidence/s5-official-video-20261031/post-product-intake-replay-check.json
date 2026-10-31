@@ -1,0 +1,100 @@
+[
+  {
+    "name": "butterfly-love-146",
+    "uiDefault": 172,
+    "damageSteps": [
+      172
+    ],
+    "cliMatches": [
+      true
+    ],
+    "aliases": {
+      "skill_local_video_butterfly-love-146": "skill_preview_s5_lovesick"
+    },
+    "models": [
+      {
+        "id": "skill_preview_s5_lovesick",
+        "alias": "skill_local_video_butterfly-love-146",
+        "productExists": true,
+        "scope": "仅算实帧参数对应的基础伤害，不结算待实现附加效果",
+        "omittedEffects": "减益施加次数对应的永久威力增长尚未接入。"
+      }
+    ],
+    "cliRoot": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/butterfly-love-146"
+  },
+  {
+    "name": "grand-grass-148",
+    "uiDefault": 137,
+    "damageSteps": [
+      137
+    ],
+    "cliMatches": [
+      true
+    ],
+    "aliases": {
+      "skill_local_video_grand-grass-148": "skill_preview_s5_vascular-restructure"
+    },
+    "models": [
+      {
+        "id": "skill_preview_s5_vascular-restructure",
+        "alias": "skill_local_video_grand-grass-148",
+        "productExists": true,
+        "scope": "仅算实帧参数对应的基础伤害，不结算待实现附加效果",
+        "omittedEffects": "累计回复生命阈值对应的能量回复尚未接入。"
+      }
+    ],
+    "cliRoot": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/grand-grass-148"
+  },
+  {
+    "name": "butterfly-love-146-candidate",
+    "uiDefault": 172,
+    "damageSteps": [
+      172,
+      146,
+      127
+    ],
+    "cliMatches": [
+      true,
+      true,
+      true
+    ],
+    "aliases": {
+      "skill_local_video_butterfly-love-146": "skill_preview_s5_lovesick"
+    },
+    "models": [
+      {
+        "id": "skill_preview_s5_lovesick",
+        "alias": "skill_local_video_butterfly-love-146",
+        "productExists": true,
+        "scope": "仅算实帧参数对应的基础伤害，不结算待实现附加效果",
+        "omittedEffects": "减益施加次数对应的永久威力增长尚未接入。"
+      }
+    ],
+    "cliRoot": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/butterfly-love-146"
+  },
+  {
+    "name": "grand-grass-148-candidate",
+    "uiDefault": 137,
+    "damageSteps": [
+      137,
+      158
+    ],
+    "cliMatches": [
+      true,
+      true
+    ],
+    "aliases": {
+      "skill_local_video_grand-grass-148": "skill_preview_s5_vascular-restructure"
+    },
+    "models": [
+      {
+        "id": "skill_preview_s5_vascular-restructure",
+        "alias": "skill_local_video_grand-grass-148",
+        "productExists": true,
+        "scope": "仅算实帧参数对应的基础伤害，不结算待实现附加效果",
+        "omittedEffects": "累计回复生命阈值对应的能量回复尚未接入。"
+      }
+    ],
+    "cliRoot": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/grand-grass-148"
+  }
+]

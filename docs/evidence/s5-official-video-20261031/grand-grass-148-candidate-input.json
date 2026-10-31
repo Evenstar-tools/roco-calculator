@@ -1,0 +1,43 @@
+{
+  "eventId": "grand-grass-148",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "attacker": "格兰球",
+  "defender": "龙鱼",
+  "skill": "skill_local_video_grand-grass-148",
+  "expectedDamage": 158,
+  "localSkills": [
+    {
+      "id": "skill_local_video_grand-grass-148",
+      "name": "维管束重构",
+      "type": "草",
+      "category": "magical",
+      "cost": 4,
+      "basePower": 110,
+      "description": "造成魔伤，自己累计回复至少40%生命后，每次使用本技能可回复3能量。",
+      "evidence": {
+        "kind": "official-video-local-replay-only-not-in-product",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "frame": "local-only:dense/frame-0294.png"
+      }
+    }
+  ],
+  "knownAdjustments": [
+    {
+      "label": "候选：格兰球聪明性格（视频未给，非事实）",
+      "evidence": [
+        {
+          "kind": "candidate-only",
+          "fact": "单项性格变更即可复现158；不能唯一反推实际性格"
+        }
+      ],
+      "patch": {
+        "sides": {
+          "attacker": {
+            "nature": "smart"
+          }
+        }
+      }
+    }
+  ],
+  "candidateOnly": true
+}

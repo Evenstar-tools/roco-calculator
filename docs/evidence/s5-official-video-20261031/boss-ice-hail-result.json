@@ -1,0 +1,1285 @@
+{
+  "eventId": "boss-ice-hail-on-abyss-187",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "engine": "Current Web S5 overlay -> UI selectSpirit/selectFourSkill -> buildBalanceComparison",
+  "cliBoundary": "Ordinary compact CLI omits per-owner S5 level; this adapter uses the actual Web level pipeline.",
+  "versions": {
+    "data": "s4-2026-09-10",
+    "rules": "s4-2026-09-10"
+  },
+  "defaultPresets": {
+    "attacker": {
+      "spirit": "圣冠布鲁斯",
+      "spiritId": "spirit_preview_s5_boss-ice-bruce",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "烈冰钻"
+      ],
+      "skills": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    "defender": {
+      "spirit": "深渊罗隐",
+      "spiritId": "spirit_897ad3f9223a851a",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "盛宴"
+      ],
+      "skills": [
+        {
+          "id": "skill_26ba1c16d0745e16",
+          "name": "魔爪",
+          "cost": 0,
+          "basePower": 30
+        },
+        {
+          "id": "skill_a4a5e720ecdb66a2",
+          "name": "蝙蝠",
+          "cost": 2,
+          "basePower": 65
+        },
+        {
+          "id": "skill_9403fd3a6850b653",
+          "name": "先发制人",
+          "cost": 2,
+          "basePower": 55
+        },
+        {
+          "id": "skill_210a30ff4c9d8a00",
+          "name": "鸣沙陷阱",
+          "cost": 4,
+          "basePower": 60
+        }
+      ]
+    }
+  },
+  "selectedSkills": [
+    {
+      "side": "attacker",
+      "skill": "冰雹",
+      "skillId": "skill_318b4ef58316547b",
+      "index": 0,
+      "presentInDefaultFour": false,
+      "reason": "Select the observed action for damage replay; preserve other default slots."
+    }
+  ],
+  "uiDefaultBaseline": {
+    "label": "Actual UI spirit-selection defaults with observed action selected; includes default trait controls/levels",
+    "evidence": [],
+    "state": {
+      "schemaVersion": 1,
+      "versions": {
+        "data": "s4-2026-09-10",
+        "rules": "s4-2026-09-10"
+      },
+      "mode": "four",
+      "calculationOptions": {
+        "includeNegativeStatusSettlement": false
+      },
+      "marks": {
+        "attacker": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        },
+        "defender": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        }
+      },
+      "negativeStatuses": {
+        "attacker": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        },
+        "defender": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        }
+      },
+      "sides": {
+        "attacker": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              {
+                "context": {},
+                "hitCount": 1,
+                "overrides": {},
+                "skillId": "skill_318b4ef58316547b"
+              },
+              null,
+              null,
+              null
+            ],
+            "single": null
+          },
+          "spiritId": "spirit_preview_s5_boss-ice-bruce",
+          "traitValues": {}
+        },
+        "defender": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_26ba1c16d0745e16",
+              "skill_a4a5e720ecdb66a2",
+              "skill_9403fd3a6850b653",
+              "skill_210a30ff4c9d8a00"
+            ],
+            "single": "skill_26ba1c16d0745e16"
+          },
+          "spiritId": "spirit_897ad3f9223a851a",
+          "traitValues": {}
+        }
+      },
+      "directions": {
+        "forward": {
+          "selectedSkillIndex": 0,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {
+            "negativeStatusUseCountsBySlot": {}
+          },
+          "overrides": {}
+        },
+        "reverse": {
+          "selectedSkillIndex": 0,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {},
+          "overrides": {}
+        }
+      }
+    },
+    "result": {
+      "skillId": "skill_318b4ef58316547b",
+      "skillName": "冰雹",
+      "status": "exact",
+      "skillCost": 4,
+      "resolvedPower": 105,
+      "staticPower": 105,
+      "displayPower": 472,
+      "hitCount": 1,
+      "hitDamages": [
+        314
+      ],
+      "totalDamage": 314,
+      "hpPercent": 77.91563275434244,
+      "combatPanel": {
+        "attacker": {
+          "magicalAttack": 123,
+          "physicalAttack": 204,
+          "speed": 192
+        },
+        "defender": {
+          "magicalDefense": 128,
+          "physicalDefense": 277,
+          "speed": 176
+        }
+      },
+      "gainSummary": "烈冰钻",
+      "formulaSteps": [
+        {
+          "label": "攻击面板",
+          "input": "physicalAttack",
+          "before": 204,
+          "after": 204,
+          "value": "204",
+          "source": "panel-stat"
+        },
+        {
+          "label": "基础威力",
+          "input": 105,
+          "before": 105,
+          "after": 105,
+          "value": "105",
+          "source": {
+            "title": "模块:Pets/data/Skills",
+            "url": "https://wiki.biligame.com/nrc/index.php?oldid=7273",
+            "revision": 7273,
+            "fetchedAt": "2026-09-09T16:57:54.897Z",
+            "sha256": "ed9132e1a3fd7f0cf287c8acbeb57e830ba0cfe2dc1f11946a72ef6329772f33"
+          }
+        },
+        {
+          "label": "固定威力增加",
+          "input": 0,
+          "before": 105,
+          "after": 105,
+          "value": "105",
+          "source": "default"
+        },
+        {
+          "label": "继承迸发固定威力",
+          "input": 0,
+          "before": 105,
+          "after": 105,
+          "value": "105",
+          "source": "default"
+        },
+        {
+          "label": "印记固定威力",
+          "input": 0,
+          "before": 105,
+          "after": 105,
+          "value": "105",
+          "source": "default"
+        },
+        {
+          "label": "特性固定威力",
+          "input": 0,
+          "before": 105,
+          "after": 105,
+          "value": "105",
+          "source": "default"
+        },
+        {
+          "label": "技能威力百分比",
+          "input": [
+            0.8
+          ],
+          "before": 105,
+          "after": 189,
+          "value": "189",
+          "source": "battle-input"
+        },
+        {
+          "label": "本系",
+          "input": 1.25,
+          "before": 189,
+          "after": 236.25,
+          "value": "236.25",
+          "source": "automatic"
+        },
+        {
+          "label": "属性克制",
+          "input": [
+            "地",
+            "恶"
+          ],
+          "before": 236.25,
+          "after": 472.5,
+          "value": "472.5",
+          "source": {
+            "title": "BWIKI 精灵详情页属性克制",
+            "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+            "revision": null,
+            "fetchedAt": "2026-07-23T13:54:31.332Z",
+            "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+          }
+        },
+        {
+          "label": "攻防等级",
+          "input": 1,
+          "before": 472.5,
+          "after": 472.5,
+          "value": "472.5",
+          "source": "direction-state"
+        },
+        {
+          "label": "烈冰钻 · 敌方携带技能总能耗 8；威力 +80%；速度无额外增益",
+          "input": {
+            "summary": "敌方携带技能总能耗 8；威力 +80%；速度无额外增益",
+            "effects": [
+              {
+                "kind": "skill-power-percent",
+                "amount": 80
+              }
+            ]
+          },
+          "before": 1,
+          "after": 1.8,
+          "source": "manual-s5-preview-state"
+        },
+        {
+          "label": "其他威力乘区",
+          "input": 1,
+          "before": 472.5,
+          "after": 472.5,
+          "value": "472.5",
+          "source": "direction-state"
+        },
+        {
+          "label": "显示威力",
+          "input": {
+            "method": "floor"
+          },
+          "before": 472.5,
+          "after": 472,
+          "value": "472",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "等级系数与攻防比",
+          "input": {
+            "level": 60,
+            "coefficient": 0.9024390243902439,
+            "attackerStat": 204,
+            "calculationPower": 472.5,
+            "damageReductionMultiplier": 1,
+            "defenderDefense": 277,
+            "displayedPower": 472,
+            "roundedNumerator": 86986,
+            "unroundedNumerator": 86986.09756097561,
+            "unroundedOneHit": 314.028880866426
+          },
+          "before": 86986.09756097561,
+          "after": 314,
+          "value": "314",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "减伤、连击与最终倍率",
+          "input": {
+            "damageReductionMultiplier": 1,
+            "hitCount": 1,
+            "finalDamageMultiplier": 1,
+            "oneHitAfterFinal": 314
+          },
+          "before": 314,
+          "after": 314,
+          "value": "314",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "星陨追加伤害",
+          "input": {
+            "stacks": 0,
+            "power": 0
+          },
+          "before": 314,
+          "after": 0,
+          "value": "0",
+          "source": "reviewed-rule:starfall-v1"
+        }
+      ],
+      "warnings": []
+    },
+    "cli": {
+      "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/boss-ice-hail-on-abyss-187-ui-default.cli-input.json",
+      "ok": true,
+      "engine": {
+        "productVersion": "2.2.8",
+        "serverId": "cn",
+        "availability": "verified",
+        "dataVersion": "s4-2026-09-10",
+        "rulesVersion": "s4-2026-09-10",
+        "snapshotVersion": 2
+      },
+      "inputDigest": "sha256:4ee455c45a2e4e85fd79c31426add36231bde57f2b5f33970dced71b5f68c87f",
+      "result": {
+        "skillId": "skill_318b4ef58316547b",
+        "skillName": "冰雹",
+        "status": "exact",
+        "reason": null,
+        "totalDamage": 314,
+        "hpPercent": 77.91563275434244,
+        "lethal": false,
+        "hitCount": 1,
+        "displayPower": 472,
+        "effectivePower": 472,
+        "typeLabel": "冰",
+        "typeMultiplier": 2,
+        "warnings": [],
+        "postAttackEffects": null,
+        "markSettlements": [],
+        "traitSettlements": []
+      },
+      "matchesWebDamage": true
+    },
+    "panels": {
+      "attacker": {
+        "physicalAttack": 204,
+        "magicalAttack": 123,
+        "speed": 192,
+        "hp": 345,
+        "physicalDefense": 218,
+        "magicalDefense": 190
+      },
+      "defender": {
+        "physicalAttack": 268,
+        "magicalAttack": 179,
+        "speed": 176,
+        "hp": 403,
+        "physicalDefense": 277,
+        "magicalDefense": 128
+      }
+    }
+  },
+  "localReplayOnlySkills": [],
+  "expectedDamage": 726,
+  "steps": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "evidence": [],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                {
+                  "context": {},
+                  "hitCount": 1,
+                  "overrides": {},
+                  "skillId": "skill_318b4ef58316547b"
+                },
+                null,
+                null,
+                null
+              ],
+              "single": null
+            },
+            "spiritId": "spirit_preview_s5_boss-ice-bruce",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_26ba1c16d0745e16",
+                "skill_a4a5e720ecdb66a2",
+                "skill_9403fd3a6850b653",
+                "skill_210a30ff4c9d8a00"
+              ],
+              "single": "skill_26ba1c16d0745e16"
+            },
+            "spiritId": "spirit_897ad3f9223a851a",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "negativeStatusUseCountsBySlot": {}
+            },
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_318b4ef58316547b",
+        "skillName": "冰雹",
+        "status": "exact",
+        "skillCost": 4,
+        "resolvedPower": 105,
+        "staticPower": 105,
+        "displayPower": 472,
+        "hitCount": 1,
+        "hitDamages": [
+          314
+        ],
+        "totalDamage": 314,
+        "hpPercent": 77.91563275434244,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 123,
+            "physicalAttack": 204,
+            "speed": 192
+          },
+          "defender": {
+            "magicalDefense": 128,
+            "physicalDefense": 277,
+            "speed": 176
+          }
+        },
+        "gainSummary": "烈冰钻",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "physicalAttack",
+            "before": 204,
+            "after": 204,
+            "value": "204",
+            "source": "panel-stat"
+          },
+          {
+            "label": "基础威力",
+            "input": 105,
+            "before": 105,
+            "after": 105,
+            "value": "105",
+            "source": {
+              "title": "模块:Pets/data/Skills",
+              "url": "https://wiki.biligame.com/nrc/index.php?oldid=7273",
+              "revision": 7273,
+              "fetchedAt": "2026-09-09T16:57:54.897Z",
+              "sha256": "ed9132e1a3fd7f0cf287c8acbeb57e830ba0cfe2dc1f11946a72ef6329772f33"
+            }
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 105,
+            "after": 105,
+            "value": "105",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 105,
+            "after": 105,
+            "value": "105",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 105,
+            "after": 105,
+            "value": "105",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 105,
+            "after": 105,
+            "value": "105",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [
+              0.8
+            ],
+            "before": 105,
+            "after": 189,
+            "value": "189",
+            "source": "battle-input"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 189,
+            "after": 236.25,
+            "value": "236.25",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "地",
+              "恶"
+            ],
+            "before": 236.25,
+            "after": 472.5,
+            "value": "472.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 472.5,
+            "after": 472.5,
+            "value": "472.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "烈冰钻 · 敌方携带技能总能耗 8；威力 +80%；速度无额外增益",
+            "input": {
+              "summary": "敌方携带技能总能耗 8；威力 +80%；速度无额外增益",
+              "effects": [
+                {
+                  "kind": "skill-power-percent",
+                  "amount": 80
+                }
+              ]
+            },
+            "before": 1,
+            "after": 1.8,
+            "source": "manual-s5-preview-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 472.5,
+            "after": 472.5,
+            "value": "472.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 472.5,
+            "after": 472,
+            "value": "472",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 204,
+              "calculationPower": 472.5,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 277,
+              "displayedPower": 472,
+              "roundedNumerator": 86986,
+              "unroundedNumerator": 86986.09756097561,
+              "unroundedOneHit": 314.028880866426
+            },
+            "before": 86986.09756097561,
+            "after": 314,
+            "value": "314",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 314
+            },
+            "before": 314,
+            "after": 314,
+            "value": "314",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 314,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/boss-ice-hail-on-abyss-187-step-0.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:4ee455c45a2e4e85fd79c31426add36231bde57f2b5f33970dced71b5f68c87f",
+        "result": {
+          "skillId": "skill_318b4ef58316547b",
+          "skillName": "冰雹",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 314,
+          "hpPercent": 77.91563275434244,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 472,
+          "effectivePower": 472,
+          "typeLabel": "冰",
+          "typeMultiplier": 2,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 204,
+          "magicalAttack": 123,
+          "speed": 192,
+          "hp": 345,
+          "physicalDefense": 218,
+          "magicalDefense": 190
+        },
+        "defender": {
+          "physicalAttack": 268,
+          "magicalAttack": 179,
+          "speed": 176,
+          "hp": 403,
+          "physicalDefense": 277,
+          "magicalDefense": 128
+        }
+      }
+    },
+    {
+      "label": "视频圣冠布鲁斯当前HP276（最大359）",
+      "evidence": [
+        {
+          "frame": "local-only:dense/frame-0371.png",
+          "fact": "HP276/359"
+        }
+      ],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                {
+                  "context": {},
+                  "hitCount": 1,
+                  "overrides": {},
+                  "skillId": "skill_318b4ef58316547b"
+                },
+                null,
+                null,
+                null
+              ],
+              "single": null
+            },
+            "spiritId": "spirit_preview_s5_boss-ice-bruce",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_26ba1c16d0745e16",
+                "skill_a4a5e720ecdb66a2",
+                "skill_9403fd3a6850b653",
+                "skill_210a30ff4c9d8a00"
+              ],
+              "single": "skill_26ba1c16d0745e16"
+            },
+            "spiritId": "spirit_897ad3f9223a851a",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "negativeStatusUseCountsBySlot": {}
+            },
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": 276,
+            "context": {},
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_318b4ef58316547b",
+        "skillName": "冰雹",
+        "status": "exact",
+        "skillCost": 4,
+        "resolvedPower": 105,
+        "staticPower": 105,
+        "displayPower": 472,
+        "hitCount": 1,
+        "hitDamages": [
+          314
+        ],
+        "totalDamage": 314,
+        "hpPercent": 77.91563275434244,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 123,
+            "physicalAttack": 204,
+            "speed": 192
+          },
+          "defender": {
+            "magicalDefense": 128,
+            "physicalDefense": 277,
+            "speed": 176
+          }
+        },
+        "gainSummary": "烈冰钻",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "physicalAttack",
+            "before": 204,
+            "after": 204,
+            "value": "204",
+            "source": "panel-stat"
+          },
+          {
+            "label": "基础威力",
+            "input": 105,
+            "before": 105,
+            "after": 105,
+            "value": "105",
+            "source": {
+              "title": "模块:Pets/data/Skills",
+              "url": "https://wiki.biligame.com/nrc/index.php?oldid=7273",
+              "revision": 7273,
+              "fetchedAt": "2026-09-09T16:57:54.897Z",
+              "sha256": "ed9132e1a3fd7f0cf287c8acbeb57e830ba0cfe2dc1f11946a72ef6329772f33"
+            }
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 105,
+            "after": 105,
+            "value": "105",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 105,
+            "after": 105,
+            "value": "105",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 105,
+            "after": 105,
+            "value": "105",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 105,
+            "after": 105,
+            "value": "105",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [
+              0.8
+            ],
+            "before": 105,
+            "after": 189,
+            "value": "189",
+            "source": "battle-input"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 189,
+            "after": 236.25,
+            "value": "236.25",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "地",
+              "恶"
+            ],
+            "before": 236.25,
+            "after": 472.5,
+            "value": "472.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 472.5,
+            "after": 472.5,
+            "value": "472.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "烈冰钻 · 敌方携带技能总能耗 8；威力 +80%；速度无额外增益",
+            "input": {
+              "summary": "敌方携带技能总能耗 8；威力 +80%；速度无额外增益",
+              "effects": [
+                {
+                  "kind": "skill-power-percent",
+                  "amount": 80
+                }
+              ]
+            },
+            "before": 1,
+            "after": 1.8,
+            "source": "manual-s5-preview-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 472.5,
+            "after": 472.5,
+            "value": "472.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 472.5,
+            "after": 472,
+            "value": "472",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 204,
+              "calculationPower": 472.5,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 277,
+              "displayedPower": 472,
+              "roundedNumerator": 86986,
+              "unroundedNumerator": 86986.09756097561,
+              "unroundedOneHit": 314.028880866426
+            },
+            "before": 86986.09756097561,
+            "after": 314,
+            "value": "314",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 314
+            },
+            "before": 314,
+            "after": 314,
+            "value": "314",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 314,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/boss-ice-hail-on-abyss-187-step-1.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:24672ab72a834192c1e5036c62bf2aab33d75b6dce33f86d7efb2fdba8d9c11b",
+        "result": {
+          "skillId": "skill_318b4ef58316547b",
+          "skillName": "冰雹",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 314,
+          "hpPercent": 77.91563275434244,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 472,
+          "effectivePower": 472,
+          "typeLabel": "冰",
+          "typeMultiplier": 2,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 204,
+          "magicalAttack": 123,
+          "speed": 192,
+          "hp": 345,
+          "physicalDefense": 218,
+          "magicalDefense": 190
+        },
+        "defender": {
+          "physicalAttack": 268,
+          "magicalAttack": 179,
+          "speed": 176,
+          "hp": 403,
+          "physicalDefense": 277,
+          "magicalDefense": 128
+        }
+      }
+    }
+  ],
+  "comparison": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "status": "exact",
+      "actualDamage": 314,
+      "expectedDamage": 726,
+      "delta": -412
+    },
+    {
+      "label": "视频圣冠布鲁斯当前HP276（最大359）",
+      "status": "exact",
+      "actualDamage": 314,
+      "expectedDamage": 726,
+      "delta": -412
+    }
+  ]
+}

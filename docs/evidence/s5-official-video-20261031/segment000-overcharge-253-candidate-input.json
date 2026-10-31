@@ -1,0 +1,57 @@
+{
+  "eventId": "segment000-overcharge-253",
+  "attacker": "龙嵴金脉",
+  "defender": "翠顶夫人",
+  "skill": "过充电",
+  "expectedDamage": 253,
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "knownAdjustments": [
+    {
+      "label": "候选复现，未确证视频性格个体：普通/大胆",
+      "evidence": [
+        {
+          "kind": "inference_only",
+          "fact": "仅约束可读等级/HP和伤害；未公开性格和相关攻防个体不是官方配置"
+        },
+        {
+          "kind": "measured_hp_constraint",
+          "hp": {
+            "attacker": 468
+          }
+        },
+        {
+          "kind": "search_scope",
+          "fact": "All31 natures deduplicated by relevant HP and attack/defense multipliers; related attack/defense IV integers0..60; HP IV0..60 constrained by visible HP where supplied; no formula change; IV candidate not official"
+        }
+      ],
+      "patch": {
+        "sides": {
+          "attacker": {
+            "nature": "neutral",
+            "natureId": "neutral",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            }
+          },
+          "defender": {
+            "nature": "bold",
+            "natureId": "bold",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 20,
+              "magicalDefense": 60
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "eventId": "segment000-eggshell-120",
+  "attacker": "蹦床松鼠",
+  "defender": "鸡麻麻",
+  "skill": "音波弹",
+  "opponentSkill": "蛋壳",
+  "expectedDamage": 120,
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "knownAdjustments": [
+    {
+      "label": "实际蛋壳应对：减伤60%即伤害倍率0.4，音波弹共4次30伤害",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0120.png",
+          "fact": "蹦床松鼠音波弹；鸡麻麻使用蛋壳应对"
+        },
+        {
+          "file": "local-only:dense/frame-0122.png through frame-0130.png",
+          "fact": "HP425→395→365→335→305，共4次30"
+        }
+      ],
+      "patch": {
+        "directions": {
+          "forward": {
+            "reduction": 0.4,
+            "hitCount": 4
+          }
+        },
+        "sides": {
+          "attacker": {
+            "skills": {
+              "four": [
+                "skill_8266665e073cd698",
+                "skill_7a3282500b58d354",
+                {
+                  "skillId": "skill_463c9348ada7f1e8",
+                  "hitCount": 4
+                },
+                "skill_c047702d8bae61e5"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "候选复现，未确证视频性格个体：普通/普通",
+      "evidence": [
+        {
+          "kind": "inference_only",
+          "fact": "仅约束可读等级/HP和伤害；未公开性格和相关攻防个体不是官方配置"
+        },
+        {
+          "kind": "measured_hp_constraint",
+          "hp": {
+            "defender": 425
+          }
+        },
+        {
+          "kind": "search_scope",
+          "fact": "All31 natures deduplicated by relevant HP and attack/defense multipliers; related attack/defense IV integers0..60; HP IV0..60 constrained by visible HP where supplied; no formula change; IV candidate not official"
+        }
+      ],
+      "patch": {
+        "sides": {
+          "attacker": {
+            "nature": "neutral",
+            "natureId": "neutral",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            }
+          },
+          "defender": {
+            "nature": "neutral",
+            "natureId": "neutral",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 6
+            }
+          }
+        }
+      }
+    }
+  ]
+}
