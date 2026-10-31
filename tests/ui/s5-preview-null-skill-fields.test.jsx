@@ -73,7 +73,7 @@ test("真实阿瓦鲨两个变种保留variantName并共享一阶、二阶分支
 test.each([
   ["shadow-papercut", "灵扰", 3, 25, "four", 3], ["watermelon-bug", "果粒", 2, 45, "four", 1],
   ["shadow-papercut", "灵扰", 3, 25, "single", 3], ["watermelon-bug", "果粒", 2, 45, "single", 1],
-])("真实App %s默认%s已知连击%d、威力%d在%s显示，手填1后为%d且切换精简保留", (key, name, count, basePower, mode, afterManual) => {
+])("真实App %s默认%s已知连击%d、威力%d在%s显示，手填1区分单技能草稿与规则且切换后显示%d", (key, name, count, basePower, mode, afterManual) => {
   const initialState = createInitialState(snapshot);
   initialState.mode = mode;
   const state = selectSpirit(initialState, { initialState, snapshot, side: "attacker", spiritId: `spirit_preview_s5_${key}` }).state;
@@ -83,7 +83,7 @@ test.each([
   expect(hits()).toHaveValue(count);
   expect(power()).toHaveValue(basePower);
   fireEvent.change(hits(), { target: { value: "1" } });
-  expect(hits()).toHaveValue(afterManual);
+  expect(hits()).toHaveValue(mode === "single" ? 1 : afterManual);
   fireEvent.click(screen.getByRole("button", { name: "精简版", exact: true }));
   fireEvent.click(screen.getByRole("button", { name: "具体版", exact: true }));
   expect(hits()).toHaveValue(afterManual);
