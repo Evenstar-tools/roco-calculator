@@ -113,6 +113,7 @@ export function damageComparisonIssue(snapshot, state, direction = "forward", se
   const levelIssue = getS5PreviewBattleLevelEvaluation(snapshot, state, sourceSide)?.blockingReason;
   if (levelIssue) return levelIssue;
   const { skill, entry } = selected;
+  if (skill.s5StatusEffectPending) return skill.s5StatusEffectPending;
   const details = typeof entry === "object" ? entry : {};
   const overrides = state.mode === "single" ? state.directions[direction].overrides ?? {} : {};
   const power = resolvePowerOverride({

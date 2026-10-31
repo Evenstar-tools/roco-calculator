@@ -1,6 +1,7 @@
 import { getServerRelease } from "./server-environment.js";
 import { withS5PreviewBattleLevels } from "./battle-level.js";
 import { resolveS5PreviewTraitEffect } from "./s5-preview-traits.js";
+import { carriedSkillTotalCost } from "./skill-result/loadout.js";
 import { abilityAdjustedStat } from "./skill-result/numeric.js";
 import { calculateMatchup } from "./calculate.js";
 import { linkedNegativeStatusContext } from "./negative-status-context.js";
@@ -47,7 +48,7 @@ const STAT_VIEW = [
 ];
 
 export function getAppliedWeatherLabel(weather, result) {
-  if (weather === "dream") return "萌系天气（占位）";
+  if (weather === "dream") return "霞光梦境";
   if (result?.status !== "exact") return null;
   const hasGain = (group, name) => result.gainSources?.[group]?.some(
     (source) => source.name === name && Number.isFinite(source.amount) && source.amount !== 0,
@@ -254,11 +255,15 @@ function previewPanelForSide(snapshot, state, sideKey, panelStats) {
   const side = state.sides[sideKey];
   const outgoing = state.directions[sideKey === "attacker" ? "forward" : "reverse"];
   const incoming = state.directions[sideKey === "attacker" ? "reverse" : "forward"];
+  const opponentKey = sideKey === "attacker" ? "defender" : "attacker";
+  const opponentCost = carriedSkillTotalCost(state.sides[opponentKey], state.mode,
+    getSnapshotIndexes(snapshot).skills, state.directions[opponentKey === "attacker" ? "forward" : "reverse"].overrides,
+    { requireKnown: true });
   let physical = 0, magical = 0, defense = 0, speedFlat = 0, speedStage = 0;
   let hasPreviewTrait = false;
   for (const trait of getEffectiveTraits(snapshot, { ...side, spirit: getSpirit(snapshot, side) })) {
     const resolve = (role, category, direction) => resolveS5PreviewTraitEffect(trait, role, {
-      context: { ...direction.context, ...direction.overrides?.context }, skill: { category },
+      context: { ...direction.context, ...direction.overrides?.context, automaticEnemyTotalSkillCost: opponentCost }, skill: { category },
     });
     const physicalEffect = resolve("attacker", "physical", outgoing);
     if (!physicalEffect) continue;

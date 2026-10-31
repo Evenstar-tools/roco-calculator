@@ -7,8 +7,8 @@ export const S5_PREVIEW_MECHANICS = Object.freeze({
   "super-abu": { name: "超能阿布", events: ["skill-used"], unknowns: ["阿布家族当前等级须手动确认", "非60级能力值采用初版外推模型，待游戏面板校对"] },
   "underground-silver-dragon": { name: "地绡银龙", events: ["energy-spent"], unknowns: ["魔攻增益叠法与上限未公开"] },
   "gold-vein-dragon": { name: "龙嵴金脉", events: ["charge-complete"], unknowns: ["攻击增益持续时间及离场保留未公开"] },
-  "boss-ice-bruce": { name: "首领冰钻布鲁斯", events: ["opponent-total-cost"], unknowns: ["对手总能耗的统计口径待核验", "威力增益叠法与上限待核验"] },
-  "boss-glass-jellyfish": { name: "首领琉璃水母", events: ["skill-used"], unknowns: ["中毒印记的所属方与取值口径待核验"] },
+  "boss-ice-bruce": { name: "圣冠布鲁斯", events: ["opponent-total-cost"], unknowns: [] },
+  "boss-glass-jellyfish": { name: "琉璃君主", events: ["skill-used"], unknowns: ["中毒印记的所属方与取值口径待核验"] },
   jingyu: { name: "鲸羽", events: ["turn-end"], unknowns: ["主界面尚未接入暴风雪回合末星陨动作"] },
   doulie: { name: "豆粒鹅", events: ["opponent-freeze-gained"], unknowns: ["10层冻结是当前层数还是累计量待核验", "雪天首回合扣减的结算时点未公开"] },
   "watermelon-bug": { name: "西瓜虫", events: ["skill-used"], unknowns: ["草系技能随机奉献的目标与分配须由实际随机结果提供"] },
@@ -124,14 +124,11 @@ export function reduceS5Preview(mechanicKey, previous, event, confirmed = {}) {
     }
     case "boss-ice-bruce": {
       if (event.type !== "opponent-total-cost") return ignored(state, event);
-      if (!identifiedBasis(confirmed.costBasis)) return blocked(state, event, "对手总能耗统计口径尚未核验，不默认采用携带技能或已消耗能量");
-      if (!whole(event.totalCost)) return blocked(state, event, "已核验口径下的对手总能耗尚未确认");
-      const knownPower = finite(confirmed.currentPowerBonusPercent) && confirmed.currentPowerBonusPercent >= 0;
+      if (!whole(event.totalCost)) return blocked(state, event, "对手携带技能总能耗尚未确认");
       return completed(state, event, {}, [
-        effect("per-opponent-cost-power", { perCostPercent: 10, opponentTotalCost: event.totalCost, costBasis: confirmed.costBasis }),
-        ...(knownPower ? [effect("skill-power-percent", { amount: confirmed.currentPowerBonusPercent, evidence: "caller-confirmed-current-state" })] : []),
-        ...(event.totalCost >= 20 ? [effect("speed-flat", { amount: 50 })] : []),
-      ], knownPower ? [] : ["每点能耗威力+10%为观察事实；累计叠法与上限待核验，不生成累计威力倍率"]);
+        effect("skill-power-percent", { amount: event.totalCost * 10 }),
+        ...(event.totalCost > 15 ? [effect("speed-flat", { amount: 75 })] : []),
+      ]);
     }
     case "boss-glass-jellyfish": {
       if (event.type !== "skill-used") return ignored(state, event);

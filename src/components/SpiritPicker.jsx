@@ -29,6 +29,7 @@ function searchMatchRank(spirit, needle) {
     spirit.initials,
     spirit.dexNo,
     ...(spirit.aliases ?? []),
+    ...(spirit.formerNames ?? []),
   ].map(normalizeSearch);
   if (fields.some((field) => field.startsWith(needle))) return 2;
   return 3;
@@ -238,6 +239,7 @@ export function SpiritPicker({
               spirit.initials,
               spirit.dexNo,
               ...(spirit.aliases ?? []),
+              ...(spirit.formerNames ?? []),
             ].some((field) => normalizeSearch(field).includes(needle)),
           )
           .sort((left, right) =>

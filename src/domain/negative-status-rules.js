@@ -26,6 +26,10 @@ const SKILL_RULES = {
   惊雷: { classification: "weather" },
   通电: { stacks: { electrified: 1 } },
   孢子: { stacks: { parasitism: 3 } },
+  外附传播: {
+    inputs: [booleanInput("negativeStatusCounterAttack", "应对攻击")],
+    resolve: (context) => ({ parasitism: context.negativeStatusCounterAttack ? 2 : 0 }),
+  },
   易燃物质: { resolve: (_context, { effectiveHitCount }) => ({ burn: effectiveHitCount * 2 }) },
   引燃: { stacks: { burn: 10 } },
   充分燃烧: {
@@ -64,6 +68,7 @@ const SKILL_RULES = {
     }),
     special: "double-freeze-on-counter",
   },
+  严霜: { stacks: { freeze: 8 } },
   霜降: { stacks: { freeze: 4 } },
   霜天: { stacks: { freeze: 1 } },
   冰墙: {

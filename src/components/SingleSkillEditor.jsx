@@ -74,6 +74,15 @@ export function mergeDynamicInputs(...inputGroups) {
   );
 }
 
+export function withoutTraitLinkedSkillInputs(inputs, traits = []) {
+  const mechanics = new Set(traits.map(trait => trait?.previewIdentity?.mechanicKey));
+  return inputs.filter(input => {
+    const key = input.contextKey ?? input.key;
+    return !(key === "s5EnergySpentBeforeUse" && mechanics.has("underground-silver-dragon") ||
+      key === "s5OverchargeActivated" && mechanics.has("gold-vein-dragon"));
+  });
+}
+
 function dynamicInputId(input) {
   return input.id ?? input.key;
 }
@@ -456,14 +465,14 @@ export function SingleSkillEditor({
     : null;
   const choiceTraitInput = (attackerTraits.length ? attackerTraits : [attackerTrait])
     .some((trait) => supportsChoiceTrait(trait?.displayName ?? trait?.name)) ? getChoiceTraitInput(selectedSkill) : null;
-  const dynamicInputs = mergeDynamicInputs(
+  const dynamicInputs = withoutTraitLinkedSkillInputs(mergeDynamicInputs(
     dynamicInputsForSkill(selectedSkill, {
       includeNegativeStatusEffects: negativeStatusEnabled,
       includeStatusEffects: true,
     }),
     result?.inputs ?? [],
     choiceTraitInput ? [choiceTraitInput] : [],
-  );
+  ), attackerTraits);
   const editableHitCountInput = dynamicInputs.find(
     (input) => input.drivesHitCount === true,
   );

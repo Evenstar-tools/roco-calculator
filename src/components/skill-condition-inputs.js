@@ -1,5 +1,5 @@
 import {
-  dynamicInputsForSkill, mergeDynamicInputs, isDynamicInputVisible,
+  dynamicInputsForSkill, mergeDynamicInputs, isDynamicInputVisible, withoutTraitLinkedSkillInputs,
 } from "./SingleSkillEditor.jsx";
 import { getChoiceTraitInput, supportsChoiceTrait } from "../domain/choice-skill-sequence.js";
 import { getGaleTurbineCompanionInput } from "../domain/wing-extension.js";
@@ -51,10 +51,10 @@ export function getSkillSlotConditions({ selected, result, selectedSkills = [], 
           ) ?? []),
         ]
       : [];
-  const skillDynamicInputs = mergeDynamicInputs(
+  const skillDynamicInputs = withoutTraitLinkedSkillInputs(mergeDynamicInputs(
     skillInputs,
     result?.inputs ?? [],
-  ).map((input) =>
+  ), traits).map((input) =>
     selected?.name === "雷暴" &&
     (input.contextKey ?? input.key) === "burstTriggered"
       ? { ...input, label: "雷暴迸发" }

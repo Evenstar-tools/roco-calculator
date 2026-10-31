@@ -5,6 +5,7 @@ import { S5PreviewTraitSummary } from "../../src/components/S5PreviewTraitSummar
 import { SingleSkillEditor } from "../../src/components/SingleSkillEditor.jsx";
 import { FourSkillEditor } from "../../src/components/FourSkillEditor.jsx";
 import { getTraitView } from "../../src/domain/calculator-view-model.js";
+import { linkEnemyCostTraitControls } from "../../src/domain/trait-runtime.js";
 
 const skill = { id: "hit", name: "测试技能", type: "普", category: "physical", basePower: 60, cost: 1 };
 
@@ -121,16 +122,53 @@ test("四技能纯攻击增益仅在精灵自身列，两个方向不重复显�
   expect(screen.getAllByRole("spinbutton", { name: "聚能次数" })).toHaveLength(1);
 });
 
-test("冰钻首领防御栏只保留速度条件和速度摘要，威力仍在自身攻击栏", () => {
+test("烈冰钻条件只在持有者栏展示，自动模式隐藏手填耗能", () => {
   const attack = traitView("boss-ice-bruce");
   const defense = traitView("boss-ice-bruce", "defender");
   render(<SingleSkillEditor hitCount={1} selectedSkill={skill} skills={[skill]}
     attackerTrait={attack} defenderTrait={defense}
-    traitContext={{ ...withValues(attack, { attackerTraitS5CurrentPowerBonus: 30 }),
-      ...withValues(defense, { defenderTraitS5CurrentPowerBonus: 80, defenderTraitS5OpponentTotalCost: 20 }) }} />);
-  expect(screen.getAllByRole("spinbutton", { name: "当前累计已生效威力增益（手动）" })).toHaveLength(1);
+    traitContext={{ ...withValues(attack, { enemyTotalSkillCostAuto: false, enemyTotalSkillCost: 3 }),
+      ...withValues(defense, { enemyTotalSkillCost: 16 }) }} />);
+  expect(screen.getAllByRole("spinbutton", { name: "敌方技能总能耗" })).toHaveLength(1);
   expect(screen.getByRole("status", { name: "攻击特性当前效果" })).toHaveTextContent("威力 +30%");
-  expect(screen.getByRole("status", { name: "防御特性当前效果" })).toHaveTextContent(/^速度 \+50$/);
+  expect(screen.queryByRole("status", { name: "防御特性当前效果" })).toBeNull();
+});
+
+test("烈冰钻无选技能时仍说明自动耗能未知，手填后才展示已确认增益", () => {
+  const trait = traitView("boss-ice-bruce");
+  const { rerender } = render(<S5PreviewTraitSummary trait={trait} owner
+    context={withValues(trait, { enemyTotalSkillCost: null })} />);
+  const summary = screen.getByRole("status", { name: "攻击特性当前效果" });
+  expect(summary).toHaveAttribute("data-status", "pending");
+  expect(summary).toHaveTextContent("对手有技能能耗待确认");
+  expect(summary).not.toHaveTextContent("威力 +");
+  rerender(<S5PreviewTraitSummary trait={trait} owner context={withValues(trait, {
+    enemyTotalSkillCostAuto: false, enemyTotalSkillCost: 16,
+  })} />);
+  expect(summary).toHaveAttribute("data-status", "ready");
+  expect(summary).toHaveTextContent("威力 +160%");
+  expect(summary).toHaveTextContent("速度 +75");
+});
+
+test("双方烈冰钻自动模式隐藏手填框，摘要仍分别显示已知总耗8与16", () => {
+  const attack = traitView("boss-ice-bruce");
+  const defense = traitView("boss-ice-bruce", "defender");
+  const forward = linkEnemyCostTraitControls(linkEnemyCostTraitControls({}, attack.inputs, 8), defense.inputs, 16);
+  const reverse = linkEnemyCostTraitControls(linkEnemyCostTraitControls({}, attack.inputs, 16), defense.inputs, 8);
+  const { container } = render(<FourSkillEditor attackerName="圣冠甲" defenderName="圣冠乙"
+    attackerSkills={[skill]} defenderSkills={[skill]} skills={[skill]}
+    attackerTrait={attack} attackerDefenseTrait={defense} attackerTraitContext={forward}
+    defenderTrait={attack} defenderDefenseTrait={defense} defenderTraitContext={reverse} />);
+  const own = within(container.querySelector(".four-skill-side--attacker")).getByRole("status", { name: "攻击特性当前效果" });
+  const other = within(container.querySelector(".four-skill-side--defender")).getByRole("status", { name: "攻击特性当前效果" });
+  expect(own).toHaveAttribute("data-status", "ready");
+  expect(own).toHaveTextContent("总能耗 8；威力 +80%");
+  expect(own).not.toHaveTextContent("速度 +75");
+  expect(other).toHaveAttribute("data-status", "ready");
+  expect(other).toHaveTextContent("总能耗 16；威力 +160%");
+  expect(other).toHaveTextContent("速度 +75");
+  expect(screen.queryByRole("spinbutton", { name: "敌方技能总能耗" })).not.toBeInTheDocument();
+  expect(screen.queryByText(/能耗待确认/u)).not.toBeInTheDocument();
 });
 
 test.each(["egg-wrap", "minggulong", "abu"])("%s保留真正影响防御的输入与摘要", key => {
@@ -153,4 +191,16 @@ test("没有控件的候选仍显示摘要，未知机制原因不重复堆叠",
     expect(summary).toHaveAttribute("data-status", "pending");
     expect(summary).toHaveTextContent(/^该S5特性的规则尚未接入$/);
   }
+});
+
+
+test.each([["gold-vein-dragon", "过充电", "已聚能至少1次"],
+  ["underground-silver-dragon", "碎银", "此前累计消耗能量"]])("%s沿用特性计数，不再展示相同技能输入", (key, name, inputLabel) => {
+  const attack = traitView(key);
+  const selected = { ...skill, name };
+  render(<SingleSkillEditor hitCount={1} selectedSkill={selected} skills={[selected]}
+    attackerTrait={attack} attackerTraits={[attack.previewTraitEntity]} />);
+  expect(screen.queryByRole("spinbutton", { name: inputLabel })).toBeNull();
+  expect(screen.queryByRole("checkbox", { name: inputLabel })).toBeNull();
+  expect(screen.getByRole("spinbutton", { name: key === "gold-vein-dragon" ? "聚能次数" : "累计消耗能量" })).toBeInTheDocument();
 });

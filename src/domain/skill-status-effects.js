@@ -24,6 +24,20 @@ const numberInput = (key, label, min, max, defaultValue) => ({
 });
 
 const STATUS_EFFECTS = Object.freeze({
+  筑梦: { operations: () => ({ weather: "dream" }) },
+  热桥: {
+    inputs: [booleanInput("defenseCounterSucceeded", "应对攻击成功")],
+    operations: (context) => ({ targetMagicalDefenseStageAdd: context.defenseCounterSucceeded === true ? -6 : 0 }),
+  },
+  地缚灵: {
+    inputs: [booleanInput("enemySwitchedThisTurn", "敌方本回合更换精灵")],
+    resolve: (context) => ({ targetDefense: -7, targetSpeedFlat: context.enemySwitchedThisTurn === true ? -50 : 0 }),
+  },
+  画龙点睛: {
+    inputs: [booleanInput("s5DragonEyeChargeReady", "已完成蓄力或免蓄力")],
+    resolve: (context) => context.s5DragonEyeChargeReady === true
+      ? { ownAttack: 8, ownSpeedFlat: 30 } : {},
+  },
   落雨: { operations: () => ({ weather: "rain" }) },
   降雨: { operations: () => ({ weather: "rain" }) },
   惊雷: { operations: () => ({ weather: "thunder" }) },
@@ -692,6 +706,7 @@ function stageDeltas(effect, multiplier, context) {
 }
 
 export function getSkillStatusEffect(skill) {
+  if (usesS3MidseasonRules(skill) && ["筑梦", "热桥", "地缚灵", "画龙点睛"].includes(skill?.name)) return null;
   const effect = STATUS_EFFECTS[skill?.name] ?? null;
   if (usesS3MidseasonRules(skill) && skill.name === "暗箱操作") return {
     ...effect, resolve: (context) => context.defenseCounterSucceeded === true

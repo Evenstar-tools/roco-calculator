@@ -205,3 +205,17 @@ test("S4 十一只可计算新精灵全部进入速度线和耐久榜", async ()
   expect(expectedNames.filter((name) => !speedNames.has(name))).toEqual([]);
   expect(expectedNames.filter((name) => !durabilityNames.has(name))).toEqual([]);
 });
+
+test("boss Bruce speed line keeps full, max and trait-triggered tiers apart", () => {
+  const trait = { id: "trait-bruce", name: "烈冰钻", previewIdentity: { mechanicKey: "boss-ice-bruce" } };
+  const spirit = {
+    fullName: "圣冠布鲁斯", id: "bruce", traitIds: [trait.id], sourceCategory: "首领形态", stage: "首领",
+    raceStats: { hp: 73, physicalAttack: 101, magicalAttack: 27, physicalDefense: 114, magicalDefense: 88, speed: 90 },
+  };
+  const speeds = ["positive-max", "neutral-max"].map(profileId =>
+    createSpeedTargets({ profileId, spirits: [spirit] }).map(target => target.speed));
+  const special = createSpeedSpecialTargets({ profileId: "positive-max", snapshot: { spirits: [spirit], traits: [trait] } });
+  expect(speeds).toEqual([[220], [192]]);
+  expect(special).toMatchObject([{ speed: 295, specialLabel: "烈冰钻" }]);
+  expect(createSpeedSpecialTargets({ profileId: "neutral-max", snapshot: { spirits: [spirit], traits: [trait] } })).toEqual([]);
+});

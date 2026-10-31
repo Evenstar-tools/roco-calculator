@@ -3,6 +3,8 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import catalog from "../../data/candidates/s5-preview-new-spirits.json";
 import snapshot from "../../public/data/runtime.json";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
+import { withS5OfficialVideoSkills } from "../../src/features/s5-preview/official-video.js";
 import { getBattleFormChoices } from "../../src/domain/battle-form.js";
 import { chooseDefaultSkillIds } from "../../src/domain/skill-loadout.js";
 import { s5PreviewIds, withS5PreviewCatalog } from "../../src/features/s5-preview/catalog.js";
@@ -16,9 +18,10 @@ test.each(["boss-ice-bruce", "boss-glass-jellyfish"])("%s按用户确认保留�
   const entry = catalog.entries.find(item => item.key === key);
   const baseline = snapshot.spirits.find(item => item.id === entry.raceStatsEvidence.baseSpiritId);
   expect(baseline.fullName).toBe(entry.baseName);
-  expect(spirit(key).raceStats).toEqual(baseline.raceStats);
+  const isGlassLord = key === "boss-glass-jellyfish";
+  expect(spirit(key).raceStats).toEqual(isGlassLord ? { ...baseline.raceStats, hp: 141, total: baseline.raceStats.total + 7 } : baseline.raceStats);
   expect(spirit(key).previewIdentity).toMatchObject({ raceStatsPlaceholder: false,
-    raceStatsEvidence: { kind: "user-confirmed-baseline", confirmedAt: "2026-10-29" } });
+    raceStatsEvidence: { kind: "user-confirmed-baseline", confirmedAt: isGlassLord ? "2026-10-31" : "2026-10-29" } });
   expect(spirit(key).id).not.toBe(baseline.id);
   expect(result.spirits.find(item => item.id === baseline.id)).toBe(baseline);
   expect(withS5PreviewCatalog(result, catalog, { useTestRaceStats: true })).toBe(result);
@@ -107,7 +110,12 @@ test("家族图四技能按图序进入每只默认槽；共享新技能单例�
     for (const definition of entry.skills) {
       const matches = result.skills.filter(skill => skill.name === definition.name);
       expect(matches).toHaveLength(1);
-      expect(matches[0]).toMatchObject({ cost: null, basePower: null, type: null, calculationStatus: "pending-skill-data" });
+      expect(matches[0]).toMatchObject({ cost: definition.cost, basePower: definition.basePower, type: definition.type });
+      if (definition.cost === null || definition.type === null) {
+        expect(matches[0].calculationStatus).toBe("pending-skill-data");
+      } else {
+        expect(matches[0].calculationStatus).toBeUndefined();
+      }
       expect(matches[0].iconUrl).toBe(`/assets/skills/${definition.id}.png`);
       expect(existsSync(resolve("public", `.${definition.iconUrl}`))).toBe(true);
     }
@@ -122,4 +130,50 @@ test("家族图四技能按图序进入每只默认槽；共享新技能单例�
   expect(result.skills.filter(skill => skill.name === "续杯")).toHaveLength(1);
   expect(result.skills.find(skill => skill.name === "夏蛰").description).toContain("2次随机奉献");
   expect(withS5PreviewCatalog(result, catalog, { useTestRaceStats: true })).toBe(result);
+});
+
+
+test("10月31日官方视频补参不编造未演示值，非伤害威力横线保持null", () => {
+  const expected = [
+    ["深红龙击", "龙", "physical", 5, 115], ["碎银", "地", "magical", 10, 170],
+    ["过充电", "电", "physical", 2, 65], ["离岸流", "水", "physical", 5, 125],
+    ["投毒", "毒", "physical", 3, 90], ["灵扰", "幽", "physical", 3, 25],
+    ["筑梦", "萌", "status", 7, null], ["热桥", "冰", "defense", 2, null],
+    ["蓝移", "幻", "magical", 4, 110], ["冷冻", "冰", "physical", 4, 100],
+    ["果粒", "草", "magical", 3, 45],
+  ];
+  for (const [name, type, category, cost, basePower] of expected) {
+    const skill = result.skills.find(item => item.name === name);
+    expect(skill).toMatchObject({ type, category, cost, basePower });
+    expect(skill.calculationStatus).toBeUndefined();
+  }
+  for (const [key, name, traitName] of [["boss-ice-bruce", "圣冠布鲁斯", "烈冰钻"],
+    ["boss-glass-jellyfish", "琉璃君主", "深层侵蚀"]]) {
+    expect(spirit(key).fullName).toBe(name);
+    expect(spirit(key).traitName).toBe(traitName);
+    expect(spirit(key).asset.localUrl).toBe(`/assets/spirits/s5-preview/${key}.png`);
+    expect(existsSync(resolve("public", `.${spirit(key).asset.localUrl}`))).toBe(true);
+  }
+  for (const [key, name] of [["boss-ice-bruce", "冰雹"], ["boss-glass-jellyfish", "血气"]]) {
+    const defaults = chooseDefaultSkillIds(result, s5PreviewIds(key).spiritId).filter(Boolean);
+    expect(defaults.map(id => result.skills.find(skill => skill.id === id).name)).toEqual([name]);
+  }
+});
+
+test("两新龙技按具名演示精灵分开接入学习面及默认槽，不串阿布或国际服", () => {
+  const web = withWebPreview(snapshot);
+  for (const [spiritId, name] of [["spirit_b2f1251352d5f670", "画龙点睛"], ["spirit_800a0042f52851cf", "龙之爪牙"],
+    ["spirit_9dd866cafbbf24f3", "恋恋不舍"], ["spirit_8de88e249e9a78f0", "维管束重构"]]) {
+    const skill = web.skills.find(item => item.name === name);
+    const learnset = web.learnsets.find(item => item.spiritId === spiritId);
+    expect(learnset.skillIds).toContain(skill.id);
+    expect(chooseDefaultSkillIds(web, spiritId)[0]).toBe(skill.id);
+    expect(existsSync(resolve("public", `.${skill.iconUrl}`))).toBe(true);
+    expect(snapshot.skills.some(item => item.id === skill.id)).toBe(false);
+  }
+  expect(web.learnsets.find(item => item.spiritId === s5PreviewIds("abu").spiritId).skillIds)
+    .not.toContain("skill_preview_s5_dragon-claws");
+  expect(withS5OfficialVideoSkills(web)).toBe(web);
+  const global = { ...snapshot, meta: { ...snapshot.meta, serverId: "global" } };
+  expect(withS5OfficialVideoSkills(global)).toBe(global);
 });

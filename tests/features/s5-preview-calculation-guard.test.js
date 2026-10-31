@@ -6,6 +6,7 @@ import { damagePresentation } from "../../src/domain/result-presentation.js";
 import { buildBalanceComparison } from "../../src/features/balance-comparison/model.js";
 import { withS5PreviewCalculationGuard } from "../../src/features/s5-preview/calculation-guard.js";
 import { applyS5SeasonAnnouncement } from "../../src/features/s5-preview/season-announcement.js";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 
 const current = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
 const raceStats = { hp: 100, physicalAttack: 100, magicalAttack: 100, physicalDefense: 100, magicalDefense: 100, speed: 100, total: 600 };
@@ -135,7 +136,7 @@ describe("S5 placeholder calculation guard", () => {
     expect(guarded.skillResultsByDirection.forward[0]).toMatchObject({ status: "unsupported", totalDamage: null, reason: pending.s5StatusEffectPending });
     expect(guarded.skillResultsByDirection.forward[1]).toBe(raw.skillResultsByDirection.forward[1]);
     expect(guarded.skillResultsByDirection.forward[1].totalDamage).toBeGreaterThan(0);
-    expect(raw.skillResultsByDirection.forward[0].status).not.toBe("unsupported");
+    expect(raw.skillResultsByDirection.forward[0]).toMatchObject({ status: "unsupported", reason: pending.s5StatusEffectPending });
   });
 
   test("换碟的广播只拦携带有效特性的一侧，不猜加成、不影响其他技能", () => {
@@ -156,5 +157,26 @@ describe("S5 placeholder calculation guard", () => {
     const ignored = buildCalculatorViewModel({ snapshot, state, activeDirection: "forward" });
     expect(withS5PreviewCalculationGuard(ignored, snapshot, state).skillResultsByDirection.forward[0])
       .toBe(ignored.skillResultsByDirection.forward[0]);
+  });
+
+  test.each(["attacker", "defender"])("烈冰钻在%s侧自动读取已知携带能耗，未知能耗仍拦截", (ownerSide) => {
+    const snapshot = withWebPreview(current);
+    const state = createInitialState(snapshot);
+    state.mode = "four";
+    const boss = snapshot.spirits.find(spirit => spirit.fullName === "圣冠布鲁斯");
+    const targetSide = ownerSide === "attacker" ? "defender" : "attacker";
+    state.sides[ownerSide].spiritId = boss.id;
+    state.sides[targetSide].spiritId = fire.id;
+    for (const side of Object.values(state.sides)) side.skills = { single: bite.id, four: [bite.id, null, null, null] };
+    const args = { snapshot, state, activeDirection: ownerSide === "attacker" ? "forward" : "reverse" };
+    const raw = buildCalculatorViewModel(args);
+    expect(raw.result.selectedResult.status).toBe("exact");
+    expect(withS5PreviewCalculationGuard(raw, snapshot, state).result.selectedResult).toBe(raw.result.selectedResult);
+    const unknown = snapshot.skills.find(skill => skill.name === "蓝移");
+    state.sides[targetSide].skills.four[1] = unknown.id;
+    const unknownSnapshot = { ...snapshot, skills: snapshot.skills.map(skill => skill.id === unknown.id ? { ...skill, cost: null } : skill) };
+    const pending = buildCalculatorViewModel({ ...args, snapshot: unknownSnapshot });
+    expect(withS5PreviewCalculationGuard(pending, unknownSnapshot, state).result.selectedResult)
+      .toMatchObject({ status: "unsupported", totalDamage: null, reason: expect.stringContaining("能耗待确认") });
   });
 });

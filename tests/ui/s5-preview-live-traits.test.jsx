@@ -160,7 +160,7 @@ test.each(["single", "four"])("%s萌系天气与铃兰共用状态，明确回�
   const parasite = screen.getByRole("spinbutton", { name: "防御方寄生层数" });
   expect(turnEnd).toBeDisabled();
   fireEvent.change(weather, { target: { value: "dream" } });
-  expect(screen.getAllByRole("checkbox", { name: "萌系天气（占位）" })[0]).toBeChecked();
+  expect(screen.getAllByRole("checkbox", { name: "霞光梦境" })[0]).toBeChecked();
   expect(turnEnd).toBeEnabled();
   expect(parasite).toHaveValue(0);
   await Promise.resolve();
@@ -177,9 +177,9 @@ test.each(["single", "four"])("%s萌系天气与铃兰共用状态，明确回�
   // Changing weather never removes layers already applied by an explicit turn.
   fireEvent.change(weather, { target: { value: "rain" } });
   expect(turnEnd).toBeDisabled();
-  expect(screen.getAllByRole("checkbox", { name: "萌系天气（占位）" })[0]).not.toBeChecked();
+  expect(screen.getAllByRole("checkbox", { name: "霞光梦境" })[0]).not.toBeChecked();
   expect(parasite).toHaveValue(3);
-  fireEvent.click(screen.getAllByRole("checkbox", { name: "萌系天气（占位）" })[0]);
+  fireEvent.click(screen.getAllByRole("checkbox", { name: "霞光梦境" })[0]);
   expect(weather).toHaveValue("dream");
   fireEvent.change(parasite, { target: { value: "98" } });
   fireEvent.click(turnEnd);

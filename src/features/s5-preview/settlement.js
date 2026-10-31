@@ -23,7 +23,7 @@ export function applyS5PreviewDreamTurnEnd(state, { side, snapshot } = {}) {
   const total = statuses.parasitism;
   const unchanged = (reason) => ({ state, applied: false, added: 0, total, reason });
   if (!targetSide || !snapshot || !state?.sides?.[side]) return unchanged("未选择特性持有方");
-  if (currentWeather(state.directions?.forward?.context) !== "dream") return unchanged("当前未处于萌系天气");
+  if (currentWeather(state.directions?.forward?.context) !== "dream") return unchanged("当前未处于霞光梦境");
   const configured = state.sides[side];
   const spirit = resolveBattleSpirit(snapshot, configured);
   const traits = getEffectiveTraits(snapshot, { ...configured, spirit });

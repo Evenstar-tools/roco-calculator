@@ -215,14 +215,14 @@ function expectDream(state, enabled) {
   }
 }
 
-test("萌系占位天气同步铃兰双方控件，与正式天气互斥且不虚构持续回合", () => {
+test("霞光梦境同步铃兰双方控件，与其他天气互斥并保留官方8回合", () => {
   const dream = updateGlobalWeather(updateGlobalRain(initial(), 3).state, "dream").state;
   expectDream(dream, true);
   expectBlizzard(dream, false);
   for (const direction of Object.values(dream.directions)) {
     expect(currentWeather(direction.context)).toBe("dream");
     expect(direction.context).toMatchObject({ weatherRainTurns: 0, weatherThunder: false,
-      weatherSandstorm: false, weatherBlizzard: false, weatherTurns: 0 });
+      weatherSandstorm: false, weatherBlizzard: false, weatherTurns: 8 });
   }
   for (const weather of ["rain", "thunder", "sandstorm", "blizzard", "none"]) {
     const changed = updateGlobalWeather(dream, weather).state;
@@ -278,7 +278,7 @@ test("萌系天气经真实分享协议与配置迁移往返保留，恢复时�
   const migrated = migrateSharedConfiguration(decoded, dream.versions, snapshot);
   const restored = replaceConfiguration(initial(), migrated, { remember: false, source: "share" }).state;
   expectDream(restored, true);
-  expect(restored.directions.forward.context.weatherTurns).toBe(0);
+  expect(restored.directions.forward.context.weatherTurns).toBe(8);
   // 刷新/导入的全场天气为准，历史技能里的相反条件不能覆盖它。
   const refreshed = JSON.parse(JSON.stringify(restored));
   refreshed.sides.attacker.skills.single.context[dreamControls[0].id] = false;

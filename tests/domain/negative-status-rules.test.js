@@ -14,6 +14,44 @@ const skill = (name) => snapshot.skills.find((candidate) => candidate.name === n
 const trait = (name) => snapshot.traits.find((candidate) => candidate.name === name);
 
 describe("negative status source rules", () => {
+  test("S5严霜一次施加8层冻结，加个雪球仍只按一次施加追加", () => {
+    const severeFrost = {
+      id: "skill_preview_s5_severe-frost", name: "严霜", type: "冰", category: "status",
+    };
+    expect(resolveNegativeStatusApplications({ skill: severeFrost }).stacks.freeze).toBe(8);
+    expect(resolveNegativeStatusApplications({
+      skill: severeFrost, traits: [trait("加个雪球")], effectiveHitCount: 3,
+    })).toMatchObject({
+      stacks: { freeze: 10 },
+      sources: [
+        { kind: "skill", name: "严霜", stacks: { freeze: 8 } },
+        { kind: "trait", name: "加个雪球", stacks: { freeze: 2 } },
+      ],
+    });
+  });
+
+  test("S5外附传播仅应对攻击成功给对方2层寄生，兼容保存后的控件ID", () => {
+    const externalSpread = {
+      id: "skill_preview_s5_external-spread", name: "外附传播", type: "草", category: "defense",
+      description: "减伤80%，应对攻击：敌方获得2层寄生。",
+    };
+    const [control] = getNegativeStatusInputs(externalSpread);
+    expect(control).toMatchObject({
+      contextKey: "negativeStatusCounterAttack", type: "boolean", defaultValue: false,
+    });
+    for (const context of [{}, { negativeStatusCounterAttack: false }, { [control.id]: false }]) {
+      expect(resolveNegativeStatusApplications({ skill: externalSpread, context })).toMatchObject({
+        stacks: { parasitism: 0 }, sources: [],
+      });
+    }
+    for (const context of [{ negativeStatusCounterAttack: true }, { [control.id]: true }]) {
+      expect(resolveNegativeStatusApplications({ skill: externalSpread, context })).toMatchObject({
+        stacks: { parasitism: 2 },
+        sources: [{ kind: "skill", name: "外附传播", stacks: { parasitism: 2 } }],
+      });
+    }
+  });
+
   test("repeat skill identity covers extended slots and does not borrow legacy slot one in single mode", () => {
     const selected = { id: "selected" };
     expect(resolveNegativeStatusRepeatNextTurn({ mode: "four", skillIndex: 6, skill: selected,

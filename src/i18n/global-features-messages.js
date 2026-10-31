@@ -1,5 +1,8 @@
 // Product UI copy; entity names and descriptions come from the official client catalog.
 export const globalFeaturesMessages = Object.fromEntries([
+  ["特殊配置", "Special builds", "特殊構成"],
+  ["仅计注明的特性，不计天气和技能。", "Only the listed Traits are included; weather and skill effects are excluded.", "記載された特性のみを含み、天候・スキルの効果は含みません。"],
+  ["特殊配置仅计注明的特性，不计天气和技能。", "Special builds include only the listed Traits; weather and skill effects are excluded.", "特殊構成には記載された特性のみを含み、天候・スキルの効果は含みません。"],
   ["伤害{v0}%", "Damage {v0}%", "ダメージ{v0}%"],
   ["技能资料暂时无法加载。", "Skill data could not be loaded.", "スキルデータを読み込めませんでした。"],
   ["当前服务器暂不支持此分析", "This analysis is not available on this server yet.", "このサーバーでは現在この分析を利用できません。"],
@@ -269,7 +272,7 @@ export const globalFeaturesMessages = Object.fromEntries([
   ["正在复算…", "Recalculating…", "再計算中…"],
   ["我方", "Your side ", "自分 "],
   ["/ 对方", " / Opponent ", " / 相手 "],
-  ["同先制度，萌系天气下速度较慢者先行动", "At equal priority, the slower Jini acts first in Cute weather", "優先度が同じ場合、萌天候では遅いジニが先に行動"],
+  ["同先制度，霞光梦境下速度较慢者先行动", "At equal priority, the slower Jini acts first in Cute weather", "優先度が同じ場合、萌天候では遅いジニが先に行動"],
   ["同先制度，仅比较当前速度", "Equal priority; compares current SPD only", "同じ優先度で、現在の速さのみ比較"],
   ["战斗条件", "Battle conditions", "バトル条件"],
   ["默认条件 · 天气 / 血量 / 能力 / 异常 / 减伤", "Default · Weather / HP / Stats / Status / Reduction", "初期条件 · 天候／HP／能力／状態／軽減"],
@@ -279,7 +282,7 @@ export const globalFeaturesMessages = Object.fromEntries([
   ["雷暴", "Thunderstorm", "雷雨"],
   ["沙尘暴", "Sandstorm", "砂嵐"],
   ["暴风雪", "Blizzard", "吹雪"],
-  ["萌系天气（占位）", "Cute weather", "萌天候"],
+  ["霞光梦境", "Cute weather", "萌天候"],
   ["防守技能减伤", "Defensive skill reduction", "防御スキルの軽減"],
   ["敌方星陨", "Target's Starfall", "相手の隕石"],
   ["敌方冻结", "Target's Freeze", "相手の凍結"],

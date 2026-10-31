@@ -18,7 +18,8 @@ import {
   targetNegativeMarkSettlement,
 } from "../marks.js";
 import { buildRefractionHint, reducedSkillCost, refractionEnergyReduction } from "../refraction.js";
-import { getS5PreviewSkillCostReduction } from "../s5-preview-traits.js";
+import { getS5PreviewSkillCostReduction, getS5PreviewTraitEvaluation } from "../s5-preview-traits.js";
+import { readSilverEnergySpent } from "../../features/s5-preview/energy-input-migration.js";
 import { gainSourcesFor, limitGainSources, summarizeGains } from "../gain-provenance.js";
 import { resolvePowerOverride } from "../power-override.js";
 import {
@@ -100,6 +101,10 @@ export function calculateSkillResult({
   lockedPower,
 }) {
   if (!skill) return emptySlotResult();
+  if (skill.s5StatusEffectPending) return unresolvedResult(skill, {
+    status: "unsupported", reason: skill.s5StatusEffectPending,
+    source: skill.provenance?.previewStatus ?? skill.provenance,
+  });
   const details = entryDetails(entry);
   const directionOverrides = direction.overrides ?? {};
   const slotOverrides = details.overrides ?? {};
@@ -143,6 +148,39 @@ export function calculateSkillResult({
     ...directionOverrides.context,
     ...slotOverrides.context,
   };
+  for (const [owner, opponent, role] of [[attacker, defender, "attacker"], [defender, attacker, "defender"]]) {
+    const trait = owner.traits.find(item => /^s5(?:[-_:]|$)/iu.test(item.previewIdentity?.catalogId ?? "") &&
+      item.previewIdentity?.mechanicKey === "boss-ice-bruce");
+    if (!trait || opponent.confirmedTotalSkillCost !== null) continue;
+    const evaluation = getS5PreviewTraitEvaluation(trait, role,
+      { ...rawContext, automaticEnemyTotalSkillCost: null });
+    if (evaluation?.blockingReason) return unresolvedResult(skill, {
+      status: "unsupported", reason: evaluation.blockingReason,
+    });
+  }
+  // These conditions belong to the attacking trait holder. Reuse already
+  // incurred owner counters, including pending turn-end gains, without counting
+  // this use in advance or reading the defending holder's mirrored inputs.
+  if (skill.name === "碎银") {
+    const trait = attacker.traits.find(item => /^s5(?:[-_:]|$)/iu.test(item.previewIdentity?.catalogId ?? "") &&
+      item.previewIdentity?.mechanicKey === "underground-silver-dragon");
+    const control = getSkillEffectInputs(skill).find(input => input.contextKey === "s5EnergySpentBeforeUse");
+    const spent = trait ? readSilverEnergySpent(rawContext, "attacker", trait) : null;
+    if (trait && control && spent !== null) {
+      rawContext[control.id] = spent ?? 0;
+      rawContext[control.contextKey] = spent ?? 0;
+    }
+  }
+  if (skill.name === "过充电") {
+    const trait = attacker.traits.find(item => /^s5(?:[-_:]|$)/iu.test(item.previewIdentity?.catalogId ?? "") &&
+      item.previewIdentity?.mechanicKey === "gold-vein-dragon");
+    const control = getSkillEffectInputs(skill).find(input => input.contextKey === "s5OverchargeActivated");
+    const evaluation = trait && getS5PreviewTraitEvaluation(trait, "attacker", rawContext);
+    if (control && evaluation?.calcStatus === "ready") {
+      rawContext[control.id] = evaluation.totalCount >= 1;
+      rawContext[control.contextKey] = evaluation.totalCount >= 1;
+    }
+  }
   const positionControl = getSkillEffectInputs(skill).find(
     (input) => input.contextKey === "skillPosition",
   );

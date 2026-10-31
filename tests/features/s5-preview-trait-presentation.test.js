@@ -8,7 +8,7 @@ import { getS5PreviewTraitPresentation } from "../../src/features/s5-preview/tra
 
 const expectedDefender = {
   minggulong: "full", abu: "full", "boss-abu": "full", "super-abu": "full", "egg-wrap": "full", diliutun: "hidden",
-  "boss-ice-bruce": "speed", "underground-silver-dragon": "hidden", "gold-vein-dragon": "hidden",
+  "boss-ice-bruce": "hidden", "underground-silver-dragon": "hidden", "gold-vein-dragon": "hidden",
   "boss-glass-jellyfish": "hidden", jingyu: "hidden", doulie: "hidden", "watermelon-bug": "hidden",
   "lele-shark": "hidden", "crab-coconut": "hidden", "little-scissor": "hidden", "lily-of-valley": "hidden",
 };
@@ -39,7 +39,7 @@ test.each(Object.entries(expectedDefender))("%s uses its relevant role while own
     expect(projected.visible).toBe(scope !== "hidden");
     expect(projected.summaryScope).toBe(scope === "speed" ? "speed" : "full");
     if (scope === "hidden") expect(projected.inputs).toEqual([]);
-    else if (scope === "speed") expect(projected.inputs.map(input => input.contextKey)).toEqual(["defenderTraitS5OpponentTotalCost"]);
+    else if (scope === "speed") expect(projected.inputs.map(input => input.contextKey)).toEqual(["enemyTotalSkillCostAuto", "enemyTotalSkillCost"]);
     else expect(projected.inputs).toBe(view.inputs);
     expect(getS5PreviewTraitPresentation(view, role, { owner: true })).toEqual({ visible: true, inputs: view.inputs, summaryScope: "full" });
     expect(view).toEqual(before);

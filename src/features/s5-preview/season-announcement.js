@@ -1,3 +1,4 @@
+import { withS5OfficialVideoSkills } from "./official-video.js";
 import announcement from "../../../data/candidates/s5-season-announcement-20261027.json";
 import { mergeEntityChangeInfo } from "../../data/entity-change-history.js";
 
@@ -170,6 +171,6 @@ export function applyS5SeasonAnnouncement(snapshot) {
 }
 
 export function createS5AnnouncementQuerySeason(s4Season) {
-  const result = project(s4Season, true);
+  const result = withS5OfficialVideoSkills(project(s4Season, true));
   return { ...result, id: "S5", label: "S5（公告）", preview: true, announcementNote: announcement.learnsetNote };
 }

@@ -227,11 +227,15 @@ describe("S5 冥古龙等级榜单", () => {
         .map(target => target.profileId).sort()).toEqual(standardProfiles);
     }
     const unexpanded = createDurabilityRanking({ spirits, includeLevelVariants: false });
-    expect(unexpanded.rows).toHaveLength(1);
-    expect(unexpanded.rows[0]).toMatchObject({ id: ordinary.id, level: 60 });
-    expect(unexpanded.rows[0].incomingDamageMultiplier).toBe(1);
-    expect(unexpanded.rows[0].durability).toEqual(unexpanded.rows[0].panelDurability);
-    expect(unexpanded.excluded).toContainEqual(expect.objectContaining({ spiritId: minggulong.id }));
+    // Recorded S5 stats remain eligible when level expansion is disabled.
+    expect(unexpanded.rows).toHaveLength(2);
+    expect(unexpanded.rows.map(row => row.id).sort()).toEqual([ordinary.id, minggulong.id].sort());
+    for (const row of unexpanded.rows) {
+      expect(row.level).toBe(60);
+      expect(row.incomingDamageMultiplier).toBe(1);
+      expect(row.durability).toEqual(row.panelDurability);
+    }
+    expect(unexpanded.excluded).toEqual([]);
   });
 
   test("构造、筛选榜单不向原快照或种族值写入等级配置", () => {

@@ -9,7 +9,7 @@ export const S5_PREVIEW_TEST_STATS = Object.freeze({
 
 const KEY_PATTERN = /^[a-z0-9][a-z0-9_-]*$/u;
 const SKILL_ID_PATTERN = /^skill_preview_s5_[a-z0-9][a-z0-9_-]*$/u;
-const SKILL_FIELDS = ["id", "name", "type", "category", "cost", "basePower", "description", "iconUrl"];
+const SKILL_FIELDS = ["id", "name", "type", "category", "cost", "basePower", "description", "iconUrl", "s5StatusEffectPending"];
 const RACE_STAT_KEYS = ["hp", "physicalAttack", "magicalAttack", "physicalDefense", "magicalDefense", "speed"];
 const text = (value) => typeof value === "string" && value.trim().length > 0;
 const require = (condition, message) => {
@@ -36,7 +36,8 @@ function completeSkill(skill) {
   return text(skill?.id) && text(skill.name) && ELEMENT_TYPES.includes(skill.type) &&
     ["physical", "magical", "status", "defense"].includes(skill.category) &&
     Number.isSafeInteger(skill.cost) && skill.cost >= 0 &&
-    Number.isSafeInteger(skill.basePower) && skill.basePower >= 0 && text(skill.description);
+    (Number.isSafeInteger(skill.basePower) && skill.basePower >= 0 ||
+      ["status", "defense"].includes(skill.category) && skill.basePower === null) && text(skill.description);
 }
 
 function declaredSkill(skill) {
@@ -48,6 +49,15 @@ function declaredSkill(skill) {
 
 function officialImageEvidence(evidence) {
   return evidence?.kind === "official-image" && httpsUrl(evidence.url) && text(evidence.frame);
+}
+
+function officialVideoEvidence(evidence) {
+  return evidence?.kind === "official-video" && httpsUrl(evidence.url) &&
+    Number.isFinite(evidence.seconds) && evidence.seconds >= 0 && text(evidence.frame);
+}
+
+function officialSkillEvidence(evidence) {
+  return officialImageEvidence(evidence) || officialVideoEvidence(evidence);
 }
 
 function recordedRaceStatsEvidence(evidence, entry) {
@@ -123,12 +133,12 @@ export function validateS5PreviewCatalog(catalog) {
     require(entry.skills === undefined || Array.isArray(entry.skills), `${entry.key} 的已知技能池无效`);
     if (entry.announcedSkills !== undefined) {
       require(Array.isArray(entry.announcedSkills) && new Set(entry.announcedSkills.map(skill => skill?.name)).size === entry.announcedSkills.length &&
-        entry.announcedSkills.every(skill => text(skill?.name) && text(skill.description) && officialImageEvidence(skill.evidence)),
+        entry.announcedSkills.every(skill => text(skill?.name) && text(skill.description) && officialSkillEvidence(skill.evidence)),
       `${entry.key} 的已公布技能说明或来源无效`);
     }
     if (entry.officialSkillRefs !== undefined) {
       require(Array.isArray(entry.officialSkillRefs) && new Set(entry.officialSkillRefs.map(skill => skill?.id)).size === entry.officialSkillRefs.length &&
-        entry.officialSkillRefs.every(skill => text(skill?.id) && text(skill.name) && officialImageEvidence(skill.evidence) &&
+        entry.officialSkillRefs.every(skill => text(skill?.id) && text(skill.name) && officialSkillEvidence(skill.evidence) &&
           (skill.iconUrl === undefined || skill.iconUrl === `/assets/skills/${skill.id}.png`)),
       `${entry.key} 的正式技能引用或来源无效`);
     }
@@ -140,8 +150,8 @@ export function validateS5PreviewCatalog(catalog) {
         (!skillNames.has(skill.name) || skillNames.get(skill.name) === skill.id), `${entry.key} 的已知技能 ID 或名称重复冲突`);
       entrySkillIds.add(skill.id);
       skillIds.set(skill.id, skill); skillNames.set(skill.name, skill.id);
-      require(officialImageEvidence(skill.evidence) || skill.evidence?.kind === "user-image" && text(skill.evidence.frame),
-        `${skill.name} 缺少图片证据`);
+      require(officialSkillEvidence(skill.evidence) || skill.evidence?.kind === "user-image" && text(skill.evidence.frame),
+        `${skill.name} 缺少官方实帧或图片证据`);
       require(skill.acquisition === undefined || text(skill.acquisition), `${skill.name} 的学习途径无效`);
       require(skill.iconUrl === undefined || skill.iconUrl === `/assets/skills/${skill.id}.png`,
         `${skill.name} 的图标必须使用本技能对应的本地 PNG`);
@@ -357,6 +367,8 @@ export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_
     };
     spirits.push({
       id: spiritId, fullName: entry.name, baseName: entry.baseName ?? entry.name,
+      // Renamed bosses stay reachable by their original form name.
+      ...(entry.kind === "boss" && entry.baseName && entry.baseName !== entry.name ? { formerNames: [entry.baseName] } : {}),
       variantName: entry.variantName ?? null, dexNo: null, types: [...(entry.types ?? [])],
       stage, sourceCategory: "S5前瞻", ...(evolutionChainIds ? { evolutionChainIds } : {}),
       raceStats, calculationStatus,

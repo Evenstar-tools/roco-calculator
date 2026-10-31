@@ -78,6 +78,7 @@ const SPEED_SPECIAL_CASES = Object.freeze([
   ["卡洛儿", "neutral-max", "示弱", undefined, { allowUnlearnedSkill: true }],
   ["古钟蛇", "positive-max", "示弱", undefined, { allowGrowth: true }],
   ["寒音蛇", "positive-max", "示弱"],
+  ["圣冠布鲁斯", "positive-max", "烈冰钻"],
 ]);
 
 function speedProfile(profileId) {

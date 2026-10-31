@@ -436,6 +436,24 @@ function transmissionSide(skillIds) {
 }
 
 describe("calculateMatchup", () => {
+  test.each([["single", "forward"], ["single", "reverse"], ["four", "forward"], ["four", "reverse"]])("S5未接机制在%s/%s核心路径阻断，手调威力不能绕过且不影响对向技能", (mode, direction) => {
+    const pending = { id: "s5-pending-skill", name: "间歇泉", type: "水", category: "physical", cost: 4, basePower: 115,
+      s5StatusEffectPending: "自身减益层数对能耗的影响尚未接入。" };
+    const source = direction === "forward" ? "attacker" : "defender";
+    const other = direction === "forward" ? "reverse" : "forward";
+    const current = battleInput({ mode });
+    const actorId = current.sides[source].spiritId;
+    current.sides[source] = side(actorId, pending.id, [{ skillId: pending.id,
+      overrides: { powerOverride: { mode: "panel", value: 999 } } }, null, null, null]);
+    current.directions[direction].overrides.powerOverride = { mode: "panel", value: 999 };
+    const result = calculateMatchup({ ...snapshot, skills: [...snapshot.skills, pending] }, current);
+    expect(result[direction].selectedResult).toMatchObject({ status: "unsupported", totalDamage: null, hpPercent: null,
+      reason: pending.s5StatusEffectPending, formulaSteps: [] });
+    expect(result[direction].selectedResult).not.toHaveProperty("skillPower");
+    expect(result[direction].selectedResult).not.toHaveProperty("skillCost");
+    expect(result[other].selectedResult.status).toBe("exact");
+  });
+
 
   test.each([
     ["single", "forward"],
@@ -2460,6 +2478,80 @@ describe("calculateMatchup", () => {
 
     expect(result(true)).toMatchObject({ skillCost: 1, skillPower: 90 });
     expect(result(false)).toMatchObject({ skillCost: 3, skillPower: 90 });
+  });
+
+  test("S5四技能独立读取条件，实际能耗和成长威力进入最终伤害结果", () => {
+    const definitions = [
+      ["深红龙击", 115, 5, "龙", "s5ChargeEntryCount", 1],
+      ["碎银", 170, 10, "地", "s5EnergySpentBeforeUse", 10],
+      ["过充电", 65, 2, "电", "s5OverchargeActivated", true],
+      ["离岸流", 125, 5, "水", "s5WaterSkillUseCount", 2],
+    ];
+    const skills = definitions.map(([name, basePower, cost, type], index) => ({
+      id: `s5_skill_rule_${index}`, name, basePower, cost, type,
+      category: name === "碎银" ? "magical" : "physical",
+    }));
+    const slots = skills.map((skill, index) => ({ skillId: skill.id,
+      context: { [getSkillEffectInputs(skill).find(control => control.contextKey === definitions[index][4]).id]: definitions[index][5] } }));
+    const current = battleInput({ mode: "four", sides: {
+      attacker: side("spirit_sonic_dog", skills[0].id, slots),
+    } });
+    const result = calculateMatchup({ ...snapshot, skills: [...snapshot.skills, ...skills] }, current);
+    expect(result.forward.results).toMatchObject([
+      { skillCost: 3, skillPower: 115, status: "exact" },
+      { skillCost: 5, skillPower: 170, status: "exact" },
+      { skillCost: 2, skillPower: 95, status: "exact" },
+      { skillCost: 2, skillPower: 125, status: "exact" },
+    ]);
+    expect(result.forward.results.every(entry => entry.totalDamage > 0)).toBe(true);
+    expect(slots.map(slot => Object.values(slot.context)[0])).toEqual([1, 10, true, 2]);
+  });
+
+  test.each([["灵扰", 0, 3], ["灵扰", 2, 5], ["龙之爪牙", 0, 5]])("S5 %s已生效成长%s次的连击数为%s", (name, growth, hitCount) => {
+    const skill = { id: "s5_multi_hit", name, basePower: 20, cost: 3, type: "龙", category: "physical" };
+    const current = battleInput({ sides: {
+      attacker: side("spirit_sonic_dog", skill.id, [skill.id, null, null, null]),
+    }, directions: { forward: { context: { s5EnergyTheftHitGrowthCount: growth } } } });
+    const result = calculateMatchup({ ...snapshot, skills: [...snapshot.skills, skill] }, current).forward.selectedResult;
+    expect(result).toMatchObject({ status: "exact", hitCount });
+    expect(result.hitDamages).toHaveLength(hitCount);
+  });
+
+  test.each([
+    ["碎银", "underground-silver-dragon", 170, 10, "EnergySpent", "SettledEnergySpent", "s5EnergySpentBeforeUse", 10, 5, 170],
+    ["过充电", "gold-vein-dragon", 65, 2, "ChargeCount", "SettledChargeCount", "s5OverchargeActivated", 1, 2, 95],
+  ])("S5 %s优先沿用攻击方特性已发生但未结算的计数，并隔离对手", (name, mechanicKey, basePower, cost, countSuffix, settledSuffix, skillKey, count, expectedCost, expectedPower) => {
+    const skill = { id: "s5-owner-condition", name, basePower, cost, type: "普通", category: name === "碎银" ? "magical" : "physical" };
+    const trait = { id: "s5-owner-condition-trait", name: "候选特性", previewIdentity: { catalogId: "s5-skill-condition-fixture", key: mechanicKey, mechanicKey } };
+    const countControl = getTraitEffectInputs(trait, "attacker").find(control => control.contextKey === `attackerTraitS5${countSuffix}`);
+    const settledControl = getTraitEffectInputs(trait, "attacker").find(control => control.contextKey === `attackerTraitS5${settledSuffix}`);
+    const skillControl = getSkillEffectInputs(skill).find(control => control.contextKey === skillKey);
+    const fixture = { ...snapshot, traits: [trait], skills: [...snapshot.skills, skill],
+      spirits: snapshot.spirits.map(spirit => spirit.id === "spirit_sonic_dog" ? { ...spirit, traitIds: [trait.id] } : spirit) };
+    const current = battleInput({ mode: "four", sides: { attacker: side("spirit_sonic_dog", skill.id,
+      [{ skillId: skill.id, context: { [skillControl.id]: name === "碎银" ? 0 : false } }, null, null, null]) },
+      directions: { forward: { context: { [countControl.id]: count, [settledControl.id]: 0 } } } });
+    const result = calculateMatchup(fixture, current).forward.selectedResult;
+    expect(result).toMatchObject({ status: "exact", skillCost: expectedCost, skillPower: expectedPower });
+    expect(current.directions.forward.context[countControl.id]).toBe(count);
+
+    const zero = structuredClone(current);
+    zero.directions.forward.context[countControl.id] = 0;
+    zero.sides.attacker.skills.four[0].context[skillControl.id] = name === "碎银" ? 100 : true;
+    expect(calculateMatchup(fixture, zero).forward.selectedResult).toMatchObject({ skillCost: cost, skillPower: basePower });
+
+    const onlyDefenderOwns = { ...fixture, spirits: snapshot.spirits.map(spirit =>
+      spirit.id === "spirit_water" ? { ...spirit, traitIds: [trait.id] } : spirit) };
+    const opponentControl = getTraitEffectInputs(trait, "defender").find(control => control.contextKey === `defenderTraitS5${countSuffix}`);
+    zero.directions.forward.context = { [opponentControl.id]: count };
+    zero.sides.attacker.skills.four[0].context[skillControl.id] = name === "碎银" ? 0 : false;
+    expect(calculateMatchup(onlyDefenderOwns, zero).forward.selectedResult).toMatchObject({ skillCost: cost, skillPower: basePower });
+
+    const inherited = { ...fixture, traits: [{ ...trait, runtimeInputValues: {
+      [canonicalTraitControlKey(countControl)]: count, [canonicalTraitControlKey(settledControl)]: 0,
+    } }] };
+    zero.directions.forward.context = {};
+    expect(calculateMatchup(inherited, zero).forward.selectedResult).toMatchObject({ skillCost: expectedCost, skillPower: expectedPower });
   });
 
   test.each(["挺起胸脯", "“国王”的威严"])(

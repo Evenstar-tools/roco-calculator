@@ -1,5 +1,8 @@
 import { afterEach, expect, test } from "vitest";
 import { createPreviewStorage, installPreviewStorage } from "../../src/runtime/preview-storage.js";
+import { createCalculatorSessionStore } from "../../src/runtime/workspace-store.js";
+import { getGoldChargeCountInput } from "../../src/features/s5-preview/charge-input-migration.js";
+import { getSilverEnergySpentInput } from "../../src/features/s5-preview/energy-input-migration.js";
 
 let restore;
 afterEach(() => { restore?.(); restore = null; localStorage.clear(); sessionStorage.clear(); });
@@ -110,4 +113,28 @@ test("forwarded preview storage events correct both values with the same read-on
     expect(received).toEqual([[corrected, corrected]]);
     expect(native.length).toBe(0);
   } finally { window.removeEventListener("storage", listener); }
+});
+
+test.each([
+  ["spirit_preview_s5_gold-vein-dragon", getGoldChargeCountInput()],
+  ["spirit_preview_s5_underground-silver-dragon", getSilverEnergySpentInput()],
+])("%s current-only inputs survive sequential session saves and refresh without a false tab conflict", (spiritId, control) => {
+  const storage = createPreviewStorage(localStorage);
+  const store = createCalculatorSessionStore({ storage });
+  const key = "rock-calculator.servers.cn.calculator.session.v1";
+  const initial = { sides: { attacker: { spiritId: "spirit_preview_s5_boss-ice-bruce" }, defender: { spiritId } },
+    directions: { forward: { context: {} }, reverse: { context: { [control.id]: 0 } } } };
+  store.loadSession();
+  store.saveSession({ present: initial, past: [], future: [] });
+  expect(storage.getItem(key)).toBe(localStorage.getItem("rock-calculator.preview.s5." + key));
+  const present = { ...initial, sides: { attacker: { spiritId: "spirit_preview_s5_boss-ice-bruce" },
+    defender: { spiritId: "spirit_preview_s5_boss-glass-jellyfish" } } };
+  const saved = { present, past: [{ state: initial, rememberSides: [] }], future: [] };
+  expect(store.saveSession(saved)).toEqual(saved);
+  expect(storage.getItem(key)).toBe(localStorage.getItem("rock-calculator.preview.s5." + key));
+  expect(createCalculatorSessionStore({ storage }).loadSession()).toEqual(saved);
+  const stale = createCalculatorSessionStore({ storage });
+  stale.loadSession();
+  store.saveSession({ ...saved, present: { ...present, mode: "single" } });
+  expect(() => stale.saveSession(saved)).toThrow(expect.objectContaining({ code: "STORAGE_CONFLICT" }));
 });

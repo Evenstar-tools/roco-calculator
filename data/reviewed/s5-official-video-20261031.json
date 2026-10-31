@@ -1,0 +1,610 @@
+{
+  "source": {
+    "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+    "bvid": "BV1SNxq6REfb",
+    "title": "《洛克王国：世界》S5赛季新技能与首领化展示",
+    "creator": "洛克王国世界",
+    "publishedAt": "2026-10-31T18:00:00+08:00",
+    "authority": "official-video",
+    "note": "逐技能面板及首领特性实帧核对；未展示技能参数保持null；无伤害技能的威力横线保留null。"
+  },
+  "skills": [
+    {
+      "id": "skill_preview_s5_rip-current",
+      "name": "离岸流",
+      "type": "水",
+      "category": "physical",
+      "cost": 5,
+      "basePower": 125,
+      "description": "造成物伤，使用至少2次水系技能后，本技能能耗永久-3。",
+      "iconUrl": "/assets/skills/skill_preview_s5_rip-current.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 48.737896,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-048.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_refill",
+      "name": "续杯",
+      "type": "水",
+      "category": "status",
+      "cost": 2,
+      "basePower": null,
+      "description": "自己获得双攻+50%，本技能能耗每-1，额外获得50%。",
+      "iconUrl": "/assets/skills/skill_preview_s5_refill.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 58.84215,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-058.png"
+      },
+      "s5StatusEffectPending": "减耗对应的额外双攻增益尚未接入。"
+    },
+    {
+      "id": "skill_preview_s5_eggshell",
+      "name": "蛋壳",
+      "type": "普通",
+      "category": "defense",
+      "cost": 2,
+      "basePower": null,
+      "description": "减伤60%，应对攻击：驱散敌方所有增益。",
+      "iconUrl": "/assets/skills/skill_preview_s5_eggshell.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 62.778046,
+        "frame": "_work/s5-official-video-20261031/browser-frames/extra-062.png"
+      },
+      "s5StatusEffectPending": "应对攻击后的增益驱散尚未接入。"
+    },
+    {
+      "id": "skill_preview_s5_dream-building",
+      "name": "筑梦",
+      "type": "萌",
+      "category": "status",
+      "cost": 7,
+      "basePower": null,
+      "description": "将天气改为霞光梦境，持续8回合。",
+      "iconUrl": "/assets/skills/skill_preview_s5_dream-building.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 68.947646,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-068.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_geyser",
+      "name": "间歇泉",
+      "type": "水",
+      "category": "physical",
+      "cost": 4,
+      "basePower": 115,
+      "description": "造成物伤，自己每有1层减益，本技能能耗-1。",
+      "iconUrl": "/assets/skills/skill_preview_s5_geyser.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 72.869513,
+        "frame": "_work/s5-official-video-20261031/browser-frames/extra-072.png"
+      },
+      "s5StatusEffectPending": "自身减益层数对能耗的影响尚未接入。"
+    },
+    {
+      "id": "skill_preview_s5_external-spread",
+      "name": "外附传播",
+      "type": "草",
+      "category": "defense",
+      "cost": 3,
+      "basePower": null,
+      "description": "减伤80%，应对攻击：敌方获得2层寄生。",
+      "iconUrl": "/assets/skills/skill_preview_s5_external-spread.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 78.90011,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-078.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_severe-frost",
+      "name": "严霜",
+      "type": "冰",
+      "category": "status",
+      "cost": 4,
+      "basePower": null,
+      "description": "敌方获得8层冻结。",
+      "iconUrl": "/assets/skills/skill_preview_s5_severe-frost.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 88.991483,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-088.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_summer-pad",
+      "name": "夏蛰",
+      "type": "虫",
+      "category": "status",
+      "cost": 4,
+      "basePower": null,
+      "description": "己方队伍获得2次随机奉献，应对防御：获得所有种类的奉献各1次。",
+      "iconUrl": "/assets/skills/skill_preview_s5_summer-pad.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 98.971615,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-098.png"
+      },
+      "s5StatusEffectPending": "随机奉献结果尚未接入，请按实际结果调整。"
+    },
+    {
+      "id": "skill_preview_s5_earthbound-spirit",
+      "name": "地缚灵",
+      "type": "幽",
+      "category": "status",
+      "cost": 2,
+      "basePower": null,
+      "description": "敌方获得双防-70%，若敌方本回合更换精灵，敌方额外获得速度-50。",
+      "iconUrl": "/assets/skills/skill_preview_s5_earthbound-spirit.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 105.777079,
+        "frame": "_work/s5-official-video-20261031/browser-frames/extra-105.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_spirit-disturbance",
+      "name": "灵扰",
+      "type": "幽",
+      "category": "physical",
+      "cost": 3,
+      "basePower": 25,
+      "description": "造成物伤，3连击。偷取敌方能量至少1次后，本技能连击数永久+1。",
+      "iconUrl": "/assets/skills/skill_preview_s5_spirit-disturbance.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 112.880704,
+        "frame": "_work/s5-official-video-20261031/browser-frames/extra-112.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_thermal-bridge",
+      "name": "热桥",
+      "type": "冰",
+      "category": "defense",
+      "cost": 2,
+      "basePower": null,
+      "description": "减伤80%，应对攻击：敌方获得魔防-60%。",
+      "iconUrl": "/assets/skills/skill_preview_s5_thermal-bridge.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 119.061427,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-118.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_mixed-state",
+      "name": "混合态",
+      "type": "幻",
+      "category": "status",
+      "cost": 1,
+      "basePower": null,
+      "description": "敌方获得随机10层属性减益。",
+      "iconUrl": "/assets/skills/skill_preview_s5_mixed-state.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 122.92797,
+        "frame": "_work/s5-official-video-20261031/browser-frames/extra-122.png"
+      },
+      "s5StatusEffectPending": "随机减益结果尚未接入，请按实际结果调整。"
+    },
+    {
+      "id": "skill_preview_s5_poison-cast",
+      "name": "投毒",
+      "type": "毒",
+      "category": "physical",
+      "cost": 3,
+      "basePower": 90,
+      "description": "造成物伤，使敌方获得至少2次中毒后，每次使用本技能攻击中毒目标时威力+25。",
+      "iconUrl": "/assets/skills/skill_preview_s5_poison-cast.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 129.000993,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-128.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_dragon-eye-dotting",
+      "name": "画龙点睛",
+      "type": "龙",
+      "category": "status",
+      "cost": 1,
+      "basePower": null,
+      "description": "蓄力，自己获得双攻+80%和速度+30。任意方式蓄力2次后，本技能不再需要蓄力。",
+      "iconUrl": "/assets/skills/skill_preview_s5_dragon-eye-dotting.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 138.998346,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-138.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_dragon-claws",
+      "name": "龙之爪牙",
+      "type": "龙",
+      "category": "physical",
+      "cost": 3,
+      "basePower": 25,
+      "description": "蓄力，造成物伤，5连击。",
+      "iconUrl": "/assets/skills/skill_preview_s5_dragon-claws.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 142.933993,
+        "frame": "_work/s5-official-video-20261031/browser-frames/extra-142.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_barren-devour",
+      "name": "荒芜之噬",
+      "type": "龙",
+      "category": "physical",
+      "cost": 5,
+      "basePower": 130,
+      "description": "造成物伤，若击败敌方，自己等级+20。",
+      "iconUrl": "/assets/skills/skill_preview_s5_barren-devour.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 22.765488,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-022.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_curse-flame",
+      "name": "咒火",
+      "type": "龙",
+      "category": "status",
+      "cost": 3,
+      "basePower": null,
+      "description": "蓄力，自己获得2层龙噬印记。",
+      "iconUrl": "/assets/skills/skill_preview_s5_curse-flame.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 16.357006,
+        "frame": "_work/s5-official-video-20261031/browser-frames/extra-016.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_dark-curse",
+      "name": "冥暗诅咒",
+      "type": "幽",
+      "category": "status",
+      "cost": 2,
+      "basePower": null,
+      "description": "敌方失去5能量，且下回合末回复3能量，应对防御：下回合不回复能量。",
+      "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 4.939831,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-005.png"
+      },
+      "s5StatusEffectPending": "暂不支持扣能与下回合回复的时序结算。"
+    },
+    {
+      "id": "skill_preview_s5_crimson-dragon-strike",
+      "name": "深红龙击",
+      "type": "龙",
+      "category": "physical",
+      "cost": 5,
+      "basePower": 115,
+      "description": "造成物伤。自己每进入1次蓄力状态，本技能能耗永久-2。",
+      "iconUrl": "/assets/skills/skill_preview_s5_crimson-dragon-strike.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 12.658548,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-012.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_silver-shards",
+      "name": "碎银",
+      "type": "地",
+      "category": "magical",
+      "cost": 10,
+      "basePower": 170,
+      "description": "造成魔伤，消耗至少10能量后，本技能能耗永久-5。",
+      "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 33.699512,
+        "frame": "_work/s5-official-video-20261031/browser-frames/extra-033.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_overcharge",
+      "name": "过充电",
+      "type": "电",
+      "category": "physical",
+      "cost": 2,
+      "basePower": 65,
+      "description": "造成物伤，聚能至少1次后，本技能威力永久+30。",
+      "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 38.80634,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-038.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_restart",
+      "name": "重启",
+      "type": "电",
+      "category": "status",
+      "cost": 0,
+      "basePower": null,
+      "description": "本回合和下个回合的结束时，自己返场。",
+      "iconUrl": "/assets/skills/skill_preview_s5_restart.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 42.802635,
+        "frame": "_work/s5-official-video-20261031/browser-frames/extra-042.png"
+      },
+      "s5StatusEffectPending": "暂不支持回合结束时的返场结算。"
+    },
+    {
+      "name": "矿物置换",
+      "description": "自己获得魔攻+120%和3回合禁足。",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 26.762864,
+        "frame": "_work/s5-official-video-20261031/browser-frames/extra-026.png"
+      },
+      "id": "skill_preview_s5_mineral-exchange",
+      "type": "地",
+      "cost": 1,
+      "basePower": null,
+      "category": "status",
+      "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png",
+      "s5StatusEffectPending": "暂不支持仅魔攻增益与禁足的组合结算。"
+    },
+    {
+      "id": "skill_preview_s5_blue-shift",
+      "iconUrl": "/assets/skills/skill_preview_s5_blue-shift.png",
+      "name": "蓝移",
+      "type": "幻",
+      "category": "magical",
+      "cost": 4,
+      "basePower": 110,
+      "description": "造成魔伤，使敌方获得至少4层星陨后，每次使用本技能可使敌方获得1层星陨。",
+      "acquisition": "官方家族展示",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 84.238093,
+        "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0168.png"
+      },
+      "s5StatusEffectPending": "追加星陨的历史前置尚未接入。"
+    },
+    {
+      "id": "skill_preview_s5_freeze",
+      "iconUrl": "/assets/skills/skill_preview_s5_freeze.png",
+      "name": "冷冻",
+      "type": "冰",
+      "category": "physical",
+      "cost": 4,
+      "basePower": 100,
+      "description": "造成物伤，使敌方获得至少2次冻结后，每次使用本技能可使敌方能耗+1。",
+      "acquisition": "官方家族展示",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 120.660604,
+        "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0241.png"
+      },
+      "s5StatusEffectPending": "冻结触发次数与敌方能耗变化尚未接入。"
+    },
+    {
+      "id": "skill_preview_s5_fruit-pulp",
+      "iconUrl": "/assets/skills/skill_preview_s5_fruit-pulp.png",
+      "name": "果粒",
+      "type": "草",
+      "category": "magical",
+      "cost": 3,
+      "basePower": 45,
+      "description": "造成魔伤，2连击。",
+      "acquisition": "官方家族展示",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 96.706699,
+        "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0193.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_lovesick",
+      "name": "恋恋不舍",
+      "type": "萌",
+      "category": "magical",
+      "cost": 4,
+      "basePower": 110,
+      "description": "造成魔伤，使敌方获得至少3次减益后，本技能威力永久+30。",
+      "iconUrl": "/assets/skills/skill_preview_s5_lovesick.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 145.160284,
+        "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0290.png"
+      },
+      "s5StatusEffectPending": "减益施加次数对应的永久威力增长尚未接入。"
+    },
+    {
+      "id": "skill_preview_s5_vascular-restructure",
+      "name": "维管束重构",
+      "type": "草",
+      "category": "magical",
+      "cost": 4,
+      "basePower": 110,
+      "description": "造成魔伤，自己累计回复至少40%生命后，每次使用本技能可回复3能量。",
+      "iconUrl": "/assets/skills/skill_preview_s5_vascular-restructure.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 147.204811,
+        "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0294.png"
+      },
+      "s5StatusEffectPending": "累计回复生命阈值对应的能量回复尚未接入。"
+    }
+  ],
+  "additionalSkills": [
+    {
+      "id": "skill_preview_s5_dragon-eye-dotting",
+      "name": "画龙点睛",
+      "type": "龙",
+      "category": "status",
+      "cost": 1,
+      "basePower": null,
+      "description": "蓄力，自己获得双攻+80%和速度+30。任意方式蓄力2次后，本技能不再需要蓄力。",
+      "iconUrl": "/assets/skills/skill_preview_s5_dragon-eye-dotting.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 138.998346,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-138.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_dragon-claws",
+      "name": "龙之爪牙",
+      "type": "龙",
+      "category": "physical",
+      "cost": 3,
+      "basePower": 25,
+      "description": "蓄力，造成物伤，5连击。",
+      "iconUrl": "/assets/skills/skill_preview_s5_dragon-claws.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 142.933993,
+        "frame": "_work/s5-official-video-20261031/browser-frames/extra-142.png"
+      }
+    },
+    {
+      "id": "skill_preview_s5_lovesick",
+      "name": "恋恋不舍",
+      "type": "萌",
+      "category": "magical",
+      "cost": 4,
+      "basePower": 110,
+      "description": "造成魔伤，使敌方获得至少3次减益后，本技能威力永久+30。",
+      "iconUrl": "/assets/skills/skill_preview_s5_lovesick.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 145.160284,
+        "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0290.png"
+      },
+      "s5StatusEffectPending": "减益施加次数对应的永久威力增长尚未接入。"
+    },
+    {
+      "id": "skill_preview_s5_vascular-restructure",
+      "name": "维管束重构",
+      "type": "草",
+      "category": "magical",
+      "cost": 4,
+      "basePower": 110,
+      "description": "造成魔伤，自己累计回复至少40%生命后，每次使用本技能可回复3能量。",
+      "iconUrl": "/assets/skills/skill_preview_s5_vascular-restructure.png",
+      "evidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 147.204811,
+        "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0294.png"
+      },
+      "s5StatusEffectPending": "累计回复生命阈值对应的能量回复尚未接入。"
+    }
+  ],
+  "learnsets": [
+    {
+      "spiritId": "spirit_b2f1251352d5f670",
+      "name": "伊兰亚龙",
+      "skillIds": [
+        "skill_preview_s5_dragon-eye-dotting"
+      ],
+      "evidenceFrame": "_work/s5-official-video-20261031/browser-frames/skill-owner-normal.png"
+    },
+    {
+      "spiritId": "spirit_800a0042f52851cf",
+      "name": "翼龙",
+      "skillIds": [
+        "skill_preview_s5_dragon-claws"
+      ],
+      "evidenceFrame": "_work/s5-official-video-20261031/browser-frames/claw-owner-normal.png"
+    },
+    {
+      "spiritId": "spirit_9dd866cafbbf24f3",
+      "name": "化蝶（平常的样子）",
+      "skillIds": [
+        "skill_preview_s5_lovesick"
+      ],
+      "evidenceFrame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0290.png"
+    },
+    {
+      "spiritId": "spirit_8de88e249e9a78f0",
+      "name": "格兰球",
+      "skillIds": [
+        "skill_preview_s5_vascular-restructure"
+      ],
+      "evidenceFrame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0294.png"
+    }
+  ],
+  "bosses": [
+    {
+      "key": "boss-ice-bruce",
+      "name": "圣冠布鲁斯",
+      "traitName": "烈冰钻",
+      "description": "敌方携带技能总能耗每有1点，自己攻击时威力+10%，若敌方总能耗大于15，自己获得速度+75。"
+    },
+    {
+      "key": "boss-glass-jellyfish",
+      "name": "琉璃君主",
+      "traitName": "深层侵蚀",
+      "description": "使用技能后，敌方获得中毒，获得层数等于中毒印记层数的2倍。"
+    }
+  ],
+  "verification": {
+    "damageReplay": "全片19次技能攻击及寄生、回复已按默认配置、可见条件、未证实配置候选分步复算；数值命中不代表确认实际性格、个体和历史。详见 docs/maintenance/s5-official-video-damage-replay-20261031.md。",
+    "unknownSkills": [],
+    "pendingMechanisms": {
+      "冥暗诅咒": "暂不支持扣能与下回合回复的时序结算。",
+      "矿物置换": "暂不支持仅魔攻增益与禁足的组合结算。",
+      "重启": "暂不支持回合结束时的返场结算。",
+      "蓝移": "追加星陨的历史前置尚未接入。",
+      "冷冻": "冻结触发次数与敌方能耗变化尚未接入。",
+      "夏蛰": "随机奉献结果尚未接入，请按实际结果调整。",
+      "混合态": "随机减益结果尚未接入，请按实际结果调整。",
+      "续杯": "减耗对应的额外双攻增益尚未接入。",
+      "蛋壳": "应对攻击后的增益驱散尚未接入。",
+      "间歇泉": "自身减益层数对能耗的影响尚未接入。",
+      "恋恋不舍": "减益施加次数对应的永久威力增长尚未接入。",
+      "维管束重构": "累计回复生命阈值对应的能量回复尚未接入。"
+    }
+  }
+}

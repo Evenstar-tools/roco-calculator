@@ -56,7 +56,7 @@ test.each(pending.map(skill => [skill.name, skill]))("真实目录%s未知参数
 });
 
 test("未解算结果中的显式null威力也不转成0，合法零威力仍显示0", () => {
-  const skill = pending[0];
+  const skill = { ...snapshot.skills.find(item => item.name === "灵扰"), basePower: null, calculationStatus: "pending-skill-data" };
   const result = { status: "unsupported", totalDamage: null, staticPower: null, actualPower: null, resolvedPower: null };
   const { rerender } = render(<SingleSkillEditor selectedSkill={skill} skills={[skill]} result={result} hitCount={1} onSkillSelect={vi.fn()} />);
   expect(screen.getByRole("spinbutton", { name: "静态威力" })).toHaveValue(null);
@@ -71,9 +71,9 @@ test("真实阿瓦鲨两个变种保留variantName并共享一阶、二阶分支
 });
 
 test.each([
-  ["shadow-papercut", "灵扰", 3, "four"], ["watermelon-bug", "果粒", 2, "four"],
-  ["shadow-papercut", "灵扰", 3, "single"], ["watermelon-bug", "果粒", 2, "single"],
-])("真实App %s默认%s已知连击%d在%s显示，手填1与切换精简保留，伤害仍阻断", (key, name, count, mode) => {
+  ["shadow-papercut", "灵扰", 3, 25, "four", 3], ["watermelon-bug", "果粒", 2, 45, "four", 1],
+  ["shadow-papercut", "灵扰", 3, 25, "single", 3], ["watermelon-bug", "果粒", 2, 45, "single", 1],
+])("真实App %s默认%s已知连击%d、威力%d在%s显示，手填1后为%d且切换精简保留", (key, name, count, basePower, mode, afterManual) => {
   const initialState = createInitialState(snapshot);
   initialState.mode = mode;
   const state = selectSpirit(initialState, { initialState, snapshot, side: "attacker", spiritId: `spirit_preview_s5_${key}` }).state;
@@ -81,22 +81,20 @@ test.each([
   const hits = () => screen.getByLabelText(mode === "four" ? "攻击方技能1连击次数" : "连击次数", { exact: true });
   const power = () => screen.getByLabelText(mode === "four" ? "攻击方技能1静态威力" : "静态威力", { exact: true });
   expect(hits()).toHaveValue(count);
-  expect(power()).toHaveValue(null);
-  expect(screen.getByTestId("primary-damage")).toHaveTextContent(/^—$/u);
+  expect(power()).toHaveValue(basePower);
   fireEvent.change(hits(), { target: { value: "1" } });
-  expect(hits()).toHaveValue(1);
+  expect(hits()).toHaveValue(afterManual);
   fireEvent.click(screen.getByRole("button", { name: "精简版", exact: true }));
-  expect(screen.getByTestId("primary-damage")).toHaveTextContent(/^—$/u);
   fireEvent.click(screen.getByRole("button", { name: "具体版", exact: true }));
-  expect(hits()).toHaveValue(1);
-  expect(power()).toHaveValue(null);
+  expect(hits()).toHaveValue(afterManual);
+  expect(power()).toHaveValue(basePower);
 });
 
 test("已有个人预设把灵扰手调为1连击时，默认3连击不覆盖它", () => {
   const initialState = createInitialState(snapshot);
   const spiritId = "spirit_preview_s5_shadow-papercut";
   const selected = selectSpirit(initialState, { initialState, snapshot, side: "attacker", spiritId }).state;
-  const skillId = pending.find(skill => skill.name === "灵扰").id;
+  const skillId = snapshot.skills.find(skill => skill.name === "灵扰").id;
   const personalConfiguration = { ...selected.sides.attacker, skills: {
     single: { skillId, hitCount: 1 }, four: [{ skillId, hitCount: 1 }, null, null, null],
   } };

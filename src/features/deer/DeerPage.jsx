@@ -230,7 +230,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
   const defenseLimitations = defender ? getDeerDefenseLimitations(snapshot, setup.state.sides.defender) : [];
   const conditions = [
     setup.attackerHp !== 100 && `自身HP ${Number(setup.attackerHp.toFixed(2))}%`,
-    setup.weather !== "none" && t("{weather}（不计天气伤害）", { weather: { rain: "雨天", thunder: "雷暴", sandstorm: "沙尘暴", blizzard: "暴风雪", dream: "萌系天气（占位）" }[setup.weather] }),
+    setup.weather !== "none" && t("{weather}（不计天气伤害）", { weather: { rain: "雨天", thunder: "雷暴", sandstorm: "沙尘暴", blizzard: "暴风雪", dream: "霞光梦境" }[setup.weather] }),
     setup.state.directions.forward.overrides.attackLevelStage && t("攻击等级 {stage}", { stage: setup.state.directions.forward.overrides.attackLevelStage }),
     setup.state.directions.forward.overrides.defenseLevelStage && t("防御等级 {stage}", { stage: setup.state.directions.forward.overrides.defenseLevelStage }),
     setup.reduction > 0 && `减伤 ${Number(setup.reduction.toFixed(2))}%`,
@@ -294,12 +294,12 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     </SideConfiguration>{sideKey === "attacker" && defender && speed && <section className="deer-speed" aria-label={t("速度对比")} aria-live="polite" aria-busy={updating}>
       <span>{t("速度对比")}</span><strong data-state={speed.state}>{t(updating ? t("正在复算…") : speed.label)}</strong>
       {speed.attacker !== null && <span className="deer-speed-values">{t("我方")}{" "}{speed.attacker}{" "}{t("/ 对方")}{" "}{speed.defender}</span>}
-      <small>{setup.weather === "dream" ? t("同先制度，萌系天气下速度较慢者先行动") : t("同先制度，仅比较当前速度")}</small>
+      <small>{setup.weather === "dream" ? t("同先制度，霞光梦境下速度较慢者先行动") : t("同先制度，仅比较当前速度")}</small>
     </section>}</div>)}</div>
     {defender && <><section className="deer-conditions"><button type="button" aria-expanded={conditionsOpen} onClick={() => setConditionsOpen(!conditionsOpen)}><SlidersHorizontal size={16} /><strong>{t("战斗条件")}</strong><span data-active={conditions.length > 0}>{t(conditions.length ? conditions.join(" · ") : t("默认条件 · 天气 / 血量 / 能力 / 异常 / 减伤"))}</span><CaretDown size={14} /></button>
       {conditionsOpen && <div className="deer-conditions-body"><div className="deer-fields">
         <NumberField label={t("自身HP")} value={setup.attackerHp} min={1} suffix="%" onChange={(attackerHp) => setOptions({ attackerHp })} />
-        <label className="deer-number">{t("天气")}<select aria-label={t("天气")} value={setup.weather} onChange={(event) => setOptions({ weather: event.target.value })}><option value="none">{t("无")}</option><option value="rain">{t("雨天")}</option><option value="thunder">{t("雷暴")}</option><option value="sandstorm">{t("沙尘暴")}</option><option value="blizzard">{t("暴风雪")}</option>{serverId !== "global" && <option value="dream">{t("萌系天气（占位）")}</option>}</select></label>
+        <label className="deer-number">{t("天气")}<select aria-label={t("天气")} value={setup.weather} onChange={(event) => setOptions({ weather: event.target.value })}><option value="none">{t("无")}</option><option value="rain">{t("雨天")}</option><option value="thunder">{t("雷暴")}</option><option value="sandstorm">{t("沙尘暴")}</option><option value="blizzard">{t("暴风雪")}</option>{serverId !== "global" && <option value="dream">{t("霞光梦境")}</option>}</select></label>
         <NumberField label={t("攻击能力等级")} integer min={-99} max={99} value={setup.state.directions.forward.overrides.attackLevelStage ?? 0} onChange={(value) => setOverride("attackLevelStage", value)} />
         <NumberField label={t("防守技能减伤")} suffix="%" value={setup.reduction} onChange={(reduction) => setOptions({ reduction })} />
         <NumberField label={t("敌方星陨")} integer max={99} value={setup.starfall} onChange={(starfall) => setOptions({ starfall })} />

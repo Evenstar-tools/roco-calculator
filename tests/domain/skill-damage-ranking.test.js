@@ -16,6 +16,16 @@ const snapshot = {
 };
 
 describe("技能承伤对比", () => {
+  test.each(["forward", "reverse"])("S5未接机制在%s承伤榜入口说明原因，不生成普通技伤害榜", async direction => {
+    const reason = "自身减益层数对能耗的影响尚未接入。";
+    const current = { ...snapshot, skills: [{ ...snapshot.skills[0], name: "间歇泉", cost: 4,
+      basePower: 115, s5StatusEffectPending: reason }] };
+    const state = createInitialState(current);
+    expect(damageComparisonIssue(current, state, direction)).toBe(reason);
+    const ranking = await createSkillDamageRanking({ snapshot: current, state, direction, scope: "all" });
+    expect(ranking).toMatchObject({ issue: reason, rows: [], excluded: [] });
+  });
+
   test("固定模板收敛为三种配点，保留动态模板且不改变独立耐久榜", async () => {
     const templates = getDamageComparisonTemplates({ grass: {} });
     expect(templates.map(({ label }) => label)).toEqual(["生命性格满双防个体", "生命性格无双防个体", "中立性格生命个体", "当前防守方配点", "用户预设"]);

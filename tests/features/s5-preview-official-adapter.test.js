@@ -95,7 +95,7 @@ test("正式同名技能复用正式ID，默认槽映射不补满、不挤掉空
 
 test.each([
   { cost: null, basePower: 70 }, { cost: 3, basePower: null },
-  { cost: 3, basePower: null, category: "status" }, { cost: null, basePower: null, type: null, category: null },
+  { cost: null, basePower: null, category: "status" }, { cost: null, basePower: null, type: null, category: null },
 ])("缺失技能参数不会被当作0结算：%j", fields => {
   const { catalog, snapshot } = fixture();
   for (const candidate of catalog.entries) candidate.skills = [skill(fields)];

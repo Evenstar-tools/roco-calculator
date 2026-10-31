@@ -1,3 +1,4 @@
+import { withS5OfficialVideoSkills } from "./official-video.js";
 import catalog from "../../../data/candidates/s5-preview-new-spirits.json";
 import { withCalculatorExtras } from "../../data/snapshot-extras.js";
 import { withS5PreviewCatalog } from "./catalog.js";
@@ -14,5 +15,5 @@ export function withWebPreview(snapshot) {
     changed = true;
     return { ...spirit, changeInfo: { ...spirit.changeInfo, isNew: false } };
   });
-  return withPublicResourceUrls(changed ? { ...preview, spirits } : preview);
+  return withPublicResourceUrls(withS5OfficialVideoSkills(changed ? { ...preview, spirits } : preview));
 }

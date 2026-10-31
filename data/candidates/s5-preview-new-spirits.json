@@ -50,6 +50,15 @@
         "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
       ],
       "note": "逐张核对九张家族图；仅更新对应条目。基础形态未公布六维，保留全100测试占位；新技能缺项保留null。"
+    },
+    {
+      "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "bvid": "BV1SNxq6REfb",
+      "title": "《洛克王国：世界》S5赛季新技能与首领化展示",
+      "creator": "洛克王国世界",
+      "publishedAt": "2026-10-31T18:00:00+08:00",
+      "authority": "official-video",
+      "note": "逐技能面板及首领特性实帧核对；未展示技能参数保持null；无伤害技能的威力横线保留null。"
     }
   ],
   "entries": [
@@ -118,6 +127,16 @@
             "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
             "creator": "洛克王国世界",
             "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "type": "龙",
+          "category": "physical",
+          "cost": 5,
+          "basePower": 130,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 22.765488,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-022.png"
           }
         },
         {
@@ -131,11 +150,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_curse-flame",
-          "type": null,
-          "cost": null,
+          "type": "龙",
+          "cost": 3,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_curse-flame.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_curse-flame.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 16.357006,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-016.png"
+          }
         },
         {
           "name": "冥暗诅咒",
@@ -148,11 +173,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_dark-curse",
-          "type": null,
-          "cost": null,
+          "type": "幽",
+          "cost": 2,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 4.939831,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-005.png"
+          }
         },
         {
           "name": "深红龙击",
@@ -165,11 +196,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_crimson-dragon-strike",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "龙",
+          "cost": 5,
+          "basePower": 115,
           "category": "physical",
-          "iconUrl": "/assets/skills/skill_preview_s5_crimson-dragon-strike.png"
+          "iconUrl": "/assets/skills/skill_preview_s5_crimson-dragon-strike.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 12.658548,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-012.png"
+          }
         }
       ],
       "officialSkillRefs": [],
@@ -185,58 +222,58 @@
           "description": "造成物伤，若击败敌方，自己等级+20。",
           "acquisition": "专属技能",
           "evidence": {
-            "kind": "user-image",
-            "frame": "codex-clipboard-68833128-1fef-4ec3-938c-f4a169ff44b9.png"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 22.765488,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-022.png"
           }
         },
         {
           "name": "咒火",
           "description": "蓄力，自己获得2层龙噬印记。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 16.357006,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-016.png"
           },
           "id": "skill_preview_s5_curse-flame",
-          "type": null,
-          "cost": null,
+          "type": "龙",
+          "cost": 3,
           "basePower": null,
-          "category": null,
+          "category": "status",
           "iconUrl": "/assets/skills/skill_preview_s5_curse-flame.png"
         },
         {
           "name": "冥暗诅咒",
           "description": "敌方失去5能量，且下回合末回复3能量，应对防御：下回合不回复能量。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 4.939831,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-005.png"
           },
           "id": "skill_preview_s5_dark-curse",
-          "type": null,
-          "cost": null,
+          "type": "幽",
+          "cost": 2,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png",
+          "s5StatusEffectPending": "暂不支持扣能与下回合回复的时序结算。"
         },
         {
           "name": "深红龙击",
           "description": "造成物伤。自己每进入1次蓄力状态，本技能能耗永久-2。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 12.658548,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-012.png"
           },
           "id": "skill_preview_s5_crimson-dragon-strike",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "龙",
+          "cost": 5,
+          "basePower": 115,
           "category": "physical",
           "iconUrl": "/assets/skills/skill_preview_s5_crimson-dragon-strike.png"
         }
@@ -284,58 +321,58 @@
           "description": "造成物伤，若击败敌方，自己等级+20。",
           "acquisition": "专属技能",
           "evidence": {
-            "kind": "user-image",
-            "frame": "codex-clipboard-68833128-1fef-4ec3-938c-f4a169ff44b9.png"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 22.765488,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-022.png"
           }
         },
         {
           "name": "咒火",
           "description": "蓄力，自己获得2层龙噬印记。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 16.357006,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-016.png"
           },
           "id": "skill_preview_s5_curse-flame",
-          "type": null,
-          "cost": null,
+          "type": "龙",
+          "cost": 3,
           "basePower": null,
-          "category": null,
+          "category": "status",
           "iconUrl": "/assets/skills/skill_preview_s5_curse-flame.png"
         },
         {
           "name": "冥暗诅咒",
           "description": "敌方失去5能量，且下回合末回复3能量，应对防御：下回合不回复能量。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 4.939831,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-005.png"
           },
           "id": "skill_preview_s5_dark-curse",
-          "type": null,
-          "cost": null,
+          "type": "幽",
+          "cost": 2,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png",
+          "s5StatusEffectPending": "暂不支持扣能与下回合回复的时序结算。"
         },
         {
           "name": "深红龙击",
           "description": "造成物伤。自己每进入1次蓄力状态，本技能能耗永久-2。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 12.658548,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-012.png"
           },
           "id": "skill_preview_s5_crimson-dragon-strike",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "龙",
+          "cost": 5,
+          "basePower": 115,
           "category": "physical",
           "iconUrl": "/assets/skills/skill_preview_s5_crimson-dragon-strike.png"
         }
@@ -397,6 +434,16 @@
             "frame": "artifacts/s5-official-atlas-20261027/source-01.jpg",
             "creator": "洛克王国世界",
             "publishedAt": "2026-10-27T16:00:00+08:00"
+          },
+          "type": "龙",
+          "category": "physical",
+          "cost": 5,
+          "basePower": 130,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 22.765488,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-022.png"
           }
         },
         {
@@ -410,11 +457,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_curse-flame",
-          "type": null,
-          "cost": null,
+          "type": "龙",
+          "cost": 3,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_curse-flame.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_curse-flame.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 16.357006,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-016.png"
+          }
         },
         {
           "name": "冥暗诅咒",
@@ -427,11 +480,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_dark-curse",
-          "type": null,
-          "cost": null,
+          "type": "幽",
+          "cost": 2,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_dark-curse.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 4.939831,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-005.png"
+          }
         },
         {
           "name": "深红龙击",
@@ -444,11 +503,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_crimson-dragon-strike",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "龙",
+          "cost": 5,
+          "basePower": 115,
           "category": "physical",
-          "iconUrl": "/assets/skills/skill_preview_s5_crimson-dragon-strike.png"
+          "iconUrl": "/assets/skills/skill_preview_s5_crimson-dragon-strike.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 12.658548,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-012.png"
+          }
         }
       ],
       "officialSkillRefs": [],
@@ -558,11 +623,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_mineral-exchange",
-          "type": null,
-          "cost": null,
+          "type": "地",
+          "cost": 1,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 26.762864,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-026.png"
+          }
         },
         {
           "name": "碎银",
@@ -575,11 +646,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_silver-shards",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "地",
+          "cost": 10,
+          "basePower": 170,
           "category": "magical",
-          "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png"
+          "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 33.699512,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-033.png"
+          }
         },
         {
           "name": "扬尘",
@@ -635,33 +712,32 @@
           "name": "矿物置换",
           "description": "自己获得魔攻+120%和3回合禁足。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 26.762864,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-026.png"
           },
           "id": "skill_preview_s5_mineral-exchange",
-          "type": null,
-          "cost": null,
+          "type": "地",
+          "cost": 1,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png",
+          "s5StatusEffectPending": "暂不支持仅魔攻增益与禁足的组合结算。"
         },
         {
           "name": "碎银",
           "description": "造成魔伤，消耗至少10能量后，本技能能耗永久-5。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 33.699512,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-033.png"
           },
           "id": "skill_preview_s5_silver-shards",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "地",
+          "cost": 10,
+          "basePower": 170,
           "category": "magical",
           "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png"
         }
@@ -741,11 +817,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_mineral-exchange",
-          "type": null,
-          "cost": null,
+          "type": "地",
+          "cost": 1,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 26.762864,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-026.png"
+          }
         },
         {
           "name": "碎银",
@@ -758,11 +840,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_silver-shards",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "地",
+          "cost": 10,
+          "basePower": 170,
           "category": "magical",
-          "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png"
+          "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 33.699512,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-033.png"
+          }
         },
         {
           "name": "扬尘",
@@ -818,33 +906,32 @@
           "name": "矿物置换",
           "description": "自己获得魔攻+120%和3回合禁足。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 26.762864,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-026.png"
           },
           "id": "skill_preview_s5_mineral-exchange",
-          "type": null,
-          "cost": null,
+          "type": "地",
+          "cost": 1,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png",
+          "s5StatusEffectPending": "暂不支持仅魔攻增益与禁足的组合结算。"
         },
         {
           "name": "碎银",
           "description": "造成魔伤，消耗至少10能量后，本技能能耗永久-5。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 33.699512,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-033.png"
           },
           "id": "skill_preview_s5_silver-shards",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "地",
+          "cost": 10,
+          "basePower": 170,
           "category": "magical",
           "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png"
         }
@@ -939,11 +1026,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_mineral-exchange",
-          "type": null,
-          "cost": null,
+          "type": "地",
+          "cost": 1,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 26.762864,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-026.png"
+          }
         },
         {
           "name": "碎银",
@@ -956,11 +1049,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_silver-shards",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "地",
+          "cost": 10,
+          "basePower": 170,
           "category": "magical",
-          "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png"
+          "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 33.699512,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-033.png"
+          }
         },
         {
           "name": "扬尘",
@@ -1016,33 +1115,32 @@
           "name": "矿物置换",
           "description": "自己获得魔攻+120%和3回合禁足。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 26.762864,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-026.png"
           },
           "id": "skill_preview_s5_mineral-exchange",
-          "type": null,
-          "cost": null,
+          "type": "地",
+          "cost": 1,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_mineral-exchange.png",
+          "s5StatusEffectPending": "暂不支持仅魔攻增益与禁足的组合结算。"
         },
         {
           "name": "碎银",
           "description": "造成魔伤，消耗至少10能量后，本技能能耗永久-5。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-02.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 33.699512,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-033.png"
           },
           "id": "skill_preview_s5_silver-shards",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "地",
+          "cost": 10,
+          "basePower": 170,
           "category": "magical",
           "iconUrl": "/assets/skills/skill_preview_s5_silver-shards.png"
         }
@@ -1122,11 +1220,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_overcharge",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "电",
+          "cost": 2,
+          "basePower": 65,
           "category": "physical",
-          "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png"
+          "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 38.80634,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-038.png"
+          }
         },
         {
           "name": "重启",
@@ -1139,11 +1243,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_restart",
-          "type": null,
-          "cost": null,
+          "type": "电",
+          "cost": 0,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_restart.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_restart.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 42.802635,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-042.png"
+          }
         },
         {
           "name": "惊雷",
@@ -1199,16 +1309,15 @@
           "name": "过充电",
           "description": "造成物伤，聚能至少1次后，本技能威力永久+30。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 38.80634,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-038.png"
           },
           "id": "skill_preview_s5_overcharge",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "电",
+          "cost": 2,
+          "basePower": 65,
           "category": "physical",
           "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png"
         },
@@ -1216,18 +1325,18 @@
           "name": "重启",
           "description": "本回合和下个回合的结束时，自己返场。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 42.802635,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-042.png"
           },
           "id": "skill_preview_s5_restart",
-          "type": null,
-          "cost": null,
+          "type": "电",
+          "cost": 0,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_restart.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_restart.png",
+          "s5StatusEffectPending": "暂不支持回合结束时的返场结算。"
         }
       ],
       "defaultSkillIds": [
@@ -1305,11 +1414,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_overcharge",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "电",
+          "cost": 2,
+          "basePower": 65,
           "category": "physical",
-          "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png"
+          "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 38.80634,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-038.png"
+          }
         },
         {
           "name": "重启",
@@ -1322,11 +1437,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_restart",
-          "type": null,
-          "cost": null,
+          "type": "电",
+          "cost": 0,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_restart.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_restart.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 42.802635,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-042.png"
+          }
         },
         {
           "name": "惊雷",
@@ -1382,16 +1503,15 @@
           "name": "过充电",
           "description": "造成物伤，聚能至少1次后，本技能威力永久+30。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 38.80634,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-038.png"
           },
           "id": "skill_preview_s5_overcharge",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "电",
+          "cost": 2,
+          "basePower": 65,
           "category": "physical",
           "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png"
         },
@@ -1399,18 +1519,18 @@
           "name": "重启",
           "description": "本回合和下个回合的结束时，自己返场。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 42.802635,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-042.png"
           },
           "id": "skill_preview_s5_restart",
-          "type": null,
-          "cost": null,
+          "type": "电",
+          "cost": 0,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_restart.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_restart.png",
+          "s5StatusEffectPending": "暂不支持回合结束时的返场结算。"
         }
       ],
       "defaultSkillIds": [
@@ -1503,11 +1623,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_overcharge",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "电",
+          "cost": 2,
+          "basePower": 65,
           "category": "physical",
-          "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png"
+          "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 38.80634,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-038.png"
+          }
         },
         {
           "name": "重启",
@@ -1520,11 +1646,17 @@
             "publishedAt": "2026-10-27T16:00:00+08:00"
           },
           "id": "skill_preview_s5_restart",
-          "type": null,
-          "cost": null,
+          "type": "电",
+          "cost": 0,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_restart.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_restart.png",
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 42.802635,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-042.png"
+          }
         },
         {
           "name": "惊雷",
@@ -1580,16 +1712,15 @@
           "name": "过充电",
           "description": "造成物伤，聚能至少1次后，本技能威力永久+30。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 38.80634,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-038.png"
           },
           "id": "skill_preview_s5_overcharge",
-          "type": null,
-          "cost": null,
-          "basePower": null,
+          "type": "电",
+          "cost": 2,
+          "basePower": 65,
           "category": "physical",
           "iconUrl": "/assets/skills/skill_preview_s5_overcharge.png"
         },
@@ -1597,18 +1728,18 @@
           "name": "重启",
           "description": "本回合和下个回合的结束时，自己返场。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263792411026391049",
-            "frame": "artifacts/s5-official-atlas-20261027/source-03.jpg",
-            "creator": "洛克王国世界",
-            "publishedAt": "2026-10-27T16:00:00+08:00"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 42.802635,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-042.png"
           },
           "id": "skill_preview_s5_restart",
-          "type": null,
-          "cost": null,
+          "type": "电",
+          "cost": 0,
           "basePower": null,
-          "category": null,
-          "iconUrl": "/assets/skills/skill_preview_s5_restart.png"
+          "category": "status",
+          "iconUrl": "/assets/skills/skill_preview_s5_restart.png",
+          "s5StatusEffectPending": "暂不支持回合结束时的返场结算。"
         }
       ],
       "defaultSkillIds": [
@@ -1621,7 +1752,7 @@
     },
     {
       "key": "boss-ice-bruce",
-      "name": "冰钻布鲁斯（首领化）",
+      "name": "圣冠布鲁斯",
       "types": [
         "冰"
       ],
@@ -1642,27 +1773,69 @@
         "confirmedAt": "2026-10-29",
         "note": "用户确认先沿用原形态种族值；首领正式数值有更改时再更新。"
       },
-      "traitSummary": "对手每1点能耗，技能威力增加10%；对方总能耗达到20点时，额外获得50速度。",
+      "traitSummary": "敌方携带技能总能耗每有1点，自己攻击时威力+10%，若敌方总能耗大于15，自己获得速度+75。",
       "mechanicKey": "boss-ice-bruce",
       "evidence": {
-        "seconds": 81.8,
-        "frame": "visual_frames/t-000081.800.jpg",
-        "captionLines": [
-          37,
-          49
-        ]
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 188.865949,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-188.png"
       },
       "unknowns": [
         "首领正式六维（暂按原形态）",
-        "首领学习面",
-        "总能耗取携带技能还是实际消耗",
         "威力增益叠加方式和上限",
-        "首领血脉附带规则"
+        "首领血脉附带规则",
+        "其余未演示技能的学习面"
+      ],
+      "traitName": "烈冰钻",
+      "stage": "首领",
+      "traitEvidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 188.865949,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-188.png"
+      },
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/boss-ice-bruce.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "sourceFrame": "_work/s5-official-video-20261031/browser-frames/extra-183.png",
+        "silhouetteUrl": "/assets/spirits/s5-preview/boss-ice-bruce-silhouette.png"
+      },
+      "officialSkillRefs": [
+        {
+          "id": "skill_318b4ef58316547b",
+          "name": "冰雹",
+          "evidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 185.195222,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0370.png"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_318b4ef58316547b",
+        null,
+        null,
+        null
+      ],
+      "announcedSkills": [
+        {
+          "name": "冰雹",
+          "description": "造成物伤，应对状态：额外使敌方获得全技能能耗+3。",
+          "evidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 185.195222,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0370.png"
+          }
+        }
       ]
     },
     {
       "key": "boss-glass-jellyfish",
-      "name": "琉璃水母（首领化）",
+      "name": "琉璃君主",
       "types": [
         "水",
         "毒"
@@ -1670,7 +1843,7 @@
       "baseName": "琉璃水母",
       "kind": "boss",
       "raceStats": {
-        "hp": 134,
+        "hp": 141,
         "physicalAttack": 37,
         "magicalAttack": 85,
         "physicalDefense": 93,
@@ -1681,25 +1854,68 @@
         "kind": "user-confirmed-baseline",
         "baseSpiritId": "spirit_bdc5a04507024396",
         "baseName": "琉璃水母",
-        "confirmedAt": "2026-10-29",
-        "note": "用户确认先沿用原形态种族值；首领正式数值有更改时再更新。"
+        "confirmedAt": "2026-10-31",
+        "note": "用户确认生命种族改为141，其余沿用原形态；官方视频BV1SNxq6REfb约162秒琉璃君主满血533，沉默个体60可算出；首领正式数值公布后再更新。"
       },
-      "traitSummary": "使用技能后，赋予对手等于中毒印记层数两倍的中毒层数。",
+      "traitSummary": "使用技能后，敌方获得中毒，获得层数等于中毒印记层数的2倍。",
       "mechanicKey": "boss-glass-jellyfish",
       "evidence": {
-        "seconds": 103.8,
-        "frame": "visual_frames/t-000103.800.jpg",
-        "captionLines": [
-          50,
-          55
-        ]
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 159.09832,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-158.png"
       },
       "unknowns": [
         "首领正式六维（暂按原形态）",
-        "首领学习面",
         "中毒印记所属方及读取时点",
         "中毒与印记上限",
-        "首领血脉附带规则"
+        "首领血脉附带规则",
+        "其余未演示技能的学习面"
+      ],
+      "traitName": "深层侵蚀",
+      "stage": "首领",
+      "traitEvidence": {
+        "kind": "official-video",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "seconds": 159.09832,
+        "frame": "_work/s5-official-video-20261031/browser-frames/hd-158.png"
+      },
+      "asset": {
+        "localUrl": "/assets/spirits/s5-preview/boss-glass-jellyfish.png",
+        "kind": "official-portrait",
+        "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "sourceFrame": "_work/s5-official-video-20261031/browser-frames/extra-155.png",
+        "silhouetteUrl": "/assets/spirits/s5-preview/boss-glass-jellyfish-silhouette.png"
+      },
+      "officialSkillRefs": [
+        {
+          "id": "skill_5b4d21e36f02d1c9",
+          "name": "血气",
+          "evidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 159.237376,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0318.png"
+          }
+        }
+      ],
+      "defaultSkillIds": [
+        "skill_5b4d21e36f02d1c9",
+        null,
+        null,
+        null
+      ],
+      "announcedSkills": [
+        {
+          "name": "血气",
+          "description": "减伤60%，应对攻击：本回合受到致命伤害时，保留1生命值。",
+          "evidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 159.237376,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0318.png"
+          }
+        }
       ]
     },
     {
@@ -1749,35 +1965,36 @@
           "id": "skill_preview_s5_severe-frost",
           "iconUrl": "/assets/skills/skill_preview_s5_severe-frost.png",
           "name": "严霜",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "冰",
+          "category": "status",
+          "cost": 4,
           "basePower": null,
           "description": "敌方获得8层冻结。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-05.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 88.991483,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-088.png"
           }
         },
         {
           "id": "skill_preview_s5_blue-shift",
           "iconUrl": "/assets/skills/skill_preview_s5_blue-shift.png",
           "name": "蓝移",
-          "type": null,
+          "type": "幻",
           "category": "magical",
-          "cost": null,
-          "basePower": null,
+          "cost": 4,
+          "basePower": 110,
           "description": "造成魔伤，使敌方获得至少4层星陨后，每次使用本技能可使敌方获得1层星陨。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-05.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 84.238093,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0168.png"
+          },
+          "s5StatusEffectPending": "追加星陨的历史前置尚未接入。"
         }
       ],
       "officialSkillRefs": [
@@ -1813,17 +2030,31 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-05.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          },
+          "type": "冰",
+          "category": "status",
+          "cost": 4,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 88.991483,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-088.png"
           }
         },
         {
           "name": "蓝移",
           "description": "造成魔伤，使敌方获得至少4层星陨后，每次使用本技能可使敌方获得1层星陨。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-05.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 84.238093,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0168.png"
+          },
+          "type": "幻",
+          "category": "magical",
+          "cost": 4,
+          "basePower": 110
         },
         {
           "name": "仰望夜空",
@@ -1909,35 +2140,36 @@
           "id": "skill_preview_s5_thermal-bridge",
           "iconUrl": "/assets/skills/skill_preview_s5_thermal-bridge.png",
           "name": "热桥",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "冰",
+          "category": "defense",
+          "cost": 2,
           "basePower": null,
           "description": "减伤80%，应对攻击：敌方获得魔防-60%。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-04.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 119.061427,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-118.png"
           }
         },
         {
           "id": "skill_preview_s5_freeze",
           "iconUrl": "/assets/skills/skill_preview_s5_freeze.png",
           "name": "冷冻",
-          "type": null,
+          "type": "冰",
           "category": "physical",
-          "cost": null,
-          "basePower": null,
+          "cost": 4,
+          "basePower": 100,
           "description": "造成物伤，使敌方获得至少2次冻结后，每次使用本技能可使敌方能耗+1。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-04.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 120.660604,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0241.png"
+          },
+          "s5StatusEffectPending": "冻结触发次数与敌方能耗变化尚未接入。"
         }
       ],
       "officialSkillRefs": [
@@ -1973,17 +2205,31 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-04.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          },
+          "type": "冰",
+          "category": "defense",
+          "cost": 2,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 119.061427,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-118.png"
           }
         },
         {
           "name": "冷冻",
           "description": "造成物伤，使敌方获得至少2次冻结后，每次使用本技能可使敌方能耗+1。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-04.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 120.660604,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0241.png"
+          },
+          "type": "冰",
+          "category": "physical",
+          "cost": 4,
+          "basePower": 100
         },
         {
           "name": "暴风雪",
@@ -2070,35 +2316,36 @@
           "id": "skill_preview_s5_fruit-pulp",
           "iconUrl": "/assets/skills/skill_preview_s5_fruit-pulp.png",
           "name": "果粒",
-          "type": null,
+          "type": "草",
           "category": "magical",
-          "cost": null,
-          "basePower": null,
+          "cost": 3,
+          "basePower": 45,
           "description": "造成魔伤，2连击。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-03.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 96.706699,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0193.png"
           }
         },
         {
           "id": "skill_preview_s5_summer-pad",
           "iconUrl": "/assets/skills/skill_preview_s5_summer-pad.png",
           "name": "夏蛰",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "虫",
+          "category": "status",
+          "cost": 4,
           "basePower": null,
           "description": "己方队伍获得2次随机奉献，应对防御：获得所有种类的奉献各1次。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-03.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 98.971615,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-098.png"
+          },
+          "s5StatusEffectPending": "随机奉献结果尚未接入，请按实际结果调整。"
         }
       ],
       "officialSkillRefs": [
@@ -2130,11 +2377,15 @@
           "name": "果粒",
           "description": "造成魔伤，2连击。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-03.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 96.706699,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0193.png"
+          },
+          "type": "草",
+          "category": "magical",
+          "cost": 3,
+          "basePower": 45
         },
         {
           "name": "夏蛰",
@@ -2144,6 +2395,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-03.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          },
+          "type": "虫",
+          "category": "status",
+          "cost": 4,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 98.971615,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-098.png"
           }
         },
         {
@@ -2232,35 +2493,36 @@
           "id": "skill_preview_s5_poison-cast",
           "iconUrl": "/assets/skills/skill_preview_s5_poison-cast.png",
           "name": "投毒",
-          "type": null,
+          "type": "毒",
           "category": "physical",
-          "cost": null,
-          "basePower": null,
+          "cost": 3,
+          "basePower": 90,
           "description": "造成物伤，使敌方获得至少2次中毒后，每次使用本技能攻击中毒目标时威力+25。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-02.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 129.000993,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-128.png"
           }
         },
         {
           "id": "skill_preview_s5_mixed-state",
           "iconUrl": "/assets/skills/skill_preview_s5_mixed-state.png",
           "name": "混合态",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "幻",
+          "category": "status",
+          "cost": 1,
           "basePower": null,
           "description": "敌方获得随机10层属性减益。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-02.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 122.92797,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-122.png"
+          },
+          "s5StatusEffectPending": "随机减益结果尚未接入，请按实际结果调整。"
         }
       ],
       "officialSkillRefs": [
@@ -2296,6 +2558,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-02.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          },
+          "type": "毒",
+          "category": "physical",
+          "cost": 3,
+          "basePower": 90,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 129.000993,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-128.png"
           }
         },
         {
@@ -2306,6 +2578,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-02.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          },
+          "type": "幻",
+          "category": "status",
+          "cost": 1,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 122.92797,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-122.png"
           }
         },
         {
@@ -2392,34 +2674,35 @@
           "id": "skill_preview_s5_refill",
           "iconUrl": "/assets/skills/skill_preview_s5_refill.png",
           "name": "续杯",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "水",
+          "category": "status",
+          "cost": 2,
           "basePower": null,
           "description": "自己获得双攻+50%，本技能能耗每-1，额外获得50%。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-08.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 58.84215,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-058.png"
+          },
+          "s5StatusEffectPending": "减耗对应的额外双攻增益尚未接入。"
         },
         {
           "id": "skill_preview_s5_rip-current",
           "iconUrl": "/assets/skills/skill_preview_s5_rip-current.png",
           "name": "离岸流",
-          "type": null,
+          "type": "水",
           "category": "physical",
-          "cost": null,
-          "basePower": null,
+          "cost": 5,
+          "basePower": 125,
           "description": "造成物伤，使用至少2次水系技能后，本技能能耗永久-3。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-08.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 48.737896,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-048.png"
           }
         }
       ],
@@ -2456,6 +2739,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-08.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          },
+          "type": "水",
+          "category": "status",
+          "cost": 2,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 58.84215,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-058.png"
           }
         },
         {
@@ -2466,6 +2759,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-08.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          },
+          "type": "水",
+          "category": "physical",
+          "cost": 5,
+          "basePower": 125,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 48.737896,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-048.png"
           }
         },
         {
@@ -2554,35 +2857,36 @@
           "id": "skill_preview_s5_dream-building",
           "iconUrl": "/assets/skills/skill_preview_s5_dream-building.png",
           "name": "筑梦",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "萌",
+          "category": "status",
+          "cost": 7,
           "basePower": null,
-          "description": "将天气改为霞光梦境，持续8回合。（天气为霞光梦境时，速度慢的精灵会先行动）",
+          "description": "将天气改为霞光梦境，持续8回合。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-07.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 68.947646,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-068.png"
           }
         },
         {
           "id": "skill_preview_s5_eggshell",
           "iconUrl": "/assets/skills/skill_preview_s5_eggshell.png",
           "name": "蛋壳",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "普通",
+          "category": "defense",
+          "cost": 2,
           "basePower": null,
           "description": "减伤60%，应对攻击：驱散敌方所有增益。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-07.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 62.778046,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-062.png"
+          },
+          "s5StatusEffectPending": "应对攻击后的增益驱散尚未接入。"
         }
       ],
       "officialSkillRefs": [
@@ -2612,12 +2916,22 @@
       "announcedSkills": [
         {
           "name": "筑梦",
-          "description": "将天气改为霞光梦境，持续8回合。（天气为霞光梦境时，速度慢的精灵会先行动）",
+          "description": "将天气改为霞光梦境，持续8回合。",
           "evidence": {
             "kind": "official-image",
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-07.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          },
+          "type": "萌",
+          "category": "status",
+          "cost": 7,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 68.947646,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-068.png"
           }
         },
         {
@@ -2628,6 +2942,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-07.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          },
+          "type": "普通",
+          "category": "defense",
+          "cost": 2,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 62.778046,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-062.png"
           }
         },
         {
@@ -2715,35 +3039,36 @@
           "id": "skill_preview_s5_external-spread",
           "iconUrl": "/assets/skills/skill_preview_s5_external-spread.png",
           "name": "外附传播",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "草",
+          "category": "defense",
+          "cost": 3,
           "basePower": null,
           "description": "减伤80%，应对攻击：敌方获得2层寄生。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-06.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 78.90011,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-078.png"
           }
         },
         {
           "id": "skill_preview_s5_geyser",
           "iconUrl": "/assets/skills/skill_preview_s5_geyser.png",
           "name": "间歇泉",
-          "type": null,
+          "type": "水",
           "category": "physical",
-          "cost": null,
-          "basePower": null,
+          "cost": 4,
+          "basePower": 115,
           "description": "造成物伤，自己每有1层减益，本技能能耗-1。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-06.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 72.869513,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-072.png"
+          },
+          "s5StatusEffectPending": "自身减益层数对能耗的影响尚未接入。"
         }
       ],
       "officialSkillRefs": [
@@ -2779,6 +3104,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-06.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          },
+          "type": "草",
+          "category": "defense",
+          "cost": 3,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 78.90011,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-078.png"
           }
         },
         {
@@ -2789,6 +3124,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-06.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          },
+          "type": "水",
+          "category": "physical",
+          "cost": 4,
+          "basePower": 115,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 72.869513,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-072.png"
           }
         },
         {
@@ -2876,34 +3221,34 @@
           "id": "skill_preview_s5_spirit-disturbance",
           "iconUrl": "/assets/skills/skill_preview_s5_spirit-disturbance.png",
           "name": "灵扰",
-          "type": null,
+          "type": "幽",
           "category": "physical",
-          "cost": null,
-          "basePower": null,
+          "cost": 3,
+          "basePower": 25,
           "description": "造成物伤，3连击。偷取敌方能量至少1次后，本技能连击数永久+1。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-01.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 112.880704,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-112.png"
           }
         },
         {
           "id": "skill_preview_s5_earthbound-spirit",
           "iconUrl": "/assets/skills/skill_preview_s5_earthbound-spirit.png",
           "name": "地缚灵",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "幽",
+          "category": "status",
+          "cost": 2,
           "basePower": null,
           "description": "敌方获得双防-70%，若敌方本回合更换精灵，敌方额外获得速度-50。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-01.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 105.777079,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-105.png"
           }
         }
       ],
@@ -2940,6 +3285,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-01.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          },
+          "type": "幽",
+          "category": "physical",
+          "cost": 3,
+          "basePower": 25,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 112.880704,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-112.png"
           }
         },
         {
@@ -2950,6 +3305,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-01.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          },
+          "type": "幽",
+          "category": "status",
+          "cost": 2,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 105.777079,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-105.png"
           }
         },
         {
@@ -3103,34 +3468,34 @@
           "id": "skill_preview_s5_spirit-disturbance",
           "iconUrl": "/assets/skills/skill_preview_s5_spirit-disturbance.png",
           "name": "灵扰",
-          "type": null,
+          "type": "幽",
           "category": "physical",
-          "cost": null,
-          "basePower": null,
+          "cost": 3,
+          "basePower": 25,
           "description": "造成物伤，3连击。偷取敌方能量至少1次后，本技能连击数永久+1。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-01.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 112.880704,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-112.png"
           }
         },
         {
           "id": "skill_preview_s5_earthbound-spirit",
           "iconUrl": "/assets/skills/skill_preview_s5_earthbound-spirit.png",
           "name": "地缚灵",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "幽",
+          "category": "status",
+          "cost": 2,
           "basePower": null,
           "description": "敌方获得双防-70%，若敌方本回合更换精灵，敌方额外获得速度-50。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-01.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 105.777079,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-105.png"
           }
         }
       ],
@@ -3167,6 +3532,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-01.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          },
+          "type": "幽",
+          "category": "physical",
+          "cost": 3,
+          "basePower": 25,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 112.880704,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-112.png"
           }
         },
         {
@@ -3177,6 +3552,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-01.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/99dd7bd5e614a06c46c756e28fb29a78626796832.jpg"
+          },
+          "type": "幽",
+          "category": "status",
+          "cost": 2,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 105.777079,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-105.png"
           }
         },
         {
@@ -3278,35 +3663,36 @@
           "id": "skill_preview_s5_poison-cast",
           "iconUrl": "/assets/skills/skill_preview_s5_poison-cast.png",
           "name": "投毒",
-          "type": null,
+          "type": "毒",
           "category": "physical",
-          "cost": null,
-          "basePower": null,
+          "cost": 3,
+          "basePower": 90,
           "description": "造成物伤，使敌方获得至少2次中毒后，每次使用本技能攻击中毒目标时威力+25。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-02.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 129.000993,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-128.png"
           }
         },
         {
           "id": "skill_preview_s5_mixed-state",
           "iconUrl": "/assets/skills/skill_preview_s5_mixed-state.png",
           "name": "混合态",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "幻",
+          "category": "status",
+          "cost": 1,
           "basePower": null,
           "description": "敌方获得随机10层属性减益。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-02.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 122.92797,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-122.png"
+          },
+          "s5StatusEffectPending": "随机减益结果尚未接入，请按实际结果调整。"
         }
       ],
       "officialSkillRefs": [
@@ -3342,6 +3728,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-02.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          },
+          "type": "毒",
+          "category": "physical",
+          "cost": 3,
+          "basePower": 90,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 129.000993,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-128.png"
           }
         },
         {
@@ -3352,6 +3748,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-02.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/4d3c8de5f0fa4d1ba8d58a3054e62ad1626796832.jpg"
+          },
+          "type": "幻",
+          "category": "status",
+          "cost": 1,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 122.92797,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-122.png"
           }
         },
         {
@@ -3453,35 +3859,36 @@
           "id": "skill_preview_s5_fruit-pulp",
           "iconUrl": "/assets/skills/skill_preview_s5_fruit-pulp.png",
           "name": "果粒",
-          "type": null,
+          "type": "草",
           "category": "magical",
-          "cost": null,
-          "basePower": null,
+          "cost": 3,
+          "basePower": 45,
           "description": "造成魔伤，2连击。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-03.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 96.706699,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0193.png"
           }
         },
         {
           "id": "skill_preview_s5_summer-pad",
           "iconUrl": "/assets/skills/skill_preview_s5_summer-pad.png",
           "name": "夏蛰",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "虫",
+          "category": "status",
+          "cost": 4,
           "basePower": null,
           "description": "己方队伍获得2次随机奉献，应对防御：获得所有种类的奉献各1次。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-03.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 98.971615,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-098.png"
+          },
+          "s5StatusEffectPending": "随机奉献结果尚未接入，请按实际结果调整。"
         }
       ],
       "officialSkillRefs": [
@@ -3513,11 +3920,15 @@
           "name": "果粒",
           "description": "造成魔伤，2连击。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-03.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 96.706699,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0193.png"
+          },
+          "type": "草",
+          "category": "magical",
+          "cost": 3,
+          "basePower": 45
         },
         {
           "name": "夏蛰",
@@ -3527,6 +3938,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-03.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/135c61a15266100d3538ac54e5767bac626796832.jpg"
+          },
+          "type": "虫",
+          "category": "status",
+          "cost": 4,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 98.971615,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-098.png"
           }
         },
         {
@@ -3626,35 +4047,36 @@
           "id": "skill_preview_s5_thermal-bridge",
           "iconUrl": "/assets/skills/skill_preview_s5_thermal-bridge.png",
           "name": "热桥",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "冰",
+          "category": "defense",
+          "cost": 2,
           "basePower": null,
           "description": "减伤80%，应对攻击：敌方获得魔防-60%。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-04.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 119.061427,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-118.png"
           }
         },
         {
           "id": "skill_preview_s5_freeze",
           "iconUrl": "/assets/skills/skill_preview_s5_freeze.png",
           "name": "冷冻",
-          "type": null,
+          "type": "冰",
           "category": "physical",
-          "cost": null,
-          "basePower": null,
+          "cost": 4,
+          "basePower": 100,
           "description": "造成物伤，使敌方获得至少2次冻结后，每次使用本技能可使敌方能耗+1。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-04.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 120.660604,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0241.png"
+          },
+          "s5StatusEffectPending": "冻结触发次数与敌方能耗变化尚未接入。"
         }
       ],
       "officialSkillRefs": [
@@ -3690,17 +4112,31 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-04.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
+          },
+          "type": "冰",
+          "category": "defense",
+          "cost": 2,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 119.061427,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-118.png"
           }
         },
         {
           "name": "冷冻",
           "description": "造成物伤，使敌方获得至少2次冻结后，每次使用本技能可使敌方能耗+1。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-04.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/0873045336140d8e305e1696bae80210626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 120.660604,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0241.png"
+          },
+          "type": "冰",
+          "category": "physical",
+          "cost": 4,
+          "basePower": 100
         },
         {
           "name": "暴风雪",
@@ -3800,35 +4236,36 @@
           "id": "skill_preview_s5_severe-frost",
           "iconUrl": "/assets/skills/skill_preview_s5_severe-frost.png",
           "name": "严霜",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "冰",
+          "category": "status",
+          "cost": 4,
           "basePower": null,
           "description": "敌方获得8层冻结。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-05.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 88.991483,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-088.png"
           }
         },
         {
           "id": "skill_preview_s5_blue-shift",
           "iconUrl": "/assets/skills/skill_preview_s5_blue-shift.png",
           "name": "蓝移",
-          "type": null,
+          "type": "幻",
           "category": "magical",
-          "cost": null,
-          "basePower": null,
+          "cost": 4,
+          "basePower": 110,
           "description": "造成魔伤，使敌方获得至少4层星陨后，每次使用本技能可使敌方获得1层星陨。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-05.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 84.238093,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0168.png"
+          },
+          "s5StatusEffectPending": "追加星陨的历史前置尚未接入。"
         }
       ],
       "officialSkillRefs": [
@@ -3864,17 +4301,31 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-05.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
+          },
+          "type": "冰",
+          "category": "status",
+          "cost": 4,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 88.991483,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-088.png"
           }
         },
         {
           "name": "蓝移",
           "description": "造成魔伤，使敌方获得至少4层星陨后，每次使用本技能可使敌方获得1层星陨。",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-05.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/d91fd49db239b2778b0118996d321be0626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 84.238093,
+            "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0168.png"
+          },
+          "type": "幻",
+          "category": "magical",
+          "cost": 4,
+          "basePower": 110
         },
         {
           "name": "仰望夜空",
@@ -3975,35 +4426,36 @@
           "id": "skill_preview_s5_external-spread",
           "iconUrl": "/assets/skills/skill_preview_s5_external-spread.png",
           "name": "外附传播",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "草",
+          "category": "defense",
+          "cost": 3,
           "basePower": null,
           "description": "减伤80%，应对攻击：敌方获得2层寄生。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-06.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 78.90011,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-078.png"
           }
         },
         {
           "id": "skill_preview_s5_geyser",
           "iconUrl": "/assets/skills/skill_preview_s5_geyser.png",
           "name": "间歇泉",
-          "type": null,
+          "type": "水",
           "category": "physical",
-          "cost": null,
-          "basePower": null,
+          "cost": 4,
+          "basePower": 115,
           "description": "造成物伤，自己每有1层减益，本技能能耗-1。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-06.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 72.869513,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-072.png"
+          },
+          "s5StatusEffectPending": "自身减益层数对能耗的影响尚未接入。"
         }
       ],
       "officialSkillRefs": [
@@ -4039,6 +4491,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-06.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          },
+          "type": "草",
+          "category": "defense",
+          "cost": 3,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 78.90011,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-078.png"
           }
         },
         {
@@ -4049,6 +4511,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-06.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/dddbdb1b96a547dff4b7225c16b96e46626796832.jpg"
+          },
+          "type": "水",
+          "category": "physical",
+          "cost": 4,
+          "basePower": 115,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 72.869513,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-072.png"
           }
         },
         {
@@ -4149,35 +4621,36 @@
           "id": "skill_preview_s5_dream-building",
           "iconUrl": "/assets/skills/skill_preview_s5_dream-building.png",
           "name": "筑梦",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "萌",
+          "category": "status",
+          "cost": 7,
           "basePower": null,
-          "description": "将天气改为霞光梦境，持续8回合。（天气为霞光梦境时，速度慢的精灵会先行动）",
+          "description": "将天气改为霞光梦境，持续8回合。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-07.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 68.947646,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-068.png"
           }
         },
         {
           "id": "skill_preview_s5_eggshell",
           "iconUrl": "/assets/skills/skill_preview_s5_eggshell.png",
           "name": "蛋壳",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "普通",
+          "category": "defense",
+          "cost": 2,
           "basePower": null,
           "description": "减伤60%，应对攻击：驱散敌方所有增益。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-07.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 62.778046,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-062.png"
+          },
+          "s5StatusEffectPending": "应对攻击后的增益驱散尚未接入。"
         }
       ],
       "officialSkillRefs": [
@@ -4207,12 +4680,22 @@
       "announcedSkills": [
         {
           "name": "筑梦",
-          "description": "将天气改为霞光梦境，持续8回合。（天气为霞光梦境时，速度慢的精灵会先行动）",
+          "description": "将天气改为霞光梦境，持续8回合。",
           "evidence": {
             "kind": "official-image",
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-07.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          },
+          "type": "萌",
+          "category": "status",
+          "cost": 7,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 68.947646,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-068.png"
           }
         },
         {
@@ -4223,6 +4706,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-07.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/6c56ad8315d00c6ee9f64c939e5bdad5626796832.jpg"
+          },
+          "type": "普通",
+          "category": "defense",
+          "cost": 2,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 62.778046,
+            "frame": "_work/s5-official-video-20261031/browser-frames/extra-062.png"
           }
         },
         {
@@ -4322,34 +4815,35 @@
           "id": "skill_preview_s5_refill",
           "iconUrl": "/assets/skills/skill_preview_s5_refill.png",
           "name": "续杯",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "水",
+          "category": "status",
+          "cost": 2,
           "basePower": null,
           "description": "自己获得双攻+50%，本技能能耗每-1，额外获得50%。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-08.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 58.84215,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-058.png"
+          },
+          "s5StatusEffectPending": "减耗对应的额外双攻增益尚未接入。"
         },
         {
           "id": "skill_preview_s5_rip-current",
           "iconUrl": "/assets/skills/skill_preview_s5_rip-current.png",
           "name": "离岸流",
-          "type": null,
+          "type": "水",
           "category": "physical",
-          "cost": null,
-          "basePower": null,
+          "cost": 5,
+          "basePower": 125,
           "description": "造成物伤，使用至少2次水系技能后，本技能能耗永久-3。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-08.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 48.737896,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-048.png"
           }
         }
       ],
@@ -4386,6 +4880,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-08.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          },
+          "type": "水",
+          "category": "status",
+          "cost": 2,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 58.84215,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-058.png"
           }
         },
         {
@@ -4396,6 +4900,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-08.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/106043f0b5c8c7f0886fd1bd3856e36e626796832.jpg"
+          },
+          "type": "水",
+          "category": "physical",
+          "cost": 5,
+          "basePower": 125,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 48.737896,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-048.png"
           }
         },
         {
@@ -4497,34 +5011,35 @@
           "id": "skill_preview_s5_refill",
           "iconUrl": "/assets/skills/skill_preview_s5_refill.png",
           "name": "续杯",
-          "type": null,
-          "category": null,
-          "cost": null,
+          "type": "水",
+          "category": "status",
+          "cost": 2,
           "basePower": null,
           "description": "自己获得双攻+50%，本技能能耗每-1，额外获得50%。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-09.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
-          }
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 58.84215,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-058.png"
+          },
+          "s5StatusEffectPending": "减耗对应的额外双攻增益尚未接入。"
         },
         {
           "id": "skill_preview_s5_rip-current",
           "iconUrl": "/assets/skills/skill_preview_s5_rip-current.png",
           "name": "离岸流",
-          "type": null,
+          "type": "水",
           "category": "physical",
-          "cost": null,
-          "basePower": null,
+          "cost": 5,
+          "basePower": 125,
           "description": "造成物伤，使用至少2次水系技能后，本技能能耗永久-3。",
           "acquisition": "官方家族展示",
           "evidence": {
-            "kind": "official-image",
-            "url": "https://www.bilibili.com/opus/1263800141975912449",
-            "frame": "official-09.jpg",
-            "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 48.737896,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-048.png"
           }
         }
       ],
@@ -4561,6 +5076,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-09.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+          },
+          "type": "水",
+          "category": "status",
+          "cost": 2,
+          "basePower": null,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 58.84215,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-058.png"
           }
         },
         {
@@ -4571,6 +5096,16 @@
             "url": "https://www.bilibili.com/opus/1263800141975912449",
             "frame": "official-09.jpg",
             "imageUrl": "https://i0.hdslb.com/bfs/new_dyn/93452d45fec5247e65634c08a5b4a133626796832.jpg"
+          },
+          "type": "水",
+          "category": "physical",
+          "cost": 5,
+          "basePower": 125,
+          "parameterEvidence": {
+            "kind": "official-video",
+            "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+            "seconds": 48.737896,
+            "frame": "_work/s5-official-video-20261031/browser-frames/hd-048.png"
           }
         },
         {

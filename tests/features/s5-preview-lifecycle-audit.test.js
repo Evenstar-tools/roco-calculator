@@ -84,7 +84,10 @@ test.each(["little-scissor", "lele-shark", "egg-wrap", "boss-ice-bruce"])(
     let { state } = fixture(key);
     if (key === "boss-ice-bruce") {
       const spirit = snapshot.spirits.find(entry => entry.id === state.sides.attacker.spiritId);
-      const cost = getTraitView(snapshot, spirit).inputs.find(input => input.contextKey.endsWith("OpponentTotalCost"));
+      const controls = getTraitView(snapshot, spirit).inputs;
+      const cost = controls.find(input => input.contextKey === "enemyTotalSkillCost");
+      const auto = controls.find(input => input.contextKey === "enemyTotalSkillCostAuto");
+      state = updateMirroredTraitContext(state, { direction: "forward", key: auto.id, value: false }).state;
       state = updateMirroredTraitContext(state, { direction: "forward", key: cost.id, value: 20 }).state;
     }
     const before = buildCalculatorViewModel({ snapshot, state, activeDirection: "forward" });
@@ -211,9 +214,9 @@ test.each(["little-scissor", "lele-shark", "egg-wrap", "boss-ice-bruce"])(
     const baseline = buildCalculatorViewModel({ snapshot, state, activeDirection: "forward" }).sides.attacker.finalPanelStats;
     const baselinePower = resolveS5PreviewTraitEffect(acquired, "attacker", { skill: { category: "physical" } }).fixedPowerAdd;
     state.sides.attacker.acquiredTraitValues[targetId] = Object.fromEntries(inputs.map(input => [canonicalTraitControlKey(input),
-      input.contextKey.endsWith("OpponentTotalCost") ? 20 : state.directions.forward.context[input.id]]));
+      input.contextKey === "enemyTotalSkillCost" ? 20 : input.contextKey === "enemyTotalSkillCostAuto" ? false : state.directions.forward.context[input.id]]));
     const boosted = buildCalculatorViewModel({ snapshot, state, activeDirection: "forward" }).sides.attacker.finalPanelStats;
-    if (key === "boss-ice-bruce") expect(boosted.speed).toBe(baseline.speed + 50);
+    if (key === "boss-ice-bruce") expect(boosted.speed).toBe(baseline.speed + 75);
     else if (key === "egg-wrap") expect(boosted.physicalDefense).toBeGreaterThan(baseline.physicalDefense);
     else if (key === "little-scissor") {
       const updated = getEffectiveTraits(snapshot, { ...state.sides.attacker, spirit: wolf }).find(trait => trait.id === targetId);

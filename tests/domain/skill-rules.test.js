@@ -21,6 +21,62 @@ function skill(overrides = {}) {
 }
 
 describe("resolveSkillPower", () => {
+  test.each([
+    ["深红龙击", 115, 5, "s5ChargeEntryCount", [[0, 5], [1, 3], [2, 1], [3, 0], [100, 0]]],
+    ["碎银", 170, 10, "s5EnergySpentBeforeUse", [[0, 10], [9, 10], [10, 5], [20, 5]]],
+    ["离岸流", 125, 5, "s5WaterSkillUseCount", [[0, 5], [1, 5], [2, 2], [100, 2]]],
+  ])("S5 %s 用此前已确认数量计算实际能耗，重复求值不推进次数", (name, basePower, cost, contextKey, cases) => {
+    const current = skill({ name, basePower, cost });
+    const control = getSkillEffectInputs(current).find(input => input.contextKey === contextKey);
+    expect(control).toMatchObject({ min: 0, defaultValue: 0, type: "number" });
+    for (const [count, resolvedCost] of cases) {
+      for (const key of [contextKey, control.id]) {
+        const context = { [key]: count };
+        const before = { ...context };
+        expect(resolveSkillPower(current, context)).toMatchObject({ status: "exact", value: basePower, resolvedCost });
+        expect(resolveSkillPower(current, context)).toMatchObject({ value: basePower, resolvedCost });
+        expect(context).toEqual(before);
+      }
+    }
+    expect(resolveSkillPower(current, {})).toMatchObject({ value: basePower, resolvedCost: cost });
+    expect(resolveSkillPower(current, { [contextKey]: cases.at(-1)[0], basePowerOverride: 200 }))
+      .toMatchObject({ value: 200, resolvedCost: cases.at(-1)[1] });
+  });
+
+  test("S5 过充电只在确认至少聚能一次后加30，不按次数叠加或因重复求值成长", () => {
+    const current = skill({ name: "过充电", basePower: 65, cost: 2 });
+    const [control] = getSkillEffectInputs(current);
+    expect(control).toMatchObject({ contextKey: "s5OverchargeActivated", label: "已聚能至少1次", defaultValue: false });
+    expect(resolveSkillPower(current, {})).toMatchObject({ value: 65 });
+    expect(resolveSkillPower(current, { [control.id]: true })).toMatchObject({ value: 95 });
+    expect(resolveSkillPower(current, { [control.id]: true })).toMatchObject({ value: 95 });
+    expect(resolveSkillPower(current, { s5OverchargeActivated: true, basePowerOverride: 100 })).toMatchObject({ value: 130 });
+  });
+
+  test("S5 投毒只读取已确认生效的成长次数，不借用当前毒层数或普通技能使用次数", () => {
+    const current = skill({ name: "投毒", basePower: 85, cost: 3 });
+    const [control] = getSkillEffectInputs(current);
+    expect(control.contextKey).toBe("s5PoisonPowerGrowthCount");
+    expect(resolveSkillPower(current, { enemyPoisonStacks: 10, skillUseCount: 5 })).toMatchObject({ value: 85 });
+    expect(resolveSkillPower(current, { [control.id]: 3 })).toMatchObject({ value: 160 });
+    expect(resolveSkillPower(current, { [control.id]: 21 })).toMatchObject({ value: 610 });
+  });
+
+  test("S5 灵扰基础3连，龙之爪牙基础5连，额外成长使用独立确认次数", () => {
+    const haunt = skill({ name: "灵扰", basePower: 30, cost: 3 });
+    const claws = skill({ name: "龙之爪牙", basePower: 20, cost: 2 });
+    expect(getDefaultHitCount(haunt)).toBe(3);
+    expect(getDefaultHitCount(claws)).toBe(5);
+    expect(resolveSkillPower(haunt, {})).toMatchObject({ value: 30, hitCount: 3 });
+    expect(resolveSkillPower(haunt, { s5EnergyTheftHitGrowthCount: 2 })).toMatchObject({ value: 30, hitCount: 5 });
+    expect(resolveSkillPower(claws, { stackCount: 9 })).toMatchObject({ value: 20, hitCount: 5 });
+    expect(getSkillEffectInputs(claws)).toEqual([]);
+  });
+
+  test.each(["深红龙击", "碎银", "过充电", "离岸流", "投毒", "灵扰", "龙之爪牙"])("S5 %s 的规则不进入国际服S3历史规则", name => {
+    expect(getSkillEffectRule(skill({ name, calculationRuleset: "s3-midseason-2026-08-13" }))).toBeNull();
+  });
+
   test("齿轮扭矩超过20次仍按每次15威力计算，并兼容原保存键", () => {
     const torque = snapshot.skills.find(({ name }) => name === "齿轮扭矩");
     for (const count of [0, 20, 21, 100]) {

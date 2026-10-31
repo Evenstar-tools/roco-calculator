@@ -20,7 +20,7 @@ const specs = [
   ["刨雪鹅", "沉默", "HBD"], ["圆环鲸羽", "沉默", "HCS"],
   ["沙咔蟹", "固执", "HAS"], ["鸡麻麻", "平和", "HBD"],
   ["阿瓦鲨（柠檬鲨的样子）", "平和", "HAB"], ["阿瓦鲨（虎纹鲨的样子）", "固执", "HAS"],
-  ["冰钻布鲁斯（首领化）", "固执", "HAS"], ["琉璃水母（首领化）", "沉默", "HBD"],
+  ["圣冠布鲁斯", "固执", "HAS"], ["琉璃君主", "沉默", "HBD"],
 ];
 const stats = { H: "hp", A: "physicalAttack", B: "physicalDefense", C: "magicalAttack", D: "magicalDefense", S: "speed" };
 

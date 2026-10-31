@@ -34,7 +34,7 @@ import { hasNativeMoonMemoryTrait } from "./domain/moon-memory-trait-options.js"
 import { QuickNaturePicker } from "./components/QuickNaturePicker.jsx";
 import { QuickIvPicker } from "./components/QuickIvPicker.jsx";
 import { ResultRail } from "./components/ResultRail.jsx";
-import { dynamicInputsForSkill, isDynamicInputVisible, mergeDynamicInputs, SingleSkillEditor, TraitInputs } from "./components/SingleSkillEditor.jsx";
+import { dynamicInputsForSkill, isDynamicInputVisible, mergeDynamicInputs, withoutTraitLinkedSkillInputs, SingleSkillEditor, TraitInputs } from "./components/SingleSkillEditor.jsx";
 import { TraitHint } from "./components/TraitHint.jsx";
 import { S5PreviewTraitSummary } from "./components/S5PreviewTraitSummary.jsx";
 import { CompactConditionDialog, CompactConditionTrigger } from "./components/CompactConditions.jsx";
@@ -370,7 +370,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       if (!spirit) continue;
       linked = linkStarfallTraitControls(linked, getTraitView(snapshot, spirit, role)?.inputs ?? [], targetStarfallStacksForSide(owner));
       const target = owner === "attacker" ? "defender" : "attacker";
-      linked = linkEnemyCostTraitControls(linked, getTraitView(snapshot, spirit, role)?.inputs ?? [], carriedSkillTotalCost(state.sides[target], state.mode, getSnapshotIndexes(snapshot).skills, state.directions[target === "attacker" ? "forward" : "reverse"].overrides));
+      const traitView = getTraitView(snapshot, spirit, role);
+      const requireKnown = traitView?.previewTraitEntity?.previewIdentity?.mechanicKey === "boss-ice-bruce";
+      linked = linkEnemyCostTraitControls(linked, traitView?.inputs ?? [], carriedSkillTotalCost(state.sides[target], state.mode, getSnapshotIndexes(snapshot).skills, state.directions[target === "attacker" ? "forward" : "reverse"].overrides, { requireKnown }));
     }
     return linked;
   }
@@ -1682,7 +1684,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const spirit = side === "attacker" ? attacker : defender;
     const trait = spirit?.previewIdentity ? getTraitView(snapshot, spirit, "attacker") : null;
     const direction = side === "attacker" ? "forward" : "reverse";
-    const context = state.directions[direction].context;
+    const context = linkedStarfallTraitContext(side, state.directions[direction].context);
     const previewEditor = trait?.previewTraitEntity ? (
       <div className="four-skill-trait-controls s5-preview-trait-editor">
         <TraitHint name={trait.name} description={trait.description} />
@@ -2104,10 +2106,11 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       const label = t(activeAttackSideKey === "attacker" ? "攻击方" : "防御方");
       const choiceTraitInput = (activeAttackSideKey === "attacker" ? attackerTraits : defenderTraits)
         .some((trait) => supportsChoiceTrait(trait?.displayName ?? trait?.name)) ? getChoiceTraitInput(selectedSingleSkill) : null;
-      const inputs = mergeDynamicInputs(dynamicInputsForSkill(selectedSingleSkill, {
+      const inputs = withoutTraitLinkedSkillInputs(mergeDynamicInputs(dynamicInputsForSkill(selectedSingleSkill, {
         includeNegativeStatusEffects: state.calculationOptions?.includeNegativeStatusSettlement === true,
         includeStatusEffects: true,
-      }), resultModel.selectedResult?.inputs ?? [], choiceTraitInput ? [choiceTraitInput] : []);
+      }), resultModel.selectedResult?.inputs ?? [], choiceTraitInput ? [choiceTraitInput] : []),
+        activeAttackSideKey === "attacker" ? attackerTraits : defenderTraits);
       compactSingleConditions = compactConditionModel({
         key: `single:${activeAttackSideKey}:${activeAttackSpirit.id}:${activeDefenseSpirit.id}:${selectedSingleSkill.id}`,
         side: activeAttackSideKey, kind: "skill", title: t("{side} · {name}条件", { side: label, name: entityName("skill", selectedSingleSkill) }), triggerLabel: t("{side}当前技能条件", { side: label }), inputs,

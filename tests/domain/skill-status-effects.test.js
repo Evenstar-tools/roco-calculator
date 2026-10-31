@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   getStatusSkillTriggerPreview,
+  getSkillStatusEffect,
   getSkillStatusEffectInputs,
   resolveSkillStatusActivation,
 } from "../../src/domain/skill-status-effects.js";
@@ -8,6 +9,38 @@ import {
 const skill = (name, extra = {}) => ({ name, ...extra });
 
 describe("skill status effects", () => {
+  test("S5筑梦沿用梦境天气动作", () => {
+    expect(resolveSkillStatusActivation(skill("筑梦", { category: "status", basePower: null })))
+      .toMatchObject({ applied: true, operations: { weather: "dream" } });
+  });
+  test("S5热桥保持80%减伤，应对成功只降低对手魔防60%", () => {
+    const current = skill("热桥", { category: "defense", basePower: null,
+      description: "减伤80%，应对攻击：敌方获得魔防-60%。" });
+    expect(resolveSkillStatusActivation(current)).toMatchObject({
+      deltas: { targetDefense: 0 }, operations: { defenseReductionPercent: 80, targetMagicalDefenseStageAdd: 0 },
+    });
+    const [control] = getSkillStatusEffectInputs(current);
+    expect(resolveSkillStatusActivation(current, { [control.id]: true })).toMatchObject({
+      deltas: { targetDefense: 0 }, operations: { defenseReductionPercent: 80, targetMagicalDefenseStageAdd: -6 },
+    });
+  });
+  test("S5地缚灵降低双防70%，仅当回合换宠附加速度平值-50", () => {
+    const current = skill("地缚灵", { category: "status", basePower: null });
+    expect(resolveSkillStatusActivation(current)).toMatchObject({ deltas: { targetDefense: -7, targetSpeedFlat: 0 } });
+    const [control] = getSkillStatusEffectInputs(current);
+    expect(resolveSkillStatusActivation(current, { [control.id]: true, statusTriggerCount: 3 }))
+      .toMatchObject({ deltas: { targetDefense: -7, targetSpeedFlat: -50 }, triggerCount: 1 });
+  });
+  test("S5画龙点睛仅在确认蓄力完成或免蓄力后加双攻80%和速度平值30", () => {
+    const current = skill("画龙点睛", { category: "status", basePower: null });
+    expect(resolveSkillStatusActivation(current)).toMatchObject({ applied: false, deltas: { ownAttack: 0, ownSpeedFlat: 0 } });
+    const [control] = getSkillStatusEffectInputs(current);
+    expect(resolveSkillStatusActivation(current, { [control.id]: true, statusTriggerCount: 2 }))
+      .toMatchObject({ applied: true, deltas: { ownAttack: 8, ownSpeedFlat: 30 }, triggerCount: 1 });
+  });
+  test.each(["筑梦", "热桥", "地缚灵", "画龙点睛"])("S5 %s状态规则不进入国际服S3历史规则", name => {
+    expect(getSkillStatusEffect(skill(name, { calculationRuleset: "s3-midseason-2026-08-13" }))).toBeNull();
+  });
   test.each([[0, 50], [3, 80], [5, 100], [99, 100]])("不可接触读取 %s 层中毒增加减伤", (poisonStacks, reduction) => {
     expect(resolveSkillStatusActivation(skill("不可接触", {
       category: "defense", description: "减伤50%，敌方每有1层中毒效果，本技能减伤+10%，应对攻击。",

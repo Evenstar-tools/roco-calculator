@@ -1,5 +1,7 @@
 import { getEffectiveTraits } from "../../domain/effective-traits.js";
 import { getS5PreviewTraitEvaluation } from "../../domain/s5-preview-traits.js";
+import { carriedSkillTotalCost } from "../../domain/skill-result/loadout.js";
+import { getSnapshotIndexes } from "../../domain/snapshot-indexes.js";
 
 const RESULT_IDENTITY_FIELDS = ["id", "name", "skillId", "skillName", "selected"];
 
@@ -15,9 +17,19 @@ export function withS5PreviewCalculationGuard(view, snapshot, state) {
     const side = state?.sides?.[sideKey];
     const direction = sideKey === "attacker" ? "forward" : "reverse";
     const traits = snapshot && getEffectiveTraits(snapshot, { ...side, spirit });
-    const evaluations = (traits || []).map((trait) => getS5PreviewTraitEvaluation(
-      trait, "attacker", state?.directions?.[direction]?.context ?? {},
-    )).filter(Boolean);
+    const evaluations = (traits || []).map((trait) => {
+      let context = { ...state?.directions?.[direction]?.context,
+        ...state?.directions?.[direction]?.overrides?.context };
+      if (trait.previewIdentity?.mechanicKey === "boss-ice-bruce") {
+        const opponentKey = sideKey === "attacker" ? "defender" : "attacker";
+        const opponentDirection = opponentKey === "attacker" ? "forward" : "reverse";
+        context = { ...context, automaticEnemyTotalSkillCost: carriedSkillTotalCost(
+          state.sides[opponentKey], state.mode, getSnapshotIndexes(snapshot).skills,
+          state.directions[opponentDirection]?.overrides, { requireKnown: true },
+        ) };
+      }
+      return getS5PreviewTraitEvaluation(trait, "attacker", context);
+    }).filter(Boolean);
     for (const evaluation of evaluations) {
       if (evaluation.blockingReason) pendingReasons.push(`${spirit?.fullName ?? "S5特性"}：${evaluation.blockingReason}`);
     }

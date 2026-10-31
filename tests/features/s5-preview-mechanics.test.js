@@ -97,20 +97,21 @@ describe("S5视频机制候选合同", () => {
     expect(reduceS5Preview("gold-vein-dragon", first.state, { id: "charge2", type: "charge-complete" }).state.chargeCount).toBe(2);
   });
 
-  test.each([[19, false], [20, true], [25, true]])("首领布鲁斯已核验口径总能耗%s时仅求固定速度门槛，不猜累计威力", (totalCost, speed) => {
-    const result = run("boss-ice-bruce", "opponent-total-cost", { totalCost }, undefined, { costBasis: "reviewed-total" });
-    expect(result.effects).toContainEqual({ kind: "per-opponent-cost-power", perCostPercent: 10, opponentTotalCost: totalCost, costBasis: "reviewed-total" });
-    expect(result.effects.filter(({ kind }) => kind === "speed-flat")).toEqual(speed ? [{ kind: "speed-flat", amount: 50 }] : []);
-    expect(adaptS5PreviewEffects(result).modifiers.some(({ field }) => field === "powerPercentAdd")).toBe(false);
+  test.each([[15, false], [16, true], [20, true]])("烈冰钻携带总能耗%s自动产生每点10%%威力和速度门槛", (totalCost, speed) => {
+    const result = run("boss-ice-bruce", "opponent-total-cost", { totalCost });
+    expect(result.effects).toContainEqual({ kind: "skill-power-percent", amount: totalCost * 10 });
+    expect(result.effects.filter(({ kind }) => kind === "speed-flat")).toEqual(speed ? [{ kind: "speed-flat", amount: 75 }] : []);
+    expect(adaptS5PreviewEffects(result).modifiers).toContainEqual({ direction: "outgoing", field: "powerPercentAdd", value: totalCost * 10 });
   });
 
-  test("首领布鲁斯总能耗口径缺失则阻断，只有另行核验的当前威力总增益才可传递", () => {
-    expect(run("boss-ice-bruce", "opponent-total-cost", { totalCost: 20 }).status).toBe("blocked");
+  test("烈冰钻统计口径已确认为携带技能，缺失或无效总耗仍阻断且不再读取旧手调威力", () => {
+    expect(run("boss-ice-bruce", "opponent-total-cost", {}).status).toBe("blocked");
+    expect(run("boss-ice-bruce", "opponent-total-cost", { totalCost: -1 }).status).toBe("blocked");
     expect(run("boss-ice-bruce", "opponent-loadout", { totalCost: 20 }).effects).toEqual([]);
     const result = run("boss-ice-bruce", "opponent-total-cost", { totalCost: 20 }, undefined, {
       costBasis: "reviewed-total", currentPowerBonusPercent: 65,
     });
-    expect(adaptS5PreviewEffects(result).modifiers).toContainEqual({ direction: "outgoing", field: "powerPercentAdd", value: 65 });
+    expect(adaptS5PreviewEffects(result).modifiers).toContainEqual({ direction: "outgoing", field: "powerPercentAdd", value: 200 });
   });
 
   test("首领水母不猜印记所属方；口径核验后才取中毒印记x2给敌", () => {

@@ -378,7 +378,7 @@ describe("S5萌系天气的明确回合末寄生动作", () => {
     const f = fixture("lily-of-valley");
     f.state.directions.forward.context = { attackerTraitS5DreamActive: true, attackerTraitS5TurnEndConfirmed: true };
     const result = applyS5PreviewDreamTurnEnd(f.state, { side: "attacker", snapshot: f.snapshot });
-    expect(result).toMatchObject({ applied: false, added: 0, total: 0, reason: expect.stringContaining("天气") });
+    expect(result).toMatchObject({ applied: false, added: 0, total: 0, reason: expect.stringContaining("霞光梦境") });
     expect(result.state).toBe(f.state);
   });
 

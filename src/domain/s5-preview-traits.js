@@ -64,11 +64,12 @@ export function getS5PreviewTraitInputs(trait, role = "attacker") {
       controls = [boolean("EggTriggered", "特性触发")];
       break;
     case "boss-ice-bruce":
-      controls = [
-        number("CurrentPowerBonus", "当前累计已生效威力增益（手动）", 0, { unit: "%" }),
-        number("OpponentTotalCost", "已核对对手总能耗（手动当前值）"),
-      ];
-      break;
+      return normalizeTriggerControls([
+        { key: "enemyTotalSkillCostAuto", label: "自动能耗", type: "boolean", defaultValue: true, scope: "direction" },
+        { key: "enemyTotalSkillCost", label: "敌方技能总能耗", type: "number", defaultValue: 0, min: 0, scope: "direction",
+          visibleWhen: { contextKey: "enemyTotalSkillCostAuto", equals: false, defaultValue: true } },
+        { key: "speedBoostTriggered", label: "加速（速度+75）", type: "boolean", defaultValue: false, scope: "direction" },
+      ], { source: rolePrefix(role) });
     case "boss-glass-jellyfish":
       controls = [
         boolean("SkillUsed", "已确认本次使用技能"),
@@ -103,7 +104,7 @@ export function getS5PreviewTraitInputs(trait, role = "attacker") {
       break;
     case "lily-of-valley":
       controls = [
-        { ...boolean("DreamActive", "萌系天气（占位）"), scope: "battle" },
+        { ...boolean("DreamActive", "霞光梦境"), scope: "battle" },
         { ...boolean("TurnEndConfirmed", "回合结束 · 对手寄生+3"), action: "s5-dream-turn-end" },
       ];
       break;
@@ -230,12 +231,20 @@ export function getS5PreviewTraitEvaluation(trait, role = "attacker", context = 
       break;
     }
     case "boss-ice-bruce": {
-      const bonus = amount("CurrentPowerBonus");
-      const cost = amount("OpponentTotalCost");
-      result.summary = "当前累计威力 +" + bonus + "%；手动对手总能耗 " + cost + (cost >= 20 ? "；速度 +50" : "；速度无额外增益");
-      result.note = "威力总值和总能耗由玩家按实际当前口径核对，不从配招或消耗历史自动推定。";
+      const costControl = getS5PreviewTraitInputs(trait, role).find(control => control.contextKey === "enemyTotalSkillCost");
+      if (values.enemyTotalSkillCostAuto !== false &&
+          (context[costControl.id] === null || !Number.isSafeInteger(values.enemyTotalSkillCost) || values.enemyTotalSkillCost < 0)) {
+        result.summary = "对手有技能能耗待确认，请关闭自动能耗后手动填写总值";
+        block(result.summary);
+        break;
+      }
+      const cost = Math.max(0, Number(values.enemyTotalSkillCost) || 0);
+      const bonus = cost * 10;
+      const speedBoost = cost > 15 || values.speedBoostTriggered === true;
+      result.summary = "敌方携带技能总能耗 " + cost + "；威力 +" + bonus + "%" + (speedBoost ? "；速度 +75" : "；速度无额外增益");
+      result.note = "默认读取对手携带技能总能耗；关闭自动能耗后可手动填写，总能耗大于15时速度+75，也可勾选加速直接计入。";
       if (bonus) result.effects.push({ kind: "skill-power-percent", amount: bonus });
-      if (cost >= 20) result.effects.push({ kind: "speed-flat", amount: 50 });
+      if (speedBoost) result.effects.push({ kind: "speed-flat", amount: 75 });
       break;
     }
     case "boss-glass-jellyfish": {
@@ -284,8 +293,8 @@ export function getS5PreviewTraitEvaluation(trait, role = "attacker", context = 
     case "lily-of-valley":
       // Weather is global. Old per-trait confirmations must never replay a turn.
       result.summary = context.weatherDream === true
-        ? "萌系天气生效：回合结束可给对手3层寄生"
-        : "萌系天气未生效，无寄生施加";
+        ? "霞光梦境生效：回合结束可给对手3层寄生"
+        : "霞光梦境未生效，无寄生施加";
       result.note = "点击回合结束挂寄生；不自动推进回合或扣血。";
       break;
   }
@@ -313,7 +322,12 @@ function neutral() {
 }
 
 export function resolveS5PreviewTraitEffect(trait, role = "attacker", input = {}) {
-  const evaluation = getS5PreviewTraitEvaluation(trait, role, input.context, { skill: input.skill });
+  const opponent = role === "defender" ? input.attacker : input.defender;
+  const totalCost = trait?.previewIdentity?.mechanicKey === "boss-ice-bruce" && opponent?.confirmedTotalSkillCost !== undefined
+    ? opponent.confirmedTotalSkillCost : opponent?.totalSkillCost;
+  const context = totalCost === undefined ? input.context
+    : { ...input.context, automaticEnemyTotalSkillCost: totalCost };
+  const evaluation = getS5PreviewTraitEvaluation(trait, role, context, { skill: input.skill });
   if (!evaluation) return null;
   const result = neutral();
   if (evaluation.blockingReason) return result;

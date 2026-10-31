@@ -274,7 +274,7 @@ test("纯状态技能触发次数控件与摘要、来源一致，双方同名�
 describe("shared battle activation", () => {
   test.each([
     ["落雨", "rain"], ["降雨", "rain"], ["惊雷", "thunder"],
-    ["沙涌", "sandstorm"], ["冬至", "blizzard"],
+    ["沙涌", "sandstorm"], ["冬至", "blizzard"], ["筑梦", "dream"],
   ])("%s切换全场天气并清除旧天气，持续8回合", async (name, weather) => {
     const snapshot = createSnapshot();
     snapshot.skills.push({ id: "weather-skill", name, category: "status", basePower: 0, type: "水" });
@@ -292,37 +292,43 @@ describe("shared battle activation", () => {
       weatherThunder: weather === "thunder",
       weatherSandstorm: weather === "sandstorm",
       weatherBlizzard: weather === "blizzard",
+      weatherDream: weather === "dream",
       weatherTurns: 8,
     };
     for (const direction of ["forward", "reverse"]) expect(result.state.directions[direction].context).toMatchObject(expected);
     const decoded = await decodeShareState(await encodeShareState(result.state));
     expect(decoded.directions.forward.context).toMatchObject(expected);
   });
-  test("寒风吹使用后只降低敌方魔防，保留物防及另一方向并支持分享", async () => {
+  test.each([
+    ["寒风吹", "magical", 70, "造成魔伤，敌方获得魔防-50%。", {}, -5],
+    ["热桥", "defense", null, "减伤80%，应对攻击：敌方获得魔防-60%。", { defenseCounterSucceeded: true }, -6],
+  ])("%s使用后只降低敌方魔防，保留物防及另一方向并支持分享", async (name, category, basePower, description, context, stage) => {
     const snapshot = createSnapshot();
-    snapshot.skills.push({ id: "chill-wind", name: "寒风吹", category: "magical", basePower: 70, type: "冰", description: "造成魔伤，敌方获得魔防-50%。" });
+    snapshot.skills.push({ id: "chill-wind", name, category, basePower, type: "冰", description });
     const state = createInitialState(snapshot);
     state.mode = "four";
     state.sides.attacker.spiritId = "attacker";
     state.sides.defender.spiritId = "defender";
-    state.sides.attacker.skills.four = ["chill-wind", "scratch", "grass-skill", "opportunity"];
+    state.sides.attacker.skills.four = [{ skillId: "chill-wind", context }, "scratch", "grass-skill", "opportunity"];
     const view = (current) => buildCalculatorViewModel({ activeDirection: "forward", snapshot, state: current }).calculation.forward.results;
     const before = view(state);
     const applied = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot, state });
     expect(applied.applied).toBe(true);
-    expect(applied.state.directions.forward.overrides.magicalDefenseLevelStageAdd).toBe(-5);
+    expect(applied.state.directions.forward.overrides.magicalDefenseLevelStageAdd).toBe(stage);
     const after = view(applied.state);
     expect(after[2].totalDamage).toBeGreaterThan(before[2].totalDamage);
     expect(after[1].totalDamage).toBe(before[1].totalDamage);
     expect(after[2].combatPanel.defender.magicalDefense).toBeLessThan(before[2].combatPanel.defender.magicalDefense);
     expect(after[2].combatPanel.defender.physicalDefense).toBe(before[2].combatPanel.defender.physicalDefense);
     expect(applied.state.directions.reverse.overrides.magicalDefenseLevelStageAdd ?? 0).toBe(0);
-    expect((await decodeShareState(await encodeShareState(applied.state))).directions.forward.overrides.magicalDefenseLevelStageAdd).toBe(-5);
-    const stacked = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot, state: applied.state });
-    expect(stacked.state.directions.forward.overrides.magicalDefenseLevelStageAdd).toBe(-10);
-    state.sides.defender.skills.four = ["chill-wind", "scratch", "grass-skill", null];
+    expect((await decodeShareState(await encodeShareState(applied.state))).directions.forward.overrides.magicalDefenseLevelStageAdd).toBe(stage);
+    if (category !== "defense") {
+      const stacked = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot, state: applied.state });
+      expect(stacked.state.directions.forward.overrides.magicalDefenseLevelStageAdd).toBe(stage * 2);
+    }
+    state.sides.defender.skills.four = [{ skillId: "chill-wind", context }, "scratch", "grass-skill", null];
     const reverse = applyBattleActivation({ side: "defender", skillIndex: 0, snapshot, state });
-    expect(reverse.state.directions.reverse.overrides.magicalDefenseLevelStageAdd).toBe(-5);
+    expect(reverse.state.directions.reverse.overrides.magicalDefenseLevelStageAdd).toBe(stage);
     expect(reverse.state.directions.forward.overrides.magicalDefenseLevelStageAdd ?? 0).toBe(0);
   });
   test("热身的临时威力支持2倍与4倍切换，再次触发取消且不改其他方向", () => {

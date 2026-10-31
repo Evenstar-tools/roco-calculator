@@ -737,8 +737,8 @@ export function applyConfiguration(
       });
     } else if (snapshot) {
       const skill = getSkill(snapshot, entrySkillId(entry));
-      if (skill?.id?.startsWith("skill_preview_s5_") && skill.calculationStatus === "pending-skill-data") {
-        // Known description hits remain editable even while damage parameters are pending.
+      if (skill?.id?.startsWith("skill_preview_s5_")) {
+        // S5 defaults arrive as bare ids; keep their declared hits, editable or not yet calculable.
         nextState = calculatorReducer(nextState, {
           direction,
           type: "direction/update",
@@ -1003,7 +1003,7 @@ export function updateGlobalWeather(state, weather) {
           weatherSandstorm: nextWeather === "sandstorm",
           weatherBlizzard: nextWeather === "blizzard",
           weatherDream: nextWeather === "dream",
-          weatherTurns: nextWeather === "none" || nextWeather === "dream" ? 0 : 8,
+          weatherTurns: nextWeather === "none" ? 0 : 8,
         },
       },
     });
