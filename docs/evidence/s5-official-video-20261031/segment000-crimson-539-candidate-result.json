@@ -1,0 +1,1563 @@
+{
+  "eventId": "segment000-crimson-539",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "engine": "Current Web S5 overlay -> UI selectSpirit/selectFourSkill -> buildBalanceComparison",
+  "cliBoundary": "Ordinary compact CLI omits per-owner S5 level; this adapter uses the actual Web level pipeline.",
+  "versions": {
+    "data": "s4-2026-09-10",
+    "rules": "s4-2026-09-10"
+  },
+  "defaultPresets": {
+    "attacker": {
+      "spirit": "冥古龙",
+      "spiritId": "spirit_preview_s5_minggulong",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "恶龙的奢望"
+      ],
+      "skills": [
+        {
+          "id": "skill_preview_s5_barren-devour",
+          "name": "荒芜之噬",
+          "cost": 5,
+          "basePower": 130
+        },
+        {
+          "id": "skill_preview_s5_curse-flame",
+          "name": "咒火",
+          "cost": 3,
+          "basePower": null
+        },
+        {
+          "id": "skill_preview_s5_dark-curse",
+          "name": "冥暗诅咒",
+          "cost": 2,
+          "basePower": null
+        },
+        {
+          "id": "skill_preview_s5_crimson-dragon-strike",
+          "name": "深红龙击",
+          "cost": 5,
+          "basePower": 115
+        }
+      ]
+    },
+    "defender": {
+      "spirit": "寂灭骨龙",
+      "spiritId": "spirit_2c2d72d3c0bbe704",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "不朽"
+      ],
+      "skills": [
+        {
+          "id": "skill_c9d031d10d97fac6",
+          "name": "诡刺",
+          "cost": 0,
+          "basePower": 40
+        },
+        {
+          "id": "skill_9d7e8cf644d86b9c",
+          "name": "坟场搏击",
+          "cost": 4,
+          "basePower": 180
+        },
+        {
+          "id": "skill_e746a8a9e4a70693",
+          "name": "龙吼",
+          "cost": 1,
+          "basePower": 60
+        },
+        {
+          "id": "skill_223a2e5113de216f",
+          "name": "幻象",
+          "cost": 1,
+          "basePower": 60
+        }
+      ]
+    }
+  },
+  "selectedSkills": [
+    {
+      "side": "attacker",
+      "skill": "深红龙击",
+      "skillId": "skill_preview_s5_crimson-dragon-strike",
+      "index": 3,
+      "presentInDefaultFour": true,
+      "reason": "Select the observed action for damage replay; preserve other default slots."
+    }
+  ],
+  "uiDefaultBaseline": {
+    "label": "Actual UI spirit-selection defaults with observed action selected; includes default trait controls/levels",
+    "evidence": [],
+    "state": {
+      "schemaVersion": 1,
+      "versions": {
+        "data": "s4-2026-09-10",
+        "rules": "s4-2026-09-10"
+      },
+      "mode": "four",
+      "calculationOptions": {
+        "includeNegativeStatusSettlement": false
+      },
+      "marks": {
+        "attacker": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        },
+        "defender": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        }
+      },
+      "negativeStatuses": {
+        "attacker": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        },
+        "defender": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        }
+      },
+      "sides": {
+        "attacker": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_preview_s5_barren-devour",
+              "skill_preview_s5_curse-flame",
+              "skill_preview_s5_dark-curse",
+              "skill_preview_s5_crimson-dragon-strike"
+            ],
+            "single": "skill_preview_s5_barren-devour"
+          },
+          "spiritId": "spirit_preview_s5_minggulong",
+          "traitValues": {}
+        },
+        "defender": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_c9d031d10d97fac6",
+              "skill_9d7e8cf644d86b9c",
+              "skill_e746a8a9e4a70693",
+              "skill_223a2e5113de216f"
+            ],
+            "single": "skill_c9d031d10d97fac6"
+          },
+          "spiritId": "spirit_2c2d72d3c0bbe704",
+          "traitValues": {}
+        }
+      },
+      "directions": {
+        "forward": {
+          "selectedSkillIndex": 3,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {},
+          "overrides": {}
+        },
+        "reverse": {
+          "selectedSkillIndex": 0,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {},
+          "overrides": {}
+        }
+      }
+    },
+    "result": {
+      "skillId": "skill_preview_s5_crimson-dragon-strike",
+      "skillName": "深红龙击",
+      "status": "exact",
+      "skillCost": 5,
+      "resolvedPower": 115,
+      "staticPower": 115,
+      "displayPower": 287,
+      "hitCount": 1,
+      "hitDamages": [
+        545
+      ],
+      "totalDamage": 545,
+      "hpPercent": 128.23529411764707,
+      "combatPanel": {
+        "attacker": {
+          "magicalAttack": 167,
+          "physicalAttack": 295,
+          "speed": 209
+        },
+        "defender": {
+          "magicalDefense": 182,
+          "physicalDefense": 207,
+          "speed": 159
+        }
+      },
+      "gainSummary": "",
+      "formulaSteps": [
+        {
+          "label": "攻击面板",
+          "input": "physicalAttack",
+          "before": 295,
+          "after": 295,
+          "value": "295",
+          "source": "panel-stat"
+        },
+        {
+          "label": "蓄力永久减耗",
+          "input": 0,
+          "before": 5,
+          "after": 5,
+          "source": "official-video:BV1SNxq6REfb:2026-10-31"
+        },
+        {
+          "label": "基础威力",
+          "input": 115,
+          "before": 115,
+          "after": 115,
+          "value": "115",
+          "source": "snapshot-skill"
+        },
+        {
+          "label": "固定威力增加",
+          "input": 0,
+          "before": 115,
+          "after": 115,
+          "value": "115",
+          "source": "default"
+        },
+        {
+          "label": "继承迸发固定威力",
+          "input": 0,
+          "before": 115,
+          "after": 115,
+          "value": "115",
+          "source": "default"
+        },
+        {
+          "label": "印记固定威力",
+          "input": 0,
+          "before": 115,
+          "after": 115,
+          "value": "115",
+          "source": "default"
+        },
+        {
+          "label": "特性固定威力",
+          "input": 0,
+          "before": 115,
+          "after": 115,
+          "value": "115",
+          "source": "default"
+        },
+        {
+          "label": "技能威力百分比",
+          "input": [],
+          "before": 115,
+          "after": 115,
+          "value": "115",
+          "source": "default"
+        },
+        {
+          "label": "本系",
+          "input": 1.25,
+          "before": 115,
+          "after": 143.75,
+          "value": "143.75",
+          "source": "automatic"
+        },
+        {
+          "label": "属性克制",
+          "input": [
+            "龙",
+            "幽"
+          ],
+          "before": 143.75,
+          "after": 287.5,
+          "value": "287.5",
+          "source": {
+            "title": "BWIKI 精灵详情页属性克制",
+            "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+            "revision": null,
+            "fetchedAt": "2026-07-23T13:54:31.332Z",
+            "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+          }
+        },
+        {
+          "label": "攻防等级",
+          "input": 1,
+          "before": 287.5,
+          "after": 287.5,
+          "value": "287.5",
+          "source": "direction-state"
+        },
+        {
+          "label": "其他威力乘区",
+          "input": 1,
+          "before": 287.5,
+          "after": 287.5,
+          "value": "287.5",
+          "source": "direction-state"
+        },
+        {
+          "label": "显示威力",
+          "input": {
+            "method": "floor"
+          },
+          "before": 287.5,
+          "after": 287,
+          "value": "287",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "等级系数与攻防比",
+          "input": {
+            "level": 99,
+            "coefficient": 1.3304878048780486,
+            "attackerStat": 295,
+            "calculationPower": 287.5,
+            "damageReductionMultiplier": 1,
+            "defenderDefense": 207,
+            "displayedPower": 287,
+            "roundedNumerator": 112842,
+            "unroundedNumerator": 112841.9969512195,
+            "unroundedOneHit": 545.1304347826087
+          },
+          "before": 112841.9969512195,
+          "after": 545,
+          "value": "545",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "减伤、连击与最终倍率",
+          "input": {
+            "damageReductionMultiplier": 1,
+            "hitCount": 1,
+            "finalDamageMultiplier": 1,
+            "oneHitAfterFinal": 545
+          },
+          "before": 545,
+          "after": 545,
+          "value": "545",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "星陨追加伤害",
+          "input": {
+            "stacks": 0,
+            "power": 0
+          },
+          "before": 545,
+          "after": 0,
+          "value": "0",
+          "source": "reviewed-rule:starfall-v1"
+        }
+      ],
+      "warnings": []
+    },
+    "cli": {
+      "skipped": true,
+      "reason": "At least one S5 owner level differs from60; ordinary compact CLI omits side.level."
+    },
+    "panels": {
+      "attacker": {
+        "physicalAttack": 295,
+        "magicalAttack": 167,
+        "speed": 209,
+        "hp": 576,
+        "physicalDefense": 225,
+        "magicalDefense": 199
+      },
+      "defender": {
+        "physicalAttack": 244,
+        "magicalAttack": 148,
+        "speed": 159,
+        "hp": 425,
+        "physicalDefense": 207,
+        "magicalDefense": 182
+      }
+    }
+  },
+  "localReplayOnlySkills": [],
+  "localSkillAliases": {},
+  "isolatedCliProjectRoot": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-crimson-539",
+  "expectedDamage": 539,
+  "steps": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "evidence": [],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_preview_s5_barren-devour",
+                "skill_preview_s5_curse-flame",
+                "skill_preview_s5_dark-curse",
+                "skill_preview_s5_crimson-dragon-strike"
+              ],
+              "single": "skill_preview_s5_barren-devour"
+            },
+            "spiritId": "spirit_preview_s5_minggulong",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_c9d031d10d97fac6",
+                "skill_9d7e8cf644d86b9c",
+                "skill_e746a8a9e4a70693",
+                "skill_223a2e5113de216f"
+              ],
+              "single": "skill_c9d031d10d97fac6"
+            },
+            "spiritId": "spirit_2c2d72d3c0bbe704",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 3,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "attackerTrait.attackerTraitS5BattleLevel.3d741017": 60,
+              "attackerTraitS5BattleLevel": 60
+            },
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "defenderTrait.defenderTraitS5BattleLevel.3d741017": 60,
+              "defenderTraitS5BattleLevel": 60
+            },
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_preview_s5_crimson-dragon-strike",
+        "skillName": "深红龙击",
+        "status": "exact",
+        "skillCost": 5,
+        "resolvedPower": 115,
+        "staticPower": 115,
+        "displayPower": 287,
+        "hitCount": 1,
+        "hitDamages": [
+          293
+        ],
+        "totalDamage": 293,
+        "hpPercent": 68.94117647058823,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 139,
+            "physicalAttack": 234,
+            "speed": 170
+          },
+          "defender": {
+            "magicalDefense": 182,
+            "physicalDefense": 207,
+            "speed": 159
+          }
+        },
+        "gainSummary": "",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "physicalAttack",
+            "before": 234,
+            "after": 234,
+            "value": "234",
+            "source": "panel-stat"
+          },
+          {
+            "label": "蓄力永久减耗",
+            "input": 0,
+            "before": 5,
+            "after": 5,
+            "source": "official-video:BV1SNxq6REfb:2026-10-31"
+          },
+          {
+            "label": "基础威力",
+            "input": 115,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "snapshot-skill"
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 115,
+            "after": 143.75,
+            "value": "143.75",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "龙",
+              "幽"
+            ],
+            "before": 143.75,
+            "after": 287.5,
+            "value": "287.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 287.5,
+            "after": 287.5,
+            "value": "287.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 287.5,
+            "after": 287.5,
+            "value": "287.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 287.5,
+            "after": 287,
+            "value": "287",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 234,
+              "calculationPower": 287.5,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 207,
+              "displayedPower": 287,
+              "roundedNumerator": 60712,
+              "unroundedNumerator": 60711.58536585366,
+              "unroundedOneHit": 293.29468599033817
+            },
+            "before": 60711.58536585366,
+            "after": 293,
+            "value": "293",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 293
+            },
+            "before": 293,
+            "after": 293,
+            "value": "293",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 293,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-crimson-539/segment000-crimson-539-step-0.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:16a3aa0a65c4cc91da2fcb5f2582384c47bf5e71f6fe56229179beb51a534f26",
+        "result": {
+          "skillId": "skill_preview_s5_crimson-dragon-strike",
+          "skillName": "深红龙击",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 293,
+          "hpPercent": 68.94117647058823,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 287,
+          "effectivePower": 287,
+          "typeLabel": "龙",
+          "typeMultiplier": 2,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 234,
+          "magicalAttack": 139,
+          "speed": 170,
+          "hp": 422,
+          "physicalDefense": 182,
+          "magicalDefense": 162
+        },
+        "defender": {
+          "physicalAttack": 244,
+          "magicalAttack": 148,
+          "speed": 159,
+          "hp": 425,
+          "physicalDefense": 207,
+          "magicalDefense": 182
+        }
+      }
+    },
+    {
+      "label": "实帧确认冥古龙当前等级99，保持其他标准60/普通/IV60条件",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0024.png",
+          "fact": "左HUD冥古龙99级；未猜性格个体"
+        }
+      ],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_preview_s5_barren-devour",
+                "skill_preview_s5_curse-flame",
+                "skill_preview_s5_dark-curse",
+                "skill_preview_s5_crimson-dragon-strike"
+              ],
+              "single": "skill_preview_s5_barren-devour"
+            },
+            "spiritId": "spirit_preview_s5_minggulong",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_c9d031d10d97fac6",
+                "skill_9d7e8cf644d86b9c",
+                "skill_e746a8a9e4a70693",
+                "skill_223a2e5113de216f"
+              ],
+              "single": "skill_c9d031d10d97fac6"
+            },
+            "spiritId": "spirit_2c2d72d3c0bbe704",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 3,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "attackerTrait.attackerTraitS5BattleLevel.3d741017": 99,
+              "attackerTraitS5BattleLevel": 99
+            },
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "defenderTrait.defenderTraitS5BattleLevel.3d741017": 60,
+              "defenderTraitS5BattleLevel": 60
+            },
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_preview_s5_crimson-dragon-strike",
+        "skillName": "深红龙击",
+        "status": "exact",
+        "skillCost": 5,
+        "resolvedPower": 115,
+        "staticPower": 115,
+        "displayPower": 287,
+        "hitCount": 1,
+        "hitDamages": [
+          545
+        ],
+        "totalDamage": 545,
+        "hpPercent": 128.23529411764707,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 167,
+            "physicalAttack": 295,
+            "speed": 209
+          },
+          "defender": {
+            "magicalDefense": 182,
+            "physicalDefense": 207,
+            "speed": 159
+          }
+        },
+        "gainSummary": "",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "physicalAttack",
+            "before": 295,
+            "after": 295,
+            "value": "295",
+            "source": "panel-stat"
+          },
+          {
+            "label": "蓄力永久减耗",
+            "input": 0,
+            "before": 5,
+            "after": 5,
+            "source": "official-video:BV1SNxq6REfb:2026-10-31"
+          },
+          {
+            "label": "基础威力",
+            "input": 115,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "snapshot-skill"
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 115,
+            "after": 143.75,
+            "value": "143.75",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "龙",
+              "幽"
+            ],
+            "before": 143.75,
+            "after": 287.5,
+            "value": "287.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 287.5,
+            "after": 287.5,
+            "value": "287.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 287.5,
+            "after": 287.5,
+            "value": "287.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 287.5,
+            "after": 287,
+            "value": "287",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 99,
+              "coefficient": 1.3304878048780486,
+              "attackerStat": 295,
+              "calculationPower": 287.5,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 207,
+              "displayedPower": 287,
+              "roundedNumerator": 112842,
+              "unroundedNumerator": 112841.9969512195,
+              "unroundedOneHit": 545.1304347826087
+            },
+            "before": 112841.9969512195,
+            "after": 545,
+            "value": "545",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 545
+            },
+            "before": 545,
+            "after": 545,
+            "value": "545",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 545,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "skipped": true,
+        "reason": "At least one S5 owner level differs from60; ordinary compact CLI omits side.level."
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 295,
+          "magicalAttack": 167,
+          "speed": 209,
+          "hp": 576,
+          "physicalDefense": 225,
+          "magicalDefense": 199
+        },
+        "defender": {
+          "physicalAttack": 244,
+          "magicalAttack": 148,
+          "speed": 159,
+          "hp": 425,
+          "physicalDefense": 207,
+          "magicalDefense": 182
+        }
+      }
+    },
+    {
+      "label": "候选复现，未确证视频性格个体：逞强/普通",
+      "evidence": [
+        {
+          "kind": "inference_only",
+          "fact": "仅约束可读等级/HP和伤害；未公开性格和相关攻防个体不是官方配置"
+        },
+        {
+          "kind": "measured_hp_constraint",
+          "hp": {
+            "attacker": 487
+          }
+        },
+        {
+          "kind": "search_scope",
+          "fact": "All31 natures deduplicated by relevant HP and attack/defense multipliers; related attack/defense IV integers0..60; HP IV0..60 constrained by visible HP where supplied; no formula change; IV candidate not official"
+        }
+      ],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 23,
+              "speed": 60,
+              "physicalAttack": 2,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "defiant",
+            "skills": {
+              "four": [
+                "skill_preview_s5_barren-devour",
+                "skill_preview_s5_curse-flame",
+                "skill_preview_s5_dark-curse",
+                "skill_preview_s5_crimson-dragon-strike"
+              ],
+              "single": "skill_preview_s5_barren-devour"
+            },
+            "spiritId": "spirit_preview_s5_minggulong",
+            "traitValues": {},
+            "natureId": "defiant"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 59,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_c9d031d10d97fac6",
+                "skill_9d7e8cf644d86b9c",
+                "skill_e746a8a9e4a70693",
+                "skill_223a2e5113de216f"
+              ],
+              "single": "skill_c9d031d10d97fac6"
+            },
+            "spiritId": "spirit_2c2d72d3c0bbe704",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 3,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "attackerTrait.attackerTraitS5BattleLevel.3d741017": 99,
+              "attackerTraitS5BattleLevel": 99
+            },
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "defenderTrait.defenderTraitS5BattleLevel.3d741017": 60,
+              "defenderTraitS5BattleLevel": 60
+            },
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_preview_s5_crimson-dragon-strike",
+        "skillName": "深红龙击",
+        "status": "exact",
+        "skillCost": 5,
+        "resolvedPower": 115,
+        "staticPower": 115,
+        "displayPower": 287,
+        "hitCount": 1,
+        "hitDamages": [
+          539
+        ],
+        "totalDamage": 539,
+        "hpPercent": 126.82352941176471,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 167,
+            "physicalAttack": 292,
+            "speed": 209
+          },
+          "defender": {
+            "magicalDefense": 182,
+            "physicalDefense": 207,
+            "speed": 159
+          }
+        },
+        "gainSummary": "",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "physicalAttack",
+            "before": 292,
+            "after": 292,
+            "value": "292",
+            "source": "panel-stat"
+          },
+          {
+            "label": "蓄力永久减耗",
+            "input": 0,
+            "before": 5,
+            "after": 5,
+            "source": "official-video:BV1SNxq6REfb:2026-10-31"
+          },
+          {
+            "label": "基础威力",
+            "input": 115,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "snapshot-skill"
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 115,
+            "after": 115,
+            "value": "115",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 115,
+            "after": 143.75,
+            "value": "143.75",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "龙",
+              "幽"
+            ],
+            "before": 143.75,
+            "after": 287.5,
+            "value": "287.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 287.5,
+            "after": 287.5,
+            "value": "287.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 287.5,
+            "after": 287.5,
+            "value": "287.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 287.5,
+            "after": 287,
+            "value": "287",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 99,
+              "coefficient": 1.3304878048780486,
+              "attackerStat": 292,
+              "calculationPower": 287.5,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 207,
+              "displayedPower": 287,
+              "roundedNumerator": 111694,
+              "unroundedNumerator": 111694.45121951218,
+              "unroundedOneHit": 539.5845410628019
+            },
+            "before": 111694.45121951218,
+            "after": 539,
+            "value": "539",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 539
+            },
+            "before": 539,
+            "after": 539,
+            "value": "539",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 539,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "skipped": true,
+        "reason": "At least one S5 owner level differs from60; ordinary compact CLI omits side.level."
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 292,
+          "magicalAttack": 167,
+          "speed": 209,
+          "hp": 487,
+          "physicalDefense": 225,
+          "magicalDefense": 199
+        },
+        "defender": {
+          "physicalAttack": 244,
+          "magicalAttack": 148,
+          "speed": 159,
+          "hp": 425,
+          "physicalDefense": 207,
+          "magicalDefense": 182
+        }
+      }
+    }
+  ],
+  "comparison": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "status": "exact",
+      "actualDamage": 293,
+      "expectedDamage": 539,
+      "delta": -246
+    },
+    {
+      "label": "实帧确认冥古龙当前等级99，保持其他标准60/普通/IV60条件",
+      "status": "exact",
+      "actualDamage": 545,
+      "expectedDamage": 539,
+      "delta": 6
+    },
+    {
+      "label": "候选复现，未确证视频性格个体：逞强/普通",
+      "status": "exact",
+      "actualDamage": 539,
+      "expectedDamage": 539,
+      "delta": 0
+    }
+  ]
+}

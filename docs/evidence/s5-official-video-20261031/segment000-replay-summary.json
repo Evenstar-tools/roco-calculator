@@ -1,0 +1,272 @@
+[
+  {
+    "eventId": "segment000-crimson-539",
+    "videoDamage": 539,
+    "uiDefaultDamage": 545,
+    "standard60Damage": 293,
+    "visibleConditionDamage": 545,
+    "visibleConditionHitDamages": [
+      545
+    ],
+    "visibleConditionLabel": "实帧确认冥古龙当前等级99，保持其他标准60/普通/IV60条件",
+    "reproduced": false,
+    "resultPath": "segment000-crimson-539-evidence-result.json",
+    "uiCliMatchesWeb": null,
+    "visibleConditionCliMatchesWeb": null,
+    "candidateDamage": 539,
+    "candidateDescription": "仅候选：冥古龙99级/HP487，逞强，生命IV23、物攻IV2；寂灭骨龙普通、物防IV59；其余IV60。非视频官方配置。",
+    "candidateResultPath": "segment000-crimson-539-candidate-result.json",
+    "candidateMatch": true,
+    "candidateHitDamages": [
+      539
+    ],
+    "candidatePanels": {
+      "attacker": {
+        "physicalAttack": 292,
+        "magicalAttack": 167,
+        "speed": 209,
+        "hp": 487,
+        "physicalDefense": 225,
+        "magicalDefense": 199
+      },
+      "defender": {
+        "physicalAttack": 244,
+        "magicalAttack": 148,
+        "speed": 159,
+        "hp": 425,
+        "physicalDefense": 207,
+        "magicalDefense": 182
+      }
+    },
+    "candidateCliMatchesWeb": null,
+    "candidateCliSkipped": "At least one S5 owner level differs from60; ordinary compact CLI omits side.level.",
+    "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+    "videoConfigurationConfirmed": false
+  },
+  {
+    "eventId": "segment000-barren-559",
+    "videoDamage": 559,
+    "uiDefaultDamage": 616,
+    "standard60Damage": 331,
+    "visibleConditionDamage": 460,
+    "visibleConditionHitDamages": [
+      460
+    ],
+    "visibleConditionLabel": "实帧确认冥古龙当前等级79，保持其他标准60/普通/IV60条件",
+    "reproduced": false,
+    "resultPath": "segment000-barren-559-evidence-result.json",
+    "uiCliMatchesWeb": null,
+    "visibleConditionCliMatchesWeb": null,
+    "candidateDamage": 559,
+    "candidateDescription": "仅候选：冥古龙79级/HP497，普通，生命IV60、物攻IV57；寂灭骨龙大胆、物防IV13；其余IV60。两段冥古各自配置，不跨剪辑强制相同。",
+    "candidateResultPath": "segment000-barren-559-candidate-result.json",
+    "candidateMatch": true,
+    "candidateHitDamages": [
+      559
+    ],
+    "candidatePanels": {
+      "attacker": {
+        "physicalAttack": 262,
+        "magicalAttack": 153,
+        "speed": 189,
+        "hp": 497,
+        "physicalDefense": 203,
+        "magicalDefense": 180
+      },
+      "defender": {
+        "physicalAttack": 283,
+        "magicalAttack": 148,
+        "speed": 159,
+        "hp": 425,
+        "physicalDefense": 169,
+        "magicalDefense": 182
+      }
+    },
+    "candidateCliMatchesWeb": null,
+    "candidateCliSkipped": "At least one S5 owner level differs from60; ordinary compact CLI omits side.level.",
+    "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+    "videoConfigurationConfirmed": false
+  },
+  {
+    "eventId": "segment000-silver-228",
+    "videoDamage": 228,
+    "uiDefaultDamage": 135,
+    "standard60Damage": 135,
+    "visibleConditionDamage": 135,
+    "visibleConditionHitDamages": [
+      135
+    ],
+    "visibleConditionLabel": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+    "reproduced": false,
+    "resultPath": "segment000-silver-228-baseline-result.json",
+    "uiCliMatchesWeb": true,
+    "visibleConditionCliMatchesWeb": true,
+    "candidateDamage": 228,
+    "candidateDescription": "仅候选：地绡银龙60级/HP443，沉默，生命IV54、魔攻IV60；晶石蜗莲花刚玉候选形态、普通、魔防IV56；防方携带等价交换、点亮、反击拳、防反，均来自既有学习面且非地系，偏振自动不触发本次地系40%减伤。已删除手动偏振0减伤覆盖并重放228，CLI/Web一致。视频未展示此技能组，其余IV60。",
+    "candidateResultPath": "segment000-silver-228-candidate-result.json",
+    "candidateMatch": true,
+    "candidateHitDamages": [
+      228
+    ],
+    "candidatePanels": {
+      "attacker": {
+        "physicalAttack": 141,
+        "magicalAttack": 228,
+        "speed": 225,
+        "hp": 443,
+        "physicalDefense": 183,
+        "magicalDefense": 225
+      },
+      "defender": {
+        "physicalAttack": 200,
+        "magicalAttack": 204,
+        "speed": 165,
+        "hp": 381,
+        "physicalDefense": 244,
+        "magicalDefense": 191
+      }
+    },
+    "candidateCliMatchesWeb": true,
+    "candidateCliSkipped": null,
+    "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+    "videoConfigurationConfirmed": false
+  },
+  {
+    "eventId": "segment000-overcharge-253",
+    "videoDamage": 253,
+    "uiDefaultDamage": 212,
+    "standard60Damage": 212,
+    "visibleConditionDamage": 212,
+    "visibleConditionHitDamages": [
+      212
+    ],
+    "visibleConditionLabel": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+    "reproduced": false,
+    "resultPath": "segment000-overcharge-253-baseline-result.json",
+    "uiCliMatchesWeb": true,
+    "visibleConditionCliMatchesWeb": true,
+    "candidateDamage": 253,
+    "candidateDescription": "仅候选：龙嵴金脉普通、全IV60，HP468；翠顶夫人大胆、物防IV20，其余IV60。脚下两枚红12为盾形防御图标，不当作攻击聚能层数。",
+    "candidateResultPath": "segment000-overcharge-253-candidate-result.json",
+    "candidateMatch": true,
+    "candidateHitDamages": [
+      253
+    ],
+    "candidatePanels": {
+      "attacker": {
+        "physicalAttack": 237,
+        "magicalAttack": 157,
+        "speed": 181,
+        "hp": 468,
+        "physicalDefense": 233,
+        "magicalDefense": 190
+      },
+      "defender": {
+        "physicalAttack": 228,
+        "magicalAttack": 188,
+        "speed": 220,
+        "hp": 434,
+        "physicalDefense": 206,
+        "magicalDefense": 200
+      }
+    },
+    "candidateCliMatchesWeb": true,
+    "candidateCliSkipped": null,
+    "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+    "videoConfigurationConfirmed": false
+  },
+  {
+    "eventId": "segment000-rip-458",
+    "videoDamage": 458,
+    "uiDefaultDamage": 257,
+    "standard60Damage": 257,
+    "visibleConditionDamage": 386,
+    "visibleConditionHitDamages": [
+      386
+    ],
+    "visibleConditionLabel": "实帧阿瓦鲨脚下绿色双攻图标各5：双攻能力等级+5（+50%），其他配置保持普通全60",
+    "reproduced": false,
+    "resultPath": "segment000-rip-458-evidence-result.json",
+    "uiCliMatchesWeb": true,
+    "visibleConditionCliMatchesWeb": true,
+    "candidateDamage": 458,
+    "candidateDescription": "已见绿色双攻图标各5，双攻+50%；在此基础仅候选：阿瓦鲨柠檬样子候选形态、普通全IV60、HP430；权杖-V大胆、物防IV22，其余IV60。",
+    "candidateResultPath": "segment000-rip-458-candidate-result.json",
+    "candidateMatch": true,
+    "candidateHitDamages": [
+      458
+    ],
+    "candidatePanels": {
+      "attacker": {
+        "physicalAttack": 222,
+        "magicalAttack": 144,
+        "speed": 198,
+        "hp": 430,
+        "physicalDefense": 225,
+        "magicalDefense": 190
+      },
+      "defender": {
+        "physicalAttack": 241,
+        "magicalAttack": 200,
+        "speed": 176,
+        "hp": 396,
+        "physicalDefense": 205,
+        "magicalDefense": 243
+      }
+    },
+    "candidateCliMatchesWeb": true,
+    "candidateCliSkipped": null,
+    "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+    "videoConfigurationConfirmed": false
+  },
+  {
+    "eventId": "segment000-eggshell-120",
+    "videoDamage": 120,
+    "uiDefaultDamage": 64,
+    "standard60Damage": 64,
+    "visibleConditionDamage": 100,
+    "visibleConditionHitDamages": [
+      25,
+      25,
+      25,
+      25
+    ],
+    "visibleConditionLabel": "实际蛋壳应对：减伤60%即伤害倍率0.4，音波弹共4次30伤害",
+    "reproduced": false,
+    "resultPath": "segment000-eggshell-120-evidence-result.json",
+    "uiCliMatchesWeb": true,
+    "visibleConditionCliMatchesWeb": true,
+    "candidateDamage": 120,
+    "candidateDescription": "已见蛋壳减伤60%及4击30、HP425→305；在此基础仅候选：双方普通，鸡麻麻魔防IV6、生命IV60，其余IV60；蹦床松鼠全IV60。",
+    "candidateResultPath": "segment000-eggshell-120-candidate-result.json",
+    "candidateMatch": true,
+    "candidateHitDamages": [
+      30,
+      30,
+      30,
+      30
+    ],
+    "candidatePanels": {
+      "attacker": {
+        "physicalAttack": 185,
+        "magicalAttack": 180,
+        "speed": 181,
+        "hp": 415,
+        "physicalDefense": 215,
+        "magicalDefense": 189
+      },
+      "defender": {
+        "physicalAttack": 199,
+        "magicalAttack": 198,
+        "speed": 165,
+        "hp": 425,
+        "physicalDefense": 217,
+        "magicalDefense": 158
+      }
+    },
+    "candidateCliMatchesWeb": true,
+    "candidateCliSkipped": null,
+    "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+    "videoConfigurationConfirmed": false
+  }
+]

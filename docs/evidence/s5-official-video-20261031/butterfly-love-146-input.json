@@ -1,0 +1,29 @@
+{
+  "eventId": "butterfly-love-146",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "attacker": "化蝶（平常的样子）",
+  "defender": "龙鱼",
+  "skill": "skill_local_video_butterfly-love-146",
+  "expectedDamage": 127,
+  "localSkills": [
+    {
+      "id": "skill_local_video_butterfly-love-146",
+      "name": "恋恋不舍",
+      "type": "萌",
+      "category": "magical",
+      "cost": 4,
+      "basePower": 110,
+      "description": "造成魔伤，使敌方获得至少3次减益后，本技能威力永久+30。",
+      "evidence": {
+        "kind": "official-video-local-replay-only-not-in-product",
+        "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+        "frame": "local-only:dense/frame-0290.png"
+      }
+    }
+  ],
+  "knownAdjustments": [],
+  "identityEvidence": {
+    "frame": "local-only:dense/frame-0292.png",
+    "fact": "视频圆耳外形与现有平常形态原图吻合；其默认满HP253也与视频253/253吻合；不使用HP独立推定个体"
+  }
+}

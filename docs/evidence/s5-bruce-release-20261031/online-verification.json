@@ -1,0 +1,31 @@
+{
+  "source": "actual-online-browser-verification",
+  "url": "https://rococalc.top/pre/",
+  "verifiedOn": "2026-10-31",
+  "releaseRevision": "e57a2bd7a88134231170abc65e6a0cfb206892f0",
+  "previewSourceRevision": "f554e39e80a38589dd9f766df5e78e585da028d4",
+  "ci": {
+    "url": "https://github.com/Evenstar-tools/roco-calculator/actions/runs/41208331883",
+    "conclusion": "success"
+  },
+  "result": {
+    "full": 192,
+    "fullTriggered": 267,
+    "fast": 220,
+    "fastTriggered": 295,
+    "cost15": 220,
+    "cost16": 295,
+    "noDoubleBoost": 295,
+    "refreshSpeed": 295,
+    "rows": [
+      "速度精灵 · 最终形态与首领",
+      "295极·特",
+      "220极",
+      "192满",
+      "159无",
+      "148减"
+    ],
+    "overflow": false,
+    "errors": []
+  }
+}

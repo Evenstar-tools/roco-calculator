@@ -1,0 +1,213 @@
+[
+  {
+    "name": "bone-claw-baseline",
+    "eventId": "bone-dragon-claw-on-glass-lord-162",
+    "candidateOnly": false,
+    "uiDefault": 183,
+    "reference60": 183,
+    "steps": [
+      {
+        "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+        "status": "exact",
+        "actualDamage": 183,
+        "expectedDamage": 73,
+        "delta": 110
+      },
+      {
+        "label": "视频君主已使用应对血气：按资料减伤60%（倍率0.4）",
+        "status": "exact",
+        "actualDamage": 73,
+        "expectedDamage": 73,
+        "delta": 0
+      }
+    ],
+    "cliMatches": [
+      true,
+      true
+    ],
+    "final": 73,
+    "expected": 73
+  },
+  {
+    "name": "butterfly-love-146",
+    "eventId": "butterfly-love-146",
+    "candidateOnly": false,
+    "uiDefault": 172,
+    "reference60": 172,
+    "steps": [
+      {
+        "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+        "status": "exact",
+        "actualDamage": 172,
+        "expectedDamage": 127,
+        "delta": 45
+      }
+    ],
+    "cliMatches": [
+      true
+    ],
+    "final": 172,
+    "expected": 127
+  },
+  {
+    "name": "grand-grass-148",
+    "eventId": "grand-grass-148",
+    "candidateOnly": false,
+    "uiDefault": 137,
+    "reference60": 137,
+    "steps": [
+      {
+        "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+        "status": "exact",
+        "actualDamage": 137,
+        "expectedDamage": 158,
+        "delta": -21
+      }
+    ],
+    "cliMatches": [
+      true
+    ],
+    "final": 137,
+    "expected": 158
+  },
+  {
+    "name": "boss-ice-hail",
+    "eventId": "boss-ice-hail-on-abyss-187",
+    "candidateOnly": false,
+    "uiDefault": 314,
+    "reference60": 314,
+    "steps": [
+      {
+        "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+        "status": "exact",
+        "actualDamage": 314,
+        "expectedDamage": 726,
+        "delta": -412
+      },
+      {
+        "label": "视频圣冠布鲁斯当前HP276（最大359）",
+        "status": "exact",
+        "actualDamage": 314,
+        "expectedDamage": 726,
+        "delta": -412
+      }
+    ],
+    "cliMatches": [
+      true,
+      true
+    ],
+    "final": 314,
+    "expected": 726
+  },
+  {
+    "name": "butterfly-love-146-candidate",
+    "eventId": "butterfly-love-146",
+    "candidateOnly": true,
+    "uiDefault": 172,
+    "reference60": 172,
+    "steps": [
+      {
+        "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+        "status": "exact",
+        "actualDamage": 172,
+        "expectedDamage": 127,
+        "delta": 45
+      },
+      {
+        "label": "候选：化蝶魔攻个体20（视频未给，非事实）",
+        "status": "exact",
+        "actualDamage": 146,
+        "expectedDamage": 127,
+        "delta": 19
+      },
+      {
+        "label": "候选：龙鱼警惕性格（视频未给，非事实）",
+        "status": "exact",
+        "actualDamage": 127,
+        "expectedDamage": 127,
+        "delta": 0
+      }
+    ],
+    "cliMatches": [
+      true,
+      true,
+      true
+    ],
+    "final": 127,
+    "expected": 127
+  },
+  {
+    "name": "grand-grass-148-candidate",
+    "eventId": "grand-grass-148",
+    "candidateOnly": true,
+    "uiDefault": 137,
+    "reference60": 137,
+    "steps": [
+      {
+        "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+        "status": "exact",
+        "actualDamage": 137,
+        "expectedDamage": 158,
+        "delta": -21
+      },
+      {
+        "label": "候选：格兰球聪明性格（视频未给，非事实）",
+        "status": "exact",
+        "actualDamage": 158,
+        "expectedDamage": 158,
+        "delta": 0
+      }
+    ],
+    "cliMatches": [
+      true,
+      true
+    ],
+    "final": 158,
+    "expected": 158
+  },
+  {
+    "name": "boss-ice-hail-candidate",
+    "eventId": "boss-ice-hail-on-abyss-187",
+    "candidateOnly": true,
+    "uiDefault": 314,
+    "reference60": 314,
+    "steps": [
+      {
+        "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+        "status": "exact",
+        "actualDamage": 314,
+        "expectedDamage": 726,
+        "delta": -412
+      },
+      {
+        "label": "视频圣冠布鲁斯当前HP276（最大359）",
+        "status": "exact",
+        "actualDamage": 314,
+        "expectedDamage": 726,
+        "delta": -412
+      },
+      {
+        "label": "候选：烈冰钻手填敌方技能总耗30（视频携带技能未显示，非事实）",
+        "status": "exact",
+        "actualDamage": 697,
+        "expectedDamage": 726,
+        "delta": -29
+      },
+      {
+        "label": "候选：深渊罗隐物防个体40（视频未给，非事实）",
+        "status": "exact",
+        "actualDamage": 726,
+        "expectedDamage": 726,
+        "delta": 0
+      }
+    ],
+    "cliMatches": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "final": 726,
+    "expected": 726
+  }
+]

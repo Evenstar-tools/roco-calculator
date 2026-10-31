@@ -1,0 +1,1301 @@
+{
+  "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "bvid": "BV1SNxq6REfb",
+  "segmentSeconds": [
+    0,
+    70
+  ],
+  "sourceKind": "actual_browser_video_frames",
+  "completion": "six_damage_action_events_audited_defaults_visible_conditions_and_hp_constrained_candidates_replayed",
+  "inspectionRule": "实际浏览器高清画面与原像素裁切核读；dense每约0.5秒采样，排除未解码残帧0000、0015、0090；不根据跨剪辑HP相减推伤害，不把跳数动画中间值当额外独立命中。",
+  "inspectedFrames": [
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-001.png",
+      "actualTimestampSeconds": 0.893108,
+      "requestedSeconds": 1
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/hd-005.png",
+      "actualTimestampSeconds": 4.939831,
+      "requestedSeconds": 5
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-009.png",
+      "actualTimestampSeconds": 8.931081,
+      "requestedSeconds": 9
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/hd-012.png",
+      "actualTimestampSeconds": 12.658548,
+      "requestedSeconds": 12
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-016.png",
+      "actualTimestampSeconds": 16.357006,
+      "requestedSeconds": 16
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/hd-022.png",
+      "actualTimestampSeconds": 22.765488,
+      "requestedSeconds": 22
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-026.png",
+      "actualTimestampSeconds": 26.762864,
+      "requestedSeconds": 26
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-029.png",
+      "actualTimestampSeconds": 29.806681,
+      "requestedSeconds": 29
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/hd-030.png",
+      "actualTimestampSeconds": 30.592205,
+      "requestedSeconds": 30
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-033.png",
+      "actualTimestampSeconds": 33.699512,
+      "requestedSeconds": 33
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/hd-038.png",
+      "actualTimestampSeconds": 38.80634,
+      "requestedSeconds": 38
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-040.png",
+      "actualTimestampSeconds": 40.707929,
+      "requestedSeconds": 40
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-042.png",
+      "actualTimestampSeconds": 42.802635,
+      "requestedSeconds": 42
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/hd-048.png",
+      "actualTimestampSeconds": 48.737896,
+      "requestedSeconds": 48
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-052.png",
+      "actualTimestampSeconds": 52.721487,
+      "requestedSeconds": 52
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/hd-058.png",
+      "actualTimestampSeconds": 58.84215,
+      "requestedSeconds": 58
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-062.png",
+      "actualTimestampSeconds": 62.778046,
+      "requestedSeconds": 62
+    },
+    {
+      "path": "local-only:_work/s5-official-video-20261031/browser-frames/hd-068.png",
+      "actualTimestampSeconds": 68.947646,
+      "requestedSeconds": 68
+    }
+  ],
+  "events": [
+    {
+      "eventId": "000-070-crimson-dragon-strike",
+      "attacker": {
+        "hudName": "冥古龙",
+        "level": 99,
+        "currentHp": 487,
+        "maxHp": 487
+      },
+      "defender": {
+        "hudName": "寂灭骨龙",
+        "level": 60,
+        "currentHp": null,
+        "maxHp": null
+      },
+      "skill": {
+        "name": "深红龙击",
+        "cost": 5,
+        "type": "龙",
+        "category": "physical",
+        "basePower": 115
+      },
+      "floatingDamage": 539,
+      "numericReadStatus": "两帧清晰同一浮字克制539",
+      "effectivenessLabel": "克制",
+      "knownConditions": [],
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0023.png",
+          "videoBeforeScreenshotSeconds": 11.502066,
+          "videoAfterScreenshotSeconds": 11.655569,
+          "fact": "冥古龙使出了5耗深红龙击"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0024.png",
+          "videoBeforeScreenshotSeconds": 12.016818,
+          "videoAfterScreenshotSeconds": 12.236664,
+          "fact": "克制539；99级487/487"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0025.png",
+          "videoBeforeScreenshotSeconds": 12.520205,
+          "videoAfterScreenshotSeconds": 12.668522,
+          "fact": "同一539浮字"
+        }
+      ],
+      "reproductionStatus": "candidate_reproduced_not_confirmed_video_build",
+      "replayBaselinePath": "local-only:_work/s5-official-video-20261031/damage-replay/segment000-crimson-539-baseline-result.json",
+      "totalDisplayedDamage": 539,
+      "unknowns": [
+        "性格、六项个体、敌方性格与完整配置未公开；实帧冥古HP487而默认99级576，说明默认配置不同"
+      ],
+      "candidateReplay": {
+        "eventId": "segment000-crimson-539",
+        "videoDamage": 539,
+        "uiDefaultDamage": 545,
+        "standard60Damage": 293,
+        "visibleConditionDamage": 545,
+        "visibleConditionHitDamages": [
+          545
+        ],
+        "visibleConditionLabel": "实帧确认冥古龙当前等级99，保持其他标准60/普通/IV60条件",
+        "reproduced": false,
+        "resultPath": "segment000-crimson-539-evidence-result.json",
+        "uiCliMatchesWeb": null,
+        "visibleConditionCliMatchesWeb": null,
+        "candidateDamage": 539,
+        "candidateDescription": "仅候选：冥古龙99级/HP487，逞强，生命IV23、物攻IV2；寂灭骨龙普通、物防IV59；其余IV60。非视频官方配置。",
+        "candidateResultPath": "segment000-crimson-539-candidate-result.json",
+        "candidateMatch": true,
+        "candidateHitDamages": [
+          539
+        ],
+        "candidatePanels": {
+          "attacker": {
+            "physicalAttack": 292,
+            "magicalAttack": 167,
+            "speed": 209,
+            "hp": 487,
+            "physicalDefense": 225,
+            "magicalDefense": 199
+          },
+          "defender": {
+            "physicalAttack": 244,
+            "magicalAttack": 148,
+            "speed": 159,
+            "hp": 425,
+            "physicalDefense": 207,
+            "magicalDefense": 182
+          }
+        },
+        "candidateCliMatchesWeb": null,
+        "candidateCliSkipped": "At least one S5 owner level differs from60; ordinary compact CLI omits side.level.",
+        "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+        "videoConfigurationConfirmed": false
+      }
+    },
+    {
+      "eventId": "000-070-barren-devour",
+      "attacker": {
+        "hudName": "冥古龙",
+        "level": 79,
+        "currentHp": 497,
+        "maxHp": 497
+      },
+      "defender": {
+        "hudName": "寂灭骨龙",
+        "level": 60,
+        "currentHp": null,
+        "maxHp": null
+      },
+      "skill": {
+        "name": "荒芜之噬",
+        "cost": 5,
+        "type": "龙",
+        "category": "physical",
+        "basePower": 130
+      },
+      "floatingDamage": 559,
+      "numericReadStatus": "两帧清晰同一浮字克制559",
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0039.png",
+          "videoBeforeScreenshotSeconds": 19.598286,
+          "videoAfterScreenshotSeconds": 19.79614,
+          "fact": "冥古龙79级497/497"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0046.png",
+          "videoBeforeScreenshotSeconds": 23.018795,
+          "videoAfterScreenshotSeconds": 23.165241,
+          "fact": "克制559"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0047.png",
+          "videoBeforeScreenshotSeconds": 23.530233,
+          "videoAfterScreenshotSeconds": 23.70694,
+          "fact": "同一559浮字"
+        }
+      ],
+      "reproductionStatus": "candidate_reproduced_not_confirmed_video_build",
+      "replayBaselinePath": "local-only:_work/s5-official-video-20261031/damage-replay/segment000-barren-559-baseline-result.json",
+      "effectivenessLabel": "克制",
+      "totalDisplayedDamage": 559,
+      "unknowns": [
+        "双方性格、个体与完整前置未公开"
+      ],
+      "candidateReplay": {
+        "eventId": "segment000-barren-559",
+        "videoDamage": 559,
+        "uiDefaultDamage": 616,
+        "standard60Damage": 331,
+        "visibleConditionDamage": 460,
+        "visibleConditionHitDamages": [
+          460
+        ],
+        "visibleConditionLabel": "实帧确认冥古龙当前等级79，保持其他标准60/普通/IV60条件",
+        "reproduced": false,
+        "resultPath": "segment000-barren-559-evidence-result.json",
+        "uiCliMatchesWeb": null,
+        "visibleConditionCliMatchesWeb": null,
+        "candidateDamage": 559,
+        "candidateDescription": "仅候选：冥古龙79级/HP497，普通，生命IV60、物攻IV57；寂灭骨龙大胆、物防IV13；其余IV60。两段冥古各自配置，不跨剪辑强制相同。",
+        "candidateResultPath": "segment000-barren-559-candidate-result.json",
+        "candidateMatch": true,
+        "candidateHitDamages": [
+          559
+        ],
+        "candidatePanels": {
+          "attacker": {
+            "physicalAttack": 262,
+            "magicalAttack": 153,
+            "speed": 189,
+            "hp": 497,
+            "physicalDefense": 203,
+            "magicalDefense": 180
+          },
+          "defender": {
+            "physicalAttack": 283,
+            "magicalAttack": 148,
+            "speed": 159,
+            "hp": 425,
+            "physicalDefense": 169,
+            "magicalDefense": 182
+          }
+        },
+        "candidateCliMatchesWeb": null,
+        "candidateCliSkipped": "At least one S5 owner level differs from60; ordinary compact CLI omits side.level.",
+        "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+        "videoConfigurationConfirmed": false
+      }
+    },
+    {
+      "eventId": "000-070-silver-shards",
+      "attacker": {
+        "hudName": "地绡银龙",
+        "level": 60,
+        "currentHp": 443,
+        "maxHp": 443
+      },
+      "defender": {
+        "hudName": "晶石蜗",
+        "level": 60,
+        "currentHp": null,
+        "maxHp": null
+      },
+      "skill": {
+        "name": "碎银",
+        "cost": 10,
+        "type": "地",
+        "category": "magical",
+        "basePower": 170
+      },
+      "floatingDamage": 228,
+      "numericReadStatus": "34秒同一攻击浮字最终稳定228；动画先见52/104等中间跳数",
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0061.png",
+          "videoBeforeScreenshotSeconds": 30.527363,
+          "videoAfterScreenshotSeconds": 30.710339,
+          "fact": "60级地绡银龙443/443对60级晶石蜗"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0064.png",
+          "videoBeforeScreenshotSeconds": 32.036407,
+          "videoAfterScreenshotSeconds": 32.177998,
+          "fact": "动画浮字52"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0065.png",
+          "videoBeforeScreenshotSeconds": 32.506071,
+          "videoAfterScreenshotSeconds": 32.633945,
+          "fact": "动画浮字104"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0068.png",
+          "videoBeforeScreenshotSeconds": 34.055362,
+          "videoAfterScreenshotSeconds": 34.231163,
+          "fact": "最终228"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0069.png",
+          "videoBeforeScreenshotSeconds": 34.515926,
+          "videoAfterScreenshotSeconds": 34.705869,
+          "fact": "同一228浮字"
+        }
+      ],
+      "reproductionStatus": "candidate_reproduced_not_confirmed_video_build",
+      "replayBaselinePath": "segment000-silver-228-baseline-result.json",
+      "totalDisplayedDamage": 228,
+      "floatAnimationReadings": [
+        {
+          "value": 52,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0064.png",
+            "videoBeforeScreenshotSeconds": 32.036407,
+            "videoAfterScreenshotSeconds": 32.177998
+          }
+        },
+        {
+          "value": 104,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0065.png",
+            "videoBeforeScreenshotSeconds": 32.506071,
+            "videoAfterScreenshotSeconds": 32.633945
+          }
+        },
+        {
+          "value": null,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0067.png",
+            "videoBeforeScreenshotSeconds": 33.529944,
+            "videoAfterScreenshotSeconds": 33.698332
+          },
+          "note": "红数字受白色特效遮挡，未转录"
+        },
+        {
+          "value": 228,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0068.png",
+            "videoBeforeScreenshotSeconds": 34.055362,
+            "videoAfterScreenshotSeconds": 34.231163
+          }
+        },
+        {
+          "value": 228,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0069.png",
+            "videoBeforeScreenshotSeconds": 34.515926,
+            "videoAfterScreenshotSeconds": 34.705869
+          }
+        }
+      ],
+      "defenderVariant": "画面HUD仅晶石蜗，粉蓝晶体外观；莲花刚玉为候选，6正式形态基线并列另附，不当确证",
+      "unknowns": [
+        "防方携带技能未知，偏振是否覆盖地系无法从画面确认；默认四技能含地系，默认触发40%减伤",
+        "双方性格与个体未知；进攻方HP443而普通全60基线391"
+      ],
+      "candidateReplay": {
+        "eventId": "segment000-silver-228",
+        "videoDamage": 228,
+        "uiDefaultDamage": 135,
+        "standard60Damage": 135,
+        "visibleConditionDamage": 135,
+        "visibleConditionHitDamages": [
+          135
+        ],
+        "visibleConditionLabel": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+        "reproduced": false,
+        "resultPath": "segment000-silver-228-baseline-result.json",
+        "uiCliMatchesWeb": true,
+        "visibleConditionCliMatchesWeb": true,
+        "candidateDamage": 228,
+        "candidateDescription": "仅候选：地绡银龙60级/HP443，沉默，生命IV54、魔攻IV60；晶石蜗莲花刚玉候选形态、普通、魔防IV56；防方携带等价交换、点亮、反击拳、防反，均来自既有学习面且非地系，偏振自动不触发本次地系40%减伤。已删除手动偏振0减伤覆盖并重放228，CLI/Web一致。视频未展示此技能组，其余IV60。",
+        "candidateResultPath": "segment000-silver-228-candidate-result.json",
+        "candidateMatch": true,
+        "candidateHitDamages": [
+          228
+        ],
+        "candidatePanels": {
+          "attacker": {
+            "physicalAttack": 141,
+            "magicalAttack": 228,
+            "speed": 225,
+            "hp": 443,
+            "physicalDefense": 183,
+            "magicalDefense": 225
+          },
+          "defender": {
+            "physicalAttack": 200,
+            "magicalAttack": 204,
+            "speed": 165,
+            "hp": 381,
+            "physicalDefense": 244,
+            "magicalDefense": 191
+          }
+        },
+        "candidateCliMatchesWeb": true,
+        "candidateCliSkipped": null,
+        "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+        "videoConfigurationConfirmed": false
+      }
+    },
+    {
+      "eventId": "000-070-overcharge",
+      "attacker": {
+        "hudName": "龙嵴金脉",
+        "level": 60,
+        "currentHp": 468,
+        "maxHp": 468
+      },
+      "defender": {
+        "hudName": "翠顶夫人",
+        "level": 60,
+        "currentHp": null,
+        "maxHp": null
+      },
+      "skill": {
+        "name": "过充电",
+        "cost": 2,
+        "type": "电",
+        "category": "physical",
+        "basePower": 65
+      },
+      "floatingDamage": 253,
+      "numericReadStatus": "40秒最终稳定克制253；动画先见51/156等中间跳数",
+      "effectivenessLabel": "克制",
+      "knownConditions": [
+        {
+          "kind": "hud_status_icons",
+          "owner": "attacker",
+          "observed": "两枚红色盾形能力图标各12，头顶曾出现红字魔法防御",
+          "semanticClassification": "defense_related_not_attack_charge_count",
+          "note": "不把红12当聚能次数或双攻+12；具体增减语义不另猜"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0074.png",
+          "videoBeforeScreenshotSeconds": 37.028035,
+          "videoAfterScreenshotSeconds": 37.185791,
+          "fact": "60级龙嵴金脉468/468；头顶红字魔法防御；脚下两红色盾形12"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0077.png",
+          "videoBeforeScreenshotSeconds": 38.502261,
+          "videoAfterScreenshotSeconds": 38.648447,
+          "fact": "克制51动画中间值"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0079.png",
+          "videoBeforeScreenshotSeconds": 39.526528,
+          "videoAfterScreenshotSeconds": 39.678358,
+          "fact": "克制156动画中间值"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0081.png",
+          "videoBeforeScreenshotSeconds": 40.517018,
+          "videoAfterScreenshotSeconds": 40.69127,
+          "fact": "最终克制253"
+        }
+      ],
+      "reproductionStatus": "candidate_reproduced_not_confirmed_video_build",
+      "replayBaselinePath": "segment000-overcharge-253-baseline-result.json",
+      "totalDisplayedDamage": 253,
+      "floatAnimationReadings": [
+        {
+          "value": 51,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0077.png",
+            "videoBeforeScreenshotSeconds": 38.502261,
+            "videoAfterScreenshotSeconds": 38.648447
+          }
+        },
+        {
+          "value": 156,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0079.png",
+            "videoBeforeScreenshotSeconds": 39.526528,
+            "videoAfterScreenshotSeconds": 39.678358
+          }
+        },
+        {
+          "value": 253,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0081.png",
+            "videoBeforeScreenshotSeconds": 40.517018,
+            "videoAfterScreenshotSeconds": 40.69127
+          }
+        }
+      ],
+      "unknowns": [
+        "双方性格/个体、聚能前置与攻击层数未完整展示"
+      ],
+      "candidateReplay": {
+        "eventId": "segment000-overcharge-253",
+        "videoDamage": 253,
+        "uiDefaultDamage": 212,
+        "standard60Damage": 212,
+        "visibleConditionDamage": 212,
+        "visibleConditionHitDamages": [
+          212
+        ],
+        "visibleConditionLabel": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+        "reproduced": false,
+        "resultPath": "segment000-overcharge-253-baseline-result.json",
+        "uiCliMatchesWeb": true,
+        "visibleConditionCliMatchesWeb": true,
+        "candidateDamage": 253,
+        "candidateDescription": "仅候选：龙嵴金脉普通、全IV60，HP468；翠顶夫人大胆、物防IV20，其余IV60。脚下两枚红12为盾形防御图标，不当作攻击聚能层数。",
+        "candidateResultPath": "segment000-overcharge-253-candidate-result.json",
+        "candidateMatch": true,
+        "candidateHitDamages": [
+          253
+        ],
+        "candidatePanels": {
+          "attacker": {
+            "physicalAttack": 237,
+            "magicalAttack": 157,
+            "speed": 181,
+            "hp": 468,
+            "physicalDefense": 233,
+            "magicalDefense": 190
+          },
+          "defender": {
+            "physicalAttack": 228,
+            "magicalAttack": 188,
+            "speed": 220,
+            "hp": 434,
+            "physicalDefense": 206,
+            "magicalDefense": 200
+          }
+        },
+        "candidateCliMatchesWeb": true,
+        "candidateCliSkipped": null,
+        "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+        "videoConfigurationConfirmed": false
+      }
+    },
+    {
+      "eventId": "000-070-rip-current",
+      "attacker": {
+        "hudName": "阿瓦鲨",
+        "level": 60,
+        "currentHp": 430,
+        "maxHp": 430,
+        "variant": null
+      },
+      "defender": {
+        "hudName": "权杖-V",
+        "level": 60,
+        "currentHp": null,
+        "maxHp": null
+      },
+      "skill": {
+        "name": "离岸流",
+        "cost": 5,
+        "type": "水",
+        "category": "physical",
+        "basePower": 125
+      },
+      "floatingDamage": 458,
+      "numericReadStatus": "离岸流命中清晰克制458，随后权杖-V力竭",
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0095.png",
+          "videoBeforeScreenshotSeconds": 47.540652,
+          "videoAfterScreenshotSeconds": 47.735836,
+          "fact": "阿瓦鲨60级430/430，脚下绿色双攻图标各5"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0099.png",
+          "videoBeforeScreenshotSeconds": 49.5274,
+          "videoAfterScreenshotSeconds": 49.673018,
+          "fact": "克制458"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0103.png",
+          "videoBeforeScreenshotSeconds": 51.52277,
+          "videoAfterScreenshotSeconds": 51.694265,
+          "fact": "权杖-V力竭文字"
+        }
+      ],
+      "reproductionStatus": "candidate_reproduced_not_confirmed_video_build",
+      "replayBaselinePath": "local-only:_work/s5-official-video-20261031/damage-replay/segment000-rip-458-baseline-result.json",
+      "effectivenessLabel": "克制",
+      "totalDisplayedDamage": 458,
+      "knownConditions": [
+        {
+          "kind": "hud_status_icons",
+          "owner": "attacker",
+          "observed": "绿色物攻与魔攻图标各5",
+          "semanticClassification": "dual_attack_stage_plus_5",
+          "effect": "双攻+50%",
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0095.png",
+            "videoBeforeScreenshotSeconds": 47.540652,
+            "videoAfterScreenshotSeconds": 47.735836
+          }
+        }
+      ],
+      "variantCandidate": "黄色绿色外观对应柠檬鲨样子候选；画面HUD仅阿瓦鲨，未展示全名",
+      "unknowns": [
+        "双方性格、个体与敌方防御前置未知"
+      ],
+      "candidateReplay": {
+        "eventId": "segment000-rip-458",
+        "videoDamage": 458,
+        "uiDefaultDamage": 257,
+        "standard60Damage": 257,
+        "visibleConditionDamage": 386,
+        "visibleConditionHitDamages": [
+          386
+        ],
+        "visibleConditionLabel": "实帧阿瓦鲨脚下绿色双攻图标各5：双攻能力等级+5（+50%），其他配置保持普通全60",
+        "reproduced": false,
+        "resultPath": "segment000-rip-458-evidence-result.json",
+        "uiCliMatchesWeb": true,
+        "visibleConditionCliMatchesWeb": true,
+        "candidateDamage": 458,
+        "candidateDescription": "已见绿色双攻图标各5，双攻+50%；在此基础仅候选：阿瓦鲨柠檬样子候选形态、普通全IV60、HP430；权杖-V大胆、物防IV22，其余IV60。",
+        "candidateResultPath": "segment000-rip-458-candidate-result.json",
+        "candidateMatch": true,
+        "candidateHitDamages": [
+          458
+        ],
+        "candidatePanels": {
+          "attacker": {
+            "physicalAttack": 222,
+            "magicalAttack": 144,
+            "speed": 198,
+            "hp": 430,
+            "physicalDefense": 225,
+            "magicalDefense": 190
+          },
+          "defender": {
+            "physicalAttack": 241,
+            "magicalAttack": 200,
+            "speed": 176,
+            "hp": 396,
+            "physicalDefense": 205,
+            "magicalDefense": 243
+          }
+        },
+        "candidateCliMatchesWeb": true,
+        "candidateCliSkipped": null,
+        "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+        "videoConfigurationConfirmed": false
+      }
+    },
+    {
+      "eventId": "000-070-eggshell-incoming",
+      "attacker": {
+        "hudName": "蹦床松鼠",
+        "level": 60,
+        "skillName": "音波弹"
+      },
+      "defender": {
+        "hudName": "鸡麻麻",
+        "level": 60,
+        "hpBefore": 425,
+        "hpAfter": 305,
+        "maxHp": 425,
+        "selectedDefenseSkill": "蛋壳"
+      },
+      "floatingDamage": 30,
+      "numericReadStatus": "白字30四次，连续HP425→395→365→335→305确认4段总120",
+      "knownConditions": [
+        {
+          "kind": "defense_skill_panel",
+          "name": "蛋壳",
+          "cost": 2,
+          "type": "普通",
+          "category": "defense",
+          "descriptionVerbatim": "减伤60%，应对攻击：驱散敌方所有增益。"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0120.png",
+          "videoBeforeScreenshotSeconds": 60.046262,
+          "videoAfterScreenshotSeconds": 60.20148,
+          "fact": "蹦床松鼠使出了音波弹；鸡麻麻425/425并使用蛋壳"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0124.png",
+          "videoBeforeScreenshotSeconds": 62.015113,
+          "videoAfterScreenshotSeconds": 62.171334,
+          "fact": "首个30浮字；命中前HP425"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0125.png",
+          "videoBeforeScreenshotSeconds": 62.514755,
+          "videoAfterScreenshotSeconds": 62.703932,
+          "fact": "命中后HP395"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0127.png",
+          "videoBeforeScreenshotSeconds": 63.515418,
+          "videoAfterScreenshotSeconds": 63.688738,
+          "fact": "第二次后HP365"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0129.png",
+          "videoBeforeScreenshotSeconds": 64.502035,
+          "videoAfterScreenshotSeconds": 64.669551,
+          "fact": "第三次后HP335"
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0130.png",
+          "videoBeforeScreenshotSeconds": 65.032058,
+          "videoAfterScreenshotSeconds": 65.186674,
+          "fact": "第四次后HP305"
+        }
+      ],
+      "reproductionStatus": "candidate_reproduced_not_confirmed_video_build",
+      "replayBaselinePath": "local-only:_work/s5-official-video-20261031/damage-replay/segment000-eggshell-120-baseline-result.json",
+      "hitDamages": [
+        30,
+        30,
+        30,
+        30
+      ],
+      "totalDisplayedDamage": 120,
+      "observedHitCount": 4,
+      "skill": {
+        "name": "音波弹",
+        "type": "普通",
+        "category": "magical",
+        "cost": 1,
+        "basePower": 60,
+        "provenance": "正式s4快照，视频仅战斗字确认技能名；未显示该技能详情卡"
+      },
+      "hpSequence": [
+        {
+          "hp": 425,
+          "maxHp": 425,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0122.png",
+            "videoBeforeScreenshotSeconds": 61.000381,
+            "videoAfterScreenshotSeconds": 61.158904
+          }
+        },
+        {
+          "hp": 395,
+          "maxHp": 425,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0125.png",
+            "videoBeforeScreenshotSeconds": 62.514755,
+            "videoAfterScreenshotSeconds": 62.703932
+          }
+        },
+        {
+          "hp": 365,
+          "maxHp": 425,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0127.png",
+            "videoBeforeScreenshotSeconds": 63.515418,
+            "videoAfterScreenshotSeconds": 63.688738
+          }
+        },
+        {
+          "hp": 335,
+          "maxHp": 425,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0129.png",
+            "videoBeforeScreenshotSeconds": 64.502035,
+            "videoAfterScreenshotSeconds": 64.669551
+          }
+        },
+        {
+          "hp": 305,
+          "maxHp": 425,
+          "evidence": {
+            "path": "local-only:_work/s5-official-video-20261031/damage-replay/dense/frame-0130.png",
+            "videoBeforeScreenshotSeconds": 65.032058,
+            "videoAfterScreenshotSeconds": 65.186674
+          }
+        }
+      ],
+      "unknowns": [
+        "敌方魔攻能力变化图标的完整前置、性格与个体未知"
+      ],
+      "candidateReplay": {
+        "eventId": "segment000-eggshell-120",
+        "videoDamage": 120,
+        "uiDefaultDamage": 64,
+        "standard60Damage": 64,
+        "visibleConditionDamage": 100,
+        "visibleConditionHitDamages": [
+          25,
+          25,
+          25,
+          25
+        ],
+        "visibleConditionLabel": "实际蛋壳应对：减伤60%即伤害倍率0.4，音波弹共4次30伤害",
+        "reproduced": false,
+        "resultPath": "segment000-eggshell-120-evidence-result.json",
+        "uiCliMatchesWeb": true,
+        "visibleConditionCliMatchesWeb": true,
+        "candidateDamage": 120,
+        "candidateDescription": "已见蛋壳减伤60%及4击30、HP425→305；在此基础仅候选：双方普通，鸡麻麻魔防IV6、生命IV60，其余IV60；蹦床松鼠全IV60。",
+        "candidateResultPath": "segment000-eggshell-120-candidate-result.json",
+        "candidateMatch": true,
+        "candidateHitDamages": [
+          30,
+          30,
+          30,
+          30
+        ],
+        "candidatePanels": {
+          "attacker": {
+            "physicalAttack": 185,
+            "magicalAttack": 180,
+            "speed": 181,
+            "hp": 415,
+            "physicalDefense": 215,
+            "magicalDefense": 189
+          },
+          "defender": {
+            "physicalAttack": 199,
+            "magicalAttack": 198,
+            "speed": 165,
+            "hp": 425,
+            "physicalDefense": 217,
+            "magicalDefense": 158
+          }
+        },
+        "candidateCliMatchesWeb": true,
+        "candidateCliSkipped": null,
+        "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+        "videoConfigurationConfirmed": false
+      }
+    }
+  ],
+  "contextObservations": [
+    {
+      "kind": "non_damage_skill",
+      "name": "冥暗诅咒",
+      "observedOwner": "冥古龙",
+      "observedCurrentHp": 487,
+      "observedMaxHp": 487,
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/browser-frames/hd-005.png",
+          "actualTimestampSeconds": 4.939831,
+          "requestedSeconds": 5
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-009.png",
+          "actualTimestampSeconds": 8.931081,
+          "requestedSeconds": 9
+        }
+      ]
+    },
+    {
+      "kind": "non_damage_skill",
+      "name": "咒火",
+      "observedOwner": "冥古龙",
+      "observedCurrentHp": 92,
+      "observedMaxHp": 454,
+      "note": "剪辑切到独立演示段；不可与前段487/487相减冒充伤害。",
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-016.png",
+          "actualTimestampSeconds": 16.357006,
+          "requestedSeconds": 16
+        }
+      ]
+    },
+    {
+      "kind": "non_damage_skill",
+      "name": "矿物置换",
+      "observedOwner": "地绡银龙",
+      "observedCurrentHp": 391,
+      "observedMaxHp": 391,
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-026.png",
+          "actualTimestampSeconds": 26.762864,
+          "requestedSeconds": 26
+        },
+        {
+          "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-029.png",
+          "actualTimestampSeconds": 29.806681,
+          "requestedSeconds": 29
+        }
+      ]
+    },
+    {
+      "kind": "non_damage_skill",
+      "name": "重启",
+      "observedOwner": "龙嵴金脉",
+      "observedCurrentHp": 468,
+      "observedMaxHp": 468,
+      "hudStatusIcons": "两枚红色能力图标均24（未定增减益语义）",
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/browser-frames/extra-042.png",
+          "actualTimestampSeconds": 42.802635,
+          "requestedSeconds": 42
+        }
+      ]
+    },
+    {
+      "kind": "non_damage_skill",
+      "name": "续杯",
+      "observedOwner": "阿瓦鲨",
+      "observedLevel": 60,
+      "observedCurrentHp": 430,
+      "observedMaxHp": 430,
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/browser-frames/hd-058.png",
+          "actualTimestampSeconds": 58.84215,
+          "requestedSeconds": 58
+        }
+      ]
+    },
+    {
+      "kind": "non_damage_skill",
+      "name": "筑梦",
+      "observedOwner": "鸡麻麻",
+      "observedLevel": 60,
+      "observedCurrentHp": 410,
+      "observedMaxHp": 410,
+      "note": "独立于蛋壳395/425演示，不串HP前后。",
+      "evidence": [
+        {
+          "path": "local-only:_work/s5-official-video-20261031/browser-frames/hd-068.png",
+          "actualTimestampSeconds": 68.947646,
+          "requestedSeconds": 68
+        }
+      ]
+    }
+  ],
+  "pending": [
+    "六项均已用候选配置复现相同伤害；视频未公开性格、个体与完整携带技能，候选不当作官方配置。",
+    "碎银已用既有学习面内的非地系四技能组候选复现228，偏振自动不触发地系减伤；画面未展示此技能组，仍不能确认视频配置。",
+    "浮字动画中间52/104（碎银）、51/156（过充）不另外当独立伤害相加；蛋壳4段30由HP连续下降证实。",
+    "右方HP被视频水印遮挡，未可靠转录的值仍为null。"
+  ],
+  "sampling": {
+    "denseIndexPath": "dense/index.json",
+    "segmentSamplingSeconds": [
+      0.6,
+      70.1
+    ],
+    "excludedDenseFrames": [
+      "local-only:frame-0000.png",
+      "local-only:frame-0015.png",
+      "local-only:frame-0090.png"
+    ],
+    "exclusionReasons": [
+      "seek起始未解码旧帧",
+      "单张金龙旧片段夹在冥暗诅咒连续帧之间",
+      "seek起始未解码旧帧"
+    ],
+    "boundary": "约0.5秒采样实际核图，非无间断逐帧解码；正式记录有清晰数字的事件。"
+  },
+  "silverVariantBaselines": [
+    {
+      "name": "晶石蜗（火山琉璃的样子）",
+      "uiDefaultDamage": 135
+    },
+    {
+      "name": "晶石蜗（蓝锥矿的样子）",
+      "uiDefaultDamage": 135
+    },
+    {
+      "name": "晶石蜗（莲花刚玉的样子）",
+      "uiDefaultDamage": 135
+    },
+    {
+      "name": "晶石蜗（烧蓝黄金的样子）",
+      "uiDefaultDamage": 135
+    },
+    {
+      "name": "晶石蜗（西瓜碧玺的样子）",
+      "uiDefaultDamage": 133
+    },
+    {
+      "name": "晶石蜗（星彩榴石的样子）",
+      "uiDefaultDamage": 135
+    }
+  ],
+  "replaySummary": [
+    {
+      "eventId": "segment000-crimson-539",
+      "videoDamage": 539,
+      "uiDefaultDamage": 545,
+      "standard60Damage": 293,
+      "visibleConditionDamage": 545,
+      "visibleConditionHitDamages": [
+        545
+      ],
+      "visibleConditionLabel": "实帧确认冥古龙当前等级99，保持其他标准60/普通/IV60条件",
+      "reproduced": false,
+      "resultPath": "segment000-crimson-539-evidence-result.json",
+      "uiCliMatchesWeb": null,
+      "visibleConditionCliMatchesWeb": null,
+      "candidateDamage": 539,
+      "candidateDescription": "仅候选：冥古龙99级/HP487，逞强，生命IV23、物攻IV2；寂灭骨龙普通、物防IV59；其余IV60。非视频官方配置。",
+      "candidateResultPath": "segment000-crimson-539-candidate-result.json",
+      "candidateMatch": true,
+      "candidateHitDamages": [
+        539
+      ],
+      "candidatePanels": {
+        "attacker": {
+          "physicalAttack": 292,
+          "magicalAttack": 167,
+          "speed": 209,
+          "hp": 487,
+          "physicalDefense": 225,
+          "magicalDefense": 199
+        },
+        "defender": {
+          "physicalAttack": 244,
+          "magicalAttack": 148,
+          "speed": 159,
+          "hp": 425,
+          "physicalDefense": 207,
+          "magicalDefense": 182
+        }
+      },
+      "candidateCliMatchesWeb": null,
+      "candidateCliSkipped": "At least one S5 owner level differs from60; ordinary compact CLI omits side.level.",
+      "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+      "videoConfigurationConfirmed": false
+    },
+    {
+      "eventId": "segment000-barren-559",
+      "videoDamage": 559,
+      "uiDefaultDamage": 616,
+      "standard60Damage": 331,
+      "visibleConditionDamage": 460,
+      "visibleConditionHitDamages": [
+        460
+      ],
+      "visibleConditionLabel": "实帧确认冥古龙当前等级79，保持其他标准60/普通/IV60条件",
+      "reproduced": false,
+      "resultPath": "segment000-barren-559-evidence-result.json",
+      "uiCliMatchesWeb": null,
+      "visibleConditionCliMatchesWeb": null,
+      "candidateDamage": 559,
+      "candidateDescription": "仅候选：冥古龙79级/HP497，普通，生命IV60、物攻IV57；寂灭骨龙大胆、物防IV13；其余IV60。两段冥古各自配置，不跨剪辑强制相同。",
+      "candidateResultPath": "segment000-barren-559-candidate-result.json",
+      "candidateMatch": true,
+      "candidateHitDamages": [
+        559
+      ],
+      "candidatePanels": {
+        "attacker": {
+          "physicalAttack": 262,
+          "magicalAttack": 153,
+          "speed": 189,
+          "hp": 497,
+          "physicalDefense": 203,
+          "magicalDefense": 180
+        },
+        "defender": {
+          "physicalAttack": 283,
+          "magicalAttack": 148,
+          "speed": 159,
+          "hp": 425,
+          "physicalDefense": 169,
+          "magicalDefense": 182
+        }
+      },
+      "candidateCliMatchesWeb": null,
+      "candidateCliSkipped": "At least one S5 owner level differs from60; ordinary compact CLI omits side.level.",
+      "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+      "videoConfigurationConfirmed": false
+    },
+    {
+      "eventId": "segment000-silver-228",
+      "videoDamage": 228,
+      "uiDefaultDamage": 135,
+      "standard60Damage": 135,
+      "visibleConditionDamage": 135,
+      "visibleConditionHitDamages": [
+        135
+      ],
+      "visibleConditionLabel": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "reproduced": false,
+      "resultPath": "segment000-silver-228-baseline-result.json",
+      "uiCliMatchesWeb": true,
+      "visibleConditionCliMatchesWeb": true,
+      "candidateDamage": 228,
+      "candidateDescription": "仅候选：地绡银龙60级/HP443，沉默，生命IV54、魔攻IV60；晶石蜗莲花刚玉候选形态、普通、魔防IV56；防方携带等价交换、点亮、反击拳、防反，均来自既有学习面且非地系，偏振自动不触发本次地系40%减伤。已删除手动偏振0减伤覆盖并重放228，CLI/Web一致。视频未展示此技能组，其余IV60。",
+      "candidateResultPath": "segment000-silver-228-candidate-result.json",
+      "candidateMatch": true,
+      "candidateHitDamages": [
+        228
+      ],
+      "candidatePanels": {
+        "attacker": {
+          "physicalAttack": 141,
+          "magicalAttack": 228,
+          "speed": 225,
+          "hp": 443,
+          "physicalDefense": 183,
+          "magicalDefense": 225
+        },
+        "defender": {
+          "physicalAttack": 200,
+          "magicalAttack": 204,
+          "speed": 165,
+          "hp": 381,
+          "physicalDefense": 244,
+          "magicalDefense": 191
+        }
+      },
+      "candidateCliMatchesWeb": true,
+      "candidateCliSkipped": null,
+      "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+      "videoConfigurationConfirmed": false
+    },
+    {
+      "eventId": "segment000-overcharge-253",
+      "videoDamage": 253,
+      "uiDefaultDamage": 212,
+      "standard60Damage": 212,
+      "visibleConditionDamage": 212,
+      "visibleConditionHitDamages": [
+        212
+      ],
+      "visibleConditionLabel": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "reproduced": false,
+      "resultPath": "segment000-overcharge-253-baseline-result.json",
+      "uiCliMatchesWeb": true,
+      "visibleConditionCliMatchesWeb": true,
+      "candidateDamage": 253,
+      "candidateDescription": "仅候选：龙嵴金脉普通、全IV60，HP468；翠顶夫人大胆、物防IV20，其余IV60。脚下两枚红12为盾形防御图标，不当作攻击聚能层数。",
+      "candidateResultPath": "segment000-overcharge-253-candidate-result.json",
+      "candidateMatch": true,
+      "candidateHitDamages": [
+        253
+      ],
+      "candidatePanels": {
+        "attacker": {
+          "physicalAttack": 237,
+          "magicalAttack": 157,
+          "speed": 181,
+          "hp": 468,
+          "physicalDefense": 233,
+          "magicalDefense": 190
+        },
+        "defender": {
+          "physicalAttack": 228,
+          "magicalAttack": 188,
+          "speed": 220,
+          "hp": 434,
+          "physicalDefense": 206,
+          "magicalDefense": 200
+        }
+      },
+      "candidateCliMatchesWeb": true,
+      "candidateCliSkipped": null,
+      "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+      "videoConfigurationConfirmed": false
+    },
+    {
+      "eventId": "segment000-rip-458",
+      "videoDamage": 458,
+      "uiDefaultDamage": 257,
+      "standard60Damage": 257,
+      "visibleConditionDamage": 386,
+      "visibleConditionHitDamages": [
+        386
+      ],
+      "visibleConditionLabel": "实帧阿瓦鲨脚下绿色双攻图标各5：双攻能力等级+5（+50%），其他配置保持普通全60",
+      "reproduced": false,
+      "resultPath": "segment000-rip-458-evidence-result.json",
+      "uiCliMatchesWeb": true,
+      "visibleConditionCliMatchesWeb": true,
+      "candidateDamage": 458,
+      "candidateDescription": "已见绿色双攻图标各5，双攻+50%；在此基础仅候选：阿瓦鲨柠檬样子候选形态、普通全IV60、HP430；权杖-V大胆、物防IV22，其余IV60。",
+      "candidateResultPath": "segment000-rip-458-candidate-result.json",
+      "candidateMatch": true,
+      "candidateHitDamages": [
+        458
+      ],
+      "candidatePanels": {
+        "attacker": {
+          "physicalAttack": 222,
+          "magicalAttack": 144,
+          "speed": 198,
+          "hp": 430,
+          "physicalDefense": 225,
+          "magicalDefense": 190
+        },
+        "defender": {
+          "physicalAttack": 241,
+          "magicalAttack": 200,
+          "speed": 176,
+          "hp": 396,
+          "physicalDefense": 205,
+          "magicalDefense": 243
+        }
+      },
+      "candidateCliMatchesWeb": true,
+      "candidateCliSkipped": null,
+      "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+      "videoConfigurationConfirmed": false
+    },
+    {
+      "eventId": "segment000-eggshell-120",
+      "videoDamage": 120,
+      "uiDefaultDamage": 64,
+      "standard60Damage": 64,
+      "visibleConditionDamage": 100,
+      "visibleConditionHitDamages": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "visibleConditionLabel": "实际蛋壳应对：减伤60%即伤害倍率0.4，音波弹共4次30伤害",
+      "reproduced": false,
+      "resultPath": "segment000-eggshell-120-evidence-result.json",
+      "uiCliMatchesWeb": true,
+      "visibleConditionCliMatchesWeb": true,
+      "candidateDamage": 120,
+      "candidateDescription": "已见蛋壳减伤60%及4击30、HP425→305；在此基础仅候选：双方普通，鸡麻麻魔防IV6、生命IV60，其余IV60；蹦床松鼠全IV60。",
+      "candidateResultPath": "segment000-eggshell-120-candidate-result.json",
+      "candidateMatch": true,
+      "candidateHitDamages": [
+        30,
+        30,
+        30,
+        30
+      ],
+      "candidatePanels": {
+        "attacker": {
+          "physicalAttack": 185,
+          "magicalAttack": 180,
+          "speed": 181,
+          "hp": 415,
+          "physicalDefense": 215,
+          "magicalDefense": 189
+        },
+        "defender": {
+          "physicalAttack": 199,
+          "magicalAttack": 198,
+          "speed": 165,
+          "hp": 425,
+          "physicalDefense": 217,
+          "magicalDefense": 158
+        }
+      },
+      "candidateCliMatchesWeb": true,
+      "candidateCliSkipped": null,
+      "candidateVerification": "same_core_web_pipeline_replay_confirmed",
+      "videoConfigurationConfirmed": false
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "eventId": "segment000-rip-458",
+  "attacker": "阿瓦鲨（柠檬鲨的样子）",
+  "defender": "权杖-V",
+  "skill": "离岸流",
+  "expectedDamage": 458,
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "knownAdjustments": [
+    {
+      "label": "实帧阿瓦鲨脚下绿色双攻图标各5：双攻能力等级+5（+50%），其他配置保持普通全60",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0095.png",
+          "fact": "两枚绿色物攻/魔攻图标各5，60级HP430/430"
+        }
+      ],
+      "patch": {
+        "directions": {
+          "forward": {
+            "overrides": {
+              "attackLevelStage": 5
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "候选复现，未确证视频性格个体：普通/大胆",
+      "evidence": [
+        {
+          "kind": "inference_only",
+          "fact": "仅约束可读等级/HP和伤害；未公开性格和相关攻防个体不是官方配置"
+        },
+        {
+          "kind": "measured_hp_constraint",
+          "hp": {
+            "attacker": 430
+          }
+        },
+        {
+          "kind": "search_scope",
+          "fact": "All31 natures deduplicated by relevant HP and attack/defense multipliers; related attack/defense IV integers0..60; HP IV0..60 constrained by visible HP where supplied; no formula change; IV candidate not official"
+        }
+      ],
+      "patch": {
+        "sides": {
+          "attacker": {
+            "nature": "neutral",
+            "natureId": "neutral",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            }
+          },
+          "defender": {
+            "nature": "bold",
+            "natureId": "bold",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 22,
+              "magicalDefense": 60
+            }
+          }
+        }
+      }
+    }
+  ]
+}

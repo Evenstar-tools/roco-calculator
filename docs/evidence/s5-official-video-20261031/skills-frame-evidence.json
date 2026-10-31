@@ -1,0 +1,379 @@
+{
+  "bvid": "BV1SNxq6REfb",
+  "title": "《洛克王国：世界》S5赛季新技能与首领化展示",
+  "creatorMid": 626796832,
+  "readRange": "hd-048/058/068/078/088/098/108/118/128/138，另extra-052/062/072/082/092/102/105/112/122/132/142；共21帧、15项技能面板。hd108淡出由extra105的地缚灵清晰面板补证。",
+  "skills": [
+    {
+      "name": "离岸流",
+      "existingCandidateId": "skill_preview_s5_rip-current",
+      "type": "水",
+      "category": "physical",
+      "categoryIconObserved": "橙色剑形图标",
+      "cost": 5,
+      "basePower": 125,
+      "powerGlyphObserved": "125",
+      "descriptionVerbatim": "造成物伤，使用至少2次水系技能后，本技能能耗永久-3。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/hd-048.png",
+      "actualTimestampSeconds": 48.737896,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true,
+      "supplementalFrame": {
+        "frame": "local-only:_work/s5-official-video-20261031/browser-frames/extra-052.png",
+        "actualTimestampSeconds": 52.721487,
+        "inspectionStatus": "visually_verified_same_panel"
+      }
+    },
+    {
+      "name": "续杯",
+      "existingCandidateId": "skill_preview_s5_refill",
+      "type": "水",
+      "category": "status",
+      "categoryIconObserved": "橙色星芒图标",
+      "cost": 2,
+      "basePower": null,
+      "powerGlyphObserved": "—",
+      "descriptionVerbatim": "自己获得双攻+50%，本技能能耗每-1，额外获得50%。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/hd-058.png",
+      "actualTimestampSeconds": 58.84215,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true
+    },
+    {
+      "name": "蛋壳",
+      "existingCandidateId": "skill_preview_s5_eggshell",
+      "type": "普通",
+      "category": "defense",
+      "categoryIconObserved": "橙色盾牌图标",
+      "cost": 2,
+      "basePower": null,
+      "powerGlyphObserved": "-",
+      "descriptionVerbatim": "减伤60%，应对攻击：驱散敌方所有增益。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/extra-062.png",
+      "actualTimestampSeconds": 62.778046,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true
+    },
+    {
+      "name": "筑梦",
+      "existingCandidateId": "skill_preview_s5_dream-building",
+      "type": "萌",
+      "category": "status",
+      "categoryIconObserved": "橙色星芒图标",
+      "cost": 7,
+      "basePower": null,
+      "powerGlyphObserved": "—",
+      "descriptionVerbatim": "将天气改为霞光梦境，持续8回合。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/hd-068.png",
+      "actualTimestampSeconds": 68.947646,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true,
+      "weatherExplanationPartialVisible": "【霞光梦境】：天气为霞光梦境时，速度",
+      "weatherExplanationNote": "说明文字下一行受播放器控件覆盖，未据截图补全；主技能说明持续8回合完整可读。"
+    },
+    {
+      "name": "间歇泉",
+      "existingCandidateId": "skill_preview_s5_geyser",
+      "type": "水",
+      "category": "physical",
+      "categoryIconObserved": "橙色剑形图标",
+      "cost": 4,
+      "basePower": 115,
+      "powerGlyphObserved": "115",
+      "descriptionVerbatim": "造成物伤，自己每有1层减益，本技能能耗-1。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/extra-072.png",
+      "actualTimestampSeconds": 72.869513,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true
+    },
+    {
+      "name": "外附传播",
+      "existingCandidateId": "skill_preview_s5_external-spread",
+      "type": "草",
+      "category": "defense",
+      "categoryIconObserved": "橙色盾牌图标",
+      "cost": 3,
+      "basePower": null,
+      "powerGlyphObserved": "—",
+      "descriptionVerbatim": "减伤80%，应对攻击：敌方获得2层寄生。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/hd-078.png",
+      "actualTimestampSeconds": 78.90011,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true,
+      "supplementalFrame": {
+        "frame": "local-only:_work/s5-official-video-20261031/browser-frames/extra-082.png",
+        "actualTimestampSeconds": 82.794357,
+        "inspectionStatus": "visually_verified_same_panel"
+      }
+    },
+    {
+      "name": "严霜",
+      "existingCandidateId": "skill_preview_s5_severe-frost",
+      "type": "冰",
+      "category": "status",
+      "categoryIconObserved": "橙色星芒图标",
+      "cost": 4,
+      "basePower": null,
+      "powerGlyphObserved": "—",
+      "descriptionVerbatim": "敌方获得8层冻结。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/hd-088.png",
+      "actualTimestampSeconds": 88.991483,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true,
+      "supplementalFrame": {
+        "frame": "local-only:_work/s5-official-video-20261031/browser-frames/extra-092.png",
+        "actualTimestampSeconds": 92.934617,
+        "inspectionStatus": "visually_verified_same_panel"
+      }
+    },
+    {
+      "name": "夏蛰",
+      "existingCandidateId": "skill_preview_s5_summer-pad",
+      "type": "虫",
+      "category": "status",
+      "categoryIconObserved": "橙色星芒图标",
+      "cost": 4,
+      "basePower": null,
+      "powerGlyphObserved": "—",
+      "descriptionVerbatim": "己方队伍获得2次随机奉献，应对防御：获得所有种类的奉献各1次。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/hd-098.png",
+      "actualTimestampSeconds": 98.971615,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true,
+      "supplementalFrame": {
+        "frame": "local-only:_work/s5-official-video-20261031/browser-frames/extra-102.png",
+        "actualTimestampSeconds": 102.902608,
+        "inspectionStatus": "visually_verified_same_panel"
+      }
+    },
+    {
+      "name": "地缚灵",
+      "existingCandidateId": "skill_preview_s5_earthbound-spirit",
+      "type": "幽",
+      "category": "status",
+      "categoryIconObserved": "橙色星芒图标",
+      "cost": 2,
+      "basePower": null,
+      "powerGlyphObserved": "-",
+      "descriptionVerbatim": "敌方获得双防-70%，若敌方本回合更换精灵，敌方额外获得速度-50。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/extra-105.png",
+      "actualTimestampSeconds": 105.777079,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true
+    },
+    {
+      "name": "灵扰",
+      "existingCandidateId": "skill_preview_s5_spirit-disturbance",
+      "type": "幽",
+      "category": "physical",
+      "categoryIconObserved": "橙色剑形图标",
+      "cost": 3,
+      "basePower": 25,
+      "powerGlyphObserved": "25",
+      "descriptionVerbatim": "造成物伤，3连击。偷取敌方能量至少1次后，本技能连击数永久+1。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/extra-112.png",
+      "actualTimestampSeconds": 112.880704,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true,
+      "hitCount": 3
+    },
+    {
+      "name": "热桥",
+      "existingCandidateId": "skill_preview_s5_thermal-bridge",
+      "type": "冰",
+      "category": "defense",
+      "categoryIconObserved": "橙色盾牌图标",
+      "cost": 2,
+      "basePower": null,
+      "powerGlyphObserved": "—",
+      "descriptionVerbatim": "减伤80%，应对攻击：敌方获得魔防-60%。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/hd-118.png",
+      "actualTimestampSeconds": 119.061427,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true
+    },
+    {
+      "name": "混合态",
+      "existingCandidateId": "skill_preview_s5_mixed-state",
+      "type": "幻",
+      "category": "status",
+      "categoryIconObserved": "橙色星芒图标",
+      "cost": 1,
+      "basePower": null,
+      "powerGlyphObserved": "-",
+      "descriptionVerbatim": "敌方获得随机10层属性减益。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/extra-122.png",
+      "actualTimestampSeconds": 122.92797,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true
+    },
+    {
+      "name": "投毒",
+      "existingCandidateId": "skill_preview_s5_poison-cast",
+      "type": "毒",
+      "category": "physical",
+      "categoryIconObserved": "橙色剑形图标",
+      "cost": 3,
+      "basePower": 90,
+      "powerGlyphObserved": "90",
+      "descriptionVerbatim": "造成物伤，使敌方获得至少2次中毒后，每次使用本技能攻击中毒目标时威力+25。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/hd-128.png",
+      "actualTimestampSeconds": 129.000993,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true
+    },
+    {
+      "name": "画龙点睛",
+      "existingCandidateId": null,
+      "type": "龙",
+      "category": "status",
+      "categoryIconObserved": "橙色星芒图标",
+      "cost": 1,
+      "basePower": null,
+      "powerGlyphObserved": "—",
+      "descriptionVerbatim": "蓄力，自己获得双攻+80%和速度+30。任意方式蓄力2次后，本技能不再需要蓄力。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/hd-138.png",
+      "actualTimestampSeconds": 138.998346,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true,
+      "supplementalFrame": {
+        "frame": "local-only:_work/s5-official-video-20261031/browser-frames/extra-132.png",
+        "actualTimestampSeconds": 132.946169,
+        "inspectionStatus": "visually_verified_same_panel"
+      }
+    },
+    {
+      "name": "龙之爪牙",
+      "existingCandidateId": null,
+      "type": "龙",
+      "category": "physical",
+      "categoryIconObserved": "橙色剑形图标",
+      "cost": 3,
+      "basePower": 25,
+      "powerGlyphObserved": "25",
+      "descriptionVerbatim": "蓄力，造成物伤，5连击。",
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/extra-142.png",
+      "actualTimestampSeconds": 142.933993,
+      "sourceUrl": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+      "sourceKind": "official-browser-video-frame",
+      "inspectionStatus": "visually_verified",
+      "iconVisible": true,
+      "hitCount": 5,
+      "chargeRequired": true
+    }
+  ],
+  "unreadableFrames": [
+    {
+      "frame": "local-only:_work/s5-official-video-20261031/browser-frames/hd-108.png",
+      "actualTimestampSeconds": 109.018392,
+      "reason": "技能面板正在淡出，名称/数值无法可靠转录",
+      "recommendedRecheckSeconds": [
+        104,
+        105,
+        106
+      ],
+      "resolvedByFrame": "local-only:_work/s5-official-video-20261031/browser-frames/extra-105.png",
+      "resolvedSkill": "地缚灵"
+    }
+  ],
+  "changesApplied": false,
+  "existingIconReview": {
+    "reviewScope": "实际view_image查看13项现有PNG并对照官方视频技能面板",
+    "result": "图案主体和配色一致；现有文件为10/27官图倾斜卡片裁切，视频为正向平面卡，不能据边框方向称错图。",
+    "items": [
+      {
+        "name": "离岸流",
+        "path": "local-only:public/assets/skills/skill_preview_s5_rip-current.png",
+        "status": "visually_matches_official_video"
+      },
+      {
+        "name": "续杯",
+        "path": "local-only:public/assets/skills/skill_preview_s5_refill.png",
+        "status": "visually_matches_official_video"
+      },
+      {
+        "name": "蛋壳",
+        "path": "local-only:public/assets/skills/skill_preview_s5_eggshell.png",
+        "status": "visually_matches_official_video"
+      },
+      {
+        "name": "筑梦",
+        "path": "local-only:public/assets/skills/skill_preview_s5_dream-building.png",
+        "status": "visually_matches_official_video"
+      },
+      {
+        "name": "间歇泉",
+        "path": "local-only:public/assets/skills/skill_preview_s5_geyser.png",
+        "status": "visually_matches_official_video"
+      },
+      {
+        "name": "外附传播",
+        "path": "local-only:public/assets/skills/skill_preview_s5_external-spread.png",
+        "status": "visually_matches_official_video"
+      },
+      {
+        "name": "严霜",
+        "path": "local-only:public/assets/skills/skill_preview_s5_severe-frost.png",
+        "status": "visually_matches_official_video"
+      },
+      {
+        "name": "夏蛰",
+        "path": "local-only:public/assets/skills/skill_preview_s5_summer-pad.png",
+        "status": "visually_matches_official_video"
+      },
+      {
+        "name": "地缚灵",
+        "path": "local-only:public/assets/skills/skill_preview_s5_earthbound-spirit.png",
+        "status": "visually_matches_official_video"
+      },
+      {
+        "name": "灵扰",
+        "path": "local-only:public/assets/skills/skill_preview_s5_spirit-disturbance.png",
+        "status": "visually_matches_official_video"
+      },
+      {
+        "name": "热桥",
+        "path": "local-only:public/assets/skills/skill_preview_s5_thermal-bridge.png",
+        "status": "visually_matches_official_video"
+      },
+      {
+        "name": "混合态",
+        "path": "local-only:public/assets/skills/skill_preview_s5_mixed-state.png",
+        "status": "visually_matches_official_video"
+      },
+      {
+        "name": "投毒",
+        "path": "local-only:public/assets/skills/skill_preview_s5_poison-cast.png",
+        "status": "visually_matches_official_video"
+      }
+    ]
+  }
+}

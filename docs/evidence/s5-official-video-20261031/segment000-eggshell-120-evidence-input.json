@@ -1,0 +1,47 @@
+{
+  "eventId": "segment000-eggshell-120",
+  "attacker": "蹦床松鼠",
+  "defender": "鸡麻麻",
+  "skill": "音波弹",
+  "opponentSkill": "蛋壳",
+  "expectedDamage": 120,
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "knownAdjustments": [
+    {
+      "label": "实际蛋壳应对：减伤60%即伤害倍率0.4，音波弹共4次30伤害",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0120.png",
+          "fact": "蹦床松鼠音波弹；鸡麻麻使用蛋壳应对"
+        },
+        {
+          "file": "local-only:dense/frame-0122.png through frame-0130.png",
+          "fact": "HP425→395→365→335→305，共4次30"
+        }
+      ],
+      "patch": {
+        "directions": {
+          "forward": {
+            "reduction": 0.4,
+            "hitCount": 4
+          }
+        },
+        "sides": {
+          "attacker": {
+            "skills": {
+              "four": [
+                "skill_8266665e073cd698",
+                "skill_7a3282500b58d354",
+                {
+                  "skillId": "skill_463c9348ada7f1e8",
+                  "hitCount": 4
+                },
+                "skill_c047702d8bae61e5"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

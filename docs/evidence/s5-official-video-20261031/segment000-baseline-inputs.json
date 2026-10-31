@@ -1,0 +1,51 @@
+[
+  {
+    "eventId": "segment000-crimson-539",
+    "attacker": "冥古龙",
+    "defender": "寂灭骨龙",
+    "skill": "深红龙击",
+    "expectedDamage": 539,
+    "source": "https://www.bilibili.com/video/BV1SNxq6REfb/"
+  },
+  {
+    "eventId": "segment000-barren-559",
+    "attacker": "冥古龙",
+    "defender": "寂灭骨龙",
+    "skill": "荒芜之噬",
+    "expectedDamage": 559,
+    "source": "https://www.bilibili.com/video/BV1SNxq6REfb/"
+  },
+  {
+    "eventId": "segment000-silver-228",
+    "attacker": "地绡银龙",
+    "defender": "晶石蜗（莲花刚玉的样子）",
+    "skill": "碎银",
+    "expectedDamage": 228,
+    "source": "https://www.bilibili.com/video/BV1SNxq6REfb/"
+  },
+  {
+    "eventId": "segment000-overcharge-253",
+    "attacker": "龙嵴金脉",
+    "defender": "翠顶夫人",
+    "skill": "过充电",
+    "expectedDamage": 253,
+    "source": "https://www.bilibili.com/video/BV1SNxq6REfb/"
+  },
+  {
+    "eventId": "segment000-rip-458",
+    "attacker": "阿瓦鲨（柠檬鲨的样子）",
+    "defender": "权杖-V",
+    "skill": "离岸流",
+    "expectedDamage": 458,
+    "source": "https://www.bilibili.com/video/BV1SNxq6REfb/"
+  },
+  {
+    "eventId": "segment000-eggshell-120",
+    "attacker": "蹦床松鼠",
+    "defender": "鸡麻麻",
+    "skill": "音波弹",
+    "opponentSkill": "蛋壳",
+    "expectedDamage": 120,
+    "source": "https://www.bilibili.com/video/BV1SNxq6REfb/"
+  }
+]

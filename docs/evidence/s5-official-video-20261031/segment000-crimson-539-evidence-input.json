@@ -1,0 +1,29 @@
+{
+  "eventId": "segment000-crimson-539",
+  "attacker": "冥古龙",
+  "defender": "寂灭骨龙",
+  "skill": "深红龙击",
+  "expectedDamage": 539,
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "knownAdjustments": [
+    {
+      "label": "实帧确认冥古龙当前等级99，保持其他标准60/普通/IV60条件",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0024.png",
+          "fact": "左HUD冥古龙99级；未猜性格个体"
+        }
+      ],
+      "patch": {
+        "directions": {
+          "forward": {
+            "context": {
+              "attackerTrait.attackerTraitS5BattleLevel.3d741017": 99,
+              "attackerTraitS5BattleLevel": 99
+            }
+          }
+        }
+      }
+    }
+  ]
+}

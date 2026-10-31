@@ -1,0 +1,1279 @@
+{
+  "eventId": "segment000-silver-228",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "engine": "Current Web S5 overlay -> UI selectSpirit/selectFourSkill -> buildBalanceComparison",
+  "cliBoundary": "Ordinary compact CLI omits per-owner S5 level; this adapter uses the actual Web level pipeline.",
+  "versions": {
+    "data": "s4-2026-09-10",
+    "rules": "s4-2026-09-10"
+  },
+  "defaultPresets": {
+    "attacker": {
+      "spirit": "地绡银龙",
+      "spiritId": "spirit_preview_s5_underground-silver-dragon",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "银头寸"
+      ],
+      "skills": [
+        {
+          "id": "skill_preview_s5_mineral-exchange",
+          "name": "矿物置换",
+          "cost": 1,
+          "basePower": null
+        },
+        {
+          "id": "skill_preview_s5_silver-shards",
+          "name": "碎银",
+          "cost": 10,
+          "basePower": 170
+        },
+        {
+          "id": "skill_086497800410e7cd",
+          "name": "扬尘",
+          "cost": 3,
+          "basePower": 80
+        },
+        {
+          "id": "skill_de14b645b3046425",
+          "name": "沙涌",
+          "cost": 7,
+          "basePower": 0
+        }
+      ]
+    },
+    "defender": {
+      "spirit": "晶石蜗（莲花刚玉的样子）",
+      "spiritId": "spirit_c3d7e5b349b3d691",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "偏振"
+      ],
+      "skills": [
+        {
+          "id": "skill_fdbadaf76d9032c1",
+          "name": "脉冲光线",
+          "cost": 0,
+          "basePower": 40
+        },
+        {
+          "id": "skill_bfc534922c853904",
+          "name": "泥浆",
+          "cost": 0,
+          "basePower": 40
+        },
+        {
+          "id": "skill_32bb236ac6c2a963",
+          "name": "透射",
+          "cost": 1,
+          "basePower": 60
+        },
+        {
+          "id": "skill_fb7a382355deaebc",
+          "name": "扬沙",
+          "cost": 1,
+          "basePower": 60
+        }
+      ]
+    }
+  },
+  "selectedSkills": [
+    {
+      "side": "attacker",
+      "skill": "碎银",
+      "skillId": "skill_preview_s5_silver-shards",
+      "index": 1,
+      "presentInDefaultFour": true,
+      "reason": "Select the observed action for damage replay; preserve other default slots."
+    }
+  ],
+  "uiDefaultBaseline": {
+    "label": "Actual UI spirit-selection defaults with observed action selected; includes default trait controls/levels",
+    "evidence": [],
+    "state": {
+      "schemaVersion": 1,
+      "versions": {
+        "data": "s4-2026-09-10",
+        "rules": "s4-2026-09-10"
+      },
+      "mode": "four",
+      "calculationOptions": {
+        "includeNegativeStatusSettlement": false
+      },
+      "marks": {
+        "attacker": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        },
+        "defender": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        }
+      },
+      "negativeStatuses": {
+        "attacker": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        },
+        "defender": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        }
+      },
+      "sides": {
+        "attacker": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_preview_s5_mineral-exchange",
+              "skill_preview_s5_silver-shards",
+              "skill_086497800410e7cd",
+              "skill_de14b645b3046425"
+            ],
+            "single": "skill_preview_s5_mineral-exchange"
+          },
+          "spiritId": "spirit_preview_s5_underground-silver-dragon",
+          "traitValues": {}
+        },
+        "defender": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_fdbadaf76d9032c1",
+              "skill_bfc534922c853904",
+              "skill_32bb236ac6c2a963",
+              "skill_fb7a382355deaebc"
+            ],
+            "single": "skill_fdbadaf76d9032c1"
+          },
+          "spiritId": "spirit_c3d7e5b349b3d691",
+          "traitValues": {}
+        }
+      },
+      "directions": {
+        "forward": {
+          "selectedSkillIndex": 1,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {
+            "defenderTrait.defenderTraitEffect.43166ce0": 40
+          },
+          "overrides": {}
+        },
+        "reverse": {
+          "selectedSkillIndex": 0,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {},
+          "overrides": {}
+        }
+      }
+    },
+    "result": {
+      "skillId": "skill_preview_s5_silver-shards",
+      "skillName": "碎银",
+      "status": "exact",
+      "skillCost": 10,
+      "resolvedPower": 170,
+      "staticPower": 170,
+      "displayPower": 212,
+      "hitCount": 1,
+      "hitDamages": [
+        135
+      ],
+      "totalDamage": 135,
+      "hpPercent": 35.43307086614173,
+      "combatPanel": {
+        "attacker": {
+          "magicalAttack": 228,
+          "physicalAttack": 151,
+          "speed": 225
+        },
+        "defender": {
+          "magicalDefense": 193,
+          "physicalDefense": 244,
+          "speed": 165
+        }
+      },
+      "gainSummary": "偏振",
+      "formulaSteps": [
+        {
+          "label": "攻击面板",
+          "input": "magicalAttack",
+          "before": 228,
+          "after": 228,
+          "value": "228",
+          "source": "panel-stat"
+        },
+        {
+          "label": "累计耗能永久减耗",
+          "input": 0,
+          "before": 10,
+          "after": 10,
+          "source": "official-video:BV1SNxq6REfb:2026-10-31"
+        },
+        {
+          "label": "基础威力",
+          "input": 170,
+          "before": 170,
+          "after": 170,
+          "value": "170",
+          "source": "snapshot-skill"
+        },
+        {
+          "label": "固定威力增加",
+          "input": 0,
+          "before": 170,
+          "after": 170,
+          "value": "170",
+          "source": "default"
+        },
+        {
+          "label": "继承迸发固定威力",
+          "input": 0,
+          "before": 170,
+          "after": 170,
+          "value": "170",
+          "source": "default"
+        },
+        {
+          "label": "印记固定威力",
+          "input": 0,
+          "before": 170,
+          "after": 170,
+          "value": "170",
+          "source": "default"
+        },
+        {
+          "label": "特性固定威力",
+          "input": 0,
+          "before": 170,
+          "after": 170,
+          "value": "170",
+          "source": "default"
+        },
+        {
+          "label": "技能威力百分比",
+          "input": [],
+          "before": 170,
+          "after": 170,
+          "value": "170",
+          "source": "default"
+        },
+        {
+          "label": "本系",
+          "input": 1.25,
+          "before": 170,
+          "after": 212.5,
+          "value": "212.5",
+          "source": "automatic"
+        },
+        {
+          "label": "属性克制",
+          "input": [
+            "光",
+            "地"
+          ],
+          "before": 212.5,
+          "after": 212.5,
+          "value": "212.5",
+          "source": {
+            "title": "BWIKI 精灵详情页属性克制",
+            "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+            "revision": null,
+            "fetchedAt": "2026-07-23T13:54:31.332Z",
+            "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+          }
+        },
+        {
+          "label": "攻防等级",
+          "input": 1,
+          "before": 212.5,
+          "after": 212.5,
+          "value": "212.5",
+          "source": "direction-state"
+        },
+        {
+          "label": "偏振",
+          "input": true,
+          "before": 1,
+          "after": 0.6,
+          "source": "reviewed-trait:polarization-v1"
+        },
+        {
+          "label": "其他威力乘区",
+          "input": 1,
+          "before": 212.5,
+          "after": 212.5,
+          "value": "212.5",
+          "source": "direction-state"
+        },
+        {
+          "label": "显示威力",
+          "input": {
+            "method": "floor"
+          },
+          "before": 212.5,
+          "after": 212,
+          "value": "212",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "等级系数与攻防比",
+          "input": {
+            "level": 60,
+            "coefficient": 0.9024390243902439,
+            "attackerStat": 228,
+            "calculationPower": 212.5,
+            "damageReductionMultiplier": 0.6,
+            "defenderDefense": 193,
+            "displayedPower": 212,
+            "roundedNumerator": 43723,
+            "unroundedNumerator": 43723.170731707316,
+            "unroundedOneHit": 135.92642487046632
+          },
+          "before": 43723.170731707316,
+          "after": 135,
+          "value": "135",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "减伤、连击与最终倍率",
+          "input": {
+            "damageReductionMultiplier": 0.6,
+            "hitCount": 1,
+            "finalDamageMultiplier": 1,
+            "oneHitAfterFinal": 135
+          },
+          "before": 135,
+          "after": 135,
+          "value": "135",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "星陨追加伤害",
+          "input": {
+            "stacks": 0,
+            "power": 0
+          },
+          "before": 135,
+          "after": 0,
+          "value": "0",
+          "source": "reviewed-rule:starfall-v1"
+        }
+      ],
+      "warnings": []
+    },
+    "cli": {
+      "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-silver-228/segment000-silver-228-ui-default.cli-input.json",
+      "ok": true,
+      "engine": {
+        "productVersion": "2.2.8",
+        "serverId": "cn",
+        "availability": "verified",
+        "dataVersion": "s4-2026-09-10",
+        "rulesVersion": "s4-2026-09-10",
+        "snapshotVersion": 2
+      },
+      "inputDigest": "sha256:e96caa4491924234620ac138e8e445b82296305a60525aa15a32666bc2c38399",
+      "result": {
+        "skillId": "skill_preview_s5_silver-shards",
+        "skillName": "碎银",
+        "status": "exact",
+        "reason": null,
+        "totalDamage": 135,
+        "hpPercent": 35.43307086614173,
+        "lethal": false,
+        "hitCount": 1,
+        "displayPower": 212,
+        "effectivePower": 212,
+        "typeLabel": "地",
+        "typeMultiplier": 1,
+        "warnings": [],
+        "postAttackEffects": null,
+        "markSettlements": [],
+        "traitSettlements": []
+      },
+      "matchesWebDamage": true
+    },
+    "panels": {
+      "attacker": {
+        "physicalAttack": 151,
+        "magicalAttack": 228,
+        "speed": 225,
+        "hp": 391,
+        "physicalDefense": 183,
+        "magicalDefense": 225
+      },
+      "defender": {
+        "physicalAttack": 200,
+        "magicalAttack": 204,
+        "speed": 165,
+        "hp": 381,
+        "physicalDefense": 244,
+        "magicalDefense": 193
+      }
+    }
+  },
+  "localReplayOnlySkills": [],
+  "localSkillAliases": {},
+  "isolatedCliProjectRoot": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-silver-228",
+  "expectedDamage": 228,
+  "steps": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "evidence": [],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_preview_s5_mineral-exchange",
+                "skill_preview_s5_silver-shards",
+                "skill_086497800410e7cd",
+                "skill_de14b645b3046425"
+              ],
+              "single": "skill_preview_s5_mineral-exchange"
+            },
+            "spiritId": "spirit_preview_s5_underground-silver-dragon",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_fdbadaf76d9032c1",
+                "skill_bfc534922c853904",
+                "skill_32bb236ac6c2a963",
+                "skill_fb7a382355deaebc"
+              ],
+              "single": "skill_fdbadaf76d9032c1"
+            },
+            "spiritId": "spirit_c3d7e5b349b3d691",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 1,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "defenderTrait.defenderTraitEffect.43166ce0": 40
+            },
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_preview_s5_silver-shards",
+        "skillName": "碎银",
+        "status": "exact",
+        "skillCost": 10,
+        "resolvedPower": 170,
+        "staticPower": 170,
+        "displayPower": 212,
+        "hitCount": 1,
+        "hitDamages": [
+          135
+        ],
+        "totalDamage": 135,
+        "hpPercent": 35.43307086614173,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 228,
+            "physicalAttack": 151,
+            "speed": 225
+          },
+          "defender": {
+            "magicalDefense": 193,
+            "physicalDefense": 244,
+            "speed": 165
+          }
+        },
+        "gainSummary": "偏振",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "magicalAttack",
+            "before": 228,
+            "after": 228,
+            "value": "228",
+            "source": "panel-stat"
+          },
+          {
+            "label": "累计耗能永久减耗",
+            "input": 0,
+            "before": 10,
+            "after": 10,
+            "source": "official-video:BV1SNxq6REfb:2026-10-31"
+          },
+          {
+            "label": "基础威力",
+            "input": 170,
+            "before": 170,
+            "after": 170,
+            "value": "170",
+            "source": "snapshot-skill"
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 170,
+            "after": 170,
+            "value": "170",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 170,
+            "after": 170,
+            "value": "170",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 170,
+            "after": 170,
+            "value": "170",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 170,
+            "after": 170,
+            "value": "170",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 170,
+            "after": 170,
+            "value": "170",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 170,
+            "after": 212.5,
+            "value": "212.5",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "光",
+              "地"
+            ],
+            "before": 212.5,
+            "after": 212.5,
+            "value": "212.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 212.5,
+            "after": 212.5,
+            "value": "212.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "偏振",
+            "input": true,
+            "before": 1,
+            "after": 0.6,
+            "source": "reviewed-trait:polarization-v1"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 212.5,
+            "after": 212.5,
+            "value": "212.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 212.5,
+            "after": 212,
+            "value": "212",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 228,
+              "calculationPower": 212.5,
+              "damageReductionMultiplier": 0.6,
+              "defenderDefense": 193,
+              "displayedPower": 212,
+              "roundedNumerator": 43723,
+              "unroundedNumerator": 43723.170731707316,
+              "unroundedOneHit": 135.92642487046632
+            },
+            "before": 43723.170731707316,
+            "after": 135,
+            "value": "135",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 0.6,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 135
+            },
+            "before": 135,
+            "after": 135,
+            "value": "135",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 135,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-silver-228/segment000-silver-228-step-0.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:e96caa4491924234620ac138e8e445b82296305a60525aa15a32666bc2c38399",
+        "result": {
+          "skillId": "skill_preview_s5_silver-shards",
+          "skillName": "碎银",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 135,
+          "hpPercent": 35.43307086614173,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 212,
+          "effectivePower": 212,
+          "typeLabel": "地",
+          "typeMultiplier": 1,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 151,
+          "magicalAttack": 228,
+          "speed": 225,
+          "hp": 391,
+          "physicalDefense": 183,
+          "magicalDefense": 225
+        },
+        "defender": {
+          "physicalAttack": 200,
+          "magicalAttack": 204,
+          "speed": 165,
+          "hp": 381,
+          "physicalDefense": 244,
+          "magicalDefense": 193
+        }
+      }
+    },
+    {
+      "label": "未证实合法配置候选：沉默生命个体54/魔攻60，防方普通魔防56，携带等价交换、点亮、反击拳、防反（均非地系），偏振自动无地系减伤",
+      "evidence": [
+        {
+          "kind": "inference_only",
+          "fact": "仅约束可读等级/HP和伤害；未公开性格和相关攻防个体不是官方配置"
+        },
+        {
+          "kind": "measured_hp_constraint",
+          "hp": {
+            "attacker": 443
+          }
+        },
+        {
+          "kind": "search_scope",
+          "fact": "All31 natures deduplicated by relevant HP and attack/defense multipliers; related attack/defense IV integers0..60; HP IV0..60 constrained by visible HP where supplied; no formula change; IV candidate not official"
+        },
+        {
+          "kind": "legal_loadout_candidate_only",
+          "fact": "四项均来自现有莲花刚玉晶石蜗学习面，不含地系；删除手动偏振减伤覆盖，改由实际携带技能自动计算。视频未显示此技能组。"
+        }
+      ],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 54,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "silent",
+            "skills": {
+              "four": [
+                "skill_preview_s5_mineral-exchange",
+                "skill_preview_s5_silver-shards",
+                "skill_086497800410e7cd",
+                "skill_de14b645b3046425"
+              ],
+              "single": "skill_preview_s5_mineral-exchange"
+            },
+            "spiritId": "spirit_preview_s5_underground-silver-dragon",
+            "traitValues": {},
+            "natureId": "silent"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 56
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_bce8810cad08f9b1",
+                "skill_accd13acb74ee445",
+                "skill_59a43615100e03f2",
+                "skill_f8e63db3ac09a6fc"
+              ],
+              "single": "skill_bce8810cad08f9b1"
+            },
+            "spiritId": "spirit_c3d7e5b349b3d691",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 1,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "defenderTrait.defenderTraitEffect.43166ce0": 40
+            },
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 0,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {},
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_preview_s5_silver-shards",
+        "skillName": "碎银",
+        "status": "exact",
+        "skillCost": 10,
+        "resolvedPower": 170,
+        "staticPower": 170,
+        "displayPower": 212,
+        "hitCount": 1,
+        "hitDamages": [
+          228
+        ],
+        "totalDamage": 228,
+        "hpPercent": 59.84251968503938,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 228,
+            "physicalAttack": 141,
+            "speed": 225
+          },
+          "defender": {
+            "magicalDefense": 191,
+            "physicalDefense": 244,
+            "speed": 165
+          }
+        },
+        "gainSummary": "",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "magicalAttack",
+            "before": 228,
+            "after": 228,
+            "value": "228",
+            "source": "panel-stat"
+          },
+          {
+            "label": "累计耗能永久减耗",
+            "input": 0,
+            "before": 10,
+            "after": 10,
+            "source": "official-video:BV1SNxq6REfb:2026-10-31"
+          },
+          {
+            "label": "基础威力",
+            "input": 170,
+            "before": 170,
+            "after": 170,
+            "value": "170",
+            "source": "snapshot-skill"
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 170,
+            "after": 170,
+            "value": "170",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 170,
+            "after": 170,
+            "value": "170",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 170,
+            "after": 170,
+            "value": "170",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 170,
+            "after": 170,
+            "value": "170",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 170,
+            "after": 170,
+            "value": "170",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 170,
+            "after": 212.5,
+            "value": "212.5",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "光",
+              "地"
+            ],
+            "before": 212.5,
+            "after": 212.5,
+            "value": "212.5",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 212.5,
+            "after": 212.5,
+            "value": "212.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "偏振",
+            "input": false,
+            "before": 1,
+            "after": 1,
+            "source": "reviewed-trait:polarization-v1"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 212.5,
+            "after": 212.5,
+            "value": "212.5",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 212.5,
+            "after": 212,
+            "value": "212",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 228,
+              "calculationPower": 212.5,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 191,
+              "displayedPower": 212,
+              "roundedNumerator": 43723,
+              "unroundedNumerator": 43723.170731707316,
+              "unroundedOneHit": 228.91623036649216
+            },
+            "before": 43723.170731707316,
+            "after": 228,
+            "value": "228",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 228
+            },
+            "before": 228,
+            "after": 228,
+            "value": "228",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 228,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-silver-228/segment000-silver-228-step-1.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:21e8fa52a9b2070973eeb431edd949951bd370b1f28b41080ae77066bd7e5652",
+        "result": {
+          "skillId": "skill_preview_s5_silver-shards",
+          "skillName": "碎银",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 228,
+          "hpPercent": 59.84251968503938,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 212,
+          "effectivePower": 212,
+          "typeLabel": "地",
+          "typeMultiplier": 1,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 141,
+          "magicalAttack": 228,
+          "speed": 225,
+          "hp": 443,
+          "physicalDefense": 183,
+          "magicalDefense": 225
+        },
+        "defender": {
+          "physicalAttack": 200,
+          "magicalAttack": 204,
+          "speed": 165,
+          "hp": 381,
+          "physicalDefense": 244,
+          "magicalDefense": 191
+        }
+      }
+    }
+  ],
+  "comparison": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "status": "exact",
+      "actualDamage": 135,
+      "expectedDamage": 228,
+      "delta": -93
+    },
+    {
+      "label": "未证实合法配置候选：沉默生命个体54/魔攻60，防方普通魔防56，携带等价交换、点亮、反击拳、防反（均非地系），偏振自动无地系减伤",
+      "status": "exact",
+      "actualDamage": 228,
+      "expectedDamage": 228,
+      "delta": 0
+    }
+  ]
+}

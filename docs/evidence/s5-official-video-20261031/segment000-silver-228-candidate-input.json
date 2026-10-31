@@ -1,0 +1,75 @@
+{
+  "eventId": "segment000-silver-228",
+  "attacker": "地绡银龙",
+  "defender": "晶石蜗（莲花刚玉的样子）",
+  "skill": "碎银",
+  "expectedDamage": 228,
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "knownAdjustments": [
+    {
+      "label": "未证实合法配置候选：沉默生命个体54/魔攻60，防方普通魔防56，携带等价交换、点亮、反击拳、防反（均非地系），偏振自动无地系减伤",
+      "evidence": [
+        {
+          "kind": "inference_only",
+          "fact": "仅约束可读等级/HP和伤害；未公开性格和相关攻防个体不是官方配置"
+        },
+        {
+          "kind": "measured_hp_constraint",
+          "hp": {
+            "attacker": 443
+          }
+        },
+        {
+          "kind": "search_scope",
+          "fact": "All31 natures deduplicated by relevant HP and attack/defense multipliers; related attack/defense IV integers0..60; HP IV0..60 constrained by visible HP where supplied; no formula change; IV candidate not official"
+        },
+        {
+          "kind": "legal_loadout_candidate_only",
+          "fact": "四项均来自现有莲花刚玉晶石蜗学习面，不含地系；删除手动偏振减伤覆盖，改由实际携带技能自动计算。视频未显示此技能组。"
+        }
+      ],
+      "patch": {
+        "sides": {
+          "attacker": {
+            "nature": "silent",
+            "natureId": "silent",
+            "displayIvs": {
+              "hp": 54,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            }
+          },
+          "defender": {
+            "nature": "neutral",
+            "natureId": "neutral",
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 56
+            },
+            "skills": {
+              "four": [
+                "skill_bce8810cad08f9b1",
+                "skill_accd13acb74ee445",
+                "skill_59a43615100e03f2",
+                "skill_f8e63db3ac09a6fc"
+              ],
+              "single": "skill_bce8810cad08f9b1"
+            }
+          }
+        },
+        "directions": {
+          "forward": {
+            "context": {}
+          }
+        }
+      }
+    }
+  ]
+}

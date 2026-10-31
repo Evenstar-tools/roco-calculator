@@ -1,0 +1,1265 @@
+{
+  "eventId": "segment000-eggshell-120",
+  "source": "https://www.bilibili.com/video/BV1SNxq6REfb/",
+  "engine": "Current Web S5 overlay -> UI selectSpirit/selectFourSkill -> buildBalanceComparison",
+  "cliBoundary": "Ordinary compact CLI omits per-owner S5 level; this adapter uses the actual Web level pipeline.",
+  "versions": {
+    "data": "s4-2026-09-10",
+    "rules": "s4-2026-09-10"
+  },
+  "defaultPresets": {
+    "attacker": {
+      "spirit": "蹦床松鼠",
+      "spiritId": "spirit_f8063bcf10b237fc",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "囤积"
+      ],
+      "skills": [
+        {
+          "id": "skill_8266665e073cd698",
+          "name": "落星",
+          "cost": 0,
+          "basePower": 45
+        },
+        {
+          "id": "skill_7a3282500b58d354",
+          "name": "拍击",
+          "cost": 1,
+          "basePower": 65
+        },
+        {
+          "id": "skill_463c9348ada7f1e8",
+          "name": "音波弹",
+          "cost": 1,
+          "basePower": 60
+        },
+        {
+          "id": "skill_c047702d8bae61e5",
+          "name": "旋转突击",
+          "cost": 3,
+          "basePower": 35
+        }
+      ]
+    },
+    "defender": {
+      "spirit": "鸡麻麻",
+      "spiritId": "spirit_preview_s5_chicken-mama",
+      "nature": "neutral",
+      "displayIvs": {
+        "hp": 60,
+        "speed": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 60,
+        "physicalDefense": 60,
+        "magicalDefense": 60
+      },
+      "traits": [
+        "护犊"
+      ],
+      "skills": [
+        {
+          "id": "skill_preview_s5_dream-building",
+          "name": "筑梦",
+          "cost": 7,
+          "basePower": null
+        },
+        {
+          "id": "skill_preview_s5_eggshell",
+          "name": "蛋壳",
+          "cost": 2,
+          "basePower": null
+        },
+        {
+          "id": "skill_f5d921b97fb279d7",
+          "name": "超级糖果",
+          "cost": 3,
+          "basePower": 100
+        },
+        {
+          "id": "skill_004571bc89bd5faf",
+          "name": "追打",
+          "cost": 3,
+          "basePower": 75
+        }
+      ]
+    }
+  },
+  "selectedSkills": [
+    {
+      "side": "attacker",
+      "skill": "音波弹",
+      "skillId": "skill_463c9348ada7f1e8",
+      "index": 2,
+      "presentInDefaultFour": true,
+      "reason": "Select the observed action for damage replay; preserve other default slots."
+    },
+    {
+      "side": "defender",
+      "skill": "蛋壳",
+      "skillId": "skill_preview_s5_eggshell",
+      "index": 1,
+      "presentInDefaultFour": true,
+      "reason": "Select the observed action for damage replay; preserve other default slots."
+    }
+  ],
+  "uiDefaultBaseline": {
+    "label": "Actual UI spirit-selection defaults with observed action selected; includes default trait controls/levels",
+    "evidence": [],
+    "state": {
+      "schemaVersion": 1,
+      "versions": {
+        "data": "s4-2026-09-10",
+        "rules": "s4-2026-09-10"
+      },
+      "mode": "four",
+      "calculationOptions": {
+        "includeNegativeStatusSettlement": false
+      },
+      "marks": {
+        "attacker": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        },
+        "defender": {
+          "negative": {
+            "id": null,
+            "stacks": 0
+          },
+          "positive": {
+            "id": null,
+            "stacks": 0
+          }
+        }
+      },
+      "negativeStatuses": {
+        "attacker": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        },
+        "defender": {
+          "burn": 0,
+          "electrified": 0,
+          "freeze": 0,
+          "parasitism": 0,
+          "poison": 0
+        }
+      },
+      "sides": {
+        "attacker": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_8266665e073cd698",
+              "skill_7a3282500b58d354",
+              "skill_463c9348ada7f1e8",
+              "skill_c047702d8bae61e5"
+            ],
+            "single": "skill_8266665e073cd698"
+          },
+          "spiritId": "spirit_f8063bcf10b237fc",
+          "traitValues": {}
+        },
+        "defender": {
+          "acquiredTraitIds": [],
+          "acquiredTraitValues": {},
+          "displayIvs": {
+            "hp": 60,
+            "speed": 60,
+            "physicalAttack": 60,
+            "magicalAttack": 60,
+            "physicalDefense": 60,
+            "magicalDefense": 60
+          },
+          "nature": "neutral",
+          "skills": {
+            "four": [
+              "skill_preview_s5_dream-building",
+              "skill_preview_s5_eggshell",
+              "skill_f5d921b97fb279d7",
+              "skill_004571bc89bd5faf"
+            ],
+            "single": "skill_preview_s5_dream-building"
+          },
+          "spiritId": "spirit_preview_s5_chicken-mama",
+          "traitValues": {}
+        }
+      },
+      "directions": {
+        "forward": {
+          "selectedSkillIndex": 2,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {
+            "defenderTrait.defenderTraitS5EggTriggered.20c95cdc": false
+          },
+          "overrides": {}
+        },
+        "reverse": {
+          "selectedSkillIndex": 1,
+          "selectedDamageSource": "skill",
+          "reduction": 1,
+          "hitCount": 1,
+          "traitDamageHitCount": 1,
+          "starfallStacks": 0,
+          "finalDamageMultiplier": 1,
+          "currentHp": null,
+          "context": {
+            "attackerTrait.attackerTraitS5EggTriggered.20c95cdc": false
+          },
+          "overrides": {}
+        }
+      }
+    },
+    "result": {
+      "skillId": "skill_463c9348ada7f1e8",
+      "skillName": "音波弹",
+      "status": "exact",
+      "skillCost": 1,
+      "resolvedPower": 60,
+      "staticPower": 60,
+      "displayPower": 75,
+      "hitCount": 1,
+      "hitDamages": [
+        64
+      ],
+      "totalDamage": 64,
+      "hpPercent": 15.058823529411763,
+      "combatPanel": {
+        "attacker": {
+          "magicalAttack": 180,
+          "physicalAttack": 185,
+          "speed": 181
+        },
+        "defender": {
+          "magicalDefense": 188,
+          "physicalDefense": 217,
+          "speed": 165
+        }
+      },
+      "gainSummary": "",
+      "formulaSteps": [
+        {
+          "label": "攻击面板",
+          "input": "magicalAttack",
+          "before": 180,
+          "after": 180,
+          "value": "180",
+          "source": "panel-stat"
+        },
+        {
+          "label": "基础威力",
+          "input": 60,
+          "before": 60,
+          "after": 60,
+          "value": "60",
+          "source": {
+            "title": "模块:Pets/data/Skills",
+            "url": "https://wiki.biligame.com/nrc/index.php?oldid=7273",
+            "revision": 7273,
+            "fetchedAt": "2026-09-09T16:57:54.897Z",
+            "sha256": "ed9132e1a3fd7f0cf287c8acbeb57e830ba0cfe2dc1f11946a72ef6329772f33"
+          }
+        },
+        {
+          "label": "固定威力增加",
+          "input": 0,
+          "before": 60,
+          "after": 60,
+          "value": "60",
+          "source": "default"
+        },
+        {
+          "label": "继承迸发固定威力",
+          "input": 0,
+          "before": 60,
+          "after": 60,
+          "value": "60",
+          "source": "default"
+        },
+        {
+          "label": "印记固定威力",
+          "input": 0,
+          "before": 60,
+          "after": 60,
+          "value": "60",
+          "source": "default"
+        },
+        {
+          "label": "特性固定威力",
+          "input": 0,
+          "before": 60,
+          "after": 60,
+          "value": "60",
+          "source": "default"
+        },
+        {
+          "label": "技能威力百分比",
+          "input": [],
+          "before": 60,
+          "after": 60,
+          "value": "60",
+          "source": "default"
+        },
+        {
+          "label": "本系",
+          "input": 1.25,
+          "before": 60,
+          "after": 75,
+          "value": "75",
+          "source": "automatic"
+        },
+        {
+          "label": "属性克制",
+          "input": [
+            "普通",
+            "萌"
+          ],
+          "before": 75,
+          "after": 75,
+          "value": "75",
+          "source": {
+            "title": "BWIKI 精灵详情页属性克制",
+            "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+            "revision": null,
+            "fetchedAt": "2026-07-23T13:54:31.332Z",
+            "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+          }
+        },
+        {
+          "label": "攻防等级",
+          "input": 1,
+          "before": 75,
+          "after": 75,
+          "value": "75",
+          "source": "direction-state"
+        },
+        {
+          "label": "其他威力乘区",
+          "input": 1,
+          "before": 75,
+          "after": 75,
+          "value": "75",
+          "source": "direction-state"
+        },
+        {
+          "label": "显示威力",
+          "input": {
+            "method": "floor"
+          },
+          "before": 75,
+          "after": 75,
+          "value": "75",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "等级系数与攻防比",
+          "input": {
+            "level": 60,
+            "coefficient": 0.9024390243902439,
+            "attackerStat": 180,
+            "calculationPower": 75,
+            "damageReductionMultiplier": 1,
+            "defenderDefense": 188,
+            "displayedPower": 75,
+            "roundedNumerator": 12183,
+            "unroundedNumerator": 12182.926829268294,
+            "unroundedOneHit": 64.80319148936171
+          },
+          "before": 12182.926829268294,
+          "after": 64,
+          "value": "64",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "减伤、连击与最终倍率",
+          "input": {
+            "damageReductionMultiplier": 1,
+            "hitCount": 1,
+            "finalDamageMultiplier": 1,
+            "oneHitAfterFinal": 64
+          },
+          "before": 64,
+          "after": 64,
+          "value": "64",
+          "source": "damage-formula-v1"
+        },
+        {
+          "label": "星陨追加伤害",
+          "input": {
+            "stacks": 0,
+            "power": 0
+          },
+          "before": 64,
+          "after": 0,
+          "value": "0",
+          "source": "reviewed-rule:starfall-v1"
+        }
+      ],
+      "warnings": []
+    },
+    "cli": {
+      "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-eggshell-120/segment000-eggshell-120-ui-default.cli-input.json",
+      "ok": true,
+      "engine": {
+        "productVersion": "2.2.8",
+        "serverId": "cn",
+        "availability": "verified",
+        "dataVersion": "s4-2026-09-10",
+        "rulesVersion": "s4-2026-09-10",
+        "snapshotVersion": 2
+      },
+      "inputDigest": "sha256:e6c4d1f25a3a2850ac3066a9211f2eee8e7c55033edd0fc61a22c1b257ae1f6b",
+      "result": {
+        "skillId": "skill_463c9348ada7f1e8",
+        "skillName": "音波弹",
+        "status": "exact",
+        "reason": null,
+        "totalDamage": 64,
+        "hpPercent": 15.058823529411763,
+        "lethal": false,
+        "hitCount": 1,
+        "displayPower": 75,
+        "effectivePower": 75,
+        "typeLabel": "普通",
+        "typeMultiplier": 1,
+        "warnings": [],
+        "postAttackEffects": null,
+        "markSettlements": [],
+        "traitSettlements": []
+      },
+      "matchesWebDamage": true
+    },
+    "panels": {
+      "attacker": {
+        "physicalAttack": 185,
+        "magicalAttack": 180,
+        "speed": 181,
+        "hp": 415,
+        "physicalDefense": 215,
+        "magicalDefense": 189
+      },
+      "defender": {
+        "physicalAttack": 199,
+        "magicalAttack": 198,
+        "speed": 165,
+        "hp": 425,
+        "physicalDefense": 217,
+        "magicalDefense": 188
+      }
+    }
+  },
+  "localReplayOnlySkills": [],
+  "localSkillAliases": {},
+  "isolatedCliProjectRoot": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-eggshell-120",
+  "expectedDamage": 120,
+  "steps": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "evidence": [],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_8266665e073cd698",
+                "skill_7a3282500b58d354",
+                "skill_463c9348ada7f1e8",
+                "skill_c047702d8bae61e5"
+              ],
+              "single": "skill_8266665e073cd698"
+            },
+            "spiritId": "spirit_f8063bcf10b237fc",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_preview_s5_dream-building",
+                "skill_preview_s5_eggshell",
+                "skill_f5d921b97fb279d7",
+                "skill_004571bc89bd5faf"
+              ],
+              "single": "skill_preview_s5_dream-building"
+            },
+            "spiritId": "spirit_preview_s5_chicken-mama",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 2,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "defenderTrait.defenderTraitS5EggTriggered.20c95cdc": false
+            },
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 1,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "attackerTrait.attackerTraitS5EggTriggered.20c95cdc": false
+            },
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_463c9348ada7f1e8",
+        "skillName": "音波弹",
+        "status": "exact",
+        "skillCost": 1,
+        "resolvedPower": 60,
+        "staticPower": 60,
+        "displayPower": 75,
+        "hitCount": 1,
+        "hitDamages": [
+          64
+        ],
+        "totalDamage": 64,
+        "hpPercent": 15.058823529411763,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 180,
+            "physicalAttack": 185,
+            "speed": 181
+          },
+          "defender": {
+            "magicalDefense": 188,
+            "physicalDefense": 217,
+            "speed": 165
+          }
+        },
+        "gainSummary": "",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "magicalAttack",
+            "before": 180,
+            "after": 180,
+            "value": "180",
+            "source": "panel-stat"
+          },
+          {
+            "label": "基础威力",
+            "input": 60,
+            "before": 60,
+            "after": 60,
+            "value": "60",
+            "source": {
+              "title": "模块:Pets/data/Skills",
+              "url": "https://wiki.biligame.com/nrc/index.php?oldid=7273",
+              "revision": 7273,
+              "fetchedAt": "2026-09-09T16:57:54.897Z",
+              "sha256": "ed9132e1a3fd7f0cf287c8acbeb57e830ba0cfe2dc1f11946a72ef6329772f33"
+            }
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 60,
+            "after": 60,
+            "value": "60",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 60,
+            "after": 60,
+            "value": "60",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 60,
+            "after": 60,
+            "value": "60",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 60,
+            "after": 60,
+            "value": "60",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 60,
+            "after": 60,
+            "value": "60",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 60,
+            "after": 75,
+            "value": "75",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "普通",
+              "萌"
+            ],
+            "before": 75,
+            "after": 75,
+            "value": "75",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 75,
+            "after": 75,
+            "value": "75",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 75,
+            "after": 75,
+            "value": "75",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 75,
+            "after": 75,
+            "value": "75",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 180,
+              "calculationPower": 75,
+              "damageReductionMultiplier": 1,
+              "defenderDefense": 188,
+              "displayedPower": 75,
+              "roundedNumerator": 12183,
+              "unroundedNumerator": 12182.926829268294,
+              "unroundedOneHit": 64.80319148936171
+            },
+            "before": 12182.926829268294,
+            "after": 64,
+            "value": "64",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 1,
+              "hitCount": 1,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 64
+            },
+            "before": 64,
+            "after": 64,
+            "value": "64",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 64,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-eggshell-120/segment000-eggshell-120-step-0.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:e6c4d1f25a3a2850ac3066a9211f2eee8e7c55033edd0fc61a22c1b257ae1f6b",
+        "result": {
+          "skillId": "skill_463c9348ada7f1e8",
+          "skillName": "音波弹",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 64,
+          "hpPercent": 15.058823529411763,
+          "lethal": false,
+          "hitCount": 1,
+          "displayPower": 75,
+          "effectivePower": 75,
+          "typeLabel": "普通",
+          "typeMultiplier": 1,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 185,
+          "magicalAttack": 180,
+          "speed": 181,
+          "hp": 415,
+          "physicalDefense": 215,
+          "magicalDefense": 189
+        },
+        "defender": {
+          "physicalAttack": 199,
+          "magicalAttack": 198,
+          "speed": 165,
+          "hp": 425,
+          "physicalDefense": 217,
+          "magicalDefense": 188
+        }
+      }
+    },
+    {
+      "label": "实际蛋壳应对：减伤60%即伤害倍率0.4，音波弹共4次30伤害",
+      "evidence": [
+        {
+          "file": "local-only:dense/frame-0120.png",
+          "fact": "蹦床松鼠音波弹；鸡麻麻使用蛋壳应对"
+        },
+        {
+          "file": "local-only:dense/frame-0122.png through frame-0130.png",
+          "fact": "HP425→395→365→335→305，共4次30"
+        }
+      ],
+      "state": {
+        "schemaVersion": 1,
+        "versions": {
+          "data": "s4-2026-09-10",
+          "rules": "s4-2026-09-10"
+        },
+        "mode": "four",
+        "calculationOptions": {
+          "includeNegativeStatusSettlement": false
+        },
+        "marks": {
+          "attacker": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          },
+          "defender": {
+            "negative": {
+              "id": null,
+              "stacks": 0
+            },
+            "positive": {
+              "id": null,
+              "stacks": 0
+            }
+          }
+        },
+        "negativeStatuses": {
+          "attacker": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          },
+          "defender": {
+            "burn": 0,
+            "electrified": 0,
+            "freeze": 0,
+            "parasitism": 0,
+            "poison": 0
+          }
+        },
+        "sides": {
+          "attacker": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_8266665e073cd698",
+                "skill_7a3282500b58d354",
+                {
+                  "skillId": "skill_463c9348ada7f1e8",
+                  "hitCount": 4
+                },
+                "skill_c047702d8bae61e5"
+              ],
+              "single": "skill_8266665e073cd698"
+            },
+            "spiritId": "spirit_f8063bcf10b237fc",
+            "traitValues": {},
+            "natureId": "neutral"
+          },
+          "defender": {
+            "acquiredTraitIds": [],
+            "acquiredTraitValues": {},
+            "displayIvs": {
+              "hp": 60,
+              "speed": 60,
+              "physicalAttack": 60,
+              "magicalAttack": 60,
+              "physicalDefense": 60,
+              "magicalDefense": 60
+            },
+            "nature": "neutral",
+            "skills": {
+              "four": [
+                "skill_preview_s5_dream-building",
+                "skill_preview_s5_eggshell",
+                "skill_f5d921b97fb279d7",
+                "skill_004571bc89bd5faf"
+              ],
+              "single": "skill_preview_s5_dream-building"
+            },
+            "spiritId": "spirit_preview_s5_chicken-mama",
+            "traitValues": {},
+            "natureId": "neutral"
+          }
+        },
+        "directions": {
+          "forward": {
+            "selectedSkillIndex": 2,
+            "selectedDamageSource": "skill",
+            "reduction": 0.4,
+            "hitCount": 4,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "defenderTrait.defenderTraitS5EggTriggered.20c95cdc": false
+            },
+            "overrides": {}
+          },
+          "reverse": {
+            "selectedSkillIndex": 1,
+            "selectedDamageSource": "skill",
+            "reduction": 1,
+            "hitCount": 1,
+            "traitDamageHitCount": 1,
+            "starfallStacks": 0,
+            "finalDamageMultiplier": 1,
+            "currentHp": null,
+            "context": {
+              "attackerTrait.attackerTraitS5EggTriggered.20c95cdc": false
+            },
+            "overrides": {}
+          }
+        }
+      },
+      "result": {
+        "skillId": "skill_463c9348ada7f1e8",
+        "skillName": "音波弹",
+        "status": "exact",
+        "skillCost": 1,
+        "resolvedPower": 60,
+        "staticPower": 60,
+        "displayPower": 75,
+        "hitCount": 4,
+        "hitDamages": [
+          25,
+          25,
+          25,
+          25
+        ],
+        "totalDamage": 100,
+        "hpPercent": 23.52941176470588,
+        "combatPanel": {
+          "attacker": {
+            "magicalAttack": 180,
+            "physicalAttack": 185,
+            "speed": 181
+          },
+          "defender": {
+            "magicalDefense": 188,
+            "physicalDefense": 217,
+            "speed": 165
+          }
+        },
+        "gainSummary": "",
+        "formulaSteps": [
+          {
+            "label": "攻击面板",
+            "input": "magicalAttack",
+            "before": 180,
+            "after": 180,
+            "value": "180",
+            "source": "panel-stat"
+          },
+          {
+            "label": "基础威力",
+            "input": 60,
+            "before": 60,
+            "after": 60,
+            "value": "60",
+            "source": {
+              "title": "模块:Pets/data/Skills",
+              "url": "https://wiki.biligame.com/nrc/index.php?oldid=7273",
+              "revision": 7273,
+              "fetchedAt": "2026-09-09T16:57:54.897Z",
+              "sha256": "ed9132e1a3fd7f0cf287c8acbeb57e830ba0cfe2dc1f11946a72ef6329772f33"
+            }
+          },
+          {
+            "label": "固定威力增加",
+            "input": 0,
+            "before": 60,
+            "after": 60,
+            "value": "60",
+            "source": "default"
+          },
+          {
+            "label": "继承迸发固定威力",
+            "input": 0,
+            "before": 60,
+            "after": 60,
+            "value": "60",
+            "source": "default"
+          },
+          {
+            "label": "印记固定威力",
+            "input": 0,
+            "before": 60,
+            "after": 60,
+            "value": "60",
+            "source": "default"
+          },
+          {
+            "label": "特性固定威力",
+            "input": 0,
+            "before": 60,
+            "after": 60,
+            "value": "60",
+            "source": "default"
+          },
+          {
+            "label": "技能威力百分比",
+            "input": [],
+            "before": 60,
+            "after": 60,
+            "value": "60",
+            "source": "default"
+          },
+          {
+            "label": "本系",
+            "input": 1.25,
+            "before": 60,
+            "after": 75,
+            "value": "75",
+            "source": "automatic"
+          },
+          {
+            "label": "属性克制",
+            "input": [
+              "普通",
+              "萌"
+            ],
+            "before": 75,
+            "after": 75,
+            "value": "75",
+            "source": {
+              "title": "BWIKI 精灵详情页属性克制",
+              "url": "https://wiki.biligame.com/rocom/精灵图鉴",
+              "revision": null,
+              "fetchedAt": "2026-07-23T13:54:31.332Z",
+              "sha256": "7ffb61bf73050b044114a0d123b1e1a434a9a1155b5a63d9c6b067363878963d"
+            }
+          },
+          {
+            "label": "攻防等级",
+            "input": 1,
+            "before": 75,
+            "after": 75,
+            "value": "75",
+            "source": "direction-state"
+          },
+          {
+            "label": "其他威力乘区",
+            "input": 1,
+            "before": 75,
+            "after": 75,
+            "value": "75",
+            "source": "direction-state"
+          },
+          {
+            "label": "显示威力",
+            "input": {
+              "method": "floor"
+            },
+            "before": 75,
+            "after": 75,
+            "value": "75",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "等级系数与攻防比",
+            "input": {
+              "level": 60,
+              "coefficient": 0.9024390243902439,
+              "attackerStat": 180,
+              "calculationPower": 75,
+              "damageReductionMultiplier": 0.4,
+              "defenderDefense": 188,
+              "displayedPower": 75,
+              "roundedNumerator": 12183,
+              "unroundedNumerator": 12182.926829268294,
+              "unroundedOneHit": 25.921276595744686
+            },
+            "before": 12182.926829268294,
+            "after": 25,
+            "value": "25",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "减伤、连击与最终倍率",
+            "input": {
+              "damageReductionMultiplier": 0.4,
+              "hitCount": 4,
+              "finalDamageMultiplier": 1,
+              "oneHitAfterFinal": 25
+            },
+            "before": 25,
+            "after": 100,
+            "value": "100",
+            "source": "damage-formula-v1"
+          },
+          {
+            "label": "星陨追加伤害",
+            "input": {
+              "stacks": 0,
+              "power": 0
+            },
+            "before": 100,
+            "after": 0,
+            "value": "0",
+            "source": "reviewed-rule:starfall-v1"
+          }
+        ],
+        "warnings": []
+      },
+      "cli": {
+        "inputFile": "local-only:_work/s5-official-video-20261031/damage-replay/cli-project/segment000-eggshell-120/segment000-eggshell-120-step-1.cli-input.json",
+        "ok": true,
+        "engine": {
+          "productVersion": "2.2.8",
+          "serverId": "cn",
+          "availability": "verified",
+          "dataVersion": "s4-2026-09-10",
+          "rulesVersion": "s4-2026-09-10",
+          "snapshotVersion": 2
+        },
+        "inputDigest": "sha256:8c269f7e4d2ab9781f142b13b602daa0a54164faf1b55e6551ec1ab3e3d4498a",
+        "result": {
+          "skillId": "skill_463c9348ada7f1e8",
+          "skillName": "音波弹",
+          "status": "exact",
+          "reason": null,
+          "totalDamage": 100,
+          "hpPercent": 23.52941176470588,
+          "lethal": false,
+          "hitCount": 4,
+          "displayPower": 75,
+          "effectivePower": 75,
+          "typeLabel": "普通",
+          "typeMultiplier": 1,
+          "warnings": [],
+          "postAttackEffects": null,
+          "markSettlements": [],
+          "traitSettlements": []
+        },
+        "matchesWebDamage": true
+      },
+      "panels": {
+        "attacker": {
+          "physicalAttack": 185,
+          "magicalAttack": 180,
+          "speed": 181,
+          "hp": 415,
+          "physicalDefense": 215,
+          "magicalDefense": 189
+        },
+        "defender": {
+          "physicalAttack": 199,
+          "magicalAttack": 198,
+          "speed": 165,
+          "hp": 425,
+          "physicalDefense": 217,
+          "magicalDefense": 188
+        }
+      }
+    }
+  ],
+  "comparison": [
+    {
+      "label": "Default skill presets, ordinary nature, all six IVs60, both Lv60; observed action selected (modeled baseline, not measured video configuration)",
+      "status": "exact",
+      "actualDamage": 64,
+      "expectedDamage": 120,
+      "delta": -56
+    },
+    {
+      "label": "实际蛋壳应对：减伤60%即伤害倍率0.4，音波弹共4次30伤害",
+      "status": "exact",
+      "actualDamage": 100,
+      "expectedDamage": 120,
+      "delta": -20
+    }
+  ]
+}
