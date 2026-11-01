@@ -1,9 +1,10 @@
 export const GLOBAL_RELEASE_SUMMARY = Object.freeze({
-  date: "2026.11.01",
+  date: "2026.11.02",
   eyebrow: "国际服",
   title: "国际服计算器",
   description: "采用 S3 季中数值与规则。",
   items: [
+    { id: "skillDetails", title: "种族值六维图与特性资料", description: "技能检索新增种族值六维图，补全特性名称、图标和描述；窄屏隐藏六维图，国际服继续使用独立 S3 数据。" },
     { id: "loadRecovery", title: "加载恢复修复", description: "更新检查不再一直等待，损坏的头像缓存可自动重试；失败时显示精灵名称。速度线与耐久排行移除麦田重复外观。" },
     { id: "attackStats", title: "攻击变化修复", description: "手调等级仍调整双攻；技能按S3文案只调整指定攻击。贪得无厌只加物攻，旧配置层数保留。" },
     { id: "interactions", title: "操作修复", description: "修正单技能防御解除、水泡盾增益与窄屏技能名，补齐增益摘要译文。" },

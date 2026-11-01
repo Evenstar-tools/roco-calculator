@@ -60,7 +60,9 @@ function normalizeSearch(value) {
 export function getMoonMemoryTraitSupport(trait) {
   const traitName = trait?.displayName ?? trait?.name;
   const supported =
-    getS5PreviewTraitInputs(trait)?.some(control => control.action === "s5-stat-turn-end") ||
+    getS5PreviewTraitInputs(trait)?.some(control =>
+      control.action === "s5-stat-turn-end" || control.contextKey?.endsWith("S5ChargeCount"),
+    ) ||
     ["attacker", "defender"].some((role) =>
       hasNamedTraitEffectRule(trait, role),
     ) ||

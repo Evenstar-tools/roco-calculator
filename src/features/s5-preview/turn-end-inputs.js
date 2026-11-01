@@ -1,7 +1,6 @@
 import { normalizeTriggerControls } from "../../domain/trigger-controls.js";
 
 const SETTLED_FIELDS = {
-  "gold-vein-dragon": "SettledChargeCount",
   "underground-silver-dragon": "SettledEnergySpent",
 };
 

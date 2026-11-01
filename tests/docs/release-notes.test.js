@@ -49,11 +49,10 @@ describe("版本记录", () => {
     expect(versions.every((version) => /^v\d+\.\d+\.\d+$/u.test(version))).toBe(true);
   });
 
-  test("S4 月涌狂想作为当前桌面版本置顶", () => {
+  test("当前正式版本置顶并保留独立国际服口径", () => {
     expect(featuredRelease.status).not.toBe("preview");
     expect(featuredRelease.version).toBe(`v${packageVersion}`);
     expect(featuredRelease.title.trim().length).toBeGreaterThan(0);
-    expect(featuredRelease.title).toContain("S4");
     expect(featuredRelease.highlights.join("\n")).not.toContain("9月10日");
     expect(JSON.stringify(USER_RELEASE_NOTES)).not.toMatch(/前瞻/u);
     expect(featuredRelease.title).not.toMatch(/S3[\s-]*季中/u);

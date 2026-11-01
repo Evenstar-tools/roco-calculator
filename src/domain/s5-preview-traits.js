@@ -54,7 +54,7 @@ export function getS5PreviewTraitInputs(trait, role = "attacker") {
       controls = [number("BattleLevel", "当前等级", 60, { min: 1, max: 150, step: 1 })];
       break;
     case "gold-vein-dragon":
-      return [getGoldChargeCountInput(role), ...getS5PreviewTurnEndInputs(key, role)];
+      return [getGoldChargeCountInput(role)];
     case "little-scissor":
       controls = [number("OpponentExitCount", "敌方精灵已离场次数")];
       break;
@@ -191,15 +191,14 @@ export function getS5PreviewTraitEvaluation(trait, role = "attacker", context = 
         block(result.summary);
         break;
       }
-      const settled = Math.min(count, read("SettledChargeCount") ?? count);
       result.totalCount = count;
-      result.settledCount = settled;
-      result.pendingCount = count - settled;
-      const stages = settled * 5;
-      result.summary = count ? "聚能 " + count + " 次 · 物攻能力等级 +" + stages : "未聚能 · 无增益";
-      if (result.pendingCount) result.summary += "；待回合结束 " + result.pendingCount + " 次";
-      result.note = "每次聚能在回合结束时物攻+50%；与其它能力等级一起按现有上限结算。";
-      if (settled) result.effects.push({ kind: "physical-attack-percent", amount: stages * 10 });
+      // The count represents effective charges; legacy settlement fields no longer gate it.
+      result.settledCount = count;
+      result.pendingCount = 0;
+      const bonus = count * 50;
+      result.summary = count ? "聚能 " + count + " 次 · 物攻 +" + bonus + "%" : "未聚能";
+      result.note = "按已生效的聚能次数填写，每次物攻+50%；与其它能力等级一起按现有上限结算。";
+      if (count) result.effects.push({ kind: "physical-attack-percent", amount: bonus });
       break;
     }
     case "little-scissor": {

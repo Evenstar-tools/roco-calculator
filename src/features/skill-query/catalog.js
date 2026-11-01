@@ -20,8 +20,8 @@ export function unpackCatalog(data) {
     spirits: data.sharedSpirits ? season.spirits.map((index) => {
       const entry = data.sharedSpirits[index];
       if (!Array.isArray(entry)) return entry;
-      const [id, fullName, types, stage, familyId, traitIds] = entry;
-      return { id, fullName, types, stage, familyId, ...(traitIds ? { traitIds } : {}) };
+      const [id, fullName, types, stage, familyId, traitIds, raceStats] = entry;
+      return { id, fullName, types, stage, familyId, ...(traitIds ? { traitIds } : {}), ...(raceStats ? { raceStats } : {}) };
     }) : season.spirits,
     relations: season.relations.map((index) => data.sharedRelations[index]),
   })) };

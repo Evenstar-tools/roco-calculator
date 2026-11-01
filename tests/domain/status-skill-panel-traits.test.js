@@ -87,17 +87,17 @@ test.each([
   }
 });
 
-test("settled physical-only attack and dual defense buffs retain manual stage merging on non-damage skills", () => {
+test("immediate physical-only attack and dual defense buffs retain manual stage merging on non-damage skills", () => {
   const { snapshot, state: initial } = fixture("four");
   initial.sides.attacker.spiritId = "spirit_preview_s5_gold-vein-dragon";
   let state = setInput(snapshot, initial, "attacker", input => input.contextKey.endsWith("ChargeCount"), 2);
   state = setInput(snapshot, state, "defender", input => input.contextKey.endsWith("EggTriggered"), true);
   state.directions.forward.overrides.attackLevelStage = -3;
   state.directions.forward.overrides.defenseLevelStage = -2;
-  state = setSettled(state, "gold-vein-dragon", 0);
+  state.directions.forward.context.attackerTraitS5SettledChargeCount = 0;
   expect(view(snapshot, choose(snapshot, state, "防御")).sides.attacker.finalPanelStats)
-    .toMatchObject({ physicalAttack: 156, magicalAttack: 156 });
-  state = setSettled(state, "gold-vein-dragon", 2);
+    .toMatchObject({ physicalAttack: 345, magicalAttack: 156 });
+  state.directions.forward.context.attackerTraitS5SettledChargeCount = 2;
   const current = view(snapshot, choose(snapshot, state, "防御"));
   expect(current.sides.attacker.finalPanelStats).toMatchObject({ physicalAttack: 345, magicalAttack: 156 });
   expect(current.sides.defender.finalPanelStats).toMatchObject({ physicalDefense: 263, magicalDefense: 263 });

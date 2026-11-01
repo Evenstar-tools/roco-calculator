@@ -6,6 +6,7 @@ import { EntityChangeHint } from "../../components/EntityChangeHint.jsx";
 import { categoryNames } from "./catalog.js";
 import { matchesSource, querySpiritFamilies, skillMatchesQuery, spiritSkills } from "./query-model.js";
 import SkillQueryEffect from "./SkillQueryEffect.jsx";
+import SpiritStatRadar from "./SpiritStatRadar.jsx";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
 import { localizeAcquisitionMethods } from "./acquisition-text.js";
 import { useRuntime } from "../../runtime/RuntimeContext.jsx";
@@ -216,6 +217,7 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
         <button className="sq-back" onClick={onBackToSource ?? back}><ArrowLeft size={18} />{t(onBackToSource ? "返回属性查询" : "返回匹配结果")}</button>
         <div className="sq-spirit-heading"><div className="sq-spirit-identity"><Portrait key={spirit.id} spirit={spirit} /><div><h3 ref={detailTitle} tabIndex={-1}>{spirit.fullName}</h3>{!placeholder && <EntityChangeHint changeInfo={spirit.changeInfo} />}<p>{spirit.types?.map((type) => <span key={type}><ElementIcon type={type} size={20} />{typeName(type)}</span>)}<span>{t(spirit.stage)}</span></p>{related.length > 1 && <select aria-label={t("精灵形态")} value={spirit.id} onChange={(event) => openSpirit(event.target.value)}>{related.map((item) => <option key={item.id} value={item.id}>{item.fullName}</option>)}</select>}</div></div>
           {spiritTraits.length > 0 && <section className="sq-spirit-traits" aria-label={t("精灵特性")}>{spiritTraits.map(trait => <TraitDescription key={trait.id ?? trait.name} trait={trait} />)}</section>}
+          {!phone && !placeholder && <SpiritStatRadar spirit={spirit} />}
         </div>
         <div className="sq-detail-filters">{!placeholder && <div className="sq-sources" aria-label={t("技能学习来源")}>{SOURCES.map(([id, label]) => <button key={id} aria-label={t(label)} aria-pressed={source === id} onClick={() => setSource(id)}>{t(label)}<small>{learnset.filter(skill => !id || skill.methods.some(method => matchesSource(method, id))).length}</small></button>)}</div>}<input aria-label={t("筛选精灵技能")} placeholder={t("技能名称或效果")} value={detailQuery} onChange={(event) => setDetailQuery(event.target.value)} />{typeSelect(detailType, setDetailType, "精灵技能属性", [...new Set(learnset.map(skill => skill.type))])}{categorySelect(detailCategory, setDetailCategory, "精灵技能种类")}{effectToggle}</div>
         <div className="sq-count-line"><p className="sq-count" role="status">{t("{count} / {total} 个技能", { count: rows.length, total: learnset.length })}</p>{hasDetailFilters && <button className="sq-clear-filters" aria-label={t("清除精灵技能筛选")} onClick={clearDetailFilters}>{t("清除筛选")}</button>}</div>

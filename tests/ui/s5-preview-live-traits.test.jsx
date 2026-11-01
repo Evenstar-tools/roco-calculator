@@ -62,36 +62,27 @@ test.each(["single", "four"])("%s冥古龙仅有当前等级框，按钮与键�
   expect(level).toHaveValue(80);
 });
 
-test.each(["single", "four"])("精简%s聚能次数在回合末增加物攻，归零移除增益", async mode => {
+test.each(["single", "four"])("精简%s聚能次数立即增加物攻，无回合结束按钮，归零移除增益", async mode => {
   setup("gold-vein-dragon", mode);
   const before = primary();
   const count = screen.getByRole("spinbutton", { name: "聚能次数" });
   expect(count).toHaveValue(0);
   expect(screen.queryByRole("checkbox", { name: "聚能后双攻增益当前生效" })).not.toBeInTheDocument();
   expect(screen.queryByRole("spinbutton", { name: "当前已生效双攻增益" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "回合结束", exact: true })).not.toBeInTheDocument();
   fireEvent.change(count, { target: { value: "1" } });
-  expect(primary()).toBe(before);
-  expect(screen.getAllByText(/待回合结束 1 次/u).length).toBeGreaterThan(0);
-  await Promise.resolve();
-  fireEvent.click(screen.getAllByRole("button", { name: "回合结束", exact: true })[0]);
   const once = primary();
   expect(once).toBeGreaterThan(before);
+  expect(screen.getAllByText("聚能 1 次 · 物攻 +50%").length).toBeGreaterThan(0);
+  expect(screen.queryByText(/待回合结束/u)).not.toBeInTheDocument();
   await Promise.resolve();
   fireEvent.click(screen.getByRole("button", { name: /撤回上一步/u }));
-  expect(count).toHaveValue(1);
-  expect(screen.getAllByText(/待回合结束 1 次/u).length).toBeGreaterThan(0);
+  expect(count).toHaveValue(0);
   expect(primary()).toBe(before);
   await Promise.resolve();
-  fireEvent.click(screen.getAllByRole("button", { name: "回合结束", exact: true })[0]);
-  expect(primary()).toBe(once);
-  fireEvent.click(screen.getAllByRole("button", { name: "回合结束", exact: true })[0]);
-  expect(primary()).toBe(once);
-  expect(screen.getAllByText("聚能 1 次 · 物攻能力等级 +5").length).toBeGreaterThan(0);
-  fireEvent.change(count, { target: { value: "2" } });
-  expect(primary()).toBe(once);
-  fireEvent.click(screen.getAllByRole("button", { name: "回合结束", exact: true })[0]);
+  fireEvent.change(count, { target: { value: "3" } });
   expect(primary()).toBeGreaterThan(once);
-  expect(screen.getAllByText("聚能 2 次 · 物攻能力等级 +10").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("聚能 3 次 · 物攻 +150%").length).toBeGreaterThan(0);
   fireEvent.change(count, { target: { value: "0" } });
   expect(primary()).toBe(before);
 });
@@ -204,16 +195,14 @@ test.each(["single", "four"])("%s蛋包蛋只需特性触发一个勾选，双�
   expect(screen.getAllByText("特性未触发").length).toBeGreaterThan(0);
 });
 
-test("无技能也同步回合末聚能后的物攻与能力等级栏，手调加减不重复计入特性", () => {
+test("无技能也立即同步聚能后的物攻与能力等级栏，手调加减不重复计入特性", () => {
   setup("gold-vein-dragon", "four", null);
   fireEvent.click(screen.getByRole("button", { name: "具体版", exact: true }));
   const panel = screen.getByRole("group", { name: "攻击方能力", exact: true });
   const count = screen.getAllByRole("spinbutton", { name: "聚能次数" })[0];
   for (const [times, expected, stage] of [[1, 355, 5], [2, 474, 10]]) {
     fireEvent.change(count, { target: { value: String(times) } });
-    if (times === 1) expect(within(panel).queryByRole("button", { name: /物攻最终值/u })).not.toBeInTheDocument();
-    else expect(within(panel).getByRole("button", { name: /物攻最终值355，基础值237/u })).toBeInTheDocument();
-    fireEvent.click(screen.getAllByRole("button", { name: "回合结束", exact: true })[0]);
+    expect(screen.queryByRole("button", { name: "回合结束", exact: true })).not.toBeInTheDocument();
     expect(within(panel).queryByRole("button", { name: /魔攻最终值/u })).not.toBeInTheDocument();
     for (const stat of ["物攻"]) {
       expect(within(panel).getByRole("button", { name: new RegExp(`${stat}最终值${expected}，基础值237`) })).toBeInTheDocument();

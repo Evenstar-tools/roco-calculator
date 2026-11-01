@@ -7,6 +7,7 @@ import { S3_MIDSEASON_RULESET } from "../../src/domain/season-rules.js";
 import { localizeGlobalCatalog } from "../../src/runtime/global-entity-localization.js";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 import { familyIds, unpackCatalog } from "../../src/features/skill-query/catalog.js";
+import { hasCompleteRaceStats } from "../../src/domain/stat.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 export const GLOBAL_BASELINE_VERSION = "global-s3-midseason-2026-08-13";
@@ -75,6 +76,8 @@ export function buildGlobalSkillQueryCatalog(snapshot, runtime) {
       const view = runtimeSpirits.get(spirit.id);
       return { id: spirit.id, fullName: spirit.fullName, baseName: spirit.baseName, variantName: spirit.variantName,
         types: spirit.types, stage: spirit.stage, traitIds: spirit.traitIds, familyId: families.get(spirit.id),
+        ...(spirit.calculationStatus !== "pending-race-stats" && !spirit.previewIdentity?.raceStatsPlaceholder && hasCompleteRaceStats(spirit.raceStats)
+          ? { raceStats: spirit.raceStats } : {}),
         asset: view.asset, reference: spirit.reference, aliases: view.aliases, pinyin: view.pinyin, initials: view.initials };
     }),
     traits: snapshot.traits.map(({ id, name, description, reference, iconUrl }) => ({ id, name, description, reference, ...(iconUrl ? { iconUrl } : {}) })),

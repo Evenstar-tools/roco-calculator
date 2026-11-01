@@ -14,5 +14,5 @@ export function withWebPreview(snapshot) {
     changed = true;
     return { ...spirit, changeInfo: { ...spirit.changeInfo, isNew: false } };
   });
-  return withPublicResourceUrls(changed ? { ...preview, spirits } : preview);
+  return withPublicResourceUrls(withCalculatorExtras(changed ? { ...preview, spirits } : preview));
 }

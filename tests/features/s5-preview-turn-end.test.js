@@ -7,7 +7,7 @@ import { applyS5EnergyUse, prepareS5EnergyUse } from "../../src/features/s5-prev
 import { applyS5PreviewStatTurnEnd, updateS5PreviewTurnEndCounter } from "../../src/features/s5-preview/turn-end.js";
 import { correctS5PreviewReferences } from "../../src/features/s5-preview/reference-corrections.js";
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
-import { migrateSharedConfiguration, updateMirroredTraitContext } from "../../src/state/calculator-session.js";
+import { migrateSharedConfiguration, rememberSingleSkill, updateMirroredTraitContext } from "../../src/state/calculator-session.js";
 import { createInitialState } from "../../src/state/defaults.js";
 import { calculatorReducer } from "../../src/state/reducer.js";
 import { selectShareableInputs } from "../../src/state/share.js";
@@ -33,7 +33,7 @@ const edit = (state, key, side, value, traitId) => updateS5PreviewTurnEndCounter
 });
 const end = (state, side = "attacker") => applyS5PreviewStatTurnEnd(state, { snapshot, side }).state;
 
-test.each(keys.flatMap(key => ["attacker", "defender"].map(side => [key, side])))
+test.each(["attacker", "defender"].map(side => ["underground-silver-dragon", side]))
   ("%s %s waits for an explicit turn end, affects only its attack stat, and clears/clamps", (key, side) => {
     let state = fixture(key, side);
     const base = model(state);
@@ -64,7 +64,7 @@ test.each(keys.flatMap(key => ["attacker", "defender"].map(side => [key, side]))
     expect(model(state).sides[side].finalPanelStats).toEqual(base.sides[side].finalPanelStats);
   });
 
-test.each(keys)("%s pending and settled portions survive refresh, config memory, sharing and swaps; old saves remain applied", key => {
+test.each(["underground-silver-dragon"])("%s pending and settled portions survive refresh, config memory, sharing and swaps; old saves remain applied", key => {
   let old = fixture(key);
   old = updateMirroredTraitContext(old, { direction: "forward", key: countFor(key).id, value: 2 }).state;
   const legacy = model(old);
@@ -88,6 +88,40 @@ test.each(keys)("%s pending and settled portions survive refresh, config memory,
   expect(calculatorReducer(swapped, { type: "sides/swap" })).toEqual(fresh);
 });
 
+test.each(["attacker", "defender"])("gold %s applies counts0/1/3 immediately and keeps them through memory, sharing and swaps", side => {
+  const key = "gold-vein-dragon";
+  let state = fixture(key, side);
+  const direction = directionFor(side);
+  state.directions[direction].context.attackerTraitS5SettledChargeCount = 0;
+  const base = model(state);
+  for (const count of [0, 1, 3]) {
+    state = edit(state, key, side, count);
+    const current = model(state);
+    expect(current.sides[side].finalPanelStats.physicalAttack)
+      .toBe(Math.floor(base.sides[side].panelStats.physicalAttack * (1 + count * .5)));
+    expect(current.sides[side].finalPanelStats.magicalAttack).toBe(base.sides[side].panelStats.magicalAttack);
+    expect(getS5PreviewTraitEvaluation(traitFor(key), "attacker", state.directions[direction].context))
+      .toMatchObject({ totalCount: count, settledCount: count, pendingCount: 0 });
+    expect(end(state, side)).toBe(state);
+  }
+  const expected = model(state).sides[side].finalPanelStats;
+  const fresh = correctS5PreviewReferences(JSON.parse(JSON.stringify(state)));
+  const shared = migrateSharedConfiguration(selectShareableInputs(state), state.versions, snapshot);
+  for (const restored of [fresh, shared]) expect(model(restored).sides[side].finalPanelStats).toEqual(expected);
+  state = rememberSingleSkill(state, { side, direction, snapshot }).state;
+  const values = extractTraitValues(state.sides[side], snapshot);
+  expect(getS5PreviewTraitInputs(traitFor(key))).toHaveLength(1);
+  expect(values[canonicalTraitControlKey(countFor(key))]).toBe(3);
+  const context = materializeTraitContext(values, snapshot, state.sides[side].spiritId, "attacker");
+  expect(getS5PreviewTraitEvaluation(traitFor(key), "attacker", context))
+    .toMatchObject({ settledCount: 3, pendingCount: 0, summary: "聚能 3 次 · 物攻 +150%" });
+  const swapped = calculatorReducer(state, { type: "sides/swap" });
+  expect(model(swapped).sides[side === "attacker" ? "defender" : "attacker"].finalPanelStats).toEqual(expected);
+  expect(calculatorReducer(swapped, { type: "sides/swap" })).toEqual(state);
+  state = edit(state, key, side, 0);
+  expect(model(state).sides[side].finalPanelStats).toEqual(base.sides[side].finalPanelStats);
+});
+
 test("silver energy use records the actual cost without raising that skill's damage before turn end", () => {
   let state = fixture("underground-silver-dragon");
   const before = model(state);
@@ -98,18 +132,24 @@ test("silver energy use records the actual cost without raising that skill's dam
   expect(model(state).calculation.forward.results[1].totalDamage).toBeGreaterThan(result.totalDamage);
 });
 
-test("both borrowed counters settle together on their owner and preserve unrelated instances", () => {
+test("borrowed gold applies immediately while silver alone settles at turn end, preserving owner and unrelated values", () => {
   let state = fixture("gold-vein-dragon");
   state.sides.attacker.spiritId = snapshot.spirits.find(spirit => spirit.fullName === "诅咒狼灵").id;
   state.sides.attacker.acquiredTraitIds = keys.map(key => traitFor(key).id);
   state.sides.attacker.acquiredTraitValues = { unrelated: { value: 7 } };
-  for (const key of keys) state = edit(state, key, "attacker", 2, traitFor(key).id);
+  const base = model(state);
+  for (const key of keys) state = edit(state, key, "attacker", 3, traitFor(key).id);
   const pending = model(state);
+  expect(pending.sides.attacker.finalPanelStats.physicalAttack)
+    .toBe(Math.floor(base.sides.attacker.panelStats.physicalAttack * 2.5));
+  expect(pending.sides.attacker.finalPanelStats.magicalAttack).toBe(base.sides.attacker.finalPanelStats.magicalAttack);
+  const swapped = calculatorReducer(state, { type: "sides/swap" });
+  expect(model(swapped).sides.defender.finalPanelStats).toEqual(pending.sides.attacker.finalPanelStats);
   const contexts = state.directions;
   state = end(state);
   expect(state.directions).toBe(contexts);
   expect(state.sides.attacker.acquiredTraitValues.unrelated).toEqual({ value: 7 });
-  expect(model(state).sides.attacker.finalPanelStats.physicalAttack).toBeGreaterThan(pending.sides.attacker.finalPanelStats.physicalAttack);
+  expect(model(state).sides.attacker.finalPanelStats.physicalAttack).toBe(pending.sides.attacker.finalPanelStats.physicalAttack);
   expect(model(state).sides.attacker.finalPanelStats.magicalAttack).toBeGreaterThan(pending.sides.attacker.finalPanelStats.magicalAttack);
   expect(end(state)).toBe(state);
 });

@@ -230,6 +230,27 @@ export const S4_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.0",
+    date: "2026.11.02",
+    title: "国际服技能检索与工具更新",
+    whatsNew: S4_FEATURE_INTRO,
+    summaryHighlights: [
+      "技能检索增加种族值六维图，窄屏保持简洁。",
+      "补齐特性资料，精灵别名搜索与家族结果保持一致。",
+      "国际服保留独立数据，共用工具功能同步更新。",
+    ],
+    features: [
+      "精灵详情新增种族值六维图，以图标与数值展示六项属性；手机窄屏隐藏。",
+      "补全技能检索缺失的历史特性描述，按所选赛季和形态显示。",
+      "国际服仍使用S3季中数据与规则，共用功能更新不加入未收录精灵。",
+    ],
+    fixes: [
+      "精确别名优先于同家族的部分名称，避免搜索结果被其他形态替代。",
+      "共享特性控件与原生、借用效果保持一致。",
+      "工具箱收起已结束的S5抢先入口，原有工具与布局保留。",
+    ],
+  }),
+  createRelease({
     version: "v2.2.8",
     date: "2026.10.29",
     title: "S4工具与国际服体验更新",

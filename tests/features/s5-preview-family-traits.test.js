@@ -27,9 +27,10 @@ function duplicateState(adult, child) {
   for (const [key, count] of [[child, 2], [adult, 9]]) {
     const trait = traitFor(key);
     const controls = getS5PreviewTraitInputs(trait);
+    const settled = controls.find(control => control.hidden);
     state.sides.attacker.acquiredTraitValues[trait.id] = {
       [canonicalTraitControlKey(controls[0])]: count,
-      [canonicalTraitControlKey(controls.find(control => control.hidden))]: 0,
+      ...(settled ? { [canonicalTraitControlKey(settled)]: 0 } : {}),
     };
   }
   return state;
@@ -72,11 +73,12 @@ test("historical duplicate silver IDs retain their own values but use and settle
   expect(applyS5PreviewStatTurnEnd(state, { snapshot, side: "attacker" }).state).toBe(state);
 });
 
-test("duplicate gold IDs apply one physical-only bonus at turn end and preserve the dormant stored instance", () => {
-  let state = duplicateState("gold-vein-dragon", "sinking-gold-beast");
+test("duplicate gold IDs immediately apply one physical-only bonus and preserve the dormant stored instance", () => {
+  const state = duplicateState("gold-vein-dragon", "sinking-gold-beast");
   const before = structuredClone(state);
   const base = model(state).sides.attacker;
-  state = applyS5PreviewStatTurnEnd(state, { snapshot, side: "attacker" }).state;
+  expect(applyS5PreviewStatTurnEnd(state, { snapshot, side: "attacker" }).state).toBe(state);
+  expect(state).toEqual(before);
   const after = model(state).sides.attacker;
   expect(after.finalPanelStats.physicalAttack).toBe(base.panelStats.physicalAttack * 2);
   expect(after.finalPanelStats.magicalAttack).toBe(base.panelStats.magicalAttack);

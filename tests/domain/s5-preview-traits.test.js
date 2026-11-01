@@ -78,14 +78,14 @@ describe("S5 explicit trait controls and evaluation", () => {
     const offense = getS5PreviewTraitInputs(entity, "attacker");
     const defense = getS5PreviewTraitInputs(entity, "defender");
     expect(offense.map(canonicalTraitControlKey)).toEqual(defense.map(canonicalTraitControlKey));
-    expect(offense.map(({ source, scope }) => [source, scope])).toEqual(Array.from({ length: 3 }, () => ["attackerTrait", "direction"]));
+    expect(offense.map(({ source, scope }) => [source, scope])).toEqual([["attackerTrait", "direction"]]);
     const values = context(entity, "attacker", { ChargeCount: 2 });
-    expect(evaluate(entity, { ChargeCount: 2 }).summary).toContain("物攻能力等级 +10");
-    expect(getS5PreviewTraitEvaluation(entity, "defender", values).summary).toBe("未聚能 · 无增益");
+    expect(evaluate(entity, { ChargeCount: 2 }).summary).toBe("聚能 2 次 · 物攻 +100%");
+    expect(getS5PreviewTraitEvaluation(entity, "defender", values).summary).toBe("未聚能");
     const acquired = { ...entity, runtimeInputValues: Object.fromEntries(offense.map(control => [
       canonicalTraitControlKey(control), values[control.id],
     ])) };
-    expect(getS5PreviewTraitEvaluation(acquired, "defender", {}).summary).toContain("物攻能力等级 +10");
+    expect(getS5PreviewTraitEvaluation(acquired, "defender", {}).summary).toBe("聚能 2 次 · 物攻 +100%");
   });
 
   test.each(["little-scissor"])("%s counts actual enemy exits as flat skill power without reading old attack percentages", (key) => {
@@ -97,11 +97,18 @@ describe("S5 explicit trait controls and evaluation", () => {
     expect(getS5PreviewTraitEvaluation(entity, "attacker", { attackerTraitS5AttackBuffActive: true, attackerTraitS5CurrentAttackBonus: 90 }).effects).toEqual([]);
   });
 
-  test.each([0, 1, 2, 19, 20, 21])("gold dragon count %s adds5 stages each, leaving total-stage clamping to the shared calculator", ChargeCount => {
+  test.each([0, 1, 3, 19, 20, 21])("gold dragon count %s adds5 stages each immediately, ignoring former settlement values", ChargeCount => {
     const entity = trait("gold-vein-dragon");
-    expect(resolve(entity, "attacker", { ChargeCount })).toMatchObject({
-      attackLevelBonus: ChargeCount * 5, attackMultiplier: 1 + ChargeCount * 0.5,
-    });
+    for (const oldSettled of [0, 1, 9]) {
+      const values = { ...context(entity, "attacker", { ChargeCount }), attackerTraitS5SettledChargeCount: oldSettled };
+      expect(getS5PreviewTraitEvaluation(entity, "attacker", values)).toMatchObject({
+        totalCount: ChargeCount, settledCount: ChargeCount, pendingCount: 0,
+        summary: ChargeCount ? `聚能 ${ChargeCount} 次 · 物攻 +${ChargeCount * 50}%` : "未聚能",
+      });
+      expect(resolveS5PreviewTraitEffect(entity, "attacker", { context: values, skill: { category: "physical" } }))
+        .toMatchObject({ attackLevelBonus: ChargeCount * 5, attackMultiplier: 1 + ChargeCount * 0.5 });
+      expect(resolveS5PreviewTraitEffect(entity, "attacker", { context: values, skill: { category: "magical" } }).attackLevelBonus).toBe(0);
+    }
     expect(resolve(entity, "defender", { ChargeCount })).toMatchObject({ attackLevelBonus: 0, step: null });
   });
 
@@ -112,17 +119,12 @@ describe("S5 explicit trait controls and evaluation", () => {
     const legacy = { attackerTraitS5AttackBuffActive: true, attackerTraitS5CurrentAttackBonus: 70 };
     expect(getS5PreviewTraitEvaluation(entity, "attacker", legacy)).toMatchObject({ calcStatus: "pending" });
     expect(getS5PreviewTraitEvaluation(entity, "attacker", { ...legacy, ...context(entity, "attacker", { ChargeCount: 0 }) }))
-      .toMatchObject({ calcStatus: "ready", summary: "未聚能 · 无增益" });
+      .toMatchObject({ calcStatus: "ready", summary: "未聚能" });
     expect(getS5PreviewTraitEvaluation(entity, "attacker", { ...legacy, attackerTraitS5CurrentAttackBonus: 100 }).summary)
-      .toBe("聚能 2 次 · 物攻能力等级 +10");
+      .toBe("聚能 2 次 · 物攻 +100%");
   });
 
-  test("new counters wait for turn end; settled values clamp to the current count", () => {
-    const gold = trait("gold-vein-dragon");
-    expect(resolve(gold, "attacker", { ChargeCount: 2, SettledChargeCount: 0 }).attackLevelBonus).toBe(0);
-    expect(evaluate(gold, { ChargeCount: 2, SettledChargeCount: 1 })).toMatchObject({ totalCount: 2, settledCount: 1, pendingCount: 1 });
-    expect(resolve(gold, "attacker", { ChargeCount: 2, SettledChargeCount: 1 }, "magical").attackLevelBonus).toBe(0);
-    expect(resolve(gold, "attacker", { ChargeCount: 1, SettledChargeCount: 9 }).attackLevelBonus).toBe(5);
+  test("silver counters still wait for turn end; settled values clamp to the current count", () => {
     const silver = trait("underground-silver-dragon");
     expect(resolve(silver, "attacker", { EnergySpent: 7, SettledEnergySpent: 0 }, "magical").attackLevelBonus).toBe(0);
     expect(resolve(silver, "attacker", { EnergySpent: 7, SettledEnergySpent: 3 }, "magical").attackLevelBonus).toBe(3);

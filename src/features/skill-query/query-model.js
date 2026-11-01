@@ -36,7 +36,13 @@ export function spiritSkills(season, spiritId) {
 
 export function querySpiritFamilies(season, { skillIds = [], query = "", source = "", metadata = [] } = {}) {
   const details = new Map(metadata.map((spirit) => [spirit.id, spirit]));
-  const spirits = season.spirits.map((spirit) => ({ ...details.get(spirit.id), ...spirit }));
+  const spirits = season.spirits.map((spirit) => {
+    const detail = details.get(spirit.id);
+    return {
+      ...detail, ...spirit,
+      aliases: [...new Set([...(spirit.aliases ?? []), ...(detail?.aliases ?? [])])],
+    };
+  });
   const matchedIds = new Set(createSpiritSearchIndex(spirits).search(query, Infinity).map(({ id }) => id));
   const matchingFamilies = new Set(spirits.filter(({ id }) => matchedIds.has(id)).map((spirit) => spirit.familyId ?? spirit.id));
   const learnsets = new Map(season.learnsets.map((entry) => [entry.spiritId, entry]));
@@ -57,10 +63,14 @@ export function querySpiritFamilies(season, { skillIds = [], query = "", source 
     const candidates = ordinary.length ? ordinary : members;
     // 正式名称保留具体形态；家族共有别名和技能反查优先最终普通形态。
     const matchedMembers = members.filter(member => matchedIds.has(member.id));
+    const exactName = matchedMembers.find(member => member.fullName === query.trim());
+    const exactAlias = [...matchedMembers.filter(member => member.stage !== "首领")]
+      .sort((a, b) => (ranks[b.stage] ?? 0) - (ranks[a.stage] ?? 0))
+      .find(member => member.aliases?.includes(query.trim()));
     const namedMatch = matchedMembers.find(member => member.fullName.includes(query.trim()));
     const aliasMatch = [...matchedMembers.filter(member => member.stage !== "首领")]
       .sort((a, b) => (ranks[b.stage] ?? 0) - (ranks[a.stage] ?? 0))[0];
-    return (!skillIds.length && query.trim() && (namedMatch || aliasMatch)) ||
+    return (!skillIds.length && query.trim() && (exactName || exactAlias || namedMatch || aliasMatch)) ||
       [...candidates].sort((a, b) => (ranks[b.stage] ?? 0) - (ranks[a.stage] ?? 0))[0];
   };
   return [...groups].map(([id, members]) => {

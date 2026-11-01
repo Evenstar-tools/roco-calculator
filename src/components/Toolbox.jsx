@@ -14,7 +14,7 @@ const groups = [
 export function Toolbox({ actions, onOpen, activeTool }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
-  const showPreviewEntry = serverId === "cn";
+  const showReturnEntry = serverId === "cn" && IS_PREVIEW_BUILD;
   const toolGroups = groups.map(([label, entries]) => [label, serverId === "global" && label === "查询"
     ? [...entries, ["typeChart", "18 系克制图", Table]] : entries]);
   const [open, setOpen] = useState(false);
@@ -63,8 +63,8 @@ export function Toolbox({ actions, onOpen, activeTool }) {
             onClick={() => { setOpen(false); trigger.current?.focus(); actions[id](); }}><Icon size={18} aria-hidden="true" />{t(title)}</button>)}
         </div>
       </section>)}
-      {showPreviewEntry && <a href={IS_PREVIEW_BUILD ? (window.location.protocol === "app:" ? "/" : "/cn/") : "/pre/"} style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44 }}
-        onClick={() => setOpen(false)}><Lightning size={18} aria-hidden="true" />{IS_PREVIEW_BUILD ? "返回正式版" : "S5 抢先体验"}</a>}
+      {showReturnEntry && <a href={window.location.protocol === "app:" ? "/" : "/cn/"} style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44 }}
+        onClick={() => setOpen(false)}><Lightning size={18} aria-hidden="true" />返回正式版</a>}
     </nav>, document.body)}
   </>;
 }
