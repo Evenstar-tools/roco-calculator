@@ -4,6 +4,7 @@ import { expect, test, vi } from "vitest";
 import { SkillPicker } from "../../src/components/SkillPicker.jsx";
 import { SpiritPicker } from "../../src/components/SpiritPicker.jsx";
 import { EntityChangeHint } from "../../src/components/EntityChangeHint.jsx";
+import { mergeEntityChangeInfo } from "../../src/data/entity-change-history.js";
 
 const patch = {
   id: "s4-preview-2026-09-10",
@@ -90,6 +91,32 @@ test("新旧补丁逐条保留日期，支持键盘切换且更换实体默认�
   expect(within(nextPanel).queryByText("108 → 92")).not.toBeInTheDocument();
   await user.keyboard("{Escape}");
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+});
+
+test("重复 S5 公告只保留正式页签，显示生效日并对正确批次应用改动前", async () => {
+  const user = userEvent.setup();
+  const apply = vi.fn();
+  const item = { kind: "stat", field: "hp", label: "生命", before: 144, after: 164 };
+  const reviewed = { entityName: "森巨人", entityId: "forest-giant",
+    patch: { id: "s5-2026-10-31", seasonId: "S5", label: "S5 圣龙宝藏 2026-11-05", date: "2026.10.31", displayDate: "2026.11.05" },
+    items: [item] };
+  const changeInfo = mergeEntityChangeInfo({ ...reviewed,
+    patch: { id: "s5-season-announcement-2026-11-05", seasonId: "S5", label: "S5 赛季调整", date: "预计 2026.11.05" },
+    history: [spirit.changeInfo],
+  }, reviewed);
+  render(<EntityChangeHint changeInfo={changeInfo}
+    renderPatchAction={record => <button onClick={() => apply(record)}>应用改动前</button>} />);
+  await user.click(screen.getByRole("button", { name: "查看森巨人本期改动" }));
+  const panel = screen.getByRole("dialog", { name: "森巨人本期改动" });
+  expect(within(panel).getAllByRole("tab")).toHaveLength(2);
+  expect(within(panel).queryByRole("tab", { name: "S5 赛季调整" })).not.toBeInTheDocument();
+  expect(within(panel).getByRole("tab", { name: "S5 圣龙宝藏 2026-11-05" })).toHaveAttribute("aria-selected", "true");
+  expect(within(panel).getByRole("tabpanel")).toHaveTextContent("2026.11.05");
+  expect(within(panel).queryByText("2026.10.31")).not.toBeInTheDocument();
+  await user.click(within(panel).getByRole("button", { name: "应用改动前" }));
+  expect(apply.mock.lastCall[0]).toMatchObject(reviewed);
+  await user.click(within(panel).getByRole("tab", { name: "S4 调整" }));
+  expect(within(panel).getByText("108 → 92")).toBeVisible();
 });
 
 test("精灵改动只在叹号交互后展示，点击后可固定", async () => {

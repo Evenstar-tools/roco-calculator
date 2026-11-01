@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 import { applyS5Bwiki } from "../../scripts/bwiki/apply-s5-bwiki.mjs";
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 import { chooseDefaultSkillIds } from "../../src/domain/skill-loadout.js";
+import { raceStatsBeforePatch } from "../../src/features/balance-comparison/model.js";
 
 const read = file => JSON.parse(readFileSync(file, "utf8"));
 const evidence = read("data/reviewed/nrc-s5-20261101.json");
@@ -13,6 +14,27 @@ const findSpirit = (snapshot, name) => snapshot.spirits.find(spirit => spirit.fu
 const pool = (snapshot, name) => snapshot.learnsets.find(entry => entry.spiritId === findSpirit(snapshot, name).id);
 const sourceSpirit = name => Object.values(evidence.modules.Catalog).find(spirit => spirit.title === name);
 const ownerTrait = (snapshot, name) => snapshot.traits.find(trait => trait.id === findSpirit(snapshot, name).traitIds[0]);
+const announcementId = "s5-season-announcement-2026-11-05";
+const officialId = "s5-2026-10-31";
+const changeGroups = info => [info, ...(info?.history ?? [])].filter(Boolean);
+const officialGroup = entity => changeGroups(entity.changeInfo).find(group => group.patch?.id === officialId);
+function announcementCoveredBy(previous, official) {
+  if (previous.patch?.id !== announcementId || official?.patch?.id !== officialId ||
+      previous.patch.seasonId !== "S5" || official.patch.seasonId !== "S5" ||
+      previous.patch.date !== "预计 2026.11.05" || official.patch.displayDate !== "2026.11.05") return false;
+  return previous.items.every(item => {
+    if (item.kind === "learnset") {
+      const bloodline = item.label?.match(/^(.+)系血脉技能$/u)?.[1];
+      return ["before", "after"].filter(key => Object.hasOwn(item, key)).every(key =>
+        official.items.some(candidate => candidate.kind === "learnset" && candidate[key] === item[key] &&
+          (!bloodline || candidate.note?.includes(`${bloodline}血脉`))));
+    }
+    return official.items.some(candidate => candidate.kind === item.kind &&
+      (candidate.field ?? (candidate.kind === "trait" ? "traitDescription" : undefined)) ===
+        (item.field ?? (item.kind === "trait" ? "traitDescription" : undefined)) &&
+      candidate.before === item.before && candidate.after === item.after);
+  });
+}
 
 describe("complete S5 BWIKI build overlay", () => {
   test("画龙点睛按用户确认为无威力状态技能，保留BWIKI原始85威力证据", () => {
@@ -226,12 +248,67 @@ describe("complete S5 BWIKI build overlay", () => {
     const current = group(findSpirit(result, evidence.modules.Catalog[source[0]].title), patchId);
     for (const change of changes) expect(current.items).toEqual(expect.arrayContaining([expect.objectContaining({ kind: "stat", label: change.field, before: change.before, after: change.after })]));
   });
+  test("the real 45 spirit and 10 skill announcements collapse into their complete official S5 records", () => {
+    const officialOnlyInput = structuredClone(original);
+    const withoutAnnouncement = info => {
+      const groups = changeGroups(info).filter(group => group.patch?.id !== announcementId)
+        .map(({ history: _history, ...group }) => group);
+      const [current, ...history] = groups;
+      return current ? { ...current, ...(history.length ? { history } : {}) } : undefined;
+    };
+    for (const kind of ["spirits", "skills"]) {
+      for (const entity of officialOnlyInput[kind]) entity.changeInfo = withoutAnnouncement(entity.changeInfo);
+      officialOnlyInput.currentPatchChanges[kind] = officialOnlyInput.currentPatchChanges[kind]
+        .map(record => withoutAnnouncement({ patch: officialOnlyInput.currentPatchChanges.patch, ...record })).filter(Boolean);
+    }
+    const officialOnly = applyS5Bwiki(officialOnlyInput, evidence);
+    for (const [kind, expectedCount] of [["spirits", 45], ["skills", 10]]) {
+      const covered = original[kind].filter(entity => changeGroups(entity.changeInfo)
+        .some(group => group.patch?.id === announcementId));
+      expect(covered).toHaveLength(expectedCount);
+      for (const before of covered) {
+        const after = result[kind].find(entity => entity.id === before.id);
+        const official = officialGroup(after);
+        const announcement = changeGroups(before.changeInfo).find(group => group.patch?.id === announcementId);
+        expect(announcementCoveredBy(announcement, official), before.fullName ?? before.name).toBe(true);
+        expect(changeGroups(after.changeInfo).filter(group => group.patch?.id === announcementId)).toEqual([]);
+        expect(official).toEqual(officialGroup(officialOnly[kind].find(entity => entity.id === before.id)));
+      }
+    }
+    expect(officialGroup(findSpirit(result, "珀尔鼬")).items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: "learnset", after: "筑梦" }),
+      expect.objectContaining({ label: "蹦跶·威力", before: 110, after: 95 }),
+    ]));
+    expect(officialGroup(findSpirit(result, "觅觅蝠")).items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ field: "physicalDefense", before: 60, after: 51 }),
+      expect.objectContaining({ field: "magicalDefense", before: 76, after: 67 }),
+    ]));
+  });
+  test("森巨人 has one S5 tab, preserves older history and can still apply its pre-update race stats", () => {
+    const spirit = findSpirit(result, "森巨人");
+    const groups = changeGroups(spirit.changeInfo);
+    expect(groups.map(group => group.patch.id)).toEqual([officialId, "s4-2026-09-10", "s3-2026-07-17"]);
+    expect(officialGroup(spirit).items).toHaveLength(6);
+    expect(officialGroup(spirit).items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ kind: "learnset", before: "贯手" }),
+      expect.objectContaining({ kind: "learnset", after: "反击拳" }),
+    ]));
+    expect(raceStatsBeforePatch(spirit, officialGroup(spirit))).toEqual({
+      hp: 144, physicalAttack: 155, magicalAttack: 70, physicalDefense: 132,
+      magicalDefense: 88, speed: 70, total: 659,
+    });
+    expect(spirit.raceStats).toMatchObject({ hp: 164, physicalAttack: 160, physicalDefense: 142, magicalDefense: 98 });
+  });
   test("existing S4 history remains accessible with its original patch/date/items and new-only spirits stay NEW", () => {
     for (const kind of ["spirits", "skills"]) for (const before of original[kind]) {
       const previousGroups = [before.changeInfo, ...(before.changeInfo?.history ?? [])].filter(row => row?.patch?.id);
       const after = result[kind].find(entity => entity.id === before.id);
       const groups = [after.changeInfo, ...(after.changeInfo?.history ?? [])].filter(Boolean);
       for (const previous of previousGroups) {
+        if (announcementCoveredBy(previous, officialGroup(after))) {
+          expect(groups.some(row => row.patch?.id === previous.patch.id)).toBe(false);
+          continue;
+        }
         const current = groups.find(row => row.patch?.id === previous.patch.id);
         expect(current?.patch.date).toBe(previous.patch.date);
         for (const item of previous.items ?? []) expect(current.items).toContainEqual(item);

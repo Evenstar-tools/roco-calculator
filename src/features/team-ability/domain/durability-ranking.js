@@ -6,6 +6,7 @@ import { getNatureMultipliers } from "../../../domain/natures.js";
 import { getTraitEffectInputs, resolveTraitEffectRule } from "../../../domain/trait-effects.js";
 import { defenseStatForDamage } from "../../../domain/skill-result/numeric.js";
 import { createRankingLevelVariants, resolveRankingFormRole } from "./ranking-levels.js";
+import { isWheatCosmeticSpirit } from "./ranking-cosmetics.js";
 import { ELEMENT_TYPES, getTypeMultiplier } from "../../../domain/type-chart.js";
 import {
   calculateAllPanelStats,
@@ -246,6 +247,10 @@ export function createDurabilityRanking({
     const form = resolveRankingFormRole(spirit, { spiritFilterRevision, includeLevelVariants });
     if (!canRecommendSpirit(spirit)) {
       excluded.push(exclusionFor(spirit, form, "HIDDEN_FROM_DISCOVERY"));
+      continue;
+    }
+    if (isWheatCosmeticSpirit(spirit)) {
+      excluded.push(exclusionFor(spirit, form, "COSMETIC_DUPLICATE"));
       continue;
     }
     if (["final", "boss"].includes(form.formRole)) {

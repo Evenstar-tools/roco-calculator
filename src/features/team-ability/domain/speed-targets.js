@@ -7,20 +7,7 @@ import {
 import { createSpeedModifiers } from "./speed-modifiers.js";
 import { resolveSpiritFormRole } from "./spirit-form-role.js";
 import { createRankingLevelVariants, resolveRankingFormRole } from "./ranking-levels.js";
-
-// 五族麦田主题纯外观只在速度参考中去重；目录、配置和耐久仍保留原实体。
-const WHEAT_COSMETIC_SPIRIT_IDS = new Set([
-  "spirit_4ba8f07d34a4e247", // 护主犬 · 看守麦田
-  "spirit_58fba21fe70be498", // 音速犬 · 看守麦田
-  "spirit_576805f2cd1bbd11", // 风暴战犬 · 看守麦田
-  "spirit_95aaf0ee94680c86", // 公平鸽 · 称量
-  "spirit_e09a7b2376f6e518", // 奔波鼠 · 搬运果实
-  "spirit_95d31f7040c570b2", // 流浪鼠 · 搬运果实
-  "spirit_bf63c954e18a8852", // 花怨鳗 · 果壳铃
-  "spirit_45095a4991f540a4", // 鳗尾兽 · 果壳铃
-  "spirit_0aff77799da7257f", // 稻草人 · 暖和
-  "spirit_9383a26b3b5da4c5", // 稻草守护者 · 暖和
-]);
+import { isWheatCosmeticSpirit } from "./ranking-cosmetics.js";
 
 export const SPEED_TARGET_PROFILES = Object.freeze({
   "positive-max": Object.freeze({
@@ -127,7 +114,7 @@ export function createSpeedTargets({
 
   return spirits
     .flatMap((spirit) => {
-      if (WHEAT_COSMETIC_SPIRIT_IDS.has(spirit?.id) || !canRecommendSpirit(spirit) || !hasCompleteRaceStats(spirit?.raceStats)) return [];
+      if (isWheatCosmeticSpirit(spirit) || !canRecommendSpirit(spirit) || !hasCompleteRaceStats(spirit?.raceStats)) return [];
       const form = resolveRankingFormRole(spirit, { spiritFilterRevision });
       if (form.formRole !== "final" && form.formRole !== "boss") return [];
       return createRankingLevelVariants(spirit).map(variant => ({
@@ -161,7 +148,7 @@ export function createSpeedSpecialTargets({ profileId = "positive-max", snapshot
     .filter(([, caseProfileId]) => caseProfileId === profileId)
     .flatMap(([spiritName, , sourceName, stack, options = {}]) => {
       const spirit = spirits.find((entry) => entry.fullName === spiritName);
-      if (!spirit || WHEAT_COSMETIC_SPIRIT_IDS.has(spirit.id) || !canRecommendSpirit(spirit) || !hasCompleteRaceStats(spirit.raceStats)) return [];
+      if (!spirit || isWheatCosmeticSpirit(spirit) || !canRecommendSpirit(spirit) || !hasCompleteRaceStats(spirit.raceStats)) return [];
       const form = resolveSpiritFormRole(spirit, {
         spiritFilterRevision: snapshot?.meta?.revisions?.spiritFilter,
       });
