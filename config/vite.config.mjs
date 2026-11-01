@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import { manualChunks } from "./chunk-groups.mjs";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "node:url";
-import { realpathSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
 
 import { buildAttributionPlugin } from "../scripts/build-attribution.mjs";
 import { s5PreviewPresetsPlugin } from "../scripts/s5-preview-presets.mjs";
@@ -58,5 +58,21 @@ export default defineConfig({
       "dist/**",
     ],
   },
-  plugins: [react(), buildAttributionPlugin(), s5PreviewPresetsPlugin(), cnProductionPruningPlugin()],
+  plugins: [react(), buildAttributionPlugin(), s5PreviewPresetsPlugin(), cnProductionPruningPlugin(), {
+    name: "preview-edgeone-redirects",
+    configurePreviewServer(server) {
+      // Match the deployment's exact, same-origin redirects before Vite's SPA fallback.
+      const { redirects } = JSON.parse(readFileSync(new URL("../edgeone.json", import.meta.url), "utf8"));
+      server.middlewares.use((request, response, next) => {
+        if (!["GET", "HEAD"].includes(request.method)) return next();
+        const url = new URL(request.url, "http://preview.local");
+        const rule = redirects.find(({ source, destination }) => source === url.pathname && destination.startsWith("/") && !destination.startsWith("//"));
+        if (!rule) return next();
+        const destination = new URL(rule.destination, url);
+        if (!destination.search) destination.search = url.search;
+        response.writeHead(rule.statusCode, { Location: destination.pathname + destination.search + destination.hash });
+        response.end();
+      });
+    },
+  }],
 });

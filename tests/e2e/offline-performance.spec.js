@@ -44,6 +44,15 @@ test("works offline after the service worker caches the production app", async (
     expect(cachedRuntime.ok).toBe(true);
     expect(cachedRuntime.spiritCount).toBeGreaterThan(0);
     expect(cachedRuntime.skillCount).toBeGreaterThan(0);
+    await page.evaluate(async () => {
+      const cacheName = (await caches.keys()).find((name) => name.startsWith("rock-calculator-webapp-"));
+      const cache = await caches.open(cacheName);
+      await cache.put("/pre/?source=pwa", new Response("old preview shell"));
+    });
+    const rootUrl = new URL("/?source=pwa#legacy-preview", page.url()).href;
+    await page.goto("/pre/?source=pwa#legacy-preview");
+    await expect(page).toHaveURL(rootUrl);
+    await expect(page.getByRole("heading", { name: currentHeading })).toBeVisible();
   } finally {
     await context.setOffline(false);
   }

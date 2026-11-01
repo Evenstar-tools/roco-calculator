@@ -88,10 +88,32 @@ function dispatchFetch(listener, path, { mode = "cors", headers = {} } = {}) {
 }
 
 describe("service worker cache policy", () => {
-  test.each(["/pre", "/pre/", "/pre/?theme=s5", "/pre/assets/main-Ab12_cd9.js", "/pre/data/runtime.json"])("preview request %s bypasses the stable worker entirely", (path) => {
+  test.each(["/pre", "/pre/", "/pre/index.html", "/pre?source=pwa&theme=s5", "/pre/?theme=s5", "/pre/index.html?build-check=1"])("retired preview navigation %s redirects without replaying stale preview HTML", async (path) => {
+    const fetchImpl = vi.fn(async () => { throw new Error("offline"); });
+    const harness = createHarness({ fetchImpl, cached: {
+      [path]: new Response("old preview"),
+      [`https://calculator.test${path}`]: new Response("old preview"),
+      "/": new Response("current root"),
+    } });
+    const event = dispatchFetch(harness.listeners.fetch, path, { mode: "navigate" });
+    const response = await event.responsePromise;
+    expect(response?.status).toBe(301);
+    const destination = new URL(path, "https://calculator.test");
+    destination.pathname = "/";
+    expect(response.headers.get("location")).toBe(destination.href);
+    expect(event.background).toEqual([]);
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(harness.caches.open).not.toHaveBeenCalled();
+    expect(harness.cacheApi.match).not.toHaveBeenCalled();
+    const rootEvent = dispatchFetch(harness.listeners.fetch, destination.pathname + destination.search, { mode: "navigate" });
+    if (destination.searchParams.has("build-check")) expect(rootEvent.responsePromise).toBeUndefined();
+    else await expect((await rootEvent.responsePromise).text()).resolves.toBe("current root");
+  });
+
+  test.each(["/pre", "/pre/", "/pre/index.html", "/pre/redirect.js", "/pre/assets/main-Ab12_cd9.js", "/pre/data/runtime.json"])("preview non-navigation request %s bypasses the stable worker entirely", (path) => {
     const fetchImpl = vi.fn();
     const harness = createHarness({ fetchImpl });
-    const event = dispatchFetch(harness.listeners.fetch, path, { mode: "navigate" });
+    const event = dispatchFetch(harness.listeners.fetch, path);
     expect(event.responsePromise).toBeUndefined();
     expect(event.background).toEqual([]);
     expect(fetchImpl).not.toHaveBeenCalled();

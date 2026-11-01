@@ -1,6 +1,21 @@
 {
   "redirects": [
     {
+      "source": "/pre",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/pre/",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/pre/index.html",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
       "source": "/dianlu",
       "destination": "/dianlu/",
       "statusCode": 301

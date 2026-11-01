@@ -67,6 +67,21 @@ export function copyPreviewRelease(root, sourceDirectory) {
     if (!/["']\/pre\/assets\//u.test(html)) throw new Error("Preview HTML does not reference /pre/assets/: " + filename);
   }
   cpSync(childDist, target, { recursive: true, force: false, errorOnExist: true });
+  // Retire only the entry; retain archived assets/data and desktop packaging inputs.
+  // An external script also works under the desktop app's script-src 'self' CSP.
+  writeFileSync(path.join(target, "redirect.js"), 'location.replace("/" + location.search + location.hash);\n', "utf8");
+  writeFileSync(path.join(target, "index.html"), `<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>洛克计算器</title>
+  <script src="/pre/redirect.js"></script>
+  <noscript><meta http-equiv="refresh" content="0;url=/"></noscript>
+</head>
+<body><a href="/">打开计算器</a></body>
+</html>
+`, "utf8");
   return target;
 }
 

@@ -2,6 +2,7 @@ import { afterEach, describe, expect, test } from "vitest";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import vm from "node:vm";
 import { buildPreviewRelease, copyPreviewRelease, preparePreviewSource, readPreviewReleasePin, requireInside } from "../../scripts/build-preview-release.mjs";
 
 const pin = "2f968be798e4c25182aa7144e176778ebbe1655a";
@@ -98,6 +99,33 @@ describe("pinned /pre release assembly", () => {
     expect(readFileSync(path.join(root, "dist/client/data/runtime.json"), "utf8")).toBe("stable data");
     expect(readFileSync(path.join(root, "dist/client/assets/stable.js"), "utf8")).toBe("stable asset");
     expect(() => copyPreviewRelease(root, source)).toThrow("already exists");
+  });
+
+  test("retired preview entry redirects to the same-origin root with query/hash and keeps its historical assets", () => {
+    const root = fixture();
+    const source = path.join(root, "output/preview-source-fixture");
+    artifact(source);
+    const target = copyPreviewRelease(root, source);
+    const html = readFileSync(path.join(target, "index.html"), "utf8");
+    const scriptPath = /<script\s+src="([^"]+)"\s*><\/script>/u.exec(html)?.[1];
+    expect(scriptPath).toBe("/pre/redirect.js");
+    expect(html).not.toContain("/pre/assets/");
+    expect(html).toContain('<a href="/">');
+    const script = readFileSync(path.join(root, "dist/client", scriptPath.slice(1)), "utf8");
+    for (const entry of ["/pre", "/pre/", "/pre/index.html"]) {
+      for (const suffix of ["", "?source=pwa&theme=s5#v2.cn.zh-CN.saved", "#saved", "?next=https%3A%2F%2Fother.test"]) {
+        for (const origin of ["https://calculator.test", "app://calculator"]) {
+          const current = new URL(origin + entry + suffix);
+          let replaced;
+          vm.runInNewContext(script, { location: { search: current.search, hash: current.hash, replace: (url) => { replaced = url; } } });
+          expect(new URL(replaced, current).href).toBe(origin + "/" + suffix);
+        }
+      }
+    }
+    expect(readFileSync(path.join(target, "assets/preview.js"), "utf8")).toBe("preview code");
+    expect(readFileSync(path.join(target, "data/runtime.json"), "utf8")).toBe("preview data");
+    expect(readFileSync(path.join(target, "dianlu/index.html"), "utf8")).toContain("/pre/assets/preview.js");
+    expect(readFileSync(path.join(source, "dist/client/index.html"), "utf8")).toContain("/pre/assets/preview.js");
   });
 
   test("incomplete, wrong-base or nested-pre artifacts fail without copying", () => {

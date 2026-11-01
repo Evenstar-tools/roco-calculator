@@ -21,7 +21,7 @@ import {
 const APP_SCHEME = "app";
 const APP_ORIGIN = "app://calculator/";
 const APP_NAME = "洛克计算器";
-const APP_TITLE = "洛克计算器 · S4「季中」";
+const APP_TITLE = "洛克计算器 · S5「圣龙宝藏」";
 const PREVIEW_TITLE = "洛克计算器 · S5 抢先体验";
 const APP_USER_MODEL_ID = "cn.rock.calculator";
 

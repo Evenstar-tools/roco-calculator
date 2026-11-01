@@ -2,6 +2,22 @@ import { selectSpirit } from "./helpers/uiux-helpers.js";
 import { expect, test } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 
+test.describe("SEO retired preview entry", () => {
+  test.use({ serviceWorkers: "block" });
+  for (const entry of ["/pre", "/pre/", "/pre/index.html"]) {
+    test(`${entry} returns to the calculator preserving query, hash and saved browser data`, async ({ page }) => {
+      await page.goto("/");
+      await page.evaluate(() => localStorage.setItem("preview-retirement-test-saved-data", "preserved"));
+      const suffix = "?source=legacy-preview&theme=s5#legacy-preview";
+      const rootUrl = new URL("/" + suffix, page.url()).href;
+      await page.goto(entry + suffix);
+      await expect(page).toHaveURL(rootUrl);
+      await expect(page.getByRole("heading", { name: /洛克计算器 ·/ })).toBeVisible();
+      expect(await page.evaluate(() => localStorage.getItem("preview-retirement-test-saved-data"))).toBe("preserved");
+    });
+  }
+});
+
 test("SEO serves crawler files and a direct deer entry without an introduction", async ({ request, page }) => {
   const robots = await request.get("/robots.txt");
   expect(robots.status()).toBe(200);

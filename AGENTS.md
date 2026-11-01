@@ -26,6 +26,7 @@
 ## 当前 Web 发布源码入口
 
 - 国服正式网页与 `/pre/` 从 `config/preview-release.json` 的同一固定 S5 源码分别构建，入口为 `scripts/build-cn-release.mjs` 与 `scripts/build-preview-release.mjs`。修改国服网页时先核对该固定源码及其维护分支，更新源码并验证后再接续发布 pin；只修改主线旧 `src/` 不会进入这两个网页产物。
+- 自 2.3.0 起隐藏 S5 抢先入口，`/pre`、`/pre/` 与 `/pre/index.html` 返回主站；保留旧频道资源和配置，不再将预览根页面作为独立应用验收。默认 CLI 继续使用上述国服 pin，不因入口退役改读旧主线数据。
 - 国际服仍从 `config/global-release.json` 独立构建。主线现有共享核心和小程序保持独立维护，不因 Web 切 S5 自动同步。详细边界和本次验收见 [S5 正式接续](docs/maintenance/s5-bwiki-sync-20261101.md)。
 
 ## 赛季主题设计

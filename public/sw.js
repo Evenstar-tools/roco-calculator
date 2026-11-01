@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.2.8-ranking-history-20261101";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.0-20261102";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 // 图片长期缓存不随发布清空；摘要由 scripts/stamp-image-cache.mjs 按图片内容写入。
 const IMAGE_CACHE_PREFIX = "rock-calculator-images-";
@@ -246,7 +246,13 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
-  // 抢先版自行加载独立资源，不进入正式版的离线缓存。
+  // 旧入口直接回到主站，避免离线缓存重新打开已退役的抢先版。
+  if (event.request.mode === "navigate" && ["/pre", "/pre/", "/pre/index.html"].includes(url.pathname)) {
+    url.pathname = "/";
+    event.respondWith(Response.redirect(url.href, 301));
+    return;
+  }
+  // 保留历史资源独立加载，不进入正式版的离线缓存。
   if (url.pathname === "/pre" || url.pathname.startsWith("/pre/")) return;
   // 版本检查必须读到服务器当前 HTML。
   if (url.searchParams.has("build-check")) return;

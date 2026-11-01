@@ -72,6 +72,14 @@ test("下线的中文指南直接重定向到计算器，构建不再包含指�
   expect(source("config/vite.config.mjs")).not.toContain("../guide/index.html");
 });
 
+test("抢先版三个旧入口直接回到主站，不重定向历史资源", () => {
+  const { redirects } = JSON.parse(source("edgeone.json"));
+  const previewRules = redirects.filter((rule) => rule.source === "/pre" || rule.source.startsWith("/pre/"));
+  expect(previewRules).toEqual(["/pre", "/pre/", "/pre/index.html"].map((path) => ({
+    source: path, destination: "/", statusCode: 301,
+  })));
+});
+
 test("robots和sitemap是可随构建复制的真实文件，包含当前三个页面", () => {
   const robots = source("public/robots.txt");
   expect(robots).toMatch(/^User-agent:\s*\*\s*$/m);

@@ -54,11 +54,17 @@ test("桌面暂存内置图标并保留网页产物，两端均无额外页脚",
   expect(() => verifyDesktopSkillIcons(staged)).toThrow("损坏");
 });
 
-test("双构建的预览技能图标也离线内置，保留两套网页运行数据", () => {
+test("双构建的 S5 技能与愿力图标离线内置，保留两套网页运行数据", () => {
   const root = mkdtempSync(path.join(tmpdir(), "desktop-preview-icons-"));
   const web = path.join(root, "dist/client");
   const skillId = "skill_0000000000000003";
-  const runtime = JSON.stringify({ skills: [{ id: skillId, name: "预览旧技能", iconUrl: "https://example.com/icon.png" }] });
+  const previewIconUrl = "/assets/skills/skill_preview_s5_bwiki_dc5a_4d57cc90d796c5.png";
+  const wishPowerIconUrl = "/assets/skills/wish-power/7700001.png";
+  const runtime = JSON.stringify({ skills: [
+    { id: skillId, name: "预览旧技能", iconUrl: "https://example.com/icon.png" },
+    { id: "skill_preview_s5_dream-building", name: "筑梦", iconUrl: previewIconUrl },
+    { id: "calculator_wish_power_normal", name: "愿力冲击" },
+  ] });
   const png = Buffer.from("89504e470d0a1a0a", "hex");
   mkdirSync(path.join(root, "data/desktop-skill-icons"), { recursive: true });
   writeFileSync(path.join(root, `data/desktop-skill-icons/${skillId}.png`), png);
@@ -70,6 +76,10 @@ test("双构建的预览技能图标也离线内置，保留两套网页运行�
     }
     mkdirSync(path.join(channel, "data"), { recursive: true });
     writeFileSync(path.join(channel, "data/runtime.json"), runtime, "utf8");
+    for (const iconUrl of [previewIconUrl, wishPowerIconUrl]) {
+      mkdirSync(path.dirname(path.join(channel, iconUrl)), { recursive: true });
+      writeFileSync(path.join(channel, iconUrl), png);
+    }
   }
 
   const staged = prepareDesktopClient(root);
@@ -77,10 +87,20 @@ test("双构建的预览技能图标也离线内置，保留两套网页运行�
     const channel = path.join(staged, prefix);
     const bundled = JSON.parse(readFileSync(path.join(channel, "data/runtime.json"), "utf8"));
     expect(bundled.skills[0].iconUrl).toBe(`/assets/skills/${skillId}.png`);
+    expect(bundled.skills[1].iconUrl).toBe(previewIconUrl);
+    expect(bundled.skills[2].iconUrl).toBe(wishPowerIconUrl);
     expect(readFileSync(path.join(channel, `assets/skills/${skillId}.png`))).toEqual(png);
     expect(readFileSync(path.join(web, prefix, "data/runtime.json"), "utf8")).toBe(runtime);
   }
-  expect(verifyDesktopSkillIcons(staged)).toBe(2);
+  expect(verifyDesktopSkillIcons(staged)).toBe(6);
+  const stagedWishIcon = path.join(staged, `pre${wishPowerIconUrl}`);
+  writeFileSync(stagedWishIcon, "broken", "utf8");
+  expect(() => verifyDesktopSkillIcons(staged)).toThrow("损坏：愿力冲击");
+  writeFileSync(stagedWishIcon, png);
+  const stagedPreviewIcon = path.join(staged, `pre${previewIconUrl}`);
+  writeFileSync(stagedPreviewIcon, "broken", "utf8");
+  expect(() => verifyDesktopSkillIcons(staged)).toThrow("损坏：筑梦");
+  writeFileSync(stagedPreviewIcon, png);
   writeFileSync(path.join(staged, `pre/assets/skills/${skillId}.png`), "broken", "utf8");
   expect(() => verifyDesktopSkillIcons(staged)).toThrow("损坏：预览旧技能");
 });

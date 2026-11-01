@@ -1,7 +1,8 @@
 import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { getWishPowerIconUrl } from "../src/data/wish-power-icons.js";
 
-const localIconPattern = /^\/assets\/skills\/skill_[a-f0-9]{16}\.png$/u;
+const localIconPattern = /^\/assets\/skills\/(?:skill_[a-zA-Z0-9_-]+|wish-power\/\d+)\.png$/u;
 
 function clientChannels(clientRoot) {
   const previewRoot = path.join(clientRoot, "pre");
@@ -39,6 +40,8 @@ export function prepareDesktopClient(projectRoot) {
     const runtime = JSON.parse(readFileSync(runtimePath, "utf8"));
     mkdirSync(path.join(channelRoot, "assets/skills"), { recursive: true });
     for (const skill of runtime.skills) {
+      const wishPowerIconUrl = getWishPowerIconUrl(skill.id);
+      if (wishPowerIconUrl) skill.iconUrl = wishPowerIconUrl;
       if (localIconPattern.test(skill.iconUrl ?? "")) continue;
       if (!/^skill_[a-f0-9]{16}$/u.test(skill.id)) throw new Error(`技能 ID 无效：${skill.name}`);
       const iconUrl = `/assets/skills/${skill.id}.png`;
