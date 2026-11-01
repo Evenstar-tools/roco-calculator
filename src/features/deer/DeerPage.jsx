@@ -31,6 +31,7 @@ import { useRuntime } from "../../runtime/RuntimeContext.jsx";
 import { useToolLocale as useLocale } from "../../i18n/useToolLocale.js";
 import { previewRoute } from "../../runtime/preview-channel.js";
 import { routeFor } from "../../runtime/routes.js";
+import { SpiritImage } from "../../components/SpiritImage.jsx";
 
 function DeerHeader({ onReturn }) {
   const { serverId, locale } = useRuntime();
@@ -82,7 +83,7 @@ function SideConfiguration({ snapshot, setup, battleState, sideKey, presets, onS
   if (!spirit) return <section className="deer-side deer-side--defender" aria-label={t("防御方配置")}><div className="deer-side-heading"><span>{t("防御方")}</span></div><SpiritPicker label={t(label)} side={sideKey} spirits={options} selected={null} onSelect={onSelect} showFavorite={false} /><p className="deer-muted">{t("请选择防御方，当前未代入默认对手。")}</p></section>;
   return <section className={`deer-side deer-side--${sideKey}`} aria-label={t("{v0}配置", { v0: label })}>
     <div className="deer-side-heading"><span>{t(label)}</span><button type="button" className="deer-link" onClick={() => setExpanded(!expanded)} aria-expanded={expanded}>{expanded ? t("收起配置") : t("手调配置")}<CaretDown size={12} /></button></div>
-    <div className="deer-identity"><img src={spirit.asset?.localUrl} alt={t(spirit.fullName)} width="54" height="54" /><div className="deer-picker"><SpiritPicker label={t(label)} side={sideKey} spirits={options} selected={selected} onSelect={onSelect} showFavorite={false} /></div>
+    <div className="deer-identity"><SpiritImage name={spirit.fullName} src={spirit.asset?.localUrl} alt={t(spirit.fullName)} width="54" height="54" /><div className="deer-picker"><SpiritPicker label={t(label)} side={sideKey} spirits={options} selected={selected} onSelect={onSelect} showFavorite={false} /></div>
       {attack && <select aria-label={t("电鹿配置预设")} value={presetId} onChange={(event) => selectPreset(event.target.value)}><option value="standard">{t("常用配置")}</option>{presets[side.spiritId] && <option value="saved">{t("已存预设")}</option>}<option value="current" disabled>{t("当前配置")}</option><option value="custom" disabled>{t("自定义")}</option></select>}
     </div>
     {attack ? <><QuickNaturePicker side={sideKey} label={t(label)} displayIvs={side.displayIvs} value={side.nature} onChange={(nature) => onSide({ nature })} /><QuickIvPicker side={sideKey} label={t(label)} values={side.displayIvs} onChange={setIv} /></> : <>
