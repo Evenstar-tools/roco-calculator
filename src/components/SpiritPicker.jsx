@@ -14,6 +14,7 @@ import { buildSpiritFamilyIndex } from "./spirit-family.js";
 import { canPreserveBattleFormConfig, getFormConfigPreferences } from "../state/form-config-preferences.js";
 import { hasCompleteRaceStats } from "../domain/stat.js";
 import { canRecommendSpirit, isSpiritDiscoveryHidden, isSpiritSearchOnly } from "../domain/spirit-discovery.js";
+import { SpiritImage } from "./SpiritImage.jsx";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
@@ -489,7 +490,7 @@ export function SpiritPicker({
                   role="option"
                 >
                   {spirit.assetUrl ? (
-                    <img alt="" height="36" src={spirit.assetUrl} width="36" />
+                    <SpiritImage name={spirit.fullName} alt="" height="36" src={spirit.assetUrl} width="36" />
                   ) : null}
                   <span>
                     <span className="spirit-picker__option-title">
@@ -549,7 +550,7 @@ export function SpiritPicker({
       {selected?.id ? (
         <div className="spirit-card" data-guide-part="selection">
           {selected.assetUrl ? (
-            <img
+            <SpiritImage name={selected.fullName}
               alt={selected.fullName}
               className="spirit-card__image"
               data-preview-silhouette={selected.previewIdentity?.asset?.kind?.endsWith("silhouette") || undefined}
