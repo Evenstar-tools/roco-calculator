@@ -24,9 +24,9 @@ import { getNegativeStatusInputs, hasNegativeStatusSkillApplication, resolveNega
 import { linkedNegativeStatusContext } from "../domain/negative-status-context.js";
 import { advancePressureValveContext, getSkillStatusEffectInputs, resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
-import { resolveS5PreviewBattleLevel } from "../domain/battle-level.js";
+import { getS5SkillBattleLevelChange, getS5SkillBattleLevelControl, resolveS5PreviewBattleLevel } from "../domain/battle-level.js";
 import { getEffectiveTraits } from "../domain/effective-traits.js";
-import { projectBattleLevelHealth, updateGlobalWeather } from "./calculator-session.js";
+import { projectBattleLevelHealth, updateGlobalWeather, updateMirroredTraitContext } from "./calculator-session.js";
 import { getSkillEffectInputs } from "../domain/skill-effects.js";
 import { normalizeTriggerControls, projectTriggerContext } from "../domain/trigger-controls.js";
 
@@ -227,7 +227,8 @@ export function canApplyBattleActivation(skill, context = {}, options = {}) {
   const effects = options.postAttackEffects;
   const currentHp = effects?.selfCurrentHpAfterSettlement;
   return Boolean(
-    resolveSkillStatusActivation(skill, context) ||
+    (options.levelChangeEnabled === true && getS5SkillBattleLevelChange(skill)) ||
+      resolveSkillStatusActivation(skill, context) ||
       isChoiceSkill(skill) ||
       hasPersistentSkillProgression(skill) ||
       Number(effects?.attackLevelStageAdd) > 0 ||
@@ -264,7 +265,7 @@ export function applyBattleActivation({
   snapshot,
   state,
 }) {
-  const next = clone(projectBattleLevelHealth(state, { snapshot, side }));
+  let next = clone(projectBattleLevelHealth(state, { snapshot, side }));
   const selfDirection = sideDirection(side);
   const targetDirection = oppositeDirection(selfDirection);
   const targetSide = oppositeSide(side);
@@ -397,6 +398,15 @@ export function applyBattleActivation({
     Number.isFinite(postAttackCurrentHp);
 
   if (!resolution) {
+    const levelControl = getS5SkillBattleLevelControl(snapshot, next, side, skill);
+    if (levelControl) {
+      const previousLevel = resolveS5PreviewBattleLevel(snapshot, next, side);
+      const level = Math.max(1, Math.min(99, previousLevel + getS5SkillBattleLevelChange(skill)));
+      next = updateMirroredTraitContext(next, { direction: selfDirection, key: levelControl.id, value: level }).state;
+      next = projectBattleLevelHealth(next, { snapshot, side });
+      recordSkillActivation(next, side, skill, context);
+      return { applied: true, reason: null, state: next, skillUsed: true };
+    }
     if (postAttackStageAdd > 0 || hasPostAttackCurrentHp) {
       const selfOverrides = next.directions[selfDirection].overrides ?? {};
       if (postAttackStageAdd > 0) {

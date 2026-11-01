@@ -40,7 +40,9 @@ test.each(Object.entries(expectedDefender))("%s uses its relevant role while own
     expect(projected.summaryScope).toBe(scope === "speed" ? "speed" : "full");
     if (scope === "hidden") expect(projected.inputs).toEqual([]);
     else if (scope === "speed") expect(projected.inputs.map(input => input.contextKey)).toEqual(["enemyTotalSkillCostAuto", "enemyTotalSkillCost"]);
-    else expect(projected.inputs).toBe(view.inputs);
+    else if (key === "super-abu" && role === "defender") {
+      expect(projected.inputs.map(input => input.contextKey)).toEqual(["defenderTraitS5BattleLevel"]);
+    } else expect(projected.inputs).toBe(view.inputs);
     expect(getS5PreviewTraitPresentation(view, role, { owner: true })).toEqual({ visible: true, inputs: view.inputs, summaryScope: "full" });
     expect(view).toEqual(before);
     expect(getS5PreviewTraitInputs(trait, role)).toEqual(before.inputs);

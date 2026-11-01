@@ -33,24 +33,35 @@ describe("S5 explicit trait controls and evaluation", () => {
     expect(evaluate(unknown)).toMatchObject({ calcStatus: "pending", blockingReason: expect.any(String) });
   });
 
-  test("all three Abu aliases share identical owner-safe controls and evaluation", () => {
+  test("Abu and Super Abu use 30% below80 while guardian attack only counts battle gains", () => {
     const ordinary = getS5PreviewTraitInputs(trait("abu"), "attacker");
     expect(ordinary).toHaveLength(1);
     expect(ordinary).toMatchObject([
       { contextKey: "attackerTraitS5BattleLevel", label: "当前等级", defaultValue: 60, min: 1, max: 99, step: 2 },
     ]);
-    for (const key of ["abu", "boss-abu", "super-abu"]) {
-      expect(getS5PreviewTraitInputs(trait(key), "attacker")).toEqual(ordinary);
-      expect(evaluate(trait(key))).toMatchObject({ mechanicKey: "abu", currentLevel: 60, calcStatus: "ready" });
+    for (const key of ["abu", "super-abu"]) {
+      expect(evaluate(trait(key))).toMatchObject({ mechanicKey: key, currentLevel: 60, calcStatus: "ready" });
       for (const BattleLevel of [1, 60, 62, 79, 80, 99]) {
         expect(evaluate(trait(key), { BattleLevel })).toMatchObject({
           currentLevel: BattleLevel, calcStatus: "ready",
-          summary: `当前等级 ${BattleLevel}${BattleLevel < 80 ? "；承伤 +40%" : ""}`,
+          effects: BattleLevel < 80 ? [{ kind: "incoming-damage-percent", amount: 30 }] : [],
         });
-        expect(resolve(trait(key), "defender", { BattleLevel }).finalDamageMultiplier).toBe(BattleLevel < 80 ? 1.4 : 1);
+        expect(resolve(trait(key), "defender", { BattleLevel }).finalDamageMultiplier).toBe(BattleLevel < 80 ? 1.3 : 1);
         expect(resolve(trait(key), "attacker", { BattleLevel }).finalDamageMultiplier).toBe(1);
       }
     }
+  });
+
+  test.each([0, 1, 2, 10, 39])("guardian %s battle levels add5% physical attack each, independent of current level", gain => {
+    const entity = trait("super-abu");
+    for (const BattleLevel of [60, 79, 99]) {
+      expect(resolve(entity, "attacker", { BattleLevel, BattleLevelGain: gain })).toMatchObject({
+        attackLevelBonus: gain * .5, attackMultiplier: 1 + gain * .05,
+      });
+      expect(resolve(entity, "attacker", { BattleLevel, BattleLevelGain: gain }, "magical").attackLevelBonus).toBe(0);
+      expect(resolve(entity, "defender", { BattleLevel, BattleLevelGain: gain }).attackLevelBonus).toBe(0);
+    }
+    expect(resolve(trait("minggulong"), "defender", { BattleLevel: 79 }).finalDamageMultiplier).toBe(1.4);
   });
 
   test("role-specific IDs share canonical owner identity, preserve acquired instance values and do not borrow opposite role", () => {

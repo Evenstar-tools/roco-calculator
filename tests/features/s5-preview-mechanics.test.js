@@ -19,17 +19,17 @@ describe("S5视频机制候选合同", () => {
     expect(compared.calculationEnabled).toBe(false);
   });
 
-  test("阿布三形态共用已核验升级机制，不套历史版本规则", () => {
-    expect(S5_PREVIEW_MECHANICS["super-abu"]).toMatchObject({ name: "超能阿布", events: ["skill-used"] });
-    for (const key of ["abu", "boss-abu", "super-abu"]) {
-      const initial = createS5PreviewState({ level: 77 });
-      const result = run(key, "skill-used", { cost: 3 }, initial, { costBasis: "reviewed-eligible-cost" });
-      expect(result.state.level).toBe(79);
-      expect(result.effects).toContainEqual({ kind: "incoming-damage-percent", amount: 40, condition: "level-below-80" });
-      expect(result.calculationEnabled).toBe(false);
-      expect(adaptS5PreviewEffects(result).modifiers).toEqual([]);
-      expect(initial.level).toBe(77);
-    }
+  test("阿布仅入场前己方3费使用提升2级，超能阿布单独累计战斗中提升等级", () => {
+    const initial = createS5PreviewState({ level: 77 });
+    expect(run("abu", "skill-used", { cost: 3 }, initial).state.level).toBe(77);
+    const result = run("abu", "pre-entry-team-skill-used", { cost: 3 }, initial, { costBasis: "reviewed-eligible-cost" });
+    expect(result.state.level).toBe(79);
+    expect(result.effects).toContainEqual({ kind: "incoming-damage-percent", amount: 30, condition: "level-below-80" });
+    expect(adaptS5PreviewEffects(result).modifiers).toEqual([]);
+    expect(run("super-abu", "skill-used", { cost: 3 }, initial).state.level).toBe(77);
+    expect(run("super-abu", "battle-level-gained", { amount: 2 }, initial)).toMatchObject({
+      state: { level: 77, battleLevelGain: 2 }, effects: [{ kind: "physical-attack-percent", amount: 10 }],
+    });
   });
 
   test("冥古龙99开局，回合结束-10，79触发承伤，隔离适配器不单独输出等级面板", () => {
@@ -57,14 +57,14 @@ describe("S5视频机制候选合同", () => {
   test("不猜等级下降下限或阿布开局等级；3能耗升2级，上限99", () => {
     const verifiedCost = { costBasis: "caller-reviewed-basis" };
     expect(run("minggulong", "turn-end", {}, createS5PreviewState({ level: 9 })).status).toBe("blocked");
-    expect(run("abu", "skill-used", { cost: 3 }).status).toBe("blocked");
-    expect(run("abu", "skill-used", { cost: 3 }, createS5PreviewState({ level: 98 })).status).toBe("blocked");
-    expect(run("abu", "skill-used", { cost: 3 }, createS5PreviewState({ level: 98 }), verifiedCost).state.level).toBe(99);
-    expect(run("abu", "skill-used", { cost: 3 }, createS5PreviewState({ level: 77 }), verifiedCost).effects).toContainEqual({
-      kind: "incoming-damage-percent", amount: 40, condition: "level-below-80",
+    expect(run("abu", "pre-entry-team-skill-used", { cost: 3 }).status).toBe("blocked");
+    expect(run("abu", "pre-entry-team-skill-used", { cost: 3 }, createS5PreviewState({ level: 98 })).status).toBe("blocked");
+    expect(run("abu", "pre-entry-team-skill-used", { cost: 3 }, createS5PreviewState({ level: 98 }), verifiedCost).state.level).toBe(99);
+    expect(run("abu", "pre-entry-team-skill-used", { cost: 3 }, createS5PreviewState({ level: 77 }), verifiedCost).effects).toContainEqual({
+      kind: "incoming-damage-percent", amount: 30, condition: "level-below-80",
     });
-    expect(run("abu", "skill-used", { cost: 3 }, createS5PreviewState({ level: 78 }), verifiedCost).effects.some(({ kind }) => kind === "incoming-damage-percent")).toBe(false);
-    expect(run("abu", "skill-used", { cost: 2 }, createS5PreviewState({ level: 70 }), verifiedCost).state.level).toBe(70);
+    expect(run("abu", "pre-entry-team-skill-used", { cost: 3 }, createS5PreviewState({ level: 78 }), verifiedCost).effects.some(({ kind }) => kind === "incoming-damage-percent")).toBe(false);
+    expect(run("abu", "pre-entry-team-skill-used", { cost: 2 }, createS5PreviewState({ level: 70 }), verifiedCost).state.level).toBe(70);
   });
 
   test("地绡银龙记录回合末生效事实，不提前应用于当次技能", () => {

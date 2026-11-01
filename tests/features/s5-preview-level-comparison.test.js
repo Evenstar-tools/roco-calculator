@@ -81,7 +81,7 @@ test.each(["forward", "reverse"])("阿布80对冥古龙99的%s对比，双60完�
   expect(comparison).toMatchObject({ attackerLevel: activeDirection === "forward" ? 80 : 99,
     defenderLevel: activeDirection === "forward" ? 99 : 80,
     baselineDamage: damagePresentation(expected.result.selectedResult).damage });
-  expect(expected.result.selectedResult.traitContributions.some(entry => entry.values.finalDamageMultiplier === 1.4)).toBe(true);
+  expect(expected.result.selectedResult.traitContributions.some(entry => entry.values.finalDamageMultiplier === (activeDirection === "forward" ? 1.4 : 1.3))).toBe(true);
   if (activeDirection === "forward") expect(comparison.percent).toBeLessThan(0);
 });
 

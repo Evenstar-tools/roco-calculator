@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
-import { expect, test } from "vitest";
+import { beforeAll, expect, test } from "vitest";
+import { buildS5BwikiRuntime } from "../../scripts/s5-bwiki-runtime.mjs";
 import recommendations from "../../data/presets/s5-popular-configs.json";
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 import { resolveSpiritFormRole } from "../../src/features/team-ability/domain/spirit-form-role.js";
@@ -10,20 +11,25 @@ import { buildDamageComparisonInput, createSkillDamageRanking } from "../../src/
 import { getS5LevelIncomingDamagePercent } from "../../src/domain/s5-preview-traits.js";
 
 const base = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
-const preview = withWebPreview(base);
+const legacyPreview = withWebPreview(base);
 const ids = new Set(recommendations.entries.map(entry => entry.spiritId));
-const spirits = preview.spirits.filter(spirit => ids.has(spirit.id));
-// Formal CN publishes the configured identities without their unconfirmed growth forms.
-const subset = spirits.map(spirit => ({ ...spirit,
-  evolutionChainIds: spirit.evolutionChainIds?.filter(id => ids.has(id)),
-}));
+let preview, spirits, subset;
+beforeAll(async () => {
+  preview = await buildS5BwikiRuntime();
+  spirits = preview.spirits.filter(spirit => ids.has(spirit.id));
+  // A recommended subset can omit growth forms without losing recorded final/boss roles.
+  subset = spirits.map(spirit => ({ ...spirit,
+    evolutionChainIds: spirit.evolutionChainIds?.filter(id => ids.has(id)),
+  }));
+}, 30000);
 
-test.each([["完整前瞻", spirits], ["普通版推荐子集", subset]])("%s的14只推荐进入速度和耐久榜，冥古龙保留四档等级", (_label, candidates) => {
-  expect(candidates).toHaveLength(14);
+test.each(["完整S5", "普通版推荐子集"])("%s的17只推荐进入速度和耐久榜，冥古龙保留四档等级", label => {
+  const candidates = label === "完整S5" ? spirits : subset;
+  expect(candidates).toHaveLength(17);
   for (const spirit of candidates) {
     expect(resolveSpiritFormRole(spirit)).toMatchObject({
-      formRole: spirit.previewIdentity.kind === "boss" ? "boss" : "final",
-      formRoleStatus: "preview",
+      formRole: spirit.stage === "首领" ? "boss" : "final",
+      formRoleStatus: "verified",
     });
   }
   const durability = createDurabilityRanking({ spirits: candidates });
@@ -46,7 +52,7 @@ test.each([["完整前瞻", spirits], ["普通版推荐子集", subset]])("%s的
 });
 
 test("未知六维、全100测试占位、未证实形态及成长形态不混入排行榜", () => {
-  const silver = spirits.find(spirit => spirit.previewIdentity.key === "underground-silver-dragon");
+  const silver = legacyPreview.spirits.find(spirit => spirit.previewIdentity?.key === "underground-silver-dragon");
   const identity = silver.previewIdentity;
   const invalid = [
     { ...silver, raceStats: null },
@@ -59,25 +65,34 @@ test("未知六维、全100测试占位、未证实形态及成长形态不混�
   expect(invalid.map(spirit => resolveSpiritFormRole(spirit).formRole)).toEqual(["unknown", "unknown", "unknown", "unknown", "growth"]);
   expect(createSpeedTargets({ spirits: invalid })).toEqual([]);
   expect(createDurabilityRanking({ spirits: invalid }).rows).toEqual([]);
-  const abu = preview.spirits.find(spirit => spirit.previewIdentity?.key === "abu");
+  const abu = legacyPreview.spirits.find(spirit => spirit.previewIdentity?.key === "abu");
   expect(abu.previewIdentity.raceStatsPlaceholder).toBe(true);
   expect(createSpeedTargets({ spirits: [abu] })).toEqual([]);
   expect(createDurabilityRanking({ spirits: [abu] }).rows).toEqual([]);
-  const ming = spirits.find(spirit => spirit.previewIdentity.key === "minggulong");
+  const ming = legacyPreview.spirits.find(spirit => spirit.previewIdentity?.key === "minggulong");
   const pendingMing = { ...ming, raceStats: invalid[1].raceStats,
     previewIdentity: { ...ming.previewIdentity, raceStatsPlaceholder: true } };
   expect(createSpeedTargets({ spirits: [pendingMing] })).toEqual([]);
   expect(createDurabilityRanking({ spirits: [pendingMing] }).rows).toEqual([]);
+  const growth = preview.spirits.filter(spirit => ["呆呆铃", "跳跳铃"].includes(spirit.fullName));
+  expect(growth).toHaveLength(2);
+  expect(growth.map(spirit => resolveSpiritFormRole(spirit).formRole)).toEqual(["growth", "growth"]);
+  expect(createSpeedTargets({ spirits: growth })).toEqual([]);
+  expect(createDurabilityRanking({ spirits: growth }).rows).toEqual([]);
+  const unconfirmed = preview.spirits.find(spirit => spirit.fullName === "圣龙阿布");
+  expect(unconfirmed.previewIdentity.raceStatsPlaceholder).toBe(true);
+  expect(createSpeedTargets({ spirits: [unconfirmed] })).toEqual([]);
+  expect(createDurabilityRanking({ spirits: [unconfirmed] }).rows).toEqual([]);
 });
 
 test("S4原有精灵角色不因新推荐目录改变", () => {
-  const byId = new Map(preview.spirits.map(spirit => [spirit.id, spirit]));
+  const byId = new Map(legacyPreview.spirits.map(spirit => [spirit.id, spirit]));
   for (const spirit of base.spirits) {
     expect(resolveSpiritFormRole(byId.get(spirit.id))).toEqual(resolveSpiritFormRole(spirit));
   }
 });
 
-test("默认伤害对比含14只推荐，并沿用各自用户预设性格及个体", async () => {
+test("默认伤害对比含17只推荐，并沿用各自用户预设性格及个体", async () => {
   const snapshot = { ...preview, spirits: subset };
   const state = createInitialState(snapshot);
   const ming = recommendations.entries[0];

@@ -150,8 +150,7 @@ test("银龙手动当前魔攻增益只增加魔攻，不按能量次数猜累�
   expect(after.sides.attacker.finalPanelStats.magicalAttack).toBeGreaterThan(before.sides.attacker.finalPanelStats.magicalAttack);
 });
 
-test("阿布三形态同规则，等级进入面板和伤害，80级移除额外承伤", () => {
-  const damages = [];
+test("阿布已确认承伤降为30%，等级仍进入双向面板和伤害，未知首领保留原规则", () => {
   for (const key of ["abu", "boss-abu", "super-abu"]) {
     let state = fixture(key);
     const at60 = view(state);
@@ -159,28 +158,27 @@ test("阿布三形态同规则，等级进入面板和伤害，80级移除额外
     const ignored = structuredClone(state);
     ignored.sides.attacker.ignoreTraits = true;
     expect(at60.calculation.reverse.selectedResult.totalDamage).toBeGreaterThan(view(ignored).calculation.reverse.selectedResult.totalDamage);
-    damages.push([at60.calculation.forward.selectedResult.totalDamage, at60.calculation.reverse.selectedResult.totalDamage]);
+    const multiplier = key === "boss-abu" ? 1.4 : 1.3;
     state = set(state, "attacker", "BattleLevel", 79);
     const at79 = view(state);
     expect(at79.sides.attacker.combatLevel).toBe(79);
     expect(at79.calculation.reverse.selectedResult.traitContributions).toEqual(expect.arrayContaining([
-      expect.objectContaining({ values: expect.objectContaining({ finalDamageMultiplier: 1.4 }) }),
+      expect.objectContaining({ values: expect.objectContaining({ finalDamageMultiplier: multiplier }) }),
     ]));
-    expect(at79.calculation.forward.selectedResult.traitContributions?.some(entry => entry.values?.finalDamageMultiplier === 1.4)).not.toBe(true);
+    expect(at79.calculation.forward.selectedResult.traitContributions?.some(entry => entry.values?.finalDamageMultiplier === multiplier)).not.toBe(true);
     state = set(state, "attacker", "BattleLevel", 80);
     const at80 = view(state);
     for (const direction of ["forward", "reverse"]) {
       expect(at80.calculation[direction].selectedResult.status).toBe("exact");
     }
     expect(at80.sides.attacker.combatLevel).toBe(80);
-    expect(at80.calculation.reverse.selectedResult.traitContributions?.some(entry => entry.values?.finalDamageMultiplier === 1.4)).not.toBe(true);
+    expect(at80.calculation.reverse.selectedResult.traitContributions?.some(entry => entry.values?.finalDamageMultiplier === multiplier)).not.toBe(true);
     expect(at80.sides.attacker.panelStats.physicalAttack).toBeGreaterThan(at60.sides.attacker.panelStats.physicalAttack);
     expect(at80.sides.attacker.panelStats.hp).toBeGreaterThan(at60.sides.attacker.panelStats.hp);
     expect(at80.calculation.forward.selectedResult.totalDamage).toBeGreaterThan(at60.calculation.forward.selectedResult.totalDamage);
     expect(at80.calculation.reverse.selectedResult.totalDamage).toBeLessThan(at60.calculation.reverse.selectedResult.totalDamage);
   }
-  expect(damages[1]).toEqual(damages[0]);
-  expect(damages[2]).toEqual(damages[0]);
+
 });
 
 test("骰子未投掷中性可算，实际点数无映射时拦截，已有待核验技能守门保留", () => {

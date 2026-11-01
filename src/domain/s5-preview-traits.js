@@ -7,15 +7,15 @@ import { getGoldChargeCountInput, getLegacyGoldChargeInputs } from "../features/
 import { getSilverEnergySpentInput, readSilverEnergySpent } from "../features/s5-preview/energy-input-migration.js";
 import { readS5SixFaceDiceInput } from "../features/s5-preview/dice-input-migration.js";
 
-const ABU_KEYS = new Set(["abu", "boss-abu", "super-abu"]);
+const ABU_KEYS = new Set(["abu", "boss-abu"]);
 
 // Shared by the battle resolver and standard level-specific rankings.
-export function getS5LevelIncomingDamagePercent(level) {
-  return level < 80 ? 40 : 0;
+export function getS5LevelIncomingDamagePercent(level, mechanicKey = "minggulong") {
+  return level < 80 ? (["abu", "super-abu"].includes(mechanicKey) ? 30 : 40) : 0;
 }
 
 const KNOWN_KEYS = new Set([
-  "minggulong", "abu", "underground-silver-dragon", "gold-vein-dragon",
+  "minggulong", "abu", "super-abu", "underground-silver-dragon", "gold-vein-dragon",
   "boss-ice-bruce", "boss-glass-jellyfish", "jingyu", "doulie",
   "watermelon-bug", "diliutun", "lele-shark", "egg-wrap",
   "crab-coconut", "little-scissor", "lily-of-valley",
@@ -94,6 +94,12 @@ export function getS5PreviewTraitInputs(trait, role = "attacker") {
       break;
     case "abu":
       controls = [number("BattleLevel", "当前等级", 60, { min: 1, max: 99, step: 2 })];
+      break;
+    case "super-abu":
+      controls = [
+        number("BattleLevel", "当前等级", 60, { min: 1, max: 99, step: 1 }),
+        number("BattleLevelGain", "战斗中累计提升等级", 0, { step: 1 }),
+      ];
       break;
     case "gold-vein-dragon":
       return [getGoldChargeCountInput(role), ...getS5PreviewTurnEndInputs(key, role)];
@@ -203,12 +209,20 @@ export function getS5PreviewTraitEvaluation(trait, role = "attacker", context = 
       }
       break;
     }
-    case "abu": {
+    case "abu":
+    case "super-abu": {
       const level = amount("BattleLevel");
       result.currentLevel = level;
       result.summary = "当前等级 " + level;
-      result.note = "默认60级为试算输入；按实战当前等级填写，上限99级。";
-      const incomingPercent = getS5LevelIncomingDamagePercent(level);
+      result.note = key === "abu"
+        ? "入场前己方每使用一次3费技能，入场等级+2；按当前实战等级填写。"
+        : "只填写战斗中累计提升的等级；入场前获得的等级不计入物攻增益。";
+      const incomingPercent = getS5LevelIncomingDamagePercent(level, trait.previewIdentity.key === "boss-abu" ? "boss-abu" : key);
+      if (key === "super-abu") {
+        const gain = amount("BattleLevelGain");
+        result.summary += "；战斗中累计提升 " + gain + " 级 · 物攻 +" + gain * 5 + "%";
+        if (gain) result.effects.push({ kind: "physical-attack-percent", amount: gain * 5 });
+      }
       if (incomingPercent) {
         result.summary += "；承伤 +" + incomingPercent + "%";
         result.effects.push({ kind: "incoming-damage-percent", amount: incomingPercent });

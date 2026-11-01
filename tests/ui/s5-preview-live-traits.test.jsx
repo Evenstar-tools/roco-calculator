@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, expect, test } from "vitest";
 import { App } from "../../src/App.jsx";
+import { applyS5Bwiki } from "../../scripts/bwiki/apply-s5-bwiki.mjs";
+import { applyS5Candymo } from "../../scripts/bwiki/apply-s5-candymo.mjs";
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 import { createInitialState } from "../../src/state/defaults.js";
 import { FIRST_RUN_GUIDE_STORAGE_KEY } from "../../src/state/first-run-guide.js";
@@ -188,12 +190,12 @@ test.each([["abu", "single"], ["boss-abu", "four"], ["super-abu", "four"]])("%s 
   fireEvent.keyDown(level, { key: "ArrowDown" });
   expect(level).toHaveValue(60);
   fireEvent.change(level, { target: { value: "78" } });
-  expect(summary()).toHaveTextContent("承伤 +40%");
+  expect(summary()).toHaveTextContent(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
   fireEvent.click(increase);
   expect(level).toHaveValue(80);
-  expect(summary()).not.toHaveTextContent("承伤 +40%");
+  expect(summary()).not.toHaveTextContent(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
   fireEvent.change(level, { target: { value: "79" } });
-  expect(summary()).toHaveTextContent("承伤 +40%");
+  expect(summary()).toHaveTextContent(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
   fireEvent.change(level, { target: { value: "98" } });
   fireEvent.click(increase);
   expect(level).toHaveValue(99);
@@ -404,3 +406,74 @@ test.each([["single", "compact"], ["four", "compact"], ["four", "detailed"]])("%
   use();
   expect(input()).toHaveValue(2);
 });
+
+
+test.each([["single", "compact"], ["single", "detailed"], ["four", "compact"], ["four", "detailed"]])(
+  "%s %s超能阿布累计提升与圣龙狂斩按钮联动，当前等级独立且重复使用正常", (mode, viewMode) => {
+    const current = structuredClone(snapshot);
+    current.meta.s5NrcSync = { complete: true };
+    const spirit = current.spirits.find(entry => entry.id === "spirit_preview_s5_super-abu");
+    const trait = current.traits.find(entry => spirit.traitIds.includes(entry.id));
+    spirit.previewIdentity.mechanicKey = "super-abu";
+    trait.previewIdentity.mechanicKey = "super-abu";
+    trait.name = spirit.traitName = "圣龙的守护";
+    const slash = { id: "fixture-saint-slash", name: "圣龙狂斩", type: "龙", category: "physical", basePower: 160, cost: 3,
+      s5LevelChangeRule: "saint-dragon-slash" };
+    current.skills.push(slash);
+    current.learnsets.find(entry => entry.spiritId === spirit.id).skillIds.push(slash.id);
+    const state = createInitialState(current);
+    state.mode = mode;
+    state.sides.attacker.spiritId = spirit.id;
+    state.sides.defender.spiritId = current.spirits.find(entry => entry.fullName === "迪莫").id;
+    state.sides.attacker.skills = { single: slash.id, four: [slash.id, null, null, null] };
+    render(<App initialSnapshot={current} initialWorkspace={{ state, activeDirection: "forward", viewMode }} />);
+    const gain = screen.getByRole("spinbutton", { name: "战斗中累计提升等级", exact: true });
+    const level = screen.getByRole("spinbutton", { name: "当前等级", exact: true });
+    const at60 = primary();
+    expect(gain).toHaveValue(0);
+    fireEvent.change(gain, { target: { value: "1" } });
+    expect(primary()).toBeGreaterThan(at60);
+    expect(level).toHaveValue(60);
+    expect(screen.getAllByRole("status", { name: "攻击特性当前效果" })[0]).toHaveTextContent("物攻 +5%");
+    activateSkill(mode, { view: viewMode });
+    expect(level).toHaveValue(55);
+    expect(gain).toHaveValue(1);
+    activateSkill(mode, { view: viewMode });
+    expect(level).toHaveValue(50);
+    expect(gain).toHaveValue(1);
+    fireEvent.change(level, { target: { value: "99" } });
+    expect(gain).toHaveValue(1);
+    fireEvent.change(gain, { target: { value: "0" } });
+    expect(screen.getAllByRole("status", { name: "攻击特性当前效果" })[0]).not.toHaveTextContent("物攻");
+  },
+);
+
+
+test.each([["attacker", "攻击方"], ["defender", "防御方"]])(
+  "%s真实同族列表开启配置保留后，超能阿布90级降阶保留特性并可连续狂斩", (side, label) => {
+    const read = path => JSON.parse(readFileSync(path, "utf8"));
+    const current = applyS5Candymo(applyS5Bwiki(withWebPreview(read("data/snapshots/current.json")),
+      read("data/reviewed/nrc-s5-20261101.json")), read("data/reviewed/candymo-s5-20261101.json"));
+    const state = createInitialState(current);
+    state.mode = "four";
+    state.sides[side].spiritId = "spirit_preview_s5_super-abu";
+    state.sides[side === "attacker" ? "defender" : "attacker"].spiritId = current.spirits.find(entry => entry.fullName === "迪莫").id;
+    state.sides[side].skills.four = ["skill_preview_s5_saint-dragon-slash", null, null, null];
+    render(<App initialSnapshot={current} initialWorkspace={{ state, activeDirection: "forward", viewMode: "detailed" }} />);
+    fireEvent.change(screen.getByRole("spinbutton", { name: "当前等级", exact: true }), { target: { value: "90" } });
+    fireEvent.change(screen.getByRole("spinbutton", { name: "战斗中累计提升等级", exact: true }), { target: { value: "1" } });
+    fireEvent.focus(screen.getByRole("combobox", { name: `${label}精灵` }));
+    const preserve = screen.getByRole("switch", { name: `${label}同族切换保留本场配置` });
+    if (!preserve.checked) fireEvent.click(preserve);
+    expect(preserve).toBeChecked();
+    const option = screen.getAllByRole("option").find(entry => entry.querySelector("strong")?.textContent === "阿布");
+    expect(option).toBeTruthy();
+    fireEvent.click(option);
+    expect(screen.getByRole("spinbutton", { name: "当前等级", exact: true })).toHaveValue(90);
+    expect(screen.getByRole("spinbutton", { name: "战斗中累计提升等级", exact: true })).toHaveValue(1);
+    expect(screen.getByText(/特性沿用：/u)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: `${label}技能1使用技能`, exact: true }));
+    expect(screen.getByRole("spinbutton", { name: "当前等级", exact: true })).toHaveValue(85);
+    expect(screen.getByRole("spinbutton", { name: "战斗中累计提升等级", exact: true })).toHaveValue(1);
+  },
+);

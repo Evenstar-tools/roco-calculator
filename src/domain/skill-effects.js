@@ -260,6 +260,12 @@ const thresholdHitCount = (
 });
 
 const REVIEWED_EFFECTS = Object.freeze({
+  恋恋不舍: booleanAdd("s5LovesickDebuffThresholdReached", "已使敌方获得至少3次减益", 30),
+  维管束重构: {
+    inputs: [booleanInput("s5VascularHealingThresholdReached", "累计回复生命已达40%")],
+    ruleId: "conditional_energy_recovery",
+    ruleParams: { contextKey: "s5VascularHealingThresholdReached", energyRecovery: 3 },
+  },
   深红龙击: {
     inputs: [numberInput("s5ChargeEntryCount", "累计进入蓄力次数", 0, undefined, 0)],
     ruleId: "count_cost_reduction",
@@ -972,7 +978,7 @@ const SEASON_ANNOUNCEMENT_REVISION_11_RULE_NAMES = new Set([
 ]);
 
 const S5_OFFICIAL_VIDEO_RULE_NAMES = new Set([
-  "深红龙击", "碎银", "过充电", "离岸流", "投毒", "灵扰", "龙之爪牙",
+  "深红龙击", "碎银", "过充电", "离岸流", "投毒", "灵扰", "龙之爪牙", "恋恋不舍", "维管束重构",
 ]);
 
 function inputsForExplicitRule(ruleId, params = {}) {

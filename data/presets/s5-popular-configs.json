@@ -1,8 +1,8 @@
 {
   "format": "rock-calculator.favorite-config-library",
   "schemaVersion": 1,
-  "exportedAt": "2026-10-30T00:00:00+08:00",
-  "entryCount": 14,
+  "exportedAt": "2026-11-01T00:00:00+08:00",
+  "entryCount": 17,
   "entries": [
     {
       "spiritId": "spirit_preview_s5_minggulong",
@@ -267,6 +267,63 @@
         null,
         null,
         null
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_abu",
+      "natureId": "adamant",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalAttack": 0,
+        "magicalDefense": 0,
+        "speed": 60
+      },
+      "skills": [
+        "skill_preview_s5_saint-dragon-slash",
+        "skill_preview_s5_dragon-claws",
+        "skill_preview_s5_dragon-eye-dotting",
+        "skill_a3f4f08b6e1a60b3"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_super-abu",
+      "natureId": "adamant",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 60,
+        "physicalDefense": 0,
+        "magicalAttack": 0,
+        "magicalDefense": 0,
+        "speed": 60
+      },
+      "skills": [
+        "skill_preview_s5_saint-dragon-slash",
+        "skill_preview_s5_dragon-claws",
+        "skill_preview_s5_dragon-eye-dotting",
+        "skill_a3f4f08b6e1a60b3"
+      ],
+      "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_lily-of-valley",
+      "natureId": "smart",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 0,
+        "physicalDefense": 0,
+        "magicalAttack": 60,
+        "magicalDefense": 60,
+        "speed": 0
+      },
+      "skills": [
+        "skill_preview_s5_vascular-restructure",
+        "skill_preview_s5_lovesick",
+        "skill_preview_s5_dream-building",
+        "skill_d17a107af466ecbe"
       ],
       "traitValues": {}
     }

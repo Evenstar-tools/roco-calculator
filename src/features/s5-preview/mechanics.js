@@ -2,9 +2,9 @@
 // Technical keys are identifiers only; they do not provide translated names.
 export const S5_PREVIEW_MECHANICS = Object.freeze({
   minggulong: { name: "冥古龙", events: ["battle-start", "turn-end"], unknowns: ["等级降低的下限未公开", "非60级能力值采用初版外推模型，待游戏面板校对"] },
-  abu: { name: "阿布", events: ["skill-used"], unknowns: ["3能耗的基础/实际能耗口径待核验", "开局等级须由已核验状态提供", "非60级能力值采用初版外推模型，待游戏面板校对"] },
+  abu: { name: "阿布", events: ["pre-entry-team-skill-used"], unknowns: ["3能耗的基础/实际能耗口径待核验", "开局等级须由已核验状态提供", "非60级能力值采用初版外推模型，待游戏面板校对"] },
   "boss-abu": { name: "圣龙阿布", events: ["skill-used"], unknowns: ["阿布家族当前等级须手动确认", "非60级能力值采用初版外推模型，待游戏面板校对"] },
-  "super-abu": { name: "超能阿布", events: ["skill-used"], unknowns: ["阿布家族当前等级须手动确认", "非60级能力值采用初版外推模型，待游戏面板校对"] },
+  "super-abu": { name: "超能阿布", events: ["battle-level-gained"], unknowns: ["阿布家族当前等级须手动确认", "非60级能力值采用初版外推模型，待游戏面板校对"] },
   "underground-silver-dragon": { name: "地绡银龙", events: ["energy-spent"], unknowns: ["魔攻增益叠法与上限未公开"] },
   "gold-vein-dragon": { name: "龙嵴金脉", events: ["charge-complete"], unknowns: ["攻击增益持续时间及离场保留未公开"] },
   "boss-ice-bruce": { name: "圣冠布鲁斯", events: ["opponent-total-cost"], unknowns: [] },
@@ -51,8 +51,8 @@ function blocked(state, event, message, effects = []) {
 function ignored(state, event) {
   return completed(state, event, {}, [], [], "ignored");
 }
-function levelEffects(level) {
-  return level < 80 ? [effect("incoming-damage-percent", { amount: 40, condition: "level-below-80" })] : [];
+function levelEffects(level, amount = 40) {
+  return level < 80 ? [effect("incoming-damage-percent", { amount, condition: "level-below-80" })] : [];
 }
 
 /**
@@ -81,17 +81,22 @@ export function reduceS5Preview(mechanicKey, previous, event, confirmed = {}) {
       return completed(state, event, { level: next }, [effect("level-set", { level: next, maxLevel: 99 }), ...levelEffects(next)], [CORE_LEVEL_GAP]);
     }
     case "abu":
-    case "boss-abu":
-    case "super-abu": {
-      if (event.type !== "skill-used") return ignored(state, event);
+    case "boss-abu": {
+      if (event.type !== (mechanicKey === "abu" ? "pre-entry-team-skill-used" : "skill-used")) return ignored(state, event);
       if (!identifiedBasis(confirmed.costBasis)) return blocked(state, event, "3能耗的取值口径尚未核验，不默认采用基础或实际能耗");
       if (!whole(event.cost)) return blocked(state, event, "已核验口径下的本次技能能耗尚未确认");
       if (!whole(state.level) || state.level < 1 || state.level > 99) return blocked(state, event, "阿布当前等级尚未确认，不补默认等级");
       const next = event.cost === 3 ? Math.min(99, state.level + 2) : state.level;
       return completed(state, event, { level: next, maxLevel: 99 }, [
         ...(next !== state.level ? [effect("level-set", { level: next, maxLevel: 99 })] : []),
-        ...levelEffects(next),
+        ...levelEffects(next, mechanicKey === "abu" ? 30 : 40),
       ], [CORE_LEVEL_GAP]);
+    }
+    case "super-abu": {
+      if (event.type !== "battle-level-gained") return ignored(state, event);
+      if (!whole(event.amount) || !whole(state.battleLevelGain ?? 0)) return blocked(state, event, "本次战斗中实际提升的等级须为非负整数");
+      const gain = (state.battleLevelGain ?? 0) + event.amount;
+      return completed(state, event, { battleLevelGain: gain }, [effect("physical-attack-percent", { amount: gain * 5 })]);
     }
     case "underground-silver-dragon": {
       if (event.type !== "energy-spent") return ignored(state, event);

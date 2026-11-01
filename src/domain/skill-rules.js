@@ -369,6 +369,16 @@ function resolvePositionHitCount(skill, context) {
   }], { hitCount });
 }
 
+function resolveConditionalEnergyRecovery(skill, context) {
+  const triggered = context[skill.ruleParams.contextKey] === true;
+  const energyRecovery = triggered ? Number(skill.ruleParams.energyRecovery) : 0;
+  const basePower = Number(skill.basePower);
+  return exact(basePower, [{
+    label: `回复${energyRecovery}能量（伤害不变）`, input: triggered,
+    before: basePower, after: basePower, source: "reviewed-rule:conditional-energy-recovery-v1",
+  }], { energyRecovery });
+}
+
 function resolveBooleanPowerAdd(skill, context) {
   const params = skill.ruleParams ?? {};
   const contextKey = params.contextKey ?? "conditionTriggered";
@@ -1183,6 +1193,7 @@ const RULES = new Map([
   ["count_cost_reduction", resolveCountCostReduction],
   ["position_power_add", resolvePositionPowerAdd],
   ["boolean_power_add", resolveBooleanPowerAdd],
+  ["conditional_energy_recovery", resolveConditionalEnergyRecovery],
   ["boolean_power_multiplier", resolveBooleanPowerMultiplier],
   ["boolean_power_percent_add", resolveBooleanPowerPercentAdd],
   ["boolean_damage_multiplier", resolveBooleanDamageMultiplier],

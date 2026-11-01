@@ -92,7 +92,7 @@ import { isEnemyStarfallTraitControl, linkStarfallTraitControls, linkEnemyCostTr
 import { carriedSkillTotalCost } from "./domain/skill-result/loadout.js";
 import { getSnapshotIndexes } from "./domain/snapshot-indexes.js";
 import { calculateAllPanelStats } from "./domain/stat.js";
-import { resolveS5PreviewBattleLevel } from "./domain/battle-level.js";
+import { getS5SkillBattleLevelControl, resolveS5PreviewBattleLevel } from "./domain/battle-level.js";
 import { getEffectiveTraits } from "./domain/effective-traits.js";
 import { getBattleFormChoices } from "./domain/battle-form.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
@@ -1001,6 +1001,16 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       if (next !== stateRef.current) commitSession({ state: next, persistence: { rememberSide: side } });
     };
     if (skill?.s5StatusEffectPending) { setToast(skill.s5StatusEffectPending); return; }
+    if (getS5SkillBattleLevelControl(snapshot, latest, side, skill)) {
+      if (!trackedUse) beginDiscreteAction();
+      const applied = applyBattleActivation({ calculation, side, skillIndex: index, snapshot, state: latest });
+      if (applied.applied) {
+        commitSession({ state: applied.state, persistence: { rememberSide: side } });
+        recordS5SkillUse();
+      }
+      setToast(applied.applied ? `${skill.name}已使用 · 当前等级${resolveS5PreviewBattleLevel(snapshot, applied.state, side)}` : applied.reason);
+      return;
+    }
     const context = linkedNegativeStatusContext(latest, side,
       entry && typeof entry === "object" ? entry.context ?? {} : {});
     const activationContextSignature = getSkillActivationContextSignature(skill, context);
@@ -1541,6 +1551,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       state.directions[direction].overrides?.activeDefenseStatus ||
       Number(state.directions[direction === "forward" ? "reverse" : "forward"].reduction ?? 1) !== 1 ||
       canApplyBattleActivation(skill, linkedNegativeStatusContext(state, side, context), {
+        levelChangeEnabled: Boolean(getS5SkillBattleLevelControl(snapshot, state, side, skill)),
         negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true,
         negativeStatusCanApply: viewModel.skillResultsByDirection[direction]?.[index]?.negativeStatusCanApply,
         postAttackEffects: calculation?.[direction]?.results?.[index]?.postAttackEffects,
@@ -1553,7 +1564,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const skill = getSkill(snapshot, entry);
     if (!["status", "defense"].includes(skill?.category)) {
       const args = { snapshot, side, skill, result: calculation?.[direction]?.results?.[index] };
-      return prepareS5EnergyUse(state, args) || prepareS5DiscountUse(state, args) ? "使用技能" : "应用后续变化";
+      return prepareS5EnergyUse(state, args) || prepareS5DiscountUse(state, args) ||
+        getS5SkillBattleLevelControl(snapshot, state, side, skill) ? "使用技能" : "应用后续变化";
     }
     const context = mode === "single" ? state.directions[direction].context : entry?.context;
     if (canToggleNegativeStatusActivation(skill, linkedNegativeStatusContext(state, side, context), {
@@ -1576,7 +1588,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const discountUse = prepareS5DiscountUse(stateRef.current, { snapshot, side: activeAttackSideKey,
       skill: selectedSingleSkill, result: calculation?.[activeDirection]?.results?.[0] });
     const trackedUse = Boolean(energyUse || discountUse);
-    if (trackedUse) beginDiscreteAction();
+    if (trackedUse || getS5SkillBattleLevelControl(snapshot, stateRef.current, activeAttackSideKey, selectedSingleSkill)) beginDiscreteAction();
     const applied = applyBattleActivation({ calculation, allowNoEffectUse: trackedUse, side: activeAttackSideKey,
       skillIndex: 0, skillMode: "single", snapshot, state: stateRef.current });
     if (applied.applied || applied.stateChanged) {
@@ -2044,7 +2056,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       activeStatus?.slotIndex === (index ?? 0) && matchesSkillActivationContext(skill, activeStatus?.contextSignature, activeContext);
     const s5Action = skill && !skill.s5StatusEffectPending && (
       prepareS5EnergyUse(state, { snapshot, side, result }) ||
-      prepareS5DiscountUse(state, { snapshot, side, skill, result })
+      prepareS5DiscountUse(state, { snapshot, side, skill, result }) ||
+      getS5SkillBattleLevelControl(snapshot, state, side, skill)
     );
     const label = canRelease ? "解除状态" : skillActivationLabel(side, index ?? 0, state.mode);
     const hasAction = skill && !skill.s5StatusEffectPending && (resolution || progresses || postChanges || togglesStatus || canRelease || s5Action);

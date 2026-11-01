@@ -12,6 +12,7 @@ export function S5PreviewTraitSummary({ trait, role = "attacker", context = {}, 
   const level = evaluation.calcStatus === "ready" ? evaluation.currentLevel : null;
   const hasLevel = Number.isSafeInteger(level) && level > 0;
   const incoming = evaluation.effects.find(effect => effect.kind === "incoming-damage-percent");
+  const physicalAttack = evaluation.effects.find(effect => effect.kind === "physical-attack-percent");
   const speedOnly = presentation.summaryScope === "speed";
   const speed = evaluation.effects.find(effect => effect.kind === "speed-flat");
   const summary = speedOnly ? (speed ? `速度 +${speed.amount}` : "") : evaluation.summary;
@@ -30,6 +31,7 @@ export function S5PreviewTraitSummary({ trait, role = "attacker", context = {}, 
     >
       {hasLevel ? <>
         <span>当前等级 {level}</span>
+        {physicalAttack && (owner || role === "attacker") ? <span>物攻 +{physicalAttack.amount}%</span> : null}
         {incoming && (owner || role === "defender") ? <span>承伤 +{incoming.amount}%</span> : null}
       </> : <span>{summary}</span>}
       {reason ? <small>{reason}</small> : null}

@@ -21,6 +21,30 @@ function skill(overrides = {}) {
 }
 
 describe("resolveSkillPower", () => {
+  test("恋恋不舍按已达三次减益的独立条件一次加30，重算和普通使用次数不会再次成长", () => {
+    const current = skill({ name: "恋恋不舍", type: "萌", category: "magical", cost: 4, basePower: 110 });
+    const [control] = getSkillEffectInputs(current);
+    expect(control).toMatchObject({ contextKey: "s5LovesickDebuffThresholdReached", type: "boolean", defaultValue: false });
+    expect(resolveSkillPower(current, { skillUseCount: 5, enemyPoisonStacks: 10 })).toMatchObject({ value: 110 });
+    const context = { [control.id]: true, skillUseCount: 10 };
+    for (let index = 0; index < 3; index += 1) expect(resolveSkillPower(current, context)).toMatchObject({ value: 140 });
+    expect(context).toEqual({ [control.id]: true, skillUseCount: 10 });
+    expect(resolveSkillPower(current, { ...context, basePowerOverride: 150 })).toMatchObject({ value: 180 });
+  });
+
+  test("维管束回复条件仅报告3能量，保持110威力和4点实际消耗，不推测生命历史", () => {
+    const current = skill({ name: "维管束重构", type: "草", category: "magical", cost: 4, basePower: 110 });
+    const [control] = getSkillEffectInputs(current);
+    expect(control).toMatchObject({ contextKey: "s5VascularHealingThresholdReached", type: "boolean", defaultValue: false });
+    expect(resolveSkillPower(current, { attackerHpPercent: 100 })).toMatchObject({ value: 110, energyRecovery: 0 });
+    const active = resolveSkillPower(current, { [control.id]: true });
+    expect(active).toMatchObject({ value: 110, energyRecovery: 3,
+      steps: [expect.objectContaining({ label: "回复3能量（伤害不变）", before: 110, after: 110 })] });
+    expect(active).not.toHaveProperty("resolvedCost");
+    expect(current.cost).toBe(4);
+    expect(resolveSkillPower(current, { [control.id]: true, basePowerOverride: 150 })).toMatchObject({ value: 150, energyRecovery: 3 });
+  });
+
   test.each([
     ["深红龙击", 115, 5, "s5ChargeEntryCount", [[0, 5], [1, 3], [2, 1], [3, 0], [100, 0]]],
     ["碎银", 170, 10, "s5EnergySpentBeforeUse", [[0, 10], [9, 10], [10, 5], [20, 5]]],
@@ -73,7 +97,7 @@ describe("resolveSkillPower", () => {
     expect(getSkillEffectInputs(claws)).toEqual([]);
   });
 
-  test.each(["深红龙击", "碎银", "过充电", "离岸流", "投毒", "灵扰", "龙之爪牙"])("S5 %s 的规则不进入国际服S3历史规则", name => {
+  test.each(["深红龙击", "碎银", "过充电", "离岸流", "投毒", "灵扰", "龙之爪牙", "恋恋不舍", "维管束重构"])("S5 %s 的规则不进入国际服S3历史规则", name => {
     expect(getSkillEffectRule(skill({ name, calculationRuleset: "s3-midseason-2026-08-13" }))).toBeNull();
   });
 

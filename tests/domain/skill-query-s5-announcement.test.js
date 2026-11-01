@@ -7,6 +7,7 @@ import { applyS5SeasonAnnouncement, S5_SEASON_ANNOUNCEMENT } from "../../src/fea
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 import { querySpiritFamilies, spiritSkills } from "../../src/features/skill-query/query-model.js";
 import { applyS5Bwiki } from "../../scripts/bwiki/apply-s5-bwiki.mjs";
+import { applyS5Candymo } from "../../scripts/bwiki/apply-s5-candymo.mjs";
 import { buildS5BwikiRuntime } from "../../scripts/s5-bwiki-runtime.mjs";
 
 const loadCatalog = () => unpackCatalog(JSON.parse(readFileSync("public/data/skill-query/catalog.json", "utf8")));
@@ -166,13 +167,18 @@ test("本季汇总接收 BWIKI 新补丁并保留 S5 各组原日期，排除 S4
 test("真实 BWIKI runtime 途径差量还原完整 S5 学习面，不回填撤销的旧途径", async () => {
   const base = JSON.parse(readFileSync("data/snapshots/current.json", "utf8"));
   const evidence = JSON.parse(readFileSync("data/reviewed/nrc-s5-20261101.json", "utf8"));
-  const full = applyS5Bwiki(withWebPreview(base), evidence);
-  const runtime = await buildS5BwikiRuntime({ previewLoader: { ssrLoadModule: async () => ({ withWebPreview, applyS5Bwiki }) } });
+  const full = applyS5Candymo(withWebPreview(applyS5Bwiki(withWebPreview(base), evidence)),
+    JSON.parse(readFileSync("data/reviewed/candymo-s5-20261101.json", "utf8")));
+  const runtime = await buildS5BwikiRuntime({ previewLoader: {
+    ssrLoadModule: async () => ({ withWebPreview, applyS5Bwiki, applyS5Candymo }),
+  } });
   expect(runtime.learnsets.some(pool => pool.acquisitionsPartial)).toBe(true);
   const season = withS5AnnouncementCatalog(loadCatalog(), runtime).seasons.find(({ id }) => id === "S5");
   expect(season.label).toBe("S5");
   const newSkills = season.skills.filter(skill => skill.introducedSeason === "S5");
-  expect(newSkills).toHaveLength(28);
+  expect(newSkills).toHaveLength(29);
+  const slash = newSkills.find(skill => skill.name === "圣龙狂斩");
+  expect(skillLearners(season, slash.id).map(spirit => spirit.fullName).sort()).toEqual(["阿布", "超能阿布"].sort());
   for (const skill of newSkills) {
     const learners = skillLearners(season, skill.id);
     expect(learners.length, skill.name).toBeGreaterThan(0);

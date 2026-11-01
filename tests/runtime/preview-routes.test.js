@@ -66,7 +66,8 @@ test("formal S5 builds keep CN routes and saved calculation versions while selec
   expect(resolveSeasonThemeId({ serverId: "global" })).toBe("s3");
   expect(getServerRelease("cn").dataVersion).toBe("s4-2026-09-10");
   const { POPULAR_CONFIG_COUNT } = await import("../../src/data/preset-metadata.js");
-  expect(POPULAR_CONFIG_COUNT).toBe(245);
+  const { buildS5PopularConfigLibrary } = await import("../../scripts/s5-preview-presets.mjs");
+  expect(POPULAR_CONFIG_COUNT).toBe(buildS5PopularConfigLibrary().entryCount);
 });
 
 test("formal CN build includes S5 data and presets without mounting the preview or Global entry", () => {

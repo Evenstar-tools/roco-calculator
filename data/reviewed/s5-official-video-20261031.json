@@ -452,8 +452,7 @@
         "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
         "seconds": 145.160284,
         "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0290.png"
-      },
-      "s5StatusEffectPending": "减益施加次数对应的永久威力增长尚未接入。"
+      }
     },
     {
       "id": "skill_preview_s5_vascular-restructure",
@@ -469,8 +468,7 @@
         "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
         "seconds": 147.204811,
         "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0294.png"
-      },
-      "s5StatusEffectPending": "累计回复生命阈值对应的能量回复尚未接入。"
+      }
     }
   ],
   "additionalSkills": [
@@ -520,8 +518,7 @@
         "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
         "seconds": 145.160284,
         "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0290.png"
-      },
-      "s5StatusEffectPending": "减益施加次数对应的永久威力增长尚未接入。"
+      }
     },
     {
       "id": "skill_preview_s5_vascular-restructure",
@@ -537,8 +534,7 @@
         "url": "https://www.bilibili.com/video/BV1SNxq6REfb/",
         "seconds": 147.204811,
         "frame": "_work/s5-official-video-20261031/damage-replay/dense/frame-0294.png"
-      },
-      "s5StatusEffectPending": "累计回复生命阈值对应的能量回复尚未接入。"
+      }
     }
   ],
   "learnsets": [
@@ -602,9 +598,7 @@
       "混合态": "随机减益结果尚未接入，请按实际结果调整。",
       "续杯": "减耗对应的额外双攻增益尚未接入。",
       "蛋壳": "应对攻击后的增益驱散尚未接入。",
-      "间歇泉": "自身减益层数对能耗的影响尚未接入。",
-      "恋恋不舍": "减益施加次数对应的永久威力增长尚未接入。",
-      "维管束重构": "累计回复生命阈值对应的能量回复尚未接入。"
+      "间歇泉": "自身减益层数对能耗的影响尚未接入。"
     }
   }
 }
