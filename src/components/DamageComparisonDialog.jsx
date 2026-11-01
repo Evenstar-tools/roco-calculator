@@ -4,6 +4,7 @@ import { CaretDown, CaretUp, DownloadSimple, MagnifyingGlass, SlidersHorizontal,
 import { useDamageComparison } from "../features/damage-comparison/useDamageComparison.js";
 import DamageRangeFilter from "./DamageRangeFilter.jsx";
 import { buildDamageComparisonReport, downloadDamageComparison } from "../features/damage-comparison/export.js";
+import { SpiritImage } from "./SpiritImage.jsx";
 
 const portrait = (spirit) => spirit?.asset?.localUrl ?? spirit?.imageUrl;
 const focusable = 'button:not([disabled]), input:not([disabled]), select:not([disabled]), [href]';
@@ -89,7 +90,7 @@ export default function DamageComparisonDialog({ snapshot, source, preferences, 
         <button type="button" aria-label={t("关闭承伤对比")} onClick={onClose}><X size={20} /></button>
       </div></header>
       <div className="dc-web-source">
-        {portrait(model.selection.spirit) ? <img alt="" src={portrait(model.selection.spirit)} /> : null}
+        {portrait(model.selection.spirit) ? <SpiritImage name={model.selection.spirit?.fullName} alt="" src={portrait(model.selection.spirit)} /> : null}
         <strong>{t(model.selection.spirit?.fullName)}</strong>
         <select aria-label={t("比较技能")} value={model.selection.index} onChange={(event) => model.setSelectedSkillIndex(Number(event.target.value))}>{model.selection.options.map(({ index, skill }) => <option key={index} value={index}>{t(skill.name)}</option>)}</select>
         <small>{t(model.scopeDescription)}</small>
@@ -120,7 +121,7 @@ export default function DamageComparisonDialog({ snapshot, source, preferences, 
           return <div key={row.spirit.id} className={`dc-web-item${expanded ? " is-expanded" : ""}`}>
             <button type="button" className="dc-web-row" aria-label={t("查看{v0}承伤详情", { v0: row.spirit.fullName })} aria-expanded={expanded} aria-controls={`damage-detail-${row.spirit.id}`} onClick={() => model.setExpanded(expanded ? null : row.spirit.id)}>
               <span className="dc-web-rank">{row.rank}</span>
-              <span className="dc-web-identity">{portrait(row.spirit) ? <img alt="" src={portrait(row.spirit)} loading="lazy" /> : null}<span><strong>{t(row.spirit.fullName)}{row.template.presetFallback ? <span className="dc-web-no-preset">{t("无预设")}</span> : null}</strong><small>{t(row.spirit.types?.map(typeName).join(" · "))}<TypeMultiplier value={row.result?.typeMultiplier} mobile /><span className="dc-web-mobile-damage">{t("伤害")}{" "}{row.damage} HP</span></small></span></span>
+              <span className="dc-web-identity">{portrait(row.spirit) ? <SpiritImage name={row.spirit.fullName} alt="" src={portrait(row.spirit)} loading="lazy" /> : null}<span><strong>{t(row.spirit.fullName)}{row.template.presetFallback ? <span className="dc-web-no-preset">{t("无预设")}</span> : null}</strong><small>{t(row.spirit.types?.map(typeName).join(" · "))}<TypeMultiplier value={row.result?.typeMultiplier} mobile /><span className="dc-web-mobile-damage">{t("伤害")}{" "}{row.damage} HP</span></small></span></span>
               <TypeMultiplier value={row.result?.typeMultiplier} />
               <span className="dc-web-damage">{row.damage}</span>
               <span className={`dc-web-score${row.lethal ? " is-ko" : row.percent < 50 ? " is-low" : " is-mid"}`}><span className="dc-web-track" role="img" aria-label={breakdown} title={breakdown}>{freezePercent > 0 ? <span className="dc-web-freeze" style={{ width: `${freezePercent}%` }} /> : null}<span style={{ width: `${Math.min(100 - freezePercent, damagePercent)}%` }} /></span><span><strong>{row.percent.toFixed(1)}%</strong>{freezePercent > 0 ? <small className="dc-web-freeze-breakdown"><span>{t("伤害{v0}%", { v0: damagePercent.toFixed(1) })}</span><span>{t("＋冻结")}{freezePercent}%</span></small> : null}<small>{row.freezeLethal ? t("冻结击倒") : row.lethal ? t("本次可击倒") : t("剩余 {v0} HP", { v0: row.remainingHp })}</small></span>{expanded ? <CaretUp size={16} /> : <CaretDown size={16} />}</span>
