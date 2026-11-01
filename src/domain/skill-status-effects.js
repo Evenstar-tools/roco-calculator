@@ -41,6 +41,15 @@ const STATUS_EFFECTS = Object.freeze({
   矿物置换: {
     operations: context => ({ ownMagicalAttackStageAdd: 12 + integerInput(context.sproutStacks, 0, 99, 0) }),
   },
+  分光: {
+    inputs: [numberInput("teamDistinctTypeCount", "队伍不同系别数", 0, 18, 0)],
+    ownAttackStat: "magical",
+    resolve: context => ({ ownAttack: Number(context.teamDistinctTypeCount) > 0
+      ? 2 + integerInput(context.teamDistinctTypeCount, 1, 18, 1) : 0 }),
+  },
+  极限撕裂: {
+    resolve: context => ({ ownAttack: Number(context.attackerHpPercent ?? 100) > 50 ? -5 : 0 }),
+  },
   续杯: {
     resolve: context => ({ ownAttack: 5 * (1 + Math.max(0,
       integerInput(context.skillBaseCost, 0, 99, 2) - integerInput(context.effectiveSkillCost, 0, 99, 2))) }),
@@ -86,7 +95,7 @@ const STATUS_EFFECTS = Object.freeze({
     },
   },
   惊鸿一瞥: { ownHitCountAdd: 1 },
-  仰望夜空: { ownAttack: 7, ownDefense: 7 },
+  仰望夜空: { ownAttack: 7, ownAttackStat: "magical", ownDefense: 7 },
   重组: {
     inputs: [booleanInput("counterDefenseSucceeded", "应对防御成功")],
     operations(context) {
@@ -112,8 +121,8 @@ const STATUS_EFFECTS = Object.freeze({
       };
     },
   },
-  力量增效: { ownAttack: 10 },
-  魔法增效: { ownAttack: 7 },
+  力量增效: { ownAttack: 10, ownAttackStat: "physical" },
+  魔法增效: { ownAttack: 7, ownAttackStat: "magical" },
   快速移动: {
     inputs: [booleanInput("counterDefenseSucceeded", "应对防御成功")],
     resolve(context) {
@@ -122,9 +131,10 @@ const STATUS_EFFECTS = Object.freeze({
       };
     },
   },
-  咆哮: { targetAttack: -6 },
+  咆哮: { targetAttack: -6, targetAttackStat: "physical" },
   锐利眼神: { targetDefense: -12 },
   预备势: {
+    ownAttackStat: "physical",
     conditional: {
       key: "counterDefenseSucceeded",
       targetDefense: -8,
@@ -139,7 +149,7 @@ const STATUS_EFFECTS = Object.freeze({
   },
   加固: { ownDefense: 14 },
   鼓劲: { ownDefense: 17 },
-  三连破: { defaultHitCount: 3, ownAttackPerHit: 3 },
+  三连破: { defaultHitCount: 3, ownAttackPerHit: 3, ownAttackStat: "physical" },
   嗜痛: {
     inputs: [
       booleanInput("defenseCounterSucceeded", "防御应对成功"),
@@ -149,17 +159,17 @@ const STATUS_EFFECTS = Object.freeze({
     requiresCounter: true,
     stackKey: "incomingHitCount",
   },
-  缓一缓: { ownAttack: 1, ownDefense: 1 },
-  氧输送: { ownAttack: 7 },
+  缓一缓: { ownAttack: 1, ownAttackStat: "magical", ownDefense: 1 },
+  氧输送: { ownAttack: 7, ownAttackStat: "magical" },
   丰饶: { ownAttack: 14 },
-  花炮: { defaultHitCount: 2, ownAttackPerHit: 6 },
+  花炮: { defaultHitCount: 2, ownAttackPerHit: 6, ownAttackStat: "magical" },
   纤维化: {
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     ownDefense: 7,
     requiresCounter: true,
   },
   怒火: { ownAttack: 12, ownDefense: -4 },
-  润泽: { ownAttack: 19 },
+  润泽: { ownAttack: 19, ownAttackStat: "magical" },
   水泡盾: {
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     operations: context => ({ ownMagicalAttackStageAdd: 7 + integerInput(context.sproutStacks, 0, 99, 0) }),
@@ -188,12 +198,14 @@ const STATUS_EFFECTS = Object.freeze({
     inputs: [booleanInput("counterDefenseSucceeded", "应对防御成功")],
   },
   刺盾: {
+    targetAttackStat: "physical",
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     requiresCounter: true,
     targetAttack: -7,
   },
   钧势: { ownDefense: 14, ownSpeedFlat: -30 },
   不动如山: {
+    ownAttackStat: "physical",
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     ownAttack: 5,
     requiresCounter: true,
@@ -220,8 +232,9 @@ const STATUS_EFFECTS = Object.freeze({
     },
     inputs: [booleanInput("counterDefenseSucceeded", "应对防御成功")],
   },
-  电离爆破: { targetAttack: -2 },
+  电离爆破: { targetAttack: -2, targetAttackStat: "magical" },
   破绽: {
+    ownAttackStat: "physical",
     conditional: {
       key: "counterDefenseSucceeded",
       ownAttack: 7,
@@ -230,9 +243,10 @@ const STATUS_EFFECTS = Object.freeze({
     targetDefense: -7,
   },
   破防: { targetDefense: -7 },
-  气沉丹田: { ownAttack: 13 },
+  气沉丹田: { ownAttack: 13, ownAttackStat: "physical" },
   耍赖: { ownAttack: 1 },
   嘲弄: {
+    ownAttackStat: "magical",
     inputs: [booleanInput("enemySwitchedThisTurn", "敌方本回合更换精灵")],
     resolve(context) {
       return {
@@ -269,6 +283,7 @@ const STATUS_EFFECTS = Object.freeze({
     },
   },
   蒸汽进行曲: {
+    ownAttackStat: "physical",
     inputs: [
       booleanInput("applySpeedBoost", "速度+60"),
       booleanInput("applyAttackBoost", "物攻+90%"),
@@ -292,6 +307,7 @@ const STATUS_EFFECTS = Object.freeze({
     },
   },
   焚尽: {
+    ownAttackStat: "physical",
     inputs: [numberInput("dispelledMarkStacks", "驱散印记层数", 0, 99, 0)],
     resolve(context) {
       const stacks = integerInput(context.dispelledMarkStacks, 0, 99);
@@ -299,6 +315,7 @@ const STATUS_EFFECTS = Object.freeze({
     },
   },
   焚毁: {
+    ownAttackStat: "physical",
     inputs: [numberInput("dispelledMarkStacks", "驱散印记层数", 0, 99, 0)],
     resolve(context) {
       const stacks = integerInput(context.dispelledMarkStacks, 0, 99);
@@ -306,6 +323,7 @@ const STATUS_EFFECTS = Object.freeze({
     },
   },
   啮合传递: {
+    ownAttackStat: "physical",
     inputs: [numberInput("skillSlot", "技能栏位", 1, 4, 1)],
     resolve(context) {
       const slot = integerInput(context.skillSlot, 1, 4, 1);
@@ -316,6 +334,7 @@ const STATUS_EFFECTS = Object.freeze({
     },
   },
   泥浆铠甲: {
+    ownAttackStat: "physical",
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
     operations(context) {
       return {
@@ -339,6 +358,7 @@ const STATUS_EFFECTS = Object.freeze({
     },
   },
   以毒攻毒: {
+    ownAttackStat: "magical",
     inputs: [numberInput("poisonStacks", "中毒层数", 0, 99, 0)],
     resolve(context) {
       return {
@@ -367,6 +387,7 @@ const STATUS_EFFECTS = Object.freeze({
     },
   },
   马步: {
+    ownAttackStat: "physical",
     inputs: [
       booleanInput("applyAttackBoost", "选择物攻+150%"),
       numberInput("attackerHpPercent", "自身生命百分比", 0, 100, 100),
@@ -478,6 +499,7 @@ const STATUS_EFFECTS = Object.freeze({
     },
   },
   崩拳: {
+    ownAttackStat: "physical",
     inputs: [booleanInput("counterTriggered", "触发应对状态")],
     resolve(context) {
       return { ownAttack: context.counterTriggered === true ? 10 : 0 };
@@ -485,12 +507,14 @@ const STATUS_EFFECTS = Object.freeze({
   },
   超导加速: { ownSpeedFlat: 30 },
   坍缩: {
+    ownAttackStat: "magical",
     inputs: [booleanInput("defeatedEnemy", "本次击败敌方")],
     resolve(context) {
       return { ownAttack: context.defeatedEnemy === true ? 7 : 0 };
     },
   },
   跌落: {
+    ownAttackStat: "physical",
     inputs: [booleanInput("counterTriggered", "触发应对状态")],
     resolve(context) {
       return { ownAttack: context.counterTriggered === true ? 5 : -5 };
@@ -587,9 +611,17 @@ const STATUS_DELTA_LABELS = Object.freeze([
   ["targetSpeedFlat", "敌方速度", ""],
 ]);
 
-function describeDeltas(deltas = {}) {
-  const labels = STATUS_DELTA_LABELS.flatMap(([key, label, unit]) => {
-    const value = Number(deltas[key] ?? 0);
+const ATTACK_OPERATION_LABELS = Object.freeze([
+  ["ownPhysicalAttackStageAdd", "己方物攻", "层"],
+  ["ownMagicalAttackStageAdd", "己方魔攻", "层"],
+  ["targetPhysicalAttackStageAdd", "敌方物攻", "层"],
+  ["targetMagicalAttackStageAdd", "敌方魔攻", "层"],
+]);
+
+function describeDeltas(deltas = {}, operations = {}) {
+  const values = { ...deltas, ...operations };
+  const labels = [...STATUS_DELTA_LABELS, ...ATTACK_OPERATION_LABELS].flatMap(([key, label, unit]) => {
+    const value = Number(values[key] ?? 0);
     if (!Number.isFinite(value) || value === 0) return [];
     return [`${label} ${value > 0 ? "+" : ""}${value}${unit}`];
   });
@@ -626,8 +658,8 @@ export function getStatusSkillTriggerPreview(skill, {
       })
     : unitResolution;
   const valveEffect = skill.name === "减压阀" && unitResolution?.applied ? "被动威力+20" : "";
-  const unitEffect = valveEffect || describeDeltas(unitResolution?.deltas);
-  const cumulativeEffect = valveEffect || describeDeltas(totalResolution?.deltas);
+  const unitEffect = valveEffect || describeDeltas(unitResolution?.deltas, unitResolution?.operations);
+  const cumulativeEffect = valveEffect || describeDeltas(totalResolution?.deltas, totalResolution?.operations);
   return {
     count,
     cumulativeEffect: cumulativeEffect || "待满足触发条件",
@@ -718,8 +750,12 @@ function stageDeltas(effect, multiplier, context) {
 }
 
 export function getSkillStatusEffect(skill) {
-  if (usesS3MidseasonRules(skill) && ["筑梦", "热桥", "地缚灵", "画龙点睛", "矿物置换", "续杯", "咒火"].includes(skill?.name)) return null;
+  if (usesS3MidseasonRules(skill) && ["筑梦", "热桥", "地缚灵", "画龙点睛", "矿物置换", "分光", "续杯", "咒火"].includes(skill?.name)) return null;
   const effect = STATUS_EFFECTS[skill?.name] ?? null;
+  // 焚毁在国服 S5 改为魔攻，历史/国际服仍为物攻；以该实体的当期明确文案选择。
+  if (skill?.name === "焚毁" && /获得魔攻/u.test(skill.description ?? "")) {
+    return { ...effect, ownAttackStat: "magical" };
+  }
   if (usesS3MidseasonRules(skill) && skill.name === "暗箱操作") return {
     ...effect, resolve: (context) => context.defenseCounterSucceeded === true
       ? { targetAttack: -10, targetDefense: -10 } : { ownAttack: -10, ownDefense: -10 },
@@ -863,6 +899,15 @@ export function resolveSkillStatusActivation(skill, context = {}) {
     : resolvedDeltas;
   const operations =
     typeof effect.operations === "function" ? effect.operations(context) : {};
+  // 手动层数始终同时影响双攻；明确单攻的技能在条件、萌芽和重复次数结算后单独落账。
+  for (const side of ["own", "target"]) {
+    const stat = effect[`${side}AttackStat`];
+    const field = `${side}Attack`;
+    if (!["physical", "magical"].includes(stat) || deltas[field] === 0) continue;
+    const operation = `${side}${stat === "physical" ? "Physical" : "Magical"}AttackStageAdd`;
+    operations[operation] = Number(operations[operation] ?? 0) + deltas[field];
+    deltas[field] = 0;
+  }
   if (defenseReductionPercent !== null) {
     operations.defenseReductionPercent = defenseReductionPercent;
   }
@@ -885,6 +930,8 @@ export function resolveSkillStatusActivation(skill, context = {}) {
     reason:
       applied
         ? null
+        : skill?.name === "分光"
+          ? "请填写队伍不同系别数（1–18）"
         : skill?.name === "马步" && context.applyAttackBoost === true
           ? "自身生命需高于80%"
           : "该技能当前没有可应用的能力或威力变化",

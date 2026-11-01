@@ -19,7 +19,12 @@ test.each(["碎冰冰", "极寒领域", "鸩毒", "过敏原", "以毒攻毒", "
   expect(negativeStatusInputUpdate(state, "attacker", skill, input.id, input.type === "boolean" ? true : 50))
     .toEqual({ type: "negative-status/update", side: "defender", key, value: input.type === "boolean" ? 3 : 50 });
   expect(negativeStatusInputUpdate(state, "defender", skill, input.contextKey, input.type === "boolean" ? false : 0)?.value).toBe(0);
-  if (name === "以毒攻毒") expect(resolveSkillStatusActivation(skill, linked).deltas.ownAttack).toBe(9);
+  if (name === "以毒攻毒") {
+    const result = resolveSkillStatusActivation(skill, linked);
+    expect(result.operations.ownMagicalAttackStageAdd).toBe(9);
+    expect(result.operations.ownPhysicalAttackStageAdd ?? 0).toBe(0);
+    expect(result.deltas.ownAttack).toBe(0);
+  }
   if (name === "腐化") expect(resolveSkillStatusActivation(skill, linked).deltas.targetAttack).toBe(-9);
   if (name === "不可接触") expect(resolveSkillStatusActivation(skill, linked).operations.defenseReductionPercent).toBe(80);
   state.calculationOptions.includeNegativeStatusSettlement = false;

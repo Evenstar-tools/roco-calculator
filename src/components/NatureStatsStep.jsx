@@ -25,6 +25,7 @@ export function RepeatLevelButton({
   delta,
   disabled,
   onChange,
+  title,
   value,
 }) {
   const timeoutRef = useRef(null);
@@ -85,6 +86,7 @@ export function RepeatLevelButton({
       onPointerDown={handlePointerDown}
       onPointerLeave={stopRepeat}
       onPointerUp={stopRepeat}
+      title={title}
       type="button"
     >
       {children}
@@ -182,14 +184,16 @@ function SideStats({
         const levelHint = bonusStage !== magicalBonusStage
           ? level.role === "defense"
             ? `${t("手动微调")} ${level.stage} · ${physicalLabel} ${abilityStageLabel(displayedStage, t)} · ${magicalLabel} ${abilityStageLabel(magicalStage, t)}`
-            : t("手调 {stage}层（双攻） · 特性：物攻 {physical}层、魔攻 {magical}层", { stage: level.stage, physical: `${bonusStage > 0 ? "+" : ""}${bonusStage}`, magical: `${magicalBonusStage > 0 ? "+" : ""}${magicalBonusStage}` })
+            : t("共同 {stage}层（双攻） · 自动效果：物攻 {physical}层、魔攻 {magical}层", { stage: level.stage, physical: `${bonusStage > 0 ? "+" : ""}${bonusStage}`, magical: `${magicalBonusStage > 0 ? "+" : ""}${magicalBonusStage}` })
           : bonusStage
-            ? t("手调 {stage}层 · 特性 {bonus}层；{hint}", { stage: level.stage, bonus: `${bonusStage > 0 ? "+" : ""}${bonusStage}`, hint: abilityLevelHint(abilityAdjustedStat(1, displayedStage), t) })
+            ? t("共同 {stage}层 · 自动效果 {bonus}层；{hint}", { stage: level.stage, bonus: `${bonusStage > 0 ? "+" : ""}${bonusStage}`, hint: abilityLevelHint(abilityAdjustedStat(1, displayedStage), t) })
             : abilityLevelHint(level.multiplier, t);
         const changeLevel = (nextStage) =>
           multipleLevels
             ? onLevelChange(level.role, nextStage)
             : onLevelChange(nextStage);
+        const manualHint = level.role === "attack" || (!level.role && label === "攻击方")
+          ? t("同时调整物攻和魔攻") : undefined;
         const controlLabel = multipleLevels
           ? t("{label}{ability}", { label: translatedLabel, ability: t(level.label) })
           : t("{label}等级", { label: translatedLabel });
@@ -202,6 +206,7 @@ function SideStats({
                 delta={-1}
                 disabled={level.stage <= -99}
                 onChange={changeLevel}
+                title={manualHint}
                 value={level.stage}
               >
                 <Minus aria-hidden="true" size={14} />
@@ -220,6 +225,7 @@ function SideStats({
                 delta={1}
                 disabled={level.stage >= 99}
                 onChange={changeLevel}
+                title={manualHint}
                 value={level.stage}
               >
                 <Plus aria-hidden="true" size={14} />

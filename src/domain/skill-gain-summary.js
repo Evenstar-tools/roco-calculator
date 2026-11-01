@@ -65,6 +65,7 @@ function effectLabel(source, opposite) {
     fixedPowerAddsBySlot: `${prefix}第${source.slot}技能威力`,
     skillPowerPercentAddsBySlot: `${prefix}第${source.slot}技能威力`,
     attackLevelStage: `${prefix}攻击`,
+    physicalAttackLevelStageAdd: `${prefix}物攻`,
     magicalAttackLevelStageAdd: `${prefix}魔攻`,
     defenseLevelStage: opposite ? "防御" : "敌方防御",
     magicalDefenseLevelStageAdd: opposite ? "魔防" : "敌方魔防",

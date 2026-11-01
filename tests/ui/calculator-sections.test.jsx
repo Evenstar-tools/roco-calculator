@@ -962,7 +962,7 @@ test("ability level displays trait stages while buttons edit only the manual val
   });
   const { rerender } = render(<NatureStatsStep {...common} attacker={side(10)} />);
   const attackerSide = screen.getByRole("group", { name: "攻击方能力" });
-  expect(within(attackerSide).getByText("10层 · +100%")).toHaveAttribute("title", "手调 0层 · 特性 +10层；原值的 200%");
+  expect(within(attackerSide).getByText("10层 · +100%")).toHaveAttribute("title", "共同 0层 · 自动效果 +10层；原值的 200%");
   await user.click(within(attackerSide).getByRole("button", { name: "攻击方等级加一" }));
   expect(onAttackerLevelChange).toHaveBeenLastCalledWith(1);
   await user.click(within(attackerSide).getByRole("button", { name: "攻击方等级减一" }));
@@ -1005,6 +1005,9 @@ test("separate attack bonuses share one manual control and return to one line wh
   expect(within(attackerSide).getByText("物攻 0层 · 0%")).toBeVisible();
   expect(within(attackerSide).getByText("魔攻 4层 · +40%")).toBeVisible();
   expect(within(attackerSide).getAllByRole("button", { name: /等级[加减]一/ })).toHaveLength(2);
+  expect(within(attackerSide).getAllByTitle("同时调整物攻和魔攻")).toHaveLength(2);
+  expect(within(attackerSide).getByTitle("共同 0层（双攻） · 自动效果：物攻 0层、魔攻 +4层"))
+    .toHaveTextContent("魔攻 4层 · +40%");
   await user.click(within(attackerSide).getByRole("button", { name: "攻击方等级加一" }));
   expect(onAttackerLevelChange).toHaveBeenLastCalledWith(1);
   // Rerender the unchanged manual value, as a second independent edit.

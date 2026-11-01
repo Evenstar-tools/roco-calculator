@@ -54,12 +54,12 @@ test.each([
   const { state, direction, view, activate } = setup(spirit, "蒸汽进行曲", { applyAttackBoost: true, choiceTraitTriggered: triggered });
   const next = activate(state);
   expect(next.applied).toBe(true);
-  expect(next.state.directions[direction].overrides).toMatchObject({ attackLevelStage: attack, attackerSpeedFlat: speed });
+  expect(next.state.directions[direction].overrides).toMatchObject({ attackLevelStage: 0, physicalAttackLevelStageAdd: attack, attackerSpeedFlat: speed });
   const result = view(next.state)[direction].results[0];
-  expect(result.usageSummary).toMatchObject({ count: 1, appliedEffects: expect.arrayContaining([`攻击+${attack}层`]) });
+  expect(result.usageSummary).toMatchObject({ count: 1, appliedEffects: expect.arrayContaining([`物攻+${attack}层`]) });
   expect(result.gainSummary).toBe("蒸汽进行曲×1");
   const twice = activate(next.state);
-  expect(twice.state.directions[direction].overrides.attackLevelStage).toBe(attack * 2);
+  expect(twice.state.directions[direction].overrides.physicalAttackLevelStageAdd).toBe(attack * 2);
   expect(view(twice.state)[direction].results[0].gainSummary).toBe("蒸汽进行曲×2");
 });
 
@@ -90,8 +90,8 @@ test.each(["加尔", "黑化加尔"])("%s 切换分支、关闭特性、手动�
 test.each([
   ["加尔", "野火", { applyDefenseReduction: true }, "forward", "defenseLevelStage", -9],
   ["黑化加尔", "野火", { applyDefenseReduction: true }, "forward", "defenseLevelStage", -18],
-  ["加尔", "马步", { applyAttackBoost: true }, "forward", "attackLevelStage", 15],
-  ["黑化加尔", "马步", { applyAttackBoost: true }, "forward", "attackLevelStage", 30],
+  ["加尔", "马步", { applyAttackBoost: true }, "forward", "physicalAttackLevelStageAdd", 15],
+  ["黑化加尔", "马步", { applyAttackBoost: true }, "forward", "physicalAttackLevelStageAdd", 30],
   ["加尔", "超声波", {}, "forward", "fixedPowerAdd", 40],
   ["黑化加尔", "超声波", {}, "forward", "fixedPowerAdd", 40],
   ["黑化加尔", "沙石阵", {}, "reverse", "defenseLevelStage", 18],

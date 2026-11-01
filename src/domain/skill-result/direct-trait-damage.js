@@ -57,7 +57,8 @@ export function calculateDirectTraitDamageResult({
     finiteNumber(directionOverrides.defenseLevelStage, direction.defenseLevelStage) ??
     0;
   const totalAttackLevelStage =
-    attackLevelStage + traitResolution.attackLevelBonus + dragonBiteAttackLevelBonus(sourceMarks);
+    attackLevelStage + (finiteNumber(directionOverrides.physicalAttackLevelStageAdd) ?? 0) +
+    traitResolution.attackLevelBonus + dragonBiteAttackLevelBonus(sourceMarks);
   const totalDefenseLevelStage =
     defenseLevelStage + traitResolution.defenseLevelBonus;
   const attackDefenseLevelMultiplier = abilityLevelMultiplier(

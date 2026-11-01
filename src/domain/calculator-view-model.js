@@ -259,9 +259,10 @@ function previewPanelForSide(snapshot, state, sideKey, panelStats) {
   const opponentCost = carriedSkillTotalCost(state.sides[opponentKey], state.mode,
     getSnapshotIndexes(snapshot).skills, state.directions[opponentKey === "attacker" ? "forward" : "reverse"].overrides,
     { requireKnown: true });
-  let physical = 0, magical = Number(outgoing.overrides.magicalAttackLevelStageAdd ?? 0),
+  let physical = Number(outgoing.overrides.physicalAttackLevelStageAdd ?? 0),
+    magical = Number(outgoing.overrides.magicalAttackLevelStageAdd ?? 0),
     physicalDefense = 0, magicalDefense = 0, speedFlat = 0, speedStage = 0;
-  let hasPreviewTrait = magical !== 0;
+  let hasPreviewTrait = physical !== 0 || magical !== 0;
   const ownTraits = getEffectiveTraits(snapshot, { ...side, spirit: getSpirit(snapshot, side) });
   const opponent = state.sides[opponentKey];
   const opponentDiceTraits = getEffectiveTraits(snapshot, { ...opponent, spirit: getSpirit(snapshot, opponent) })

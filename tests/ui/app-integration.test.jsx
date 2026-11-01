@@ -1955,7 +1955,8 @@ test("uses a selected status skill with the current sprout bonus only after its 
 
   expect(within(attackSide).getByText("0层 · 0%")).toBeVisible();
   await user.click(screen.getByText("自己获得魔攻+70%。"));
-  expect(within(attackSide).getByText("8层 · +80%")).toBeVisible();
+  expect(within(attackSide).getByText("物攻 0层 · 0%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 8层 · +80%")).toBeVisible();
 });
 
 test("Dazzling shows seven slots and Refraction applies unique carried types per click", async () => {
@@ -2333,7 +2334,7 @@ test("Erosion adds poison stacks to attack and status combos without storing the
   expect(within(attackSide).getByText("30层 · +300%")).toBeVisible();
 });
 
-test("shows applied attack levels in both attack panel values", async () => {
+test("shows applied attack levels only in the named magical attack panel", async () => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -2363,7 +2364,7 @@ test("shows applied attack levels in both attack panel values", async () => {
 
   expect(
     Number(physicalAttackTile.querySelector(".stat-tile__panel").textContent),
-  ).toBe(Math.floor(physicalBefore * 1.7));
+  ).toBe(physicalBefore);
   expect(
     Number(magicalAttackTile.querySelector(".stat-tile__panel").textContent),
   ).toBe(Math.floor(magicalBefore * 1.7));
@@ -2388,7 +2389,8 @@ test("applies Prepared Stance attack gain and only applies its counter debuff wh
   await user.click(screen.getByRole("option", { name: /预备势/ }));
 
   await user.click(screen.getByText("自身物攻+80%；应对防御：对方物防-80%。"));
-  expect(within(attackSide).getByText("8层 · +80%")).toBeVisible();
+  expect(within(attackSide).getByText("物攻 8层 · +80%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 0层 · 0%")).toBeVisible();
   expect(within(defenseSide).getByText("0层 · 0%")).toBeVisible();
 
   await user.click(
@@ -2397,7 +2399,8 @@ test("applies Prepared Stance attack gain and only applies its counter debuff wh
     }),
   );
   await user.click(screen.getByText("自身物攻+80%；应对防御：对方物防-80%。"));
-  expect(within(attackSide).getByText("16层 · +160%")).toBeVisible();
+  expect(within(attackSide).getByText("物攻 16层 · +160%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 0层 · 0%")).toBeVisible();
   expect(within(defenseSide).getByText("-8层 · -80%")).toBeVisible();
 });
 
@@ -2526,8 +2529,9 @@ test("applies the same status-skill interaction to the defense-side loadout", as
   });
   await user.click(within(selectedRow).getByText("自己获得魔攻+70%。"));
 
-  expect(within(defenseSide).getByText("7层 · +70%")).toBeVisible();
-  expect(within(selectedRow).getByText(/累计状态：已使用×1.*攻击\+7层/)).toBeVisible();
+  expect(within(defenseSide).getByText("物攻 0层 · 0%")).toBeVisible();
+  expect(within(defenseSide).getByText("魔攻 7层 · +70%")).toBeVisible();
+  expect(within(selectedRow).getByText(/累计状态：已使用×1.*魔攻\+7层/)).toBeVisible();
   expect(screen.getByRole("region", { name: "当前非默认高级条件" })).toHaveTextContent("魔法增效×1");
 });
 
@@ -2556,7 +2560,8 @@ test("applies both Steam March branches to attack level and the displayed speed 
   );
   await user.click(screen.getByText("选择：自己获得速度+60或物攻+90%。"));
 
-  expect(within(attackSide).getByText("9层 · +90%")).toBeVisible();
+  expect(within(attackSide).getByText("物攻 9层 · +90%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 0层 · 0%")).toBeVisible();
   expect(
     Number(speedTile.querySelector(".stat-tile__panel").textContent),
   ).toBe(speedBefore + 60);
@@ -2598,7 +2603,8 @@ test("doubles all existing positive own levels after Mud Armor counters", async 
     screen.getByText("自己获得物攻、物防+60%；防御应对成功时增益翻倍。"),
   );
 
-  expect(within(attackSide).getByText("26层 · +260%")).toBeVisible();
+  expect(within(attackSide).getByText("物攻 12层 · +120%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 14层 · +140%")).toBeVisible();
   expect(
     Number(ownPhysicalDefense.querySelector(".stat-tile__panel").textContent),
   ).toBe(Math.floor(physicalDefenseBefore * 2.2));
@@ -2926,7 +2932,8 @@ test("uses the live attacker health percentage when activating Horse Stance", as
   await user.clear(health);
   await user.type(health, "81");
   await user.click(screen.getByText("生命高于80%时，选择：自己获得物攻+150%。"));
-  expect(within(attackSide).getByText("15层 · +150%")).toBeVisible();
+  expect(within(attackSide).getByText("物攻 15层 · +150%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 0层 · 0%")).toBeVisible();
 });
 
 test("passes Gal's choice trait into Steam March activation", async () => {
@@ -2962,7 +2969,8 @@ test("passes Gal's choice trait into Steam March activation", async () => {
   );
   await user.click(screen.getByText("选择：自己获得速度+60或物攻+90%。"));
 
-  expect(within(attackSide).getByText("9层 · +90%")).toBeVisible();
+  expect(within(attackSide).getByText("物攻 9层 · +90%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 0层 · 0%")).toBeVisible();
   expect(
     Number(speedTile.querySelector(".stat-tile__panel").textContent),
   ).toBe(speedBefore + 60);
@@ -3808,9 +3816,11 @@ test.each(["four", "single"])("%s 混合正面技能与特性异常仍可重复�
   const attackSide = within(screen.getByRole("region", { name: "性格配置" })).getByRole("group", { name: "攻击方能力" });
   const use = () => screen.getByRole("button", { name: mode === "single" ? "使用技能" : "攻击方技能1使用技能", exact: true });
   await user.click(use());
-  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
+  expect(within(attackSide).getByText("物攻 0层 · 0%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 7层 · +70%")).toBeVisible();
   await user.click(use());
-  expect(within(attackSide).getByText("14层 · +140%")).toBeVisible();
+  expect(within(attackSide).getByText("物攻 0层 · 0%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 14层 · +140%")).toBeVisible();
   expect(screen.getByRole("region", { name: "负面状态结算" })).toHaveTextContent("灼烧 ×6");
   expect(screen.queryByRole("button", { name: /取消使用/ })).not.toBeInTheDocument();
 });
