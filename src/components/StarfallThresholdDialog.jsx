@@ -10,6 +10,7 @@ import {
 import { applyStarfallThreshold } from "../state/starfall-thresholds.js";
 import { useToolLocale } from "../i18n/useToolLocale.js";
 import { useCalculatorLocale } from "../i18n/calculator-text.js";
+import { SpiritImage } from "./SpiritImage.jsx";
 
 const portrait = (spirit) => spirit?.asset?.localUrl ?? spirit?.imageUrl;
 const clampStacks = (value) => Math.min(99, Math.max(0, Math.floor(Number(value) || 0)));
@@ -72,7 +73,7 @@ export default function StarfallThresholdDialog({ snapshot, source, onClose, onA
     <section ref={dialogRef} className="starfall-dialog" role="dialog" aria-modal="true" aria-label={t("星陨斩杀线")}>
       <header className="starfall-heading"><h2>{t("星陨斩杀线")}</h2><button type="button" aria-label={t("关闭星陨斩杀线")} onClick={onClose}><X size={20} /></button></header>
       <div className="starfall-matchup">
-        <div className="starfall-source">{portrait(selection.spirit) ? <img alt="" src={portrait(selection.spirit)} /> : null}<strong>{entityName("spirit", selection.spirit)}</strong>
+        <div className="starfall-source">{portrait(selection.spirit) ? <SpiritImage name={selection.spirit?.fullName} alt="" src={portrait(selection.spirit)} /> : null}<strong>{entityName("spirit", selection.spirit)}</strong>
           <select aria-label={t("星陨计算技能")} value={selectedSkillIndex} onChange={(event) => { setSelectedSkillIndex(Number(event.target.value)); setExpanded(null); }}>
             {selection.options.map(({ index, skill }) => <option key={index} value={index}>{entityName("skill", skill)}</option>)}
           </select><span>→</span><strong>{entityName("spirit", selection.targetSpirit)}</strong>
@@ -101,7 +102,7 @@ export default function StarfallThresholdDialog({ snapshot, source, onClose, onA
         <div className="starfall-columns" aria-hidden="true"><span>{t("精灵")}</span>{STARFALL_TEMPLATES.map((template) => <span key={template.id}>{t(template.label)}<small>{t(templateDetails[template.id])}</small></span>)}<span /></div>
         {rows.slice(0, limit).map((row) => <div className="starfall-item" key={row.spirit.id} data-current={row.spirit.id === selection.targetSpirit?.id || undefined}>
           <div className="starfall-row">
-            <div className="starfall-identity">{portrait(row.spirit) ? <img alt="" src={portrait(row.spirit)} loading="lazy" /> : null}<span><strong>{entityName("spirit", row.spirit)}</strong>{row.spirit.id === selection.targetSpirit?.id ? <small>{t("当前防守方")}</small> : <small>{row.spirit.types?.map(typeName).join(" · ")}</small>}</span></div>
+            <div className="starfall-identity">{portrait(row.spirit) ? <SpiritImage name={row.spirit.fullName} alt="" src={portrait(row.spirit)} loading="lazy" /> : null}<span><strong>{entityName("spirit", row.spirit)}</strong>{row.spirit.id === selection.targetSpirit?.id ? <small>{t("当前防守方")}</small> : <small>{row.spirit.types?.map(typeName).join(" · ")}</small>}</span></div>
             {row.templates.map((value) => <div className="starfall-value" key={value.templateId} data-status={value.status} title={t(value.reason || (value.status === "unreachable" ? "0–99 层内无法斩杀" : ""))}><small>{t(templateLabels[value.templateId])}</small><strong>{thresholdText(value, t)}</strong></div>)}
             <button type="button" className="starfall-choose" aria-label={t("选择{name}培养", { name: entityName("spirit", row.spirit) })} aria-expanded={expanded === row.spirit.id} onClick={() => setExpanded(expanded === row.spirit.id ? null : row.spirit.id)}>{t("选培养")}</button>
           </div>
