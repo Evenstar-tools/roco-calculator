@@ -145,9 +145,12 @@ const RankingsPanel = lazy(() => import("./components/RankingsPanel.jsx"));
 const DamageComparisonDialog = lazy(() => import("./components/DamageComparisonDialog.jsx"));
 const StarfallThresholdDialog = lazy(() => import("./components/StarfallThresholdDialog.jsx"));
 const DeerPage = lazy(() => import("./features/deer/DeerPage.jsx"));
-const preloadSkillQuery = (serverId) => {
+const preloadSkillQuery = (serverId, snapshot, locale) => {
   void loadSkillQueryPanel().catch(() => {});
-  void import("./features/skill-query/load-catalog.js").then(({ loadSkillCatalog }) => loadSkillCatalog(serverId)).catch(() => {});
+  void Promise.all([
+    import("./features/skill-query/load-catalog.js").then(({ loadSkillCatalog }) => loadSkillCatalog(serverId)),
+    import("./features/skill-query/prepare-catalog.js"),
+  ]).then(([catalog, { prepareSkillQueryCatalog }]) => prepareSkillQueryCatalog(catalog, snapshot, serverId, locale)).catch(() => {});
 };
 
 function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlobal, active }) {
@@ -164,6 +167,14 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   const [transmissionOpen, setTransmissionOpen] = useState(false);
   const [typeQueryOpen, setTypeQueryOpen] = useState(false);
   const [queryTypes, setQueryTypes] = useState([]);
+  const typeQueryReturnView = useRef(null);
+  const returnToTypeQuery = () => { setSkillQueryOpen(false); setTypeQueryOpen(true); };
+  const openTypeSpirit = (spiritId, view) => {
+    preloadSkillQuery(serverId, snapshot, locale);
+    typeQueryReturnView.current = view;
+    setTypeQueryOpen(false);
+    setSkillQueryOpen({ spiritId, from: "types" });
+  };
   const [rankingKind, setRankingKind] = useState(null);
   const [comparisonSource, setComparisonSource] = useState(null);
   const [starfallSource, setStarfallSource] = useState(null);
@@ -2441,7 +2452,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         menuOpen={overlays.menu.open}
         onMenuOpen={() => overlays.menu.setOpen((open) => !open)}
         toolbox={{
-          onOpen: () => { overlays.menu.setOpen(false); if (release.capabilities.search) preloadSkillQuery(serverId); },
+          onOpen: () => { overlays.menu.setOpen(false); if (release.capabilities.search) preloadSkillQuery(serverId, snapshot, locale); },
           activeTool: typeQueryOpen === "chart" ? "typeChart" : typeQueryOpen ? "types" : skillQueryOpen ? "skills" : transmissionOpen ? "transmission" : rankingKind,
           actions: {
             types: () => setTypeQueryOpen(true),
@@ -2901,10 +2912,14 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       {transmissionOpen && <Suspense fallback={<div role="status">{t("正在打开传动计算器…")}</div>}><TransmissionPanel snapshot={snapshot} sides={state.sides} getSpiritConfiguration={storedData.getSpiritConfiguration} onClose={() => setTransmissionOpen(false)} /></Suspense>}
       {typeQueryOpen && <Suspense fallback={<div role="status">{t(typeQueryOpen === "chart" ? "正在打开克制图…" : "正在打开属性查询…")}</div>}>
         {typeQueryOpen === "chart" ? <TypeChartPanel typeChart={snapshot.typeChart} onClose={() => setTypeQueryOpen(false)} />
-          : <TypeQueryPanel typeChart={snapshot.typeChart} spirits={snapshot.spirits} spiritFilterRevision={snapshot.meta?.revisions?.spiritFilter} selectedTypes={queryTypes} onTypesChange={setQueryTypes} onClose={() => setTypeQueryOpen(false)} />}
+          : <TypeQueryPanel typeChart={snapshot.typeChart} spirits={snapshot.spirits} spiritFilterRevision={snapshot.meta?.revisions?.spiritFilter} selectedTypes={queryTypes} onTypesChange={setQueryTypes}
+              initialView={typeQueryReturnView.current} onWarmSpirit={() => preloadSkillQuery(serverId, snapshot, locale)} onOpenSpirit={openTypeSpirit}
+              onClose={() => { typeQueryReturnView.current = null; setTypeQueryOpen(false); }} />}
       </Suspense>}
       {openedCondition && <CompactConditionDialog model={openedCondition} anchor={conditionTarget.anchor} onClose={() => setConditionTarget(null)} />}
-      {skillQueryOpen && <Suspense fallback={<div role="status">{t("正在打开技能查询…")}</div>}><SkillQueryPanel snapshot={snapshot} skills={snapshot.skills} spirits={snapshot.spirits} onClose={() => setSkillQueryOpen(false)} /></Suspense>}
+      {skillQueryOpen && <Suspense fallback={<div role="status">{t("正在打开技能查询…")}</div>}><SkillQueryPanel snapshot={snapshot} skills={snapshot.skills} spirits={snapshot.spirits}
+        initialSpiritId={skillQueryOpen.spiritId} onBackToSource={skillQueryOpen.from === "types" ? returnToTypeQuery : undefined}
+        onClose={skillQueryOpen.from === "types" ? returnToTypeQuery : () => setSkillQueryOpen(false)} /></Suspense>}
       <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />
     </>
   );

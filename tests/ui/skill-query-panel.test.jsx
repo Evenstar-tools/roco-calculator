@@ -40,6 +40,21 @@ test("查询条件保持，家族进入完整学习面，技能反查可返回�
   expect(screen.getByLabelText("搜索技能或精灵").closest(".sq-query")).toBeNull();
 });
 
+test("属性查询直接打开指定精灵，返回源面板；切换查询标签不沿用错误目标", async () => {
+  const onBackToSource = vi.fn(), onClose = vi.fn();
+  render(<SkillQueryPanel initialSpiritId="cat" {...{ onBackToSource, onClose }} />);
+  expect(screen.getByRole("heading", { name: "喵喵" })).toBeInTheDocument();
+  expect(screen.queryByRole("textbox", { name: "搜索技能或精灵" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "查看防御详情" })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "返回属性查询" }));
+  expect(onBackToSource).toHaveBeenCalledOnce();
+  fireEvent.click(screen.getByRole("tab", { name: "赛季新技能" }));
+  fireEvent.click(screen.getByRole("button", { name: /防御 普通 · 防御.*威力/ }));
+  expect(screen.getByRole("button", { name: "喵喵 查看技能" })).toBeInTheDocument();
+  fireEvent.keyDown(document, { key: "Escape" });
+  expect(onClose).toHaveBeenCalledOnce();
+});
+
 test("赛季新技能显示图标，新技能学习面可双向跳转且排除新精灵的旧技能", () => {
   const iconUrl = "/assets/skills/skill_1234567890abcdef.png";
   render(<SkillQueryPanel onClose={vi.fn()} skills={[{ id: "guard", iconUrl }]} />);

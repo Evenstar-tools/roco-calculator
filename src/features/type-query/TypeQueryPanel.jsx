@@ -1,4 +1,4 @@
-import { Check, Info, Plus, X } from "@phosphor-icons/react";
+import { CaretRight, Check, Info, Plus, X } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ElementIcon } from "../../components/ElementIcon.jsx";
 import { ELEMENT_TYPES } from "../../domain/type-chart.js";
@@ -42,15 +42,15 @@ function explainRow(row, side, types, t, typeName, locale) {
   return [t("{v0}系攻击{v1}系防守：承受 {v2} 倍伤害。", { v0: typeName(row.type), v1: types.map(typeName).join("＋"), v2: row.multiplier }), row.parts.map((part) => t("{v0}打{v1}：{v2} 倍", { v0: typeName(row.type), v1: typeName(part.type), v2: part.multiplier })).join(separator) + period, t(raw >= 4 ? "两项均克制，按游戏规则双重弱点为 3 倍，不是 4 倍。" : types.length === 2 ? "双属性防守按两项倍率相乘计算。" : "单属性防守，直接使用对应倍率。")];
 }
 
-function SpiritResults({ spirits, types, spiritFilterRevision }) {
+function SpiritResults({ spirits, types, spiritFilterRevision, onOpenSpirit, onWarmSpirit }) {
   const { t, typeName } = useLocale();
   const matches = findFinalDualTypeSpirits(spirits, types, { spiritFilterRevision });
   return <section className="type-query__spirits" aria-label={t("对应属性精灵")}>
     <div className="type-query__spirits-heading"><div><h3>{t("对应属性精灵")}</h3><p>{t(types.map(typeName).join(" ＋ "))}{" "}{t("· 仅展示已确认最终形态")}</p></div><span>{matches.length}{" "}{t("个结果")}</span></div>
-    {matches.length ? <div className="type-query__spirit-list" role="list" aria-label={t("匹配精灵，共 {v0} 个", { v0: matches.length })} tabIndex={matches.length > 1 ? 0 : undefined}>{matches.map((spirit) => <article className="type-query__spirit-card" key={spirit.id} role="listitem">
+    {matches.length ? <div className="type-query__spirit-list" role="list" aria-label={t("匹配精灵，共 {v0} 个", { v0: matches.length })} tabIndex={matches.length > 1 ? 0 : undefined}>{matches.map((spirit) => <article key={spirit.id} role="listitem"><button type="button" className="type-query__spirit-card" data-spirit-id={spirit.id} aria-label={t("{name} 查看技能", { name: spirit.fullName })} disabled={!onOpenSpirit} onPointerEnter={onWarmSpirit} onFocus={onWarmSpirit} onPointerDown={onWarmSpirit} onClick={() => onOpenSpirit(spirit.id)}>
       <img src={spirit.asset?.localUrl ?? `${import.meta.env.BASE_URL}assets/spirits/${spirit.id}.png`} alt="" loading="lazy" />
-      <strong>{t(spirit.fullName)}</strong>
-    </article>)}</div> : <p className="type-query__spirits-empty">{t("当前没有匹配的双属性最终形态。")}</p>}
+      <strong>{t(spirit.fullName)}</strong><CaretRight size={14} aria-hidden="true" />
+    </button></article>)}</div> : <p className="type-query__spirits-empty">{t("当前没有匹配的双属性最终形态。")}</p>}
   </section>;
 }
 
@@ -66,10 +66,12 @@ export default function TypeQueryPanel(props) {
   </section></div>;
 }
 
-function VerifiedTypeQueryPanel({ typeChart, spirits = [], spiritFilterRevision, selectedTypes, onTypesChange, onClose }) {
+function VerifiedTypeQueryPanel({ typeChart, spirits = [], spiritFilterRevision, selectedTypes, onTypesChange, onClose, onOpenSpirit, onWarmSpirit, initialView }) {
   const { t, typeName, locale } = useLocale();
   const root = useRef(null);
-  const [inspected, setInspected] = useState(null);
+  const body = useRef(null);
+  const restoredView = useRef(initialView);
+  const [inspected, setInspected] = useState(initialView?.inspected ?? null);
   const query = useMemo(() => buildTypeQuery(selectedTypes, typeChart), [selectedTypes, typeChart]);
   const inspectedRow = inspected && query[inspected.side].find((row) => row.type === inspected.type);
   const neutral = query.defense.filter(({ multiplier }) => multiplier === 1);
@@ -82,7 +84,12 @@ function VerifiedTypeQueryPanel({ typeChart, spirits = [], spiritFilterRevision,
     const trigger = document.activeElement;
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    root.current.focus();
+    const view = restoredView.current;
+    const target = [...root.current.querySelectorAll("[data-spirit-id]")].find(button => button.dataset.spiritId === view?.spiritId);
+    (target ?? root.current).focus({ preventScroll: true });
+    body.current.scrollTop = view?.scrollTop ?? 0;
+    const list = body.current.querySelector(".type-query__spirit-list");
+    if (list) list.scrollLeft = view?.listScrollLeft ?? 0;
     return () => {
       document.body.style.overflow = overflow;
       const target = trigger?.isConnected && trigger !== document.body ? trigger : document.querySelector('button[aria-label="打开菜单"]');
@@ -113,7 +120,7 @@ function VerifiedTypeQueryPanel({ typeChart, spirits = [], spiritFilterRevision,
   return <div className="type-query-backdrop">
     <section className="type-query" role="dialog" aria-modal="true" aria-label={t("属性查询")} ref={root} tabIndex={-1}>
       <header className="type-query__heading"><h2>{t("属性查询")}</h2><button type="button" className="type-query__quiet" aria-label={t("关闭属性查询")} onClick={onClose}>{t("关闭")}{" "}<X size={16} /></button></header>
-      <div className="type-query__body">
+      <div className="type-query__body" ref={body}>
         <section className="type-query__selection">
           <div className="type-query__label"><strong>{t("选择属性")}</strong><span id="type-query-limit">{query.types.length === 2 ? t("已选 2 / 2 · 取消一项后更换") : t("最多选择 2 种 · 再点一次取消")}</span></div>
           <div className="type-query__rail" role="group" aria-label={t("选择属性")} aria-describedby="type-query-limit">
@@ -130,7 +137,10 @@ function VerifiedTypeQueryPanel({ typeChart, spirits = [], spiritFilterRevision,
           </div>
         </section>
         {!query.types.length ? <p className="type-query__empty" role="status">{t("点击上方属性，即时查看抗性和打击面")}</p> : <>
-          {query.types.length === 2 && <SpiritResults spirits={spirits} types={query.types} spiritFilterRevision={spiritFilterRevision} />}
+          {query.types.length === 2 && <SpiritResults spirits={spirits} types={query.types} spiritFilterRevision={spiritFilterRevision} onWarmSpirit={onWarmSpirit} onOpenSpirit={onOpenSpirit && (spiritId => onOpenSpirit(spiritId, {
+            spiritId, inspected, scrollTop: body.current?.scrollTop ?? 0,
+            listScrollLeft: body.current?.querySelector(".type-query__spirit-list")?.scrollLeft ?? 0,
+          }))} />}
           <div className="type-query__columns">
             <section className="type-query__column" aria-label={t("防守抗性")}><h3>{t("防守抗性")}</h3><p>{t(query.types.map(typeName).join(" / "))}{t("作为防御属性 · 优先看弱点")}</p>
               {DEFENSE_GROUPS.map(([multiplier, label]) => <ResultGroup key={multiplier} rows={query.defense} side="defense" {...{ multiplier, label, inspected }} onInspect={setInspected} />)}

@@ -4,11 +4,49 @@ import { expect, test, vi } from "vitest";
 import snapshot from "../../data/snapshots/current.json";
 import TypeQueryPanel from "../../src/features/type-query/TypeQueryPanel.jsx";
 
-function Harness({ initial = [], onClose = vi.fn(), chart = snapshot.typeChart }) {
+function Harness({ initial = [], onClose = vi.fn(), chart = snapshot.typeChart, ...props }) {
   const [types, setTypes] = useState(initial);
-  return <TypeQueryPanel typeChart={chart} spirits={snapshot.spirits} spiritFilterRevision={snapshot.meta?.revisions?.spiritFilter} selectedTypes={types} onTypesChange={setTypes} onClose={onClose} />;
+  return <TypeQueryPanel typeChart={chart} spirits={snapshot.spirits} spiritFilterRevision={snapshot.meta?.revisions?.spiritFilter} selectedTypes={types} onTypesChange={setTypes} onClose={onClose} {...props} />;
 }
 const choices = () => within(screen.getByRole("group", { name: "选择属性" }));
+
+test("手机横滑后进入非首项精灵，返回恢复列表横向位置", () => {
+  const onOpenSpirit = vi.fn();
+  const first = render(<Harness initial={["地", "武"]} onOpenSpirit={onOpenSpirit} />);
+  const list = screen.getByRole("list", { name: "匹配精灵，共 8 个" });
+  const button = within(list).getAllByRole("button")[3];
+  const label = button.getAttribute("aria-label");
+  list.scrollLeft = 560;
+  fireEvent.click(button);
+  const [, view] = onOpenSpirit.mock.calls[0];
+  expect(view.listScrollLeft).toBe(560);
+  first.unmount();
+  render(<Harness initial={["地", "武"]} initialView={view} onOpenSpirit={onOpenSpirit} />);
+  expect(screen.getByRole("list", { name: "匹配精灵，共 8 个" }).scrollLeft).toBe(560);
+  expect(screen.getByRole("button", { name: label })).toHaveFocus();
+});
+
+test("匹配精灵按真实 ID 进入详情，返回保留倍率解释、滚动和原按钮焦点", () => {
+  const onOpenSpirit = vi.fn(), onWarmSpirit = vi.fn();
+  const first = render(<Harness initial={["地", "冰"]} {...{ onOpenSpirit, onWarmSpirit }} />);
+  const button = screen.getByRole("button", { name: "獠牙猪 查看技能" });
+  const spiritId = snapshot.spirits.find(spirit => spirit.fullName === "獠牙猪").id;
+  fireEvent.pointerEnter(button);
+  expect(onWarmSpirit).toHaveBeenCalledOnce();
+  fireEvent.click(screen.getByRole("button", { name: "查看防守火倍率来源" }));
+  const body = screen.getByRole("dialog").querySelector(".type-query__body");
+  body.scrollTop = 180;
+  fireEvent.click(button);
+  const view = { spiritId, scrollTop: 180, listScrollLeft: 0, inspected: { side: "defense", type: "火" } };
+  expect(onOpenSpirit).toHaveBeenCalledWith(spiritId, view);
+  first.unmount();
+  render(<Harness initial={["地", "冰"]} initialView={view} {...{ onOpenSpirit, onWarmSpirit }} />);
+  expect(screen.getByRole("button", { name: "獠牙猪 查看技能" })).toHaveFocus();
+  expect(screen.getByRole("button", { name: "取消地" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "取消冰" })).toBeVisible();
+  expect(screen.getByRole("status")).toHaveTextContent("火系攻击地＋冰系防守");
+  expect(screen.getByRole("dialog").querySelector(".type-query__body").scrollTop).toBe(180);
+});
 
 test("首次空选，18属性最多双选；再点取消和清空", () => {
   render(<Harness />);
