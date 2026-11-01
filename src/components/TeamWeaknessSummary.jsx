@@ -1,9 +1,10 @@
 import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
 import { ElementIcon } from "./ElementIcon.jsx";
+import { SpiritImage } from "./SpiritImage.jsx";
 
 function Portrait({ member }) {
   const { t } = useLocale();
-  return member.assetUrl ? <img src={member.assetUrl} alt={member.name} title={t(member.name)} /> : <span title={t(member.name)}>{t(member.name)}</span>;
+  return member.assetUrl ? <SpiritImage name={member.name} src={member.assetUrl} alt={member.name} title={t(member.name)} /> : <span title={t(member.name)}>{t(member.name)}</span>;
 }
 
 export default function TeamWeaknessSummary({ analysis, onCandidates }) {
