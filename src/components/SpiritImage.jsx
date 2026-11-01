@@ -1,21 +1,36 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { localizeToolText } from "../i18n/useToolLocale.js";
 import { reportImageFailure } from "../runtime/chunk-recovery.js";
 
 const RETRY_DELAYS = [1000, 3000, 8000];
+const STABLE_PORTRAIT_RE = /^\/(?:global-assets\/)?assets\/spirits\/spirit_[a-f0-9]{16}\.(?:png|webp)$/;
+
+function recoverySource(src) {
+  try {
+    const url = new URL(src, window.location.href);
+    // 与 SW 的单张精灵图恢复协议一致；外链和其他查询参数保持原样。
+    if (!/^https?:$/.test(url.protocol) || url.origin !== window.location.origin ||
+        url.username || url.password || url.search || !STABLE_PORTRAIT_RE.test(url.pathname)) return src;
+    return `${url.pathname}?image-retry=1${url.hash}`;
+  } catch {
+    return src;
+  }
+}
 
 /** 精灵头像：失败后自动重试，仍失败时显示名字；网络恢复时再试一次。 */
 export function SpiritImage({ src, name, className, style, ...props }) {
-  const { t } = useLocale();
+  const { locale } = useLocale();
   const [stored, setStored] = useState({ src, attempt: 0, box: null });
   const timer = useRef(null);
   const load = stored.src === src ? stored : { src, attempt: 0, box: null };
   const showingPlaceholder = Boolean(load.box);
+  const recovering = load.attempt > 0 || load.recovering;
 
   useEffect(() => () => clearTimeout(timer.current), []);
   useEffect(() => {
     if (!showingPlaceholder) return undefined;
-    const retry = () => setStored({ src, attempt: 0, box: null });
+    const retry = () => setStored({ src, attempt: 0, box: null, recovering: true });
     window.addEventListener("online", retry);
     return () => window.removeEventListener("online", retry);
   }, [showingPlaceholder, src]);
@@ -37,9 +52,9 @@ export function SpiritImage({ src, name, className, style, ...props }) {
   }
 
   if (load.box) {
-    const label = name ? t(name) : "";
+    const label = name ? localizeToolText(name, locale) : "";
     return <span className={["spirit-image-fallback", className].filter(Boolean).join(" ")} title={label}
       style={{ ...style, ...(load.box.width ? { width: load.box.width, height: load.box.height } : {}) }}>{label}</span>;
   }
-  return <img key={load.attempt} {...props} className={className} style={style} src={src} data-load-retrying={load.attempt ? "" : undefined} onError={handleError} />;
+  return <img key={load.attempt} {...props} className={className} style={style} src={recovering ? recoverySource(src) : src} data-load-retrying={recovering ? "" : undefined} onError={handleError} />;
 }
