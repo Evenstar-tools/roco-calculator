@@ -16,6 +16,22 @@ const snapshot = {
 };
 
 describe("技能承伤对比", () => {
+  test.each(["forward", "reverse"])("%s 承伤榜遵守未接入特性守门，防方未使用的待确认技能不阻断攻击", async direction => {
+    const state = createInitialState(snapshot);
+    const sourceSide = direction === "forward" ? "attacker" : "defender";
+    const source = state.sides[sourceSide].spiritId;
+    const pending = { ...snapshot, spirits: snapshot.spirits.map(spirit => spirit.id === source
+      ? { ...spirit, calculationStatus: "pending-s5-mechanics" } : spirit) };
+    const blocked = await createSkillDamageRanking({ snapshot: pending, state, direction, scope: "all" });
+    expect(blocked.rows).toEqual([]);
+    expect(blocked.excluded.every(row => row.reason.includes("S5 特性尚未接入"))).toBe(true);
+    state.sides[sourceSide].ignoreTraits = true;
+    expect((await createSkillDamageRanking({ snapshot: pending, state, direction, scope: "all" })).rows).toHaveLength(3);
+    const current = { ...snapshot, skills: [...snapshot.skills, { id: "pending-status", name: "待接入状态", category: "status", basePower: 0,
+      s5StatusEffectPending: "状态规则待接入" }], learnsets: snapshot.spirits.map(spirit => ({ spiritId: spirit.id, skillIds: ["pending-status"], defaultSkillIds: ["pending-status"] })) };
+    expect((await createSkillDamageRanking({ snapshot: current, state, direction, scope: "all" })).rows).toHaveLength(3);
+  });
+
   test.each(["forward", "reverse"])("S5未接机制在%s承伤榜入口说明原因，不生成普通技伤害榜", async direction => {
     const reason = "自身减益层数对能耗的影响尚未接入。";
     const current = { ...snapshot, skills: [{ ...snapshot.skills[0], name: "间歇泉", cost: 4,

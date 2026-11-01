@@ -13,6 +13,63 @@ import {
 } from "../../src/state/share.js";
 import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
 
+test.each(["attacker", "defender"])("矿物置换由%s使用后只提高该方魔攻，面板/伤害/分享一致", async side => {
+  const snapshot = createSnapshot();
+  snapshot.skills.push({ id: "mineral", name: "矿物置换", type: "地", category: "status", basePower: null, cost: 1 });
+  const state = createInitialState(snapshot);
+  state.mode = "four";
+  state.sides.attacker.spiritId = "attacker";
+  state.sides.defender.spiritId = "defender";
+  state.sides[side].skills.four = ["mineral", "scratch", "grass-skill", null];
+  const direction = side === "attacker" ? "forward" : "reverse";
+  const opposite = side === "attacker" ? "reverse" : "forward";
+  const view = current => buildCalculatorViewModel({ activeDirection: direction, snapshot, state: current });
+  const before = view(state);
+  const applied = applyBattleActivation({ side, skillIndex: 0, snapshot, state });
+  expect(applied.applied).toBe(true);
+  expect(applied.state.directions[direction].overrides.magicalAttackLevelStageAdd).toBe(12);
+  expect(applied.state.directions[opposite].overrides.magicalAttackLevelStageAdd ?? 0).toBe(0);
+  const after = view(applied.state);
+  expect(after.sides[side].finalPanelStats.magicalAttack).toBe(Math.floor(before.sides[side].panelStats.magicalAttack * 2.2));
+  expect(after.sides[side].finalPanelStats.physicalAttack).toBe(before.sides[side].finalPanelStats.physicalAttack);
+  expect(after.sides[side].abilityStageBonuses.attackByCategory).toEqual({ physical: 0, magical: 12 });
+  expect(after.calculation[direction].results[2].totalDamage).toBeGreaterThan(before.calculation[direction].results[2].totalDamage);
+  expect(after.calculation[direction].results[2].gainSummary).toContain("矿物置换×1");
+  expect(after.calculation[direction].results[1].totalDamage).toBe(before.calculation[direction].results[1].totalDamage);
+  expect(after.calculation[direction].results[0].usageSummary.appliedEffects).toContain("魔攻+12层");
+  const restored = await decodeShareState(await encodeShareState(applied.state));
+  expect(view(restored).calculation[direction].results[2].totalDamage).toBe(after.calculation[direction].results[2].totalDamage);
+  const again = applyBattleActivation({ side, skillIndex: 0, snapshot, state: restored });
+  expect(again.state.directions[direction].overrides.magicalAttackLevelStageAdd).toBe(24);
+});
+
+test.each(["four", "single"])("%s续杯读取计算结果实际能耗，咒火等待蓄力后再加印记", skillMode => {
+  const snapshot = createSnapshot();
+  snapshot.skills.push({ id: "refill", name: "续杯", type: "水", category: "status", basePower: null, cost: 2 },
+    { id: "dragon-curse", name: "咒火", type: "龙", category: "status", basePower: null, cost: 3,
+      description: "蓄力，自己获得2层龙噬印记。" });
+  const state = createInitialState(snapshot);
+  state.mode = skillMode;
+  state.sides.attacker.spiritId = "attacker";
+  state.sides.defender.spiritId = "defender";
+  state.sides.attacker.skills.four = ["refill", null, null, null];
+  state.sides.attacker.skills.single = "refill";
+  const refill = applyBattleActivation({ side: "attacker", skillIndex: 0, skillMode, snapshot, state,
+    calculation: { forward: { results: [{ skillCost: 0 }] } } });
+  expect(refill.state.directions.forward.overrides.attackLevelStage).toBe(15);
+  refill.state.sides.attacker.skills.four[0] = { skillId: "dragon-curse", context: {} };
+  refill.state.sides.attacker.skills.single = "dragon-curse";
+  const early = applyBattleActivation({ side: "attacker", skillIndex: 0, skillMode, snapshot, state: refill.state });
+  expect(early.applied).toBe(false);
+  expect(early.state.marks.attacker.positive.id).toBeNull();
+  refill.state.sides.attacker.skills.four[0].context.s5DragonBiteChargeReady = true;
+  refill.state.directions.forward.context.s5DragonBiteChargeReady = true;
+  const charged = applyBattleActivation({ side: "attacker", skillIndex: 0, skillMode, snapshot, state: refill.state });
+  expect(charged.state.marks.attacker.positive).toMatchObject({ id: "dragon-bite", stacks: 2 });
+  const again = applyBattleActivation({ side: "attacker", skillIndex: 0, skillMode, snapshot, state: charged.state });
+  expect(again.state.marks.attacker.positive.stacks).toBe(4);
+});
+
 test("explicit pure-negative activation toggles once while attacks never apply preview status history", () => {
   const fixture = createSnapshot();
   const burn = { id: "explicit-burn", name: "引燃", category: "status", type: "火", basePower: 0, cost: 1 };

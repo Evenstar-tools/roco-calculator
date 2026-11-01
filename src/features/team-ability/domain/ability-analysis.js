@@ -19,6 +19,7 @@ const DURABILITY_OBJECTIVES = Object.freeze([
 function panelStatsFor(configuration, displayIvs = configuration.displayIvs, natureId) {
   return calculateAllPanelStats({
     raceStats: configuration.raceStats,
+    level: configuration.level ?? 60,
     displayIvs,
     natureMultipliers: getNatureMultipliers(
       natureId ?? configuration.natureId ?? configuration.nature,

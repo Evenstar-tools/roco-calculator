@@ -1,6 +1,7 @@
 import { assertCalculationEnvironment, getServerRelease } from "../domain/server-environment.js";
 import { createGlobalPlaceholderCatalog } from "./global-placeholder-catalog.js";
 import { publicResourceUrl, withPublicResourceUrls } from "./public-resource-url.js";
+import { restoreS5RuntimeRelations } from "../data/s5-runtime-relations.js";
 
 function throwIfAborted(signal) {
   if (signal?.aborted) throw signal.reason ?? new DOMException("数据加载已取消", "AbortError");
@@ -21,7 +22,7 @@ export async function loadServerSnapshot(serverId = "cn", { signal, fetcher = gl
   const snapshot = await response.json();
   throwIfAborted(signal);
   assertCalculationEnvironment(snapshot, { serverId });
-  return withPublicResourceUrls(snapshot);
+  return withPublicResourceUrls(restoreS5RuntimeRelations(snapshot));
 }
 
 // Explicitly authorized CN reference loading; the verified Global loader remains unavailable.

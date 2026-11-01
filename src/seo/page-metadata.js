@@ -2,13 +2,13 @@ import { IS_PREVIEW_BUILD } from "../runtime/preview-channel.js";
 
 export const HOME_PAGE_METADATA = Object.freeze({
   title: "洛克计算器｜洛克王国：世界 PVP 伤害计算与配队",
-  description: "洛克计算器 RocoCalc（Roco Calculator）是免费的洛克王国：世界 PVP 伤害计算工具，采用国服 S4 数据，支持队伍搭配、技能检索、属性查询、速度耐久排行与电鹿斩杀线。提供网页版和 Windows 版。",
+  description: "洛克计算器 RocoCalc（Roco Calculator）是免费的洛克王国：世界 PVP 伤害计算工具，采用国服 S5 数据，支持队伍搭配、技能检索、属性查询、速度耐久排行与电鹿斩杀线。提供网页版和 Windows 版。",
   canonical: "https://rococalc.top/",
 });
 
 export const DEER_PAGE_METADATA = Object.freeze({
   title: "电鹿斩杀线计算器 | 洛克计算器 RocoCalc",
-  description: "洛克计算器 RocoCalc 的电鹿斩杀线工具，采用洛克王国：世界国服 S4 数据，按特性层数、防御配置和战斗条件比较技能伤害、击倒所需层数与先发补刀结果。",
+  description: "洛克计算器 RocoCalc 的电鹿斩杀线工具，采用洛克王国：世界国服 S5 数据，按特性层数、防御配置和战斗条件比较技能伤害、击倒所需层数与先发补刀结果。",
   canonical: "https://rococalc.top/dianlu/",
 });
 

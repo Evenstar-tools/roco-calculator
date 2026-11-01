@@ -38,6 +38,18 @@ const STATUS_EFFECTS = Object.freeze({
     resolve: (context) => context.s5DragonEyeChargeReady === true
       ? { ownAttack: 8, ownSpeedFlat: 30 } : {},
   },
+  矿物置换: {
+    operations: context => ({ ownMagicalAttackStageAdd: 12 + integerInput(context.sproutStacks, 0, 99, 0) }),
+  },
+  续杯: {
+    resolve: context => ({ ownAttack: 5 * (1 + Math.max(0,
+      integerInput(context.skillBaseCost, 0, 99, 2) - integerInput(context.effectiveSkillCost, 0, 99, 2))) }),
+  },
+  咒火: {
+    inputs: [booleanInput("s5DragonBiteChargeReady", "已完成蓄力")],
+    operations: context => ({ markApplications: context.s5DragonBiteChargeReady === true
+      ? [{ id: "dragon-bite", polarity: "positive", stacks: 2, target: "self" }] : [] }),
+  },
   落雨: { operations: () => ({ weather: "rain" }) },
   降雨: { operations: () => ({ weather: "rain" }) },
   惊雷: { operations: () => ({ weather: "thunder" }) },
@@ -706,7 +718,7 @@ function stageDeltas(effect, multiplier, context) {
 }
 
 export function getSkillStatusEffect(skill) {
-  if (usesS3MidseasonRules(skill) && ["筑梦", "热桥", "地缚灵", "画龙点睛"].includes(skill?.name)) return null;
+  if (usesS3MidseasonRules(skill) && ["筑梦", "热桥", "地缚灵", "画龙点睛", "矿物置换", "续杯", "咒火"].includes(skill?.name)) return null;
   const effect = STATUS_EFFECTS[skill?.name] ?? null;
   if (usesS3MidseasonRules(skill) && skill.name === "暗箱操作") return {
     ...effect, resolve: (context) => context.defenseCounterSucceeded === true
@@ -771,7 +783,8 @@ export function resolveSkillStatusActivation(skill, context = {}) {
   }
   const effect = getSkillStatusEffect(skill);
   const defenseReductionPercent = getDefenseSkillReductionPercent(skill, context);
-  const markApplications = resolveSkillMarkApplications(skill);
+  // Charge marks are applied only after their explicit completion condition.
+  const markApplications = skill?.name === "咒火" ? [] : resolveSkillMarkApplications(skill);
   if (
     !effect &&
     defenseReductionPercent === null &&
@@ -793,7 +806,7 @@ export function resolveSkillStatusActivation(skill, context = {}) {
     };
   }
   context = projectTriggerContext(
-    context,
+    { ...context, skillBaseCost: skill.cost },
     getSkillStatusEffectInputs(skill),
   );
 

@@ -1,7 +1,7 @@
 import { getS5PreviewTraitEvaluation } from "../domain/s5-preview-traits.js";
 import { getS5PreviewTraitPresentation } from "../features/s5-preview/trait-presentation.js";
 
-export function S5PreviewTraitSummary({ trait, role = "attacker", context = {}, owner = false }) {
+export function S5PreviewTraitSummary({ trait, role = "attacker", context = {}, owner = false, linked = false }) {
   const presentation = getS5PreviewTraitPresentation(trait, role, { owner });
   if (!presentation?.visible) return null;
   const evaluation = getS5PreviewTraitEvaluation(trait?.previewTraitEntity, role, context);
@@ -14,7 +14,11 @@ export function S5PreviewTraitSummary({ trait, role = "attacker", context = {}, 
   const incoming = evaluation.effects.find(effect => effect.kind === "incoming-damage-percent");
   const speedOnly = presentation.summaryScope === "speed";
   const speed = evaluation.effects.find(effect => effect.kind === "speed-flat");
-  const summary = speedOnly ? (speed ? `速度 +${speed.amount}` : "速度无额外增益") : evaluation.summary;
+  const summary = speedOnly ? (speed ? `速度 +${speed.amount}` : "") : evaluation.summary;
+
+  if (!linked && evaluation.mechanicKey === "diliutun" && evaluation.calcStatus === "ready") return null;
+  if (["lele-shark", "egg-wrap"].includes(evaluation.mechanicKey) && evaluation.calcStatus === "ready" && !evaluation.effects.length) return null;
+  if (!hasLevel && !summary && !reason) return null;
 
   return (
     <div

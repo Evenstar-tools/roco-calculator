@@ -49,3 +49,14 @@
   color: var(--text-muted);
   cursor: not-allowed;
 }
+
+.trait-choice--dice {
+  width: min(350px, 100%);
+  max-width: 100%;
+}
+
+.trait-choice--dice select {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+}

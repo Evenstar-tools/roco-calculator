@@ -61,7 +61,7 @@ describe("S5 explicit trait controls and evaluation", () => {
     expect(offense.map(({ source, scope }) => [source, scope])).toEqual(Array.from({ length: 3 }, () => ["attackerTrait", "direction"]));
     const values = context(entity, "attacker", { ChargeCount: 2 });
     expect(evaluate(entity, { ChargeCount: 2 }).summary).toContain("物攻能力等级 +10");
-    expect(getS5PreviewTraitEvaluation(entity, "defender", values).summary).toBe("未聚能 · 无增益");
+    expect(getS5PreviewTraitEvaluation(entity, "defender", values).summary).toBe("未聚能");
     const acquired = { ...entity, runtimeInputValues: Object.fromEntries(offense.map(control => [
       canonicalTraitControlKey(control), values[control.id],
     ])) };
@@ -92,7 +92,7 @@ describe("S5 explicit trait controls and evaluation", () => {
     const legacy = { attackerTraitS5AttackBuffActive: true, attackerTraitS5CurrentAttackBonus: 70 };
     expect(getS5PreviewTraitEvaluation(entity, "attacker", legacy)).toMatchObject({ calcStatus: "pending" });
     expect(getS5PreviewTraitEvaluation(entity, "attacker", { ...legacy, ...context(entity, "attacker", { ChargeCount: 0 }) }))
-      .toMatchObject({ calcStatus: "ready", summary: "未聚能 · 无增益" });
+      .toMatchObject({ calcStatus: "ready", summary: "未聚能" });
     expect(getS5PreviewTraitEvaluation(entity, "attacker", { ...legacy, attackerTraitS5CurrentAttackBonus: 100 }).summary)
       .toBe("聚能 2 次 · 物攻能力等级 +10");
   });
@@ -137,7 +137,7 @@ describe("S5 explicit trait controls and evaluation", () => {
     ]) {
       const entity = trait("diliutun", { description, previewIdentity: { catalogId: "s5-official-test", key, mechanicKey: "diliutun" } });
       expect(getS5PreviewTraitInputs(entity).find(input => input.contextKey.endsWith("DiceFace"))).toMatchObject({ min: 1, max: maximum });
-      expect(evaluate(entity, { DiceRolled: true, DiceFace: 20 })).toMatchObject({ calcStatus: "pending", summary: expect.stringContaining(`骰点 ${maximum}`) });
+      expect(evaluate(entity, { DiceRolled: true, DiceFace: 20 })).toMatchObject({ calcStatus: "pending", summary: expect.stringContaining(`${maximum} 点`) });
     }
   });
 
@@ -183,7 +183,7 @@ describe("S5 explicit trait controls and evaluation", () => {
     const defense = getS5PreviewTraitInputs(entity, "defender");
     const linked = linkEnemyCostTraitControls(linkEnemyCostTraitControls({}, offense, 8), defense, 16);
     expect(getS5PreviewTraitEvaluation(entity, "attacker", linked)).toMatchObject({
-      calcStatus: "ready", summary: "敌方携带技能总能耗 8；威力 +80%；速度无额外增益",
+      calcStatus: "ready", summary: "敌方携带技能总能耗 8；威力 +80%",
     });
     expect(getS5PreviewTraitEvaluation(entity, "defender", linked)).toMatchObject({
       calcStatus: "ready", summary: "敌方携带技能总能耗 16；威力 +160%；速度 +75",
@@ -196,7 +196,7 @@ describe("S5 explicit trait controls and evaluation", () => {
     const manual = { ...linked, [auto.id]: false, [cost.id]: 0 };
     expect(linkEnemyCostTraitControls(manual, offense, null)).toBe(manual);
     expect(getS5PreviewTraitEvaluation(entity, "attacker", { ...manual, automaticEnemyTotalSkillCost: 20 }))
-      .toMatchObject({ calcStatus: "ready", summary: "敌方携带技能总能耗 0；威力 +0%；速度无额外增益" });
+      .toMatchObject({ calcStatus: "ready", summary: "敌方携带技能总能耗 0；威力 +0%" });
   });
 
   test.each([0, null, undefined, 1.5, -1])("boss Bruce linked automatic cost %s preserves known zero and rejects unknown/invalid totals", total => {
@@ -353,7 +353,7 @@ describe("S5 explicit trait controls and evaluation", () => {
     expect(resolve(trait("crab-coconut"), "attacker", { GrassDiscountReady: true })).toMatchObject({ powerPercentAdd: 0, step: null });
     // Old stored booleans cannot apply another turn or override the global weather.
     const lily = trait("lily-of-valley");
-    expect(evaluate(lily, { DreamActive: true, TurnEndConfirmed: true })).toMatchObject({ effects: [], summary: "霞光梦境未生效，无寄生施加" });
+    expect(evaluate(lily, { DreamActive: true, TurnEndConfirmed: true })).toMatchObject({ effects: [], summary: "霞光梦境未生效" });
     expect(getS5PreviewTraitEvaluation(lily, "attacker", { weatherDream: true })).toMatchObject({ effects: [], summary: "霞光梦境生效：回合结束可给对手3层寄生" });
     expect(getS5PreviewTraitInputs(lily).find(input => input.contextKey.endsWith("TurnEndConfirmed")).action).toBe("s5-dream-turn-end");
     expect(evaluate(trait("diliutun"))).toMatchObject({ calcStatus: "ready", effects: [] });

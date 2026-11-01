@@ -344,9 +344,10 @@ test.each([false, true])("名称搜索准确命中优先于收藏与部分匹配
   render(<SpiritPicker {...pickerProps(spirits)} />);
   const input = screen.getByRole("combobox", { name: "攻击方精灵" });
   fireEvent.change(input, { target: { value: "冰钻布鲁斯" } });
-  // The recorded boss aliases its original form; exact aliases precede full names.
+  // The boss is now named 圣冠布鲁斯; the original exact name and prefix match
+  // precede its related boss form when searching 冰钻布鲁斯.
   expect(screen.getAllByRole("option").map(option => option.dataset.spiritId)).toEqual(previewEnabled
-    ? [s5PreviewIds("boss-ice-bruce").spiritId, "bruce", "partial"]
+    ? ["bruce", "partial", s5PreviewIds("boss-ice-bruce").spiritId]
     : ["bruce", "partial"]);
   fireEvent.change(input, { target: { value: "迪莫" } });
   expect(screen.getAllByRole("option")).toHaveLength(1);

@@ -57,8 +57,11 @@ function TraitControls({
 }) {
   const { tc } = useCalculatorLocale();
   const controls = getMoonMemoryTraitControls(trait);
+  const selectionToggles = new Map(controls.filter(control => control.selectionToggleKey)
+    .map(control => [control.canonicalKey, controls.find(toggle => toggle.contextKey === control.selectionToggleKey)]));
+  const combinedToggleKeys = new Set([...selectionToggles.values()].filter(Boolean).map(control => control.canonicalKey));
   const visibleControls = controls.filter((control) =>
-    !control.hidden && isControlVisible(control, controls, values),
+    !control.hidden && !combinedToggleKeys.has(control.canonicalKey) && isControlVisible(control, controls, values),
   );
   if (visibleControls.length === 0) return null;
 
@@ -77,7 +80,7 @@ function TraitControls({
           <button className="trait-turn-end" key={`${trait.id}:${control.canonicalKey}`} type="button"
             onClick={() => onValueChange?.(trait.id, control.canonicalKey, true)}>{tc(control.label)}</button>
         );
-        if (control.type === "choice") {
+        if (control.type === "choice" || control.selectOptions) {
           return (
             <label key={`${trait.id}:${control.canonicalKey}`} htmlFor={inputId}>
               <span>{tc(control.label)}</span>
@@ -85,15 +88,18 @@ function TraitControls({
                 aria-label={tc(label)}
                 id={inputId}
                 onChange={(event) =>
-                  onValueChange?.(
-                    trait.id,
-                    control.canonicalKey,
-                    event.target.value,
-                  )
+                  {
+                    const toggle = selectionToggles.get(control.canonicalKey);
+                    const active = event.target.value !== "";
+                    if (active || !toggle) onValueChange?.(trait.id, control.canonicalKey,
+                      control.type === "number" ? Number(event.target.value) : event.target.value);
+                    if (toggle && Boolean(controlValue(values, toggle)) !== active) onValueChange?.(trait.id, toggle.canonicalKey, active);
+                  }
                 }
-                value={value ?? ""}
+                value={selectionToggles.get(control.canonicalKey) && !controlValue(values, selectionToggles.get(control.canonicalKey)) ? "" : value ?? ""}
               >
-                {(control.options ?? []).map((option) => (
+                {selectionToggles.has(control.canonicalKey) ? <option value="">{tc("未掷骰")}</option> : null}
+                {(control.selectOptions ?? control.options ?? []).map((option) => (
                   <option key={option.value} value={option.value}>
                     {tc(option.label)}
                   </option>

@@ -371,6 +371,7 @@ export function applyBattleActivation({
     choiceTrait,
     effectiveHitCount:
       calculation?.[selfDirection]?.results?.[skillIndex]?.hitCount,
+    effectiveSkillCost: skillResult?.skillCost ?? skill.cost,
     sproutStacks,
     statusTriggerCount,
   });
@@ -531,6 +532,9 @@ export function applyBattleActivation({
   updateDirection(next, selfDirection, {
     overrides: {
       attackLevelStage: ownAttackStage,
+      magicalAttackLevelStageAdd: clampStage(
+        Number(selfOverrides.magicalAttackLevelStageAdd ?? 0) + Number(operations.ownMagicalAttackStageAdd ?? 0),
+      ),
       attackerSpeedFlat: ownSpeedFlat,
       defenderSpeedFlat:
         Number(selfOverrides.defenderSpeedFlat ?? 0) +

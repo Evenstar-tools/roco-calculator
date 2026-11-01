@@ -1,4 +1,5 @@
 import { calculateMatchup } from "./calculate.js";
+import { withS5PreviewCalculationGuard } from "../features/s5-preview/calculation-guard.js";
 import { withS5PreviewBattleLevels } from "./battle-level.js";
 import { asResultRailModel, buildCombatState, getSpirit } from "./calculator-view-model.js";
 import { getEffectiveTraits } from "./effective-traits.js";
@@ -73,7 +74,10 @@ export function evaluateStarfallAt({ snapshot, state, direction = "forward", sel
     const issue = selectionIssue(selection);
     if (issue) return invalidEvaluation(Number(count), issue);
     const input = withS5PreviewBattleLevels(snapshot, withStarfallStacks(state, direction, count, selection.index));
-    const calculation = calculateMatchup(snapshot, buildCombatState(input, snapshot.meta?.serverId));
+    const calculation = withS5PreviewCalculationGuard({
+      sides: Object.fromEntries(Object.entries(input.sides).map(([key, side]) => [key, { spirit: getSpirit(snapshot, side) }])),
+      calculation: calculateMatchup(snapshot, buildCombatState(input, snapshot.meta?.serverId)),
+    }, snapshot, input).calculation;
     const displayed = asResultRailModel({ snapshot, state: input, calculation, direction, includeTurnPreview: false });
     const result = displayed.selectedResult;
     const warnings = result?.warnings ?? [];

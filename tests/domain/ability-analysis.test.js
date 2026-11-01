@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   analyzeSpeedBreakpoints,
+  isDurabilityBuildApplicable,
   recommendDurabilityBuilds,
 } from "../../src/features/team-ability/domain/ability-analysis.js";
 
@@ -30,6 +31,23 @@ function configuration(displayIvs = {}) {
 }
 
 describe("analyzeSpeedBreakpoints", () => {
+  test("uses the projected battle level for current speed, recommendations and application checks", () => {
+    const current = { ...configuration({ hp: 60, physicalDefense: 60 }), level: 99 };
+    expect(analyzeSpeedBreakpoints({ configuration: current, target: 240 })).toMatchObject({
+      status: "REQUIRES_SPEED_INVESTMENT", currentSpeed: 209, investedSpeed: 254,
+    });
+    const result = recommendDurabilityBuilds({ current, speedConstraint: { mode: "at-least", targetSpeed: 240 } });
+    expect(result.status).toBe("ok");
+    for (const candidate of Object.values(result.results)) {
+      expect(candidate.values.speed).toBe(60);
+      expect(candidate.panel.speed).toBe(254);
+      const options = { current, candidate, speedConstraint: { mode: "at-least", targetSpeed: 240 } };
+      expect(isDurabilityBuildApplicable(options)).toBe(true);
+      expect(isDurabilityBuildApplicable({ ...options, current: { ...current, level: 60 } })).toBe(false);
+    }
+    expect(recommendDurabilityBuilds({ current: { ...current, level: 60 }, speedConstraint: { mode: "at-least", targetSpeed: 240 } }).status).toBe("no-solution");
+  });
+
   test("reports when enabling the binary speed investment reaches the target", () => {
     expect(
       analyzeSpeedBreakpoints({

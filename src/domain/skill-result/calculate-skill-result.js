@@ -18,7 +18,7 @@ import {
   targetNegativeMarkSettlement,
 } from "../marks.js";
 import { buildRefractionHint, reducedSkillCost, refractionEnergyReduction } from "../refraction.js";
-import { getS5PreviewSkillCostReduction, getS5PreviewTraitEvaluation } from "../s5-preview-traits.js";
+import { getS5PreviewDiceSkillModifiers, getS5PreviewSkillCostReduction, getS5PreviewTraitEvaluation } from "../s5-preview-traits.js";
 import { readSilverEnergySpent } from "../../features/s5-preview/energy-input-migration.js";
 import { gainSourcesFor, limitGainSources, summarizeGains } from "../gain-provenance.js";
 import { resolvePowerOverride } from "../power-override.js";
@@ -148,6 +148,12 @@ export function calculateSkillResult({
     ...directionOverrides.context,
     ...slotOverrides.context,
   };
+  for (const [owner, role] of [[attacker, "attacker"], [defender, "defender"]]) {
+    for (const trait of owner.traits.filter(item => item.previewIdentity?.mechanicKey === "diliutun")) {
+      const evaluation = getS5PreviewTraitEvaluation(trait, role, rawContext);
+      if (evaluation?.blockingReason) return unresolvedResult(skill, { status: "unsupported", reason: evaluation.blockingReason });
+    }
+  }
   for (const [owner, opponent, role] of [[attacker, defender, "attacker"], [defender, attacker, "defender"]]) {
     const trait = owner.traits.find(item => /^s5(?:[-_:]|$)/iu.test(item.previewIdentity?.catalogId ?? "") &&
       item.previewIdentity?.mechanicKey === "boss-ice-bruce");
@@ -368,7 +374,7 @@ export function calculateSkillResult({
     skill,
     targetCurrentHp: normalizedDefenderCurrentHp,
   });
-  const traitHitCount = resolveTraitHitCountBonus({
+  const ordinaryTraitHitCount = resolveTraitHitCountBonus({
     traits: attacker.traits,
     context,
     skill,
@@ -380,6 +386,12 @@ export function calculateSkillResult({
     skill,
   });
   const declaredHitCount = hasDeclaredHitCount(skill);
+  const diceModifiers = getS5PreviewDiceSkillModifiers({ attackerTraits: attacker.traits, defenderTraits: defender.traits, context });
+  const traitHitCount = declaredHitCount ? {
+    hitCountAdd: ordinaryTraitHitCount.hitCountAdd + diceModifiers.hitCountAdd,
+    steps: [...ordinaryTraitHitCount.steps, ...diceModifiers.hitCountSteps],
+    sources: [...ordinaryTraitHitCount.sources, ...diceModifiers.sources],
+  } : ordinaryTraitHitCount;
   const editableHitCountInput = getEditableHitCountInput(skill);
   const hitCountMaximum = editableHitCountInput
     ? editableHitCountInput.max ?? Number.POSITIVE_INFINITY
@@ -414,11 +426,36 @@ export function calculateSkillResult({
         ),
       ),
     );
-  const traitCostReduction = getS5PreviewSkillCostReduction(attacker.traits, context, skill);
+  const crabCostReduction = getS5PreviewSkillCostReduction(attacker.traits, context, skill);
+  const traitCostReduction = crabCostReduction + diceModifiers.costReduction;
   const totalCostReduction = refractionEnergyReduction(directionOverrides) + traitCostReduction;
-  const reducedCost = (cost) => {
+  const sandstormCostApplies = context.weatherSandstorm === true && skill.type === "地";
+  const hasCostReduction = totalCostReduction > 0 || sandstormCostApplies;
+  const fixedReducedCost = (cost) => {
     const reduced = reducedSkillCost(cost, directionOverrides);
     return reduced === undefined ? undefined : Math.max(0, reduced - traitCostReduction);
+  };
+  // Resolve a skill's own dynamic cost and fixed reductions first. Sandstorm
+  // halves the remaining Earth cost once; an explicit actual cost is final.
+  const reducedCost = (cost) => {
+    const reduced = fixedReducedCost(cost);
+    return reduced === undefined ? undefined : sandstormCostApplies ? Math.floor(reduced / 2) : reduced;
+  };
+  const sandstormReduction = (cost) => sandstormCostApplies && fixedReducedCost(cost) !== undefined
+    ? fixedReducedCost(cost) - reducedCost(cost) : 0;
+  const costFormulaSteps = (cost, manualCost) => {
+    if (!hasCostReduction || reducedCost(cost) === undefined) return [];
+    if (manualCost !== undefined) return [formulaStep("实际能耗（手动）", { reduction: 0 }, cost, manualCost, "manual-cost")];
+    return [
+      ...(totalCostReduction > 0 ? [formulaStep(
+        `能耗减免（${[refractionEnergyReduction(directionOverrides) > 0 ? "折射·水" : null,
+          crabCostReduction > 0 ? "蟹蟹椰" : null, diceModifiers.costReduction > 0 ? "游戏的本质" : null].filter(Boolean).join("、")}）`,
+        { reduction: totalCostReduction }, cost, fixedReducedCost(cost),
+        traitCostReduction > 0 ? "s5-trait-cost" : "refraction-energy",
+      )] : []),
+      ...(sandstormCostApplies ? [formulaStep("沙暴·地系能耗减半", { multiplier: 0.5, method: "floor" },
+        fixedReducedCost(cost), reducedCost(cost), "weather:sandstorm")] : []),
+    ];
   };
   if (skill.category === "status" || skill.category === "defense") {
     const skillCost = reducedCost(skill.cost);
@@ -446,7 +483,10 @@ export function calculateSkillResult({
       traitHitCount,
       markAttackLevelBonus,
     });
-    return { ...result, skillCost };
+    return { ...result, skillCost,
+      ...(sandstormReduction(skill.cost) > 0 ? { sandstormCostReduction: sandstormReduction(skill.cost) } : {}),
+      formulaSteps: [...costFormulaSteps(skill.cost), ...(result.formulaSteps ?? [])],
+    };
   }
   const sourceMarkEffects = resolveSourceMarkEffects({
     actedBeforeEnemy: context.actedBeforeEnemy,
@@ -498,7 +538,7 @@ export function calculateSkillResult({
   const costInput = getSkillEffectInputs(skill).find((input) => input.contextKey === "actualSkillCost");
   const manualCostInput = costInput ? finiteNumber(rawContext[costInput.id], rawContext.actualSkillCost) : undefined;
   let effectiveCostInput;
-  if (costInput && totalCostReduction > 0) {
+  if (costInput && hasCostReduction) {
     effectiveCostInput = manualCostInput === undefined ? reducedCost(skill.cost)
       : Math.min(costInput.max ?? Infinity, Math.max(0, manualCostInput));
     context.actualSkillCost = effectiveCostInput;
@@ -543,6 +583,7 @@ export function calculateSkillResult({
     const categoryResolution = categoryTraitResolutions[category];
     return (
       (attackLevelStage ?? 0) +
+      (category === "magical" ? finiteNumber(directionOverrides.magicalAttackLevelStageAdd) ?? 0 : 0) +
       markAttackLevelBonus +
       (categoryResolution?.status === "exact"
         ? categoryResolution.attackLevelBonus
@@ -587,13 +628,13 @@ export function calculateSkillResult({
   context.attackerPhysicalDefense = Math.floor(
     abilityAdjustedStat(
       attacker.panelStats.physicalDefense,
-      (finiteNumber(attackerDefenseLevelStage) ?? 0) + traitResolution.attackerDefenseLevelBonus,
+      (finiteNumber(attackerDefenseLevelStage) ?? 0) + categoryTraitResolutions.physical.attackerDefenseLevelBonus,
     ),
   );
   context.defenderPhysicalDefense = Math.floor(
     abilityAdjustedStat(
       defender.panelStats.physicalDefense,
-      (defenseLevelStage ?? 0) + traitResolution.defenderDefenseLevelBonus,
+      (defenseLevelStage ?? 0) + categoryTraitResolutions.physical.defenderDefenseLevelBonus,
     ),
   );
 
@@ -747,13 +788,13 @@ export function calculateSkillResult({
       magicalDefense: Math.floor(
         abilityAdjustedStat(
           defender.panelStats.magicalDefense,
-          (defenseLevelStage ?? 0) + traitResolution.defenseLevelBonus + magicalDefenseLevelStageAdd,
+          (defenseLevelStage ?? 0) + categoryTraitResolutions.magical.defenseLevelBonus + magicalDefenseLevelStageAdd,
         ),
       ),
       physicalDefense: Math.floor(
         abilityAdjustedStat(
           defender.panelStats.physicalDefense,
-          (defenseLevelStage ?? 0) + traitResolution.defenseLevelBonus,
+          (defenseLevelStage ?? 0) + categoryTraitResolutions.physical.defenseLevelBonus,
         ),
       ),
       speed: context.defenderSpeed,
@@ -809,6 +850,8 @@ export function calculateSkillResult({
       : resolvedTypeMultiplier;
   const categoryKey =
     statKeys.attack === "magicalAttack" ? "magical" : "physical";
+  const categoryAttackLevelStageAdd = categoryKey === "magical"
+    ? finiteNumber(directionOverrides.magicalAttackLevelStageAdd) ?? 0 : 0;
   const categoryDefenseLevelStageAdd = categoryKey === "magical" ? magicalDefenseLevelStageAdd : 0;
   const bloodlineAttackLevelBonus =
     attackerBloodline.attackLevelBonusByCategory[categoryKey] +
@@ -824,6 +867,7 @@ export function calculateSkillResult({
     attackerContract.targetDefenseLevelBonusByCategory[categoryKey];
   const hasStageInput =
     markAttackLevelBonus !== 0 ||
+    categoryAttackLevelStageAdd !== 0 ||
     categoryDefenseLevelStageAdd !== 0 ||
     attackLevelStage !== undefined ||
     defenseLevelStage !== undefined ||
@@ -835,6 +879,7 @@ export function calculateSkillResult({
     contractDefenseLevelBonus !== 0;
   const totalAttackLevelStage =
     (attackLevelStage ?? 0) +
+    categoryAttackLevelStageAdd +
     markAttackLevelBonus +
     traitResolution.attackLevelBonus +
     bloodlineAttackLevelBonus +
@@ -1347,14 +1392,7 @@ export function calculateSkillResult({
         ),
       ];
   const formulaSteps = [
-    ...(totalCostReduction > 0 && resolvedSkillCost !== undefined ? [
-      formulaStep(manualCostInput === undefined
-        ? `能耗减免（${[refractionEnergyReduction(directionOverrides) > 0 ? "折射·水" : null,
-            traitCostReduction > 0 ? "蟹蟹椰" : null].filter(Boolean).join("、")}）` : "实际能耗（手动）",
-        { reduction: manualCostInput === undefined ? totalCostReduction : 0 },
-        finiteNumber(costResolution.resolvedCost, skill.cost), resolvedSkillCost,
-        manualCostInput === undefined ? traitCostReduction > 0 ? "s5-trait-cost" : "refraction-energy" : "manual-cost"),
-    ] : []),
+    ...costFormulaSteps(finiteNumber(costResolution.resolvedCost, skill.cost), manualCostInput === undefined ? undefined : effectiveCostInput),
     formulaStep(
       "攻击面板",
       statKeys.attack,
@@ -1624,6 +1662,7 @@ export function calculateSkillResult({
     ],
     attack: panelPowerOverride ? [] : limitGainSources([
       ...stateGains("attackLevelStage", attackLevelStage ?? 0, slotOverrides.attackLevelStage !== undefined),
+      ...stateGains("magicalAttackLevelStageAdd", categoryAttackLevelStageAdd),
       ...traitGains("attackLevelBonus"),
       ...namedGain(attackerBloodline.label || defenderBloodline.label || "血脉", bloodlineAttackLevelBonus),
       ...namedGain(attackerContract.label || defenderContract.label || "契约形态", contractAttackLevelBonus),
@@ -1681,6 +1720,8 @@ export function calculateSkillResult({
       costResolution.resolvedCost,
       skill.cost,
     )),
+    ...(manualCostInput === undefined && sandstormReduction(finiteNumber(powerResolution.resolvedCost, costResolution.resolvedCost, skill.cost)) > 0
+      ? { sandstormCostReduction: sandstormReduction(finiteNumber(powerResolution.resolvedCost, costResolution.resolvedCost, skill.cost)) } : {}),
     skillPower: actualPower,
     effectivePower: panelPower,
     automaticHitCountAdd,

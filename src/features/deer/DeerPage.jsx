@@ -25,7 +25,7 @@ import { hasCompleteRaceStats } from "../../domain/stat.js";
 import { chooseDefaultSkillIds } from "../../domain/skill-loadout.js";
 import { isCompleteSpiritConfig, spiritConfigsRepository } from "../../state/spirit-configs.js";
 import { canonicalTraitControlKey, materializeTraitContext } from "../../state/trait-values.js";
-import { DEER_NAMES, DEFENSE_TEMPLATES, applyDeerPreset, calculateDeerRow, calculateDeerSummaryRows, createDeerSetup, evaluateDeerAttack, getDeerDefenseLimitations, hasDeerDefenseTrait, panelFor } from "./deer-model.js";
+import { DEER_NAMES, DEFENSE_TEMPLATES, applyDeerPreset, calculateDeerRow, calculateDeerSummaryRows, createDeerSetup, evaluateDeerAttack, getDeerDefenseLimitations, hasDeerDefenseTrait, panelFor, withDeerBattleLevels } from "./deer-model.js";
 import "./deer.css";
 import { useRuntime } from "../../runtime/RuntimeContext.jsx";
 import { useToolLocale as useLocale } from "../../i18n/useToolLocale.js";
@@ -50,7 +50,7 @@ function standardAttackPreset(spiritName) {
   return { nature: spiritName === "爵士鹿" ? "adamant" : "cheerful", displayIvs: { hp: 60, physicalAttack: 60, speed: 60, magicalAttack: 0, physicalDefense: 0, magicalDefense: 0 } };
 }
 
-function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup, onSelect, onDefenseLevel, children }) {
+function SideConfiguration({ snapshot, setup, battleState, sideKey, presets, onSide, onSetup, onSelect, onDefenseLevel, children }) {
   const { typeName, t } = useLocale();
   const [expanded, setExpanded] = useState(false);
   const side = setup.state.sides[sideKey];
@@ -59,7 +59,7 @@ function SideConfiguration({ snapshot, setup, sideKey, presets, onSide, onSetup,
   const defensePercent = defenseStage * 10;
   const label = attack ? "攻击方" : "防御方";
   const spirit = snapshot.spirits.find((entry) => entry.id === side.spiritId);
-  const panels = spirit ? panelFor(snapshot, side) : null;
+  const panels = spirit ? panelFor(snapshot, side, battleState.sides[sideKey].level) : null;
   const options = useMemo(() => snapshot.spirits.filter((entry) => hasCompleteRaceStats(entry.raceStats) && (!attack || DEER_NAMES.includes(entry.fullName))).map((entry) => ({ ...entry, assetUrl: entry.asset?.localUrl })), [snapshot, attack]);
   const selected = options.find((entry) => entry.id === spirit?.id);
   const setIv = (stat, value) => onSide({ displayIvs: { ...side.displayIvs, [stat]: value } });
@@ -222,10 +222,11 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
   const combo = bestRow(rows, "comboMinimum");
   const warnings = [...new Set(rows.flatMap((row) => row.current.first.warnings ?? []))].filter((warning) => typeof warning === "string");
   const defender = snapshot.spirits.find((spirit) => spirit.id === setup.state.sides.defender.spiritId);
+  const battleState = withDeerBattleLevels(snapshot, setup.state);
   const defenseTrait = defender ? getTraitView(snapshot, defender, "defender") : null;
   const defenseContext = { ...(defender ? materializeTraitContext(setup.state.sides.defender.traitValues, snapshot, defender.id, "defender") : {}), ...setup.state.directions.forward.context };
-  const stats = defender ? panelFor(snapshot, setup.state.sides.defender) : null;
-  const attackerMaxHp = panelFor(snapshot, setup.state.sides.attacker).hp;
+  const stats = defender ? panelFor(snapshot, setup.state.sides.defender, battleState.sides.defender.level) : null;
+  const attackerMaxHp = panelFor(snapshot, setup.state.sides.attacker, battleState.sides.attacker.level).hp;
   const darkBetActive = Math.max(1, Math.round(attackerMaxHp * setup.attackerHp / 100)) < attackerMaxHp / 2;
   const defenseLimitations = defender ? getDeerDefenseLimitations(snapshot, setup.state.sides.defender) : [];
   const conditions = [
@@ -281,15 +282,19 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
   function setTrait(id, value) {
     const control = defenseTrait.inputs.find((input) => input.id === id);
     if (!control) return;
+    const ownerLevelControl = control.contextKey?.endsWith("S5BattleLevel")
+      ? getTraitView(snapshot, defender, "attacker").inputs.find(input => canonicalTraitControlKey(input) === canonicalTraitControlKey(control)) : null;
     setSetup((current) => ({ ...current, state: { ...current.state,
       sides: { ...current.state.sides, defender: { ...current.state.sides.defender, traitValues: { ...current.state.sides.defender.traitValues, [canonicalTraitControlKey(control)]: value } } },
-      directions: { ...current.state.directions, forward: { ...current.state.directions.forward, context: { ...current.state.directions.forward.context, [id]: value } } },
+      directions: { ...current.state.directions, forward: { ...current.state.directions.forward, context: { ...current.state.directions.forward.context, [id]: value } },
+        ...(ownerLevelControl ? { reverse: { ...current.state.directions.reverse, context: { ...current.state.directions.reverse.context, [ownerLevelControl.id]: value } } } : {}) },
     } }));
   }
   return <><DeerHeader onReturn={onReturn} /><main className="deer-page">
     <div className="deer-scenery" aria-hidden="true"><div className="deer-scenery-shards" /><img className="deer-scenery-portrait" src={publicResourceUrl("/assets/deer/bopulu-background-v2.webp")} alt="" width="1024" height="1536" decoding="async" draggable={false} /><div className="deer-scenery-spark deer-scenery-spark--right" /><div className="deer-scenery-spark deer-scenery-spark--left" /></div>
-    <div className="deer-header"><span>{t("共享计算内核 · 60级")}</span></div>
-    <div className="deer-configs">{["attacker", "defender"].map((sideKey) => <div className="deer-config-column" key={sideKey}><SideConfiguration snapshot={snapshot} setup={setup} sideKey={sideKey} presets={presets} onSide={(patch, manual) => setSide(sideKey, patch, manual)} onSetup={setOptions} onSelect={(id) => selectSpirit(sideKey, id)} onDefenseLevel={(value) => setOverride("defenseLevelStage", value)}>
+    <div className="deer-header"><span>{t("共享计算内核 · 60级").replace("60", battleState.sides.attacker.level === battleState.sides.defender.level
+      ? String(battleState.sides.attacker.level) : `${battleState.sides.attacker.level} / ${battleState.sides.defender.level}`)}</span></div>
+    <div className="deer-configs">{["attacker", "defender"].map((sideKey) => <div className="deer-config-column" key={sideKey}><SideConfiguration snapshot={snapshot} setup={setup} battleState={battleState} sideKey={sideKey} presets={presets} onSide={(patch, manual) => setSide(sideKey, patch, manual)} onSetup={setOptions} onSelect={(id) => selectSpirit(sideKey, id)} onDefenseLevel={(value) => setOverride("defenseLevelStage", value)}>
       {sideKey === "defender" && hasDeerDefenseTrait(snapshot, setup.state.sides.defender) && <DefenderTraitConfiguration snapshot={snapshot} spirit={defender} side={setup.state.sides.defender} trait={defenseTrait} context={defenseContext} onTrait={setTrait} onSide={(patch) => setSide("defender", patch, false)} />}
     </SideConfiguration>{sideKey === "attacker" && defender && speed && <section className="deer-speed" aria-label={t("速度对比")} aria-live="polite" aria-busy={updating}>
       <span>{t("速度对比")}</span><strong data-state={speed.state}>{t(updating ? t("正在复算…") : speed.label)}</strong>

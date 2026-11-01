@@ -38,7 +38,25 @@ describe("skill status effects", () => {
     expect(resolveSkillStatusActivation(current, { [control.id]: true, statusTriggerCount: 2 }))
       .toMatchObject({ applied: true, deltas: { ownAttack: 8, ownSpeedFlat: 30 }, triggerCount: 1 });
   });
-  test.each(["筑梦", "热桥", "地缚灵", "画龙点睛"])("S5 %s状态规则不进入国际服S3历史规则", name => {
+  test("S5矿物置换只加魔攻，萌芽按单项增益追加", () => {
+    const current = skill("矿物置换", { category: "status", basePower: null, cost: 1 });
+    expect(resolveSkillStatusActivation(current)).toMatchObject({ applied: true,
+      deltas: { ownAttack: 0 }, operations: { ownMagicalAttackStageAdd: 12 } });
+    expect(resolveSkillStatusActivation(current, { sproutStacks: 2 })).toMatchObject({
+      operations: { ownMagicalAttackStageAdd: 14 } });
+  });
+  test.each([[2, 5], [1, 10], [0, 15], [3, 5]])("S5续杯实际消耗%d时加双攻%d层", (effectiveSkillCost, ownAttack) => {
+    const current = skill("续杯", { category: "status", basePower: null, cost: 2 });
+    expect(resolveSkillStatusActivation(current, { effectiveSkillCost })).toMatchObject({ applied: true, deltas: { ownAttack } });
+  });
+  test("S5咒火未蓄力完成不被描述解析提前挂龙噬", () => {
+    const current = skill("咒火", { category: "status", basePower: null, cost: 3, description: "蓄力，自己获得2层龙噬印记。" });
+    expect(resolveSkillStatusActivation(current)).toMatchObject({ applied: false, operations: { markApplications: [] } });
+    const [control] = getSkillStatusEffectInputs(current);
+    expect(resolveSkillStatusActivation(current, { [control.id]: true })).toMatchObject({ applied: true,
+      operations: { markApplications: [{ id: "dragon-bite", stacks: 2, target: "self", polarity: "positive" }] } });
+  });
+  test.each(["筑梦", "热桥", "地缚灵", "画龙点睛", "矿物置换", "续杯", "咒火"])("S5 %s状态规则不进入国际服S3历史规则", name => {
     expect(getSkillStatusEffect(skill(name, { calculationRuleset: "s3-midseason-2026-08-13" }))).toBeNull();
   });
   test.each([[0, 50], [3, 80], [5, 100], [99, 100]])("不可接触读取 %s 层中毒增加减伤", (poisonStacks, reduction) => {

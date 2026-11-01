@@ -862,7 +862,11 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   }
 
   function openSideAbilityAnalysis(side) {
-    const configuration = createTeamMemberFromSide(stateRef.current.sides[side]);
+    const configuration = {
+      ...createTeamMemberFromSide(stateRef.current.sides[side]),
+      level: resolveS5PreviewBattleLevel(snapshot, stateRef.current, side),
+      ignoreTraits: stateRef.current.sides[side].ignoreTraits,
+    };
     overlays.team.openAbilityAnalysis({
       configuration,
       side,
@@ -1139,6 +1143,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       choiceTrait,
       effectiveHitCount:
         calculation?.[selfDirection]?.results?.[index]?.hitCount,
+      effectiveSkillCost: calculation?.[selfDirection]?.results?.[index]?.skillCost ?? skill.cost,
       sproutStacks,
     });
     const postAttackEffects =
@@ -1334,6 +1339,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       value: {
         overrides: {
           attackLevelStage: ownAttackStage,
+          magicalAttackLevelStageAdd: clampStage(
+            Number(selfOverrides.magicalAttackLevelStageAdd ?? 0) + Number(operations.ownMagicalAttackStageAdd ?? 0),
+          ),
           attackerSpeedFlat: ownSpeedFlat,
           defenderSpeedFlat:
             Number(selfOverrides.defenderSpeedFlat ?? 0) +
@@ -2015,6 +2023,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       .map((trait) => trait?.displayName ?? trait?.name).find(supportsChoiceTrait);
     const resolution = skill ? resolveSkillStatusActivation(skill, { ...context, carriedSkills, sproutStacks,
       attackerHpPercent: selfHealth.percent, effectiveHitCount: result?.hitCount,
+      effectiveSkillCost: result?.skillCost ?? skill.cost,
       choiceTrait: context.choiceTraitTriggered === true ? traitName : null }) : null;
     const sequence = skill && hasPersistentSkillProgression(skill)
       ? buildChoiceSkillSequence({ skill, context, traitName, sproutStacks }) : null;
@@ -2283,7 +2292,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     configLibrary: configLibraryFlow.overlayProps,
     dataSource: {
       ...overlays.dataSourceProps,
-      dataVersion: serverId === "global" ? "S3 · 2026-08-13" : `S4「季中」 · ${snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`,
+      dataVersion: serverId === "global" ? "S3 · 2026-08-13" : `${snapshot.meta.s5NrcSync?.complete ? "S5" : release.seasonLabel} · ${snapshot.meta.s5NrcSync?.version ?? snapshot.meta.bwikiRevision ?? snapshot.meta.snapshotVersion}`,
     },
     productAccess: overlays.productAccessProps,
     displaySettings: overlays.displaySettingsProps,
@@ -2595,6 +2604,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                     {
                       label: "防御能力等级",
                       bonusStage: attackerView.abilityStageBonuses?.defense ?? 0,
+                      bonusStages: attackerView.abilityStageBonuses?.defenseByCategory,
                       multiplier: stageMultiplier(
                         state.directions.reverse.overrides.defenseLevelStage ?? 0,
                       ),
@@ -2617,6 +2627,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                   : {
                       label: "防御能力等级",
                       bonusStage: attackerView.abilityStageBonuses?.defense ?? 0,
+                      bonusStages: attackerView.abilityStageBonuses?.defenseByCategory,
                       multiplier: stageMultiplier(defenseLevelStage),
                       role: "defense",
                       stage: defenseLevelStage,
@@ -2652,6 +2663,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                     {
                       label: "防御能力等级",
                       bonusStage: defenderView.abilityStageBonuses?.defense ?? 0,
+                      bonusStages: defenderView.abilityStageBonuses?.defenseByCategory,
                       multiplier: stageMultiplier(
                         state.directions.forward.overrides.defenseLevelStage ?? 0,
                       ),
@@ -2666,6 +2678,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
                   ? {
                       label: "防御能力等级",
                       bonusStage: defenderView.abilityStageBonuses?.defense ?? 0,
+                      bonusStages: defenderView.abilityStageBonuses?.defenseByCategory,
                       multiplier: stageMultiplier(defenseLevelStage),
                       role: "defense",
                       stage: defenseLevelStage,
@@ -2880,7 +2893,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
 }
 
 export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDeer, onOpenGlobal, active = true }) {
-  const { serverId } = useRuntime();
+  const { serverId, release } = useRuntime();
   const { t } = useLocale();
   const [snapshot, setSnapshot] = useState(() =>
     initialSnapshot
@@ -2920,7 +2933,7 @@ export function App({ initialSnapshot = null, initialWorkspace = null, onOpenDee
       <div className="app">
         <AppHeader viewMode={initialWorkspace?.viewMode ?? readViewModeSetting(serverId)} />
         <main className="loading-state">
-          <p>{t(error ? "资料加载失败，请重试。" : serverId === "global" ? "正在加载精灵资料…" : "正在加载 S4「季中」数据…")}</p>
+          <p>{t(error ? "资料加载失败，请重试。" : serverId === "global" ? "正在加载精灵资料…" : `正在加载 ${release.seasonLabel}数据…`)}</p>
           {error ? <button type="button" onClick={() => { setError(""); setLoadAttempt(value => value + 1); }}>{t("重试")}</button> : null}
         </main>
       </div>

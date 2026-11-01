@@ -4,8 +4,25 @@ export const CN_ICON_WEIGHTS = Object.freeze(["regular", "bold", "fill"]);
 
 // The root production build serves CN; Global is assembled from its separate pin.
 // Keep source translations and development builds intact, and retain all used icons.
-export function pruneCnProductionModule(code, id) {
+export function pruneCnProductionModule(code, id, { reviewedS5 = false } = {}) {
   const filename = id.replaceAll("\\", "/");
+  if (filename.endsWith("/src/i18n/calculator-messages.js")) {
+    // CN renders the source Chinese text; this table contains only EN/JA translations.
+    return "export const calculatorMessages = {};";
+  }
+  if (reviewedS5 && filename.endsWith("/src/features/s5-preview/with-web-preview.js")) {
+    // The build emits a complete reviewed snapshot. Do not ship the older fallback
+    // catalog again in JS or let it overwrite current data after a release.
+    return `import { withCalculatorExtras } from "../../data/snapshot-extras.js";
+import { withPublicResourceUrls } from "../../runtime/public-resource-url.js";
+import { restoreS5RuntimeRelations } from "../../data/s5-runtime-relations.js";
+export function withWebPreview(snapshot) {
+  const restored = restoreS5RuntimeRelations(snapshot);
+  if (restored.meta?.s5NrcSync?.complete !== true) throw new Error("S5资料尚未完整加载，请刷新重试。");
+  return withPublicResourceUrls(withCalculatorExtras(restored));
+}`;
+  }
+
   if (filename.endsWith("/src/data/global-entity-text.js")) {
     const exports = parse(code, { sourceType: "module" }).program.body;
     return exports.map(node => {
@@ -38,13 +55,13 @@ export function pruneCnProductionModule(code, id) {
   return code.slice(0, weights.start) + "[" + retained.map(node => code.slice(node.start, node.end)).join(",") + "]" + code.slice(weights.end);
 }
 
-export function cnProductionPruningPlugin() {
+export function cnProductionPruningPlugin(options = {}) {
   return {
     name: "cn-production-pruning",
     apply: "build",
     enforce: "pre",
     transform(code, id) {
-      const result = pruneCnProductionModule(code, id);
+      const result = pruneCnProductionModule(code, id, options);
       return result === null ? null : { code: result, map: null };
     },
   };

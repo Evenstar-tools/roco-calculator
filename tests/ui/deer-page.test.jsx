@@ -4,13 +4,37 @@ import { expect, test } from "vitest";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 import { DeerWorkspace } from "../../src/features/deer/DeerPage.jsx";
 import { AppHeader } from "../../src/components/AppHeader.jsx";
-import { createDeerSetup } from "../../src/features/deer/deer-model.js";
+import { createDeerSetup, buildDeerInput, DEER_VARIANTS } from "../../src/features/deer/deer-model.js";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 import userEvent from "@testing-library/user-event";
 import { getTraitView } from "../../src/domain/calculator-view-model.js";
 import { ELEMENT_TYPES } from "../../src/domain/type-chart.js";
 
 const snapshot = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
 const skillRow = (name) => screen.getByRole("button", { name, exact: true }).closest("tr");
+
+test("电鹿防方等级控件与实际面板、伤害同步，关闭等级特性回到60级", () => {
+  const current = withWebPreview(snapshot);
+  const setup = createDeerSetup(current);
+  setup.state.sides.defender.spiritId = current.spirits.find(spirit => spirit.previewIdentity?.key === "minggulong").id;
+  const expectedHp = buildDeerInput(current, setup, DEER_VARIANTS[0], 1).sides.defender.panelStats.hp;
+  render(<DeerWorkspace snapshot={current} initialState={setup.state} />);
+  const defense = screen.getByRole("region", { name: "防御方配置" });
+  fireEvent.click(within(defense).getByRole("button", { name: "手调配置" }));
+  const hpValue = () => within(defense).getByLabelText("生命个体").closest(".stat-tile").querySelector("output");
+  expect(hpValue()).toHaveTextContent(String(expectedHp));
+  const level = screen.getByRole("spinbutton", { name: "当前等级" });
+  expect(level).toHaveValue(99);
+  const before = skillRow("电弧 · 普通").textContent;
+  fireEvent.change(level, { target: { value: "79" } });
+  fireEvent.blur(level);
+  expect(level).toHaveValue(79);
+  expect(Number(hpValue().textContent)).toBeLessThan(expectedHp);
+  expect(skillRow("电弧 · 普通").textContent).not.toBe(before);
+  expect(screen.getByText("共享计算内核 · 60 / 79级")).toBeInTheDocument();
+  fireEvent.click(screen.getByLabelText("防守特性"));
+  expect(screen.getByText("共享计算内核 · 60级")).toBeInTheDocument();
+});
 
 test("爵士鹿常用配置切换成物攻增益，血脉默认武系，愿力冲击为额外最后一行", () => {
   render(<DeerWorkspace snapshot={snapshot} />);

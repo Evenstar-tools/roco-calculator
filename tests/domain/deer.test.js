@@ -4,7 +4,9 @@ import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 import { calculateMatchup } from "../../src/domain/calculate.js";
 import { calculateNegativeStatusSettlement } from "../../src/domain/negative-status.js";
 import { ELEMENT_TYPES } from "../../src/domain/type-chart.js";
-import { getTraitView } from "../../src/domain/calculator-view-model.js";
+import { buildCalculatorViewModel, getTraitView } from "../../src/domain/calculator-view-model.js";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
+import { getS5PreviewTraitInputs } from "../../src/domain/s5-preview-traits.js";
 import { canonicalTraitControlKey } from "../../src/state/trait-values.js";
 import { DEER_VARIANTS, DEFENSE_TEMPLATES, applyDeerPreset, buildDeerInput, calculateDeerRow, calculateDeerRows, calculateDeerSummaryRows, createDeerSetup, deerVariantsFor, evaluateDeerAttack, findDeerThresholds, getDeerSpeedComparison, hasDeerDefenseTrait } from "../../src/features/deer/deer-model.js";
 
@@ -13,6 +15,36 @@ const variant = (id) => DEER_VARIANTS.find((row) => row.id === id);
 const evaluate = (setup, id, stacks = 1) => evaluateDeerAttack(snapshot, setup, variant(id), stacks);
 
 describe("电鹿斩杀线", () => {
+  test.each([99, 89, 79, 69])("冥古龙%s级防方沿用主界面的生命与双防，并保留入口生命百分比", (level) => {
+    const current = withWebPreview(snapshot);
+    const setup = createDeerSetup(current);
+    const owner = current.spirits.find(spirit => spirit.previewIdentity?.key === "minggulong");
+    const trait = current.traits.find(trait => owner.traitIds.includes(trait.id));
+    setup.state.sides.defender.spiritId = owner.id;
+    const control = getS5PreviewTraitInputs(trait, "attacker").find(input => input.contextKey.endsWith("BattleLevel"));
+    setup.state.directions.reverse.context[control.id] = level;
+    const before = structuredClone(setup);
+    const input = buildDeerInput(current, setup, variant("arc"), 1);
+    const vm = buildCalculatorViewModel({ snapshot: current, state: input, activeDirection: "forward" });
+    const result = evaluateDeerAttack(current, setup, variant("arc"), 1);
+    expect(input.sides.defender.level).toBe(level);
+    expect(result.maxHp).toBe(vm.sides.defender.panelStats.hp);
+    expect(result.damage).toBe(vm.result.selectedResult.totalDamage);
+    input.directions.forward.currentHp = Math.round(result.maxHp * 0.5);
+    expect(createDeerSetup(current, input).defenderHp).toBeCloseTo(input.directions.forward.currentHp / result.maxHp * 100);
+    expect(setup).toEqual(before);
+  });
+
+  test("未接入的防方特性保留待确认状态，忽略特性后才恢复计算", () => {
+    const current = { ...snapshot, spirits: snapshot.spirits.map(spirit => spirit.fullName === "银月狼王"
+      ? { ...spirit, calculationStatus: "pending-s5-mechanics", traitIds: [] } : spirit) };
+    const setup = createDeerSetup(current);
+    expect(evaluateDeerAttack(current, setup, variant("arc"), 1)).toMatchObject({ damage: null, lethalKnown: false, comboDamage: null,
+      first: { status: "unsupported", reason: expect.stringContaining("S5 特性尚未接入") } });
+    setup.state.sides.defender.ignoreTraits = true;
+    expect(evaluateDeerAttack(current, setup, variant("arc"), 1).first.status).toBe("exact");
+  });
+
   test("愿力冲击仅属于爵士鹿，默认武系；波普鹿保持原九行", () => {
     const boss = createDeerSetup(snapshot);
     expect(boss.wishPowerType).toBe("武");

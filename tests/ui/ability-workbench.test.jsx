@@ -89,6 +89,18 @@ function chooseSpeedTarget(name) {
   return input;
 }
 
+test("临时能力分析沿用当前战斗等级，等级变化同步面板与候选", () => {
+  const configuration = { ...member({ hp: 60, physicalAttack: 60, speed: 60 }), level: 99 };
+  const props = { configuration, snapshot, source: { kind: "side", side: "attacker" } };
+  const { rerender } = render(<AbilityWorkbench {...props} />);
+  fireEvent.click(screen.getByText("手动微调"));
+  const speed = () => within(screen.getByRole("group", { name: "个体值分配" }))
+    .getByRole("button", { name: /取消速度个体值/ });
+  expect(within(speed()).getByLabelText("速度实际值")).toHaveTextContent("284");
+  rerender(<AbilityWorkbench {...props} configuration={{ ...configuration, level: 89 }} />);
+  expect(within(speed()).getByLabelText("速度实际值")).toHaveTextContent("268");
+});
+
 test("满三项后可点第四项并明确替换一个已选个体值", async () => {
   const user = userEvent.setup();
   render(

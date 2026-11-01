@@ -1,4 +1,5 @@
 import { calculateMatchup } from "./calculate.js";
+import { withS5PreviewCalculationGuard } from "../features/s5-preview/calculation-guard.js";
 import { getNature, getNatureMultipliers, STAT_LABELS } from "./natures.js";
 import { normalizeMarksState, starfallStacksFromMarkSlot } from "./marks.js";
 import { calculateFreezeThreshold, normalizeNegativeStatusSide } from "./negative-status.js";
@@ -243,7 +244,13 @@ export async function createSkillDamageRanking({ snapshot, state, direction = "f
         const calculationInput = { ...input, sides: { ...input.sides,
           [sourceSide]: source, [targetSide]: { ...input.sides[targetSide], level: 60 },
         } };
-        const result = calculateMatchup(snapshot, calculationInput)[direction].selectedResult;
+        const calculation = withS5PreviewCalculationGuard({
+          sides: Object.fromEntries(Object.entries(calculationInput.sides).map(([key, side]) => [key, {
+            spirit: getSnapshotIndexes(snapshot).spirits[side.spiritId],
+          }])),
+          calculation: calculateMatchup(snapshot, calculationInput),
+        }, snapshot, calculationInput).calculation;
+        const result = calculation[direction].selectedResult;
         if (result?.status !== "exact" || !Number.isFinite(result.totalDamage)) reason = result?.reason || "无直接伤害或缺少计算条件";
         else if (["status", "defense"].includes(selection.selected.skill.category) && result.totalDamage === 0) reason = "该技能无直接伤害";
         else {

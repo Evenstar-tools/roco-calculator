@@ -87,7 +87,7 @@ export const calculatorMessages = Object.fromEntries([
   ["无天气", "No weather", "天候なし"],
   ["雨天 · 水系威力 +75%", "Rain · Water power +75%", "雨 · 水属性の威力+75%"],
   ["雷鸣 · 回合末引电 +1", "Thunder · Conduction +1 at turn end", "雷鳴 · ターン終了時に誘電+1"],
-  ["沙暴 · 联动相关特性", "Sandstorm · Activates related traits", "砂嵐 · 関連特性に連動"],
+  ["沙暴 · 地系能耗减半", "Sandstorm · Earth skill cost halved", "砂嵐 · 地属性スキルの消費半減"],
   ["暴风雪 · 联动技能与特性", "Blizzard · Activates related skills and traits", "吹雪 · 関連スキル・特性に連動"],
   ["霞光梦境 · 速度较慢者先行动", "Charm weather · Slower Jini acts first", "萌属性の天候 · 遅いジニから行動"],
   ["同先制度下速度较慢者先行动；同速仍需判定。", "At equal priority, the slower Jini acts first. Speed ties still require a tie-break.", "優先度が同じ場合は遅いジニから行動します。同速の場合は別途判定します。"],

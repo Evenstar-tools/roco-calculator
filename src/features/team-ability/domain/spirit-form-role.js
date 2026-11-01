@@ -50,6 +50,16 @@ export function resolveSpiritFormRole(spirit, { spiritFilterRevision } = {}) {
       formRoleStatus: "verified",
     };
   }
+  const reviewed = spirit?.formRoleEvidence;
+  if (reviewed?.kind === "bwiki-season" && Number.isSafeInteger(reviewed.revision) && reviewed.revision > 0 &&
+      /^https:\/\/wiki\.biligame\.com\/nrc\//u.test(reviewed.url ?? "") &&
+      ["growth", "final", "boss"].includes(spirit.formRole)) {
+    return {
+      evolutionFamilyId: spirit.evolutionFamilyId ?? null,
+      formRole: spirit.formRole,
+      formRoleStatus: "verified",
+    };
+  }
   const sourceId = spirit?.id?.startsWith("cn-placeholder:")
     ? spirit.reference?.sourceId ?? spirit.id.slice("cn-placeholder:".length)
     : spirit?.id;

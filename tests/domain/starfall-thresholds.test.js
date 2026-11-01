@@ -45,6 +45,21 @@ function mockDamageAt(damageAt, warningsAt = () => []) {
 }
 afterEach(() => vi.restoreAllMocks());
 
+test("星陨阈值不把未接入特性当作普通伤害，防方未使用的待确认技能不阻断当前攻击", () => {
+  const { snapshot, state } = fixture();
+  const pending = { ...snapshot, spirits: snapshot.spirits.map(spirit => spirit.id === state.sides.attacker.spiritId
+    ? { ...spirit, calculationStatus: "pending-s5-mechanics" } : spirit) };
+  const result = evaluateStarfallAt({ snapshot: pending, state, stacks: 7 });
+  expect(result).toMatchObject({ status: "uncertain", damage: null, reason: expect.stringContaining("S5 特性尚未接入") });
+  state.sides.attacker.ignoreTraits = true;
+  expect(evaluateStarfallAt({ snapshot: pending, state, stacks: 7 }).status).toBe("exact");
+  state.sides.attacker.ignoreTraits = false;
+  const pendingDefenseSkill = { ...snapshot, skills: [...snapshot.skills, { id: "pending-status", name: "待接入状态", category: "status", basePower: 0,
+    s5StatusEffectPending: "状态规则待接入" }] };
+  state.sides.defender.skills.four = ["pending-status", null, null, null];
+  expect(evaluateStarfallAt({ snapshot: pendingDefenseSkill, state, stacks: 7 }).status).toBe("exact");
+});
+
 test("当前对位从主UI同源状态计算，保留实际HP、减伤、槽位与反向方向", () => {
   const { snapshot, state } = fixture();
   state.directions.reverse.currentHp = 185;

@@ -1,6 +1,6 @@
 import { publicResourceUrl } from "../runtime/public-resource-url.js";
 
-import { IS_PREVIEW_BUILD } from "../runtime/preview-channel.js";
+import { IS_S5_CN_BUILD } from "../runtime/preview-channel.js";
 
 const freezeTheme = (theme) => Object.freeze({
   ...theme,
@@ -58,7 +58,7 @@ export function resolveSeasonThemeId({ serverId = "cn", preference = "default", 
   if (preview) return preview;
   if (preference === "random" && PREVIEW_IDS.has(randomThemeId)) return randomThemeId;
   if (preference === "neutral" || PREVIEW_IDS.has(preference)) return preference;
-  return serverId === "cn" ? (IS_PREVIEW_BUILD ? "s5" : "s4") : "s3";
+  return serverId === "cn" ? (IS_S5_CN_BUILD ? "s5" : "s4") : "s3";
 }
 
 export function getSeasonTheme(id) {

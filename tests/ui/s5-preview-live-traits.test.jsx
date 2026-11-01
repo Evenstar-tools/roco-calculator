@@ -21,6 +21,76 @@ function setup(key, mode = "four", skillName = "撕咬", negative = false, confi
 }
 const primary = () => Number(screen.getByTestId("primary-damage").textContent);
 
+test("防守方6面骰使用现有控件，双方物攻与单项魔防面板同步且已知点数可算", () => {
+  const official = Object.values(JSON.parse(readFileSync("data/reviewed/nrc-s5-20261101.json", "utf8")).modules.Skills)
+    .find(skill => skill.name === "游戏的本质" && skill.desc.includes("1~6点"));
+  const current = { ...snapshot, traits: snapshot.traits.map(trait => trait.id === "trait_preview_s5_diliutun"
+    ? { ...trait, effectDetails: official.effect_details } : trait) };
+  const state = createInitialState(current);
+  state.mode = "single";
+  state.sides.attacker.spiritId = current.spirits.find(spirit => spirit.fullName === "迪莫").id;
+  state.sides.defender.spiritId = "spirit_preview_s5_diliutun";
+  const bite = current.skills.find(skill => skill.name === "撕咬");
+  for (const side of Object.values(state.sides)) side.skills = { single: bite.id, four: [bite.id, null, null, null] };
+  render(<App initialSnapshot={current} initialWorkspace={{ state, activeDirection: "forward", viewMode: "detailed" }} />);
+  const panel = (side, stat) => {
+    const group = screen.getByRole("group", { name: `${side}能力` });
+    const tile = [...group.querySelectorAll(".stat-tile")].find(tile => tile.querySelector(".stat-tile__label-text")?.textContent === stat);
+    return Number(tile.querySelector("output").textContent);
+  };
+  const originalAttack = [panel("攻击方", "物攻"), panel("防御方", "物攻")];
+  const originalMagicDefense = [panel("攻击方", "魔防"), panel("防御方", "魔防")];
+  const before = primary();
+  const face = screen.getByRole("combobox", { name: "骰点" });
+  expect(within(face).getAllByRole("option")).toHaveLength(7);
+  expect(within(face).getByRole("option", { name: /2 点.*双方物攻/u })).toBeInTheDocument();
+  fireEvent.change(face, { target: { value: "2" } });
+  expect(primary()).toBeGreaterThan(before);
+  for (const [index, side] of ["攻击方", "防御方"].entries()) expect(panel(side, "物攻")).toBe(Math.floor(originalAttack[index] * 1.5));
+  fireEvent.change(face, { target: { value: "5" } });
+  expect(Number.isFinite(primary())).toBe(true);
+  for (const [index, side] of ["攻击方", "防御方"].entries()) expect(panel(side, "魔防")).toBe(Math.floor(originalMagicDefense[index] / 1.8));
+  expect(screen.getByRole("group", { name: "防御方能力" })).toHaveTextContent("魔防 -8层 · -80%");
+});
+
+test("四技能圣冠布鲁斯对滴溜豚仅所属精灵一套骰子控件，跨方摘要共享且切换视图不重复", () => {
+  const official = Object.values(JSON.parse(readFileSync("data/reviewed/nrc-s5-20261101.json", "utf8")).modules.Skills)
+    .find(skill => skill.name === "游戏的本质" && skill.desc.includes("1~6点"));
+  const current = { ...snapshot, traits: snapshot.traits.map(trait => trait.id === "trait_preview_s5_diliutun"
+    ? { ...trait, effectDetails: official.effect_details } : trait) };
+  const state = createInitialState(current);
+  state.mode = "four";
+  state.sides.attacker.spiritId = "spirit_preview_s5_boss-ice-bruce";
+  state.sides.defender.spiritId = "spirit_preview_s5_diliutun";
+  const bite = current.skills.find(skill => skill.name === "撕咬");
+  for (const side of Object.values(state.sides)) side.skills = { single: bite.id, four: [bite.id, null, null, null] };
+  render(<App initialSnapshot={current} initialWorkspace={{ state, activeDirection: "forward", viewMode: "detailed" }} />);
+  const assertUnique = () => {
+    expect(screen.getAllByRole("combobox", { name: "骰点" })).toHaveLength(1);
+    expect(screen.queryByRole("checkbox", { name: "已掷骰并需要结算点数效果" })).not.toBeInTheDocument();
+  };
+  assertUnique();
+  const linked = document.querySelector(".four-skill-side--attacker .four-skill-trait-controls--defense");
+  const owner = document.querySelector(".four-skill-side--defender .four-skill-trait-controls:not(.four-skill-trait-controls--defense)");
+  expect(within(linked).queryByRole("combobox")).not.toBeInTheDocument();
+  expect(within(owner).getByRole("combobox", { name: "骰点" })).toHaveValue("");
+  const before = primary();
+  fireEvent.change(screen.getByRole("combobox", { name: "骰点" }), { target: { value: "2" } });
+  expect(primary()).toBeGreaterThan(before);
+  expect(within(linked).getByRole("status")).toHaveTextContent("双方物攻+50%");
+  fireEvent.click(screen.getByRole("button", { name: "精简版", exact: true }));
+  assertUnique();
+  expect(screen.getByRole("combobox", { name: "骰点" })).toHaveValue("2");
+  fireEvent.click(screen.getByRole("button", { name: "具体版", exact: true }));
+  assertUnique();
+  expect(screen.getByRole("combobox", { name: "骰点" })).toHaveValue("2");
+  fireEvent.change(screen.getByRole("combobox", { name: "骰点" }), { target: { value: "" } });
+  expect(primary()).toBe(before);
+  fireEvent.change(screen.getByRole("combobox", { name: "骰点" }), { target: { value: "1" } });
+  expect(primary()).toBe(before);
+  expect(within(document.querySelector(".four-skill-side--attacker .four-skill-trait-controls--defense")).getByRole("status")).toHaveTextContent("回合结束：双方回复生命10%");
+});
+
 function activateSkill(mode, { view = "compact", label = "使用技能" } = {}) {
   if (view === "detailed") {
     fireEvent.click(screen.getByRole("button", { name: mode === "single" ? label : `攻击方技能1${label}`, exact: true }));
@@ -143,7 +213,7 @@ test("精简四技能本次确认与原生取消/重用共用状态，摘要和�
   expect(applied).toBeGreaterThan(0);
   activateSkill("four", { label: "取消使用" });
   expect(type).toHaveValue("none");
-  expect(screen.getAllByText("未确认本次使用系别，无额外施加").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("尚未使用技能").length).toBeGreaterThan(0);
   expect(screen.getByTestId("primary-damage")).toHaveTextContent("—");
   activateSkill("four", { label: "使用状态" });
   expect(type).toHaveValue("bug");
@@ -201,7 +271,7 @@ test.each(["single", "four"])("%s蛋包蛋只需特性触发一个勾选，双�
   expect(primary()).toBe(before);
   fireEvent.click(trigger);
   expect(trigger).not.toBeChecked();
-  expect(screen.getAllByText("特性未触发").length).toBeGreaterThan(0);
+  expect(screen.queryByText("特性未触发")).not.toBeInTheDocument();
 });
 
 test("无技能也同步回合末聚能后的物攻与能力等级栏，手调加减不重复计入特性", () => {

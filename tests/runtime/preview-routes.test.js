@@ -48,3 +48,34 @@ test("preview build config defaults to its isolated channel without a CLI mode f
   expect(Object.keys(config.build.rollupOptions.input)).toEqual(["main", "deer"]);
   expect(config.build.rollupOptions.input.main.replaceAll("\\", "/")).toMatch(/\/pre\/index\.html$/u);
 });
+
+
+test("formal S5 builds keep CN routes and saved calculation versions while selecting S5 artwork", async () => {
+  vi.stubEnv("MODE", "cn");
+  vi.resetModules();
+  const { routeFor } = await import("../../src/runtime/routes.js");
+  const { IS_PREVIEW_BUILD, IS_S5_CN_BUILD } = await import("../../src/runtime/preview-channel.js");
+  const { resolveSeasonThemeId } = await import("../../src/theme/season-themes.js");
+  const { getServerRelease } = await import("../../src/domain/server-environment.js");
+  expect(IS_PREVIEW_BUILD).toBe(false);
+  expect(IS_S5_CN_BUILD).toBe(true);
+  expect(routeFor("cn")).toBe("/cn/");
+  expect(routeFor("global", "ja")).toBe("/jp/");
+  expect(resolveSeasonThemeId({ serverId: "cn" })).toBe("s5");
+  expect(resolveSeasonThemeId({ serverId: "cn", preference: "s3" })).toBe("s3");
+  expect(resolveSeasonThemeId({ serverId: "global" })).toBe("s3");
+  expect(getServerRelease("cn").dataVersion).toBe("s4-2026-09-10");
+  const { POPULAR_CONFIG_COUNT } = await import("../../src/data/preset-metadata.js");
+  expect(POPULAR_CONFIG_COUNT).toBe(245);
+});
+
+test("formal CN build includes S5 data and presets without mounting the preview or Global entry", () => {
+  const config = JSON.parse(execFileSync(process.execPath, ["--input-type=module", "-e",
+    'import c from "./config/vite.cn.config.mjs"; process.stdout.write(JSON.stringify({mode:c.mode,base:c.base,input:c.build.rollupOptions.input,plugins:c.plugins.flat().map(p=>p.name)}));'],
+  { cwd: process.cwd(), encoding: "utf8" }));
+  expect(config.mode).toBe("cn");
+  expect(config.base).toBe("/");
+  expect(Object.keys(config.input)).toEqual(["main", "deer", "china"]);
+  expect(config.input.main.replaceAll("\\", "/")).not.toContain("/pre/");
+  expect(config.plugins).toEqual(expect.arrayContaining(["s5-bwiki-runtime", "s5-preview-presets", "cn-production-pruning"]));
+});

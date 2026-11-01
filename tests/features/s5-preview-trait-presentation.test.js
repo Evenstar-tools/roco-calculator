@@ -7,7 +7,7 @@ import { extractTraitValues, materializeTraitContext } from "../../src/state/tra
 import { getS5PreviewTraitPresentation } from "../../src/features/s5-preview/trait-presentation.js";
 
 const expectedDefender = {
-  minggulong: "full", abu: "full", "boss-abu": "full", "super-abu": "full", "egg-wrap": "full", diliutun: "hidden",
+  minggulong: "full", abu: "full", "boss-abu": "full", "super-abu": "full", "egg-wrap": "full", diliutun: "full",
   "boss-ice-bruce": "hidden", "underground-silver-dragon": "hidden", "gold-vein-dragon": "hidden",
   "boss-glass-jellyfish": "hidden", jingyu: "hidden", doulie: "hidden", "watermelon-bug": "hidden",
   "lele-shark": "hidden", "crab-coconut": "hidden", "little-scissor": "hidden", "lily-of-valley": "hidden",
@@ -52,6 +52,13 @@ test("default attack role and unknown S5 mechanics keep full controls and pendin
   expect(getS5PreviewTraitPresentation(view)).toEqual({ visible: true, inputs: view.inputs, summaryScope: "full" });
   expect(getS5PreviewTraitPresentation(view, "defender")).toEqual({ visible: true, inputs: view.inputs, summaryScope: "full" });
   expect(getS5PreviewTraitEvaluation(trait)).toMatchObject({ calcStatus: "pending" });
+});
+
+test("骰子跨方关联只读，所属精灵编辑和单技能防方入口仍完整", () => {
+  const { view } = fixture("diliutun", "defender");
+  expect(getS5PreviewTraitPresentation(view, "defender", { linked: true })).toEqual({ visible: true, inputs: [], summaryScope: "full" });
+  expect(getS5PreviewTraitPresentation(view, "defender").inputs).toBe(view.inputs);
+  expect(getS5PreviewTraitPresentation(view, "defender", { linked: true, owner: true }).inputs).toBe(view.inputs);
 });
 
 test.each([null, {}, { previewTraitEntity: { name: "旧特性" } }, { previewTraitEntity: { previewIdentity: { catalogId: "s4-old", mechanicKey: "gold-vein-dragon" } } }])(

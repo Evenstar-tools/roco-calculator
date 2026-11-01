@@ -1,9 +1,10 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { IS_PREVIEW_BUILD } from "./preview-channel.js";
+import { IS_PREVIEW_BUILD, IS_S5_CN_BUILD } from "./preview-channel.js";
 import { metrics } from "../analytics/metrics.js";
 import { readThemeSetting } from "../state/display-settings.js";
 import { applyPageMetadata } from "../seo/page-metadata.js";
-import { readGlobalLocale, readManualPreference, resolveEntry, routeFor, writeManualPreference } from "./routes.js";
+import { readGlobalLocale, resolveEntry, routeFor, writeManualPreference } from "./routes.js";
+import { browserEntry } from "./browser-entry.js";
 import { decodeShareEnvelope } from "../state/share.js";
 import { IncomingShareNotice } from "./IncomingShareNotice.jsx";
 import { RuntimeProvider } from "./RuntimeContext.jsx";
@@ -20,26 +21,7 @@ const pageText = {
   ja: { title: "ロコ計算機 · グローバル", description: "S3 シーズン中盤の能力値とルールに基づくダメージ計算機。", loading: "計算機を読み込み中…" },
 };
 
-export function browserEntry() {
-  let preference = null;
-  let hasLegacyCnData = false;
-  try {
-    preference = readManualPreference(localStorage);
-    // 返回历史根入口时恢复当时的服，不被后来手动选择覆盖。
-    if (location.pathname === "/" && !location.hash && history.state?.rocoEntry) {
-      preference = history.state.rocoEntry;
-    }
-    hasLegacyCnData = ["teams.v1", "spirit-configs.v2", "spirit-configs.v1", "favorites.v1"]
-      .some((suffix) => localStorage.getItem(`rock-calculator.${suffix}`) !== null ||
-        localStorage.getItem(`rock-calculator.servers.cn.${suffix}`) !== null);
-  } catch { /* 禁用存储仍可使用明确入口。 */ }
-  return resolveEntry({
-    pathname: location.pathname, hash: location.hash, preference,
-    languages: navigator.languages, hasLegacyCnData,
-    // 只启用用户明确访问的国际服入口，沿用现有自动分流设置。
-    globalReady: false,
-  });
-}
+export { browserEntry } from "./browser-entry.js";
 
 export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
   const [entry, setEntry] = useState(() => initialEntry ?? browserEntry());
@@ -134,9 +116,9 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
   }
 
   function navigate(serverId, locale, { remember = true, hash = "", replace = false } = {}) {
-    if ((IS_PREVIEW_BUILD && serverId === "global") || (import.meta.env.MODE === "global" && serverId === "cn")) {
+    if ((IS_S5_CN_BUILD && serverId === "global") || (import.meta.env.MODE === "global" && serverId === "cn")) {
       if (remember) writeManualPreference({ serverId, locale: serverId === "cn" ? "zh-CN" : locale });
-      window.location.assign(`${routeFor(serverId, locale)}${hash}`);
+      window.location.assign(`${routeFor(serverId, locale)}${location.search}${hash}`);
       return;
     }
     const next = { serverId, locale: serverId === "cn" ? "zh-CN" : locale };

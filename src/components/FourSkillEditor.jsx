@@ -166,7 +166,7 @@ function SkillSide({
     ),
   );
   const offensePresentation = getS5PreviewTraitPresentation(trait, "attacker");
-  const defensePresentation = getS5PreviewTraitPresentation(defenseTrait, "defender");
+  const defensePresentation = getS5PreviewTraitPresentation(defenseTrait, "defender", { linked: true });
   const offensiveTraitInputs =
     (offensePresentation?.inputs ?? trait?.inputs)?.filter(
       (input) =>
@@ -239,7 +239,7 @@ function SkillSide({
               description={entityDescription("trait", defenseTrait)}
               name={`${entityName("spirit", { name: opponentName })} · ${entityName("trait", defenseTrait)}`}
             />
-            <S5PreviewTraitSummary trait={defenseTrait} role="defender" context={traitContext} />
+            <S5PreviewTraitSummary trait={defenseTrait} role="defender" context={traitContext} linked />
             <TraitInputs
               context={traitContext}
               inputs={defensiveTraitInputs}

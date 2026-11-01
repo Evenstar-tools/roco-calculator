@@ -743,7 +743,7 @@ export function AdvancedOptions({
                 <option value="none">{tc("无天气")}</option>
                 <option value="rain">{tc("雨天 · 水系威力 +75%")}</option>
                 <option value="thunder">{tc("雷鸣 · 回合末引电 +1")}</option>
-                <option value="sandstorm">{tc("沙暴 · 联动相关特性")}</option>
+                <option value="sandstorm">{tc("沙暴 · 地系能耗减半")}</option>
                 <option value="blizzard">{tc("暴风雪 · 联动技能与特性")}</option>
                 <option value="dream">{tc("霞光梦境 · 速度较慢者先行动")}</option>
               </select>

@@ -177,8 +177,12 @@ function SideStats({
         const displayedStage = clampAbilityStage((Number(level.stage) || 0) + bonusStage);
         const magicalStage = clampAbilityStage((Number(level.stage) || 0) + magicalBonusStage);
         const splitAttackStages = displayedStage !== magicalStage;
+        const physicalLabel = t(level.role === "defense" ? "物防" : "物攻");
+        const magicalLabel = t(level.role === "defense" ? "魔防" : "魔攻");
         const levelHint = bonusStage !== magicalBonusStage
-          ? t("手调 {stage}层（双攻） · 特性：物攻 {physical}层、魔攻 {magical}层", { stage: level.stage, physical: `${bonusStage > 0 ? "+" : ""}${bonusStage}`, magical: `${magicalBonusStage > 0 ? "+" : ""}${magicalBonusStage}` })
+          ? level.role === "defense"
+            ? `${t("手动微调")} ${level.stage} · ${physicalLabel} ${abilityStageLabel(displayedStage, t)} · ${magicalLabel} ${abilityStageLabel(magicalStage, t)}`
+            : t("手调 {stage}层（双攻） · 特性：物攻 {physical}层、魔攻 {magical}层", { stage: level.stage, physical: `${bonusStage > 0 ? "+" : ""}${bonusStage}`, magical: `${magicalBonusStage > 0 ? "+" : ""}${magicalBonusStage}` })
           : bonusStage
             ? t("手调 {stage}层 · 特性 {bonus}层；{hint}", { stage: level.stage, bonus: `${bonusStage > 0 ? "+" : ""}${bonusStage}`, hint: abilityLevelHint(abilityAdjustedStat(1, displayedStage), t) })
             : abilityLevelHint(level.multiplier, t);
@@ -205,9 +209,9 @@ function SideStats({
               <output title={levelHint}>
                 {splitAttackStages ? (
                   <>
-                    <span>{t("物攻")} {abilityStageLabel(displayedStage, t)}</span>
+                    <span>{physicalLabel} {abilityStageLabel(displayedStage, t)}</span>
                     <br />
-                    <span>{t("魔攻")} {abilityStageLabel(magicalStage, t)}</span>
+                    <span>{magicalLabel} {abilityStageLabel(magicalStage, t)}</span>
                   </>
                 ) : abilityStageLabel(displayedStage, t)}
               </output>

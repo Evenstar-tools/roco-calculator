@@ -55,7 +55,7 @@ export function getAppliedWeatherLabel(weather, result) {
   );
   if (weather === "rain") return hasGain("powerPercent", "雨天") || hasGain("powerPercent", "得寸进尺") ? "雨天" : null;
   if (weather === "blizzard") return hasGain("powerPercent", "冰雪魂魄") || hasGain("condition", "雪原狩猎") ? "暴风雪" : null;
-  if (weather === "sandstorm") return result.traitContributions?.some(
+  if (weather === "sandstorm") return result.sandstormCostReduction > 0 || result.traitContributions?.some(
     ({ source, values }) => source.name === "流沙统治者" &&
       [values.attackerSpeedFlatBonus, values.defenderSpeedFlatBonus].some((value) => Number.isFinite(value) && value !== 0),
   ) ? "沙暴" : null;
@@ -259,25 +259,35 @@ function previewPanelForSide(snapshot, state, sideKey, panelStats) {
   const opponentCost = carriedSkillTotalCost(state.sides[opponentKey], state.mode,
     getSnapshotIndexes(snapshot).skills, state.directions[opponentKey === "attacker" ? "forward" : "reverse"].overrides,
     { requireKnown: true });
-  let physical = 0, magical = 0, defense = 0, speedFlat = 0, speedStage = 0;
-  let hasPreviewTrait = false;
-  for (const trait of getEffectiveTraits(snapshot, { ...side, spirit: getSpirit(snapshot, side) })) {
+  let physical = 0, magical = Number(outgoing.overrides.magicalAttackLevelStageAdd ?? 0),
+    physicalDefense = 0, magicalDefense = 0, speedFlat = 0, speedStage = 0;
+  let hasPreviewTrait = magical !== 0;
+  const ownTraits = getEffectiveTraits(snapshot, { ...side, spirit: getSpirit(snapshot, side) });
+  const opponent = state.sides[opponentKey];
+  const opponentDiceTraits = getEffectiveTraits(snapshot, { ...opponent, spirit: getSpirit(snapshot, opponent) })
+    .filter(trait => trait.previewIdentity?.mechanicKey === "diliutun");
+  for (const [trait, attackRole, defenseRole] of [
+    ...ownTraits.map(trait => [trait, "attacker", "defender"]),
+    ...opponentDiceTraits.map(trait => [trait, "defender", "attacker"]),
+  ]) {
     const resolve = (role, category, direction) => resolveS5PreviewTraitEffect(trait, role, {
       context: { ...direction.context, ...direction.overrides?.context, automaticEnemyTotalSkillCost: opponentCost }, skill: { category },
     });
-    const physicalEffect = resolve("attacker", "physical", outgoing);
+    const physicalEffect = resolve(attackRole, "physical", outgoing);
     if (!physicalEffect) continue;
     hasPreviewTrait = true;
     physical += physicalEffect.attackLevelBonus;
-    magical += resolve("attacker", "magical", outgoing).attackLevelBonus;
-    defense += resolve("defender", "physical", incoming).defenseLevelBonus;
+    magical += resolve(attackRole, "magical", outgoing).attackLevelBonus;
+    physicalDefense += resolve(defenseRole, "physical", incoming).defenseLevelBonus;
+    magicalDefense += resolve(defenseRole, "magical", incoming).defenseLevelBonus;
     speedFlat += physicalEffect.attackerSpeedFlatBonus;
     speedStage += physicalEffect.attackerSpeedLevelBonus;
   }
   const abilityStageBonuses = {
     attack: physical === magical ? physical : 0,
     attackByCategory: { physical, magical },
-    defense,
+    defense: physicalDefense === magicalDefense ? physicalDefense : 0,
+    ...(physicalDefense === magicalDefense ? {} : { defenseByCategory: { physical: physicalDefense, magical: magicalDefense } }),
   };
   if (!hasPreviewTrait || !panelStats) return { finalStats: null, abilityStageBonuses };
   const attackStage = Number(outgoing.overrides.attackLevelStage ?? 0);
@@ -288,9 +298,9 @@ function previewPanelForSide(snapshot, state, sideKey, panelStats) {
       ...panelStats,
       physicalAttack: Math.floor(abilityAdjustedStat(panelStats.physicalAttack, attackStage + physical)),
       magicalAttack: Math.floor(abilityAdjustedStat(panelStats.magicalAttack, attackStage + magical)),
-      physicalDefense: Math.floor(abilityAdjustedStat(panelStats.physicalDefense, defenseStage + defense)),
+      physicalDefense: Math.floor(abilityAdjustedStat(panelStats.physicalDefense, defenseStage + physicalDefense)),
       magicalDefense: Math.floor(abilityAdjustedStat(panelStats.magicalDefense,
-        defenseStage + defense + Number(incoming.overrides.magicalDefenseLevelStageAdd ?? 0))),
+        defenseStage + magicalDefense + Number(incoming.overrides.magicalDefenseLevelStageAdd ?? 0))),
       speed: Math.round(abilityAdjustedStat(panelStats.speed + speedFlat + Number(outgoing.overrides.attackerSpeedFlat ?? 0), speedStage)),
     },
   };

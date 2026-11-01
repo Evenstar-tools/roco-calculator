@@ -172,9 +172,16 @@ test("双方烈冰钻自动模式隐藏手填框，摘要仍分别显示已知�
 });
 
 test.each(["egg-wrap", "minggulong", "abu"])("%s保留真正影响防御的输入与摘要", key => {
-  render(<SingleSkillEditor hitCount={1} selectedSkill={skill} skills={[skill]}
-    defenderTrait={traitView(key, "defender")} />);
-  expect(screen.getByRole("status", { name: "防御特性当前效果" })).toBeInTheDocument();
+  const trait = traitView(key, "defender");
+  const { rerender } = render(<SingleSkillEditor hitCount={1} selectedSkill={skill} skills={[skill]}
+    defenderTrait={trait} />);
+  if (key === "egg-wrap") {
+    expect(screen.queryByRole("status", { name: "防御特性当前效果" })).not.toBeInTheDocument();
+    const trigger = trait.inputs.find(input => input.type === "boolean");
+    rerender(<SingleSkillEditor hitCount={1} selectedSkill={skill} skills={[skill]}
+      defenderTrait={trait} traitContext={{ [trigger.id]: true }} />);
+    expect(screen.getByRole("status", { name: "防御特性当前效果" })).toHaveTextContent("双防 +50%");
+  } else expect(screen.getByRole("status", { name: "防御特性当前效果" })).toBeInTheDocument();
   expect(key === "egg-wrap" ? screen.getByRole("checkbox", { name: "特性触发" })
     : screen.getByRole("spinbutton", { name: "当前等级" })).toBeInTheDocument();
 });

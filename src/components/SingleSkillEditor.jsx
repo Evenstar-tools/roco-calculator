@@ -269,8 +269,11 @@ export function TraitInputs({
   scope,
 }) {
   const { tc } = useCalculatorLocale();
+  const selectionToggles = new Map(inputs.filter(input => input.selectionToggleKey)
+    .map(input => [input.id, inputs.find(toggle => toggle.contextKey === input.selectionToggleKey)]));
+  const combinedToggleIds = new Set([...selectionToggles.values()].filter(Boolean).map(dynamicInputId));
   return inputs
-    .filter((input) => !input.hidden && (!scope || input.scope === scope))
+    .filter((input) => !input.hidden && !combinedToggleIds.has(dynamicInputId(input)) && (!scope || input.scope === scope))
     .filter((input) => isDynamicInputVisible(input, context))
     .map((input) =>
       input.action ? (
@@ -283,17 +286,24 @@ export function TraitInputs({
         >
           {tc(input.label)}
         </button>
-      ) : input.type === "choice" ? (
-        <label className="trait-choice" key={dynamicInputId(input)}>
+      ) : input.type === "choice" || input.selectOptions ? (
+        <label className={`trait-choice${input.selectionToggleKey ? " trait-choice--dice" : ""}`} key={dynamicInputId(input)}>
           <span>{tc(input.label)}</span>
           <select
             aria-label={tc(input.label)}
             onChange={(event) =>
-              onChange?.(dynamicInputId(input), event.target.value)
+              {
+                const toggle = selectionToggles.get(input.id);
+                const active = event.target.value !== "";
+                if (active || !toggle) onChange?.(dynamicInputId(input), input.type === "number" ? Number(event.target.value) : event.target.value);
+                if (toggle && Boolean(dynamicInputValue(toggle, context)) !== active) onChange?.(dynamicInputId(toggle), active);
+              }
             }
-            value={dynamicInputValue(input, context) ?? ""}
+            value={selectionToggles.get(input.id) && !dynamicInputValue(selectionToggles.get(input.id), context)
+              ? "" : dynamicInputValue(input, context) ?? ""}
           >
-            {input.options.map((option) => (
+            {selectionToggles.has(input.id) ? <option value="">{tc("未掷骰")}</option> : null}
+            {(input.selectOptions ?? input.options).map((option) => (
               <option key={option.value} value={option.value}>
                 {tc(option.label)}
               </option>

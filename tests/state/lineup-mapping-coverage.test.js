@@ -3,6 +3,9 @@ import mapping from "../../public/data/lineup-code-map.json";
 import snapshot from "../../data/snapshots/current.json";
 import evidence from "../../data/reviewed/nrc-2026-09-10.json";
 import { decodeLineupCode, encodeLineupCode, exportLineupCode, importLineupCode } from "../../src/state/lineup-code.js";
+import s5Evidence from "../../data/reviewed/nrc-s5-20261101.json";
+import { applyS5Bwiki } from "../../scripts/bwiki/apply-s5-bwiki.mjs";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 
 const empty = { bloodlineId: 1, natureId: null, talents: [null, null, null], skills: [null, null, null, null], overrides: [0, 0] };
 const makeCode = member => encodeLineupCode({ members: [{ ...empty, spriteId: 3001, ...member }], magicId: null, mode: 5 });
@@ -22,13 +25,15 @@ test("every current spirit and skill has a verified game ID, with explicit legac
 });
 
 test("every mapped game ID imports and exports without changing the original ID", () => {
+  // The Web preview map contains S5 identities alongside the preserved S4 IDs.
+  const mappedSnapshot = applyS5Bwiki(withWebPreview(snapshot), s5Evidence);
   for (const id of Object.keys(mapping.spirits)) {
     const code = makeCode({ spriteId: Number(id) });
-    expect(exportLineupCode(importLineupCode(code, snapshot, mapping), snapshot, mapping).code, id).toBe(code);
+    expect(exportLineupCode(importLineupCode(code, mappedSnapshot, mapping), mappedSnapshot, mapping).code, id).toBe(code);
   }
   for (const id of Object.keys(mapping.skills)) {
     const code = makeCode({ skills: [Number(id), null, null, null] });
-    expect(exportLineupCode(importLineupCode(code, snapshot, mapping), snapshot, mapping).code, id).toBe(code);
+    expect(exportLineupCode(importLineupCode(code, mappedSnapshot, mapping), mappedSnapshot, mapping).code, id).toBe(code);
   }
 });
 

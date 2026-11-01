@@ -4,6 +4,7 @@ import { beforeEach, expect, test, vi } from "vitest";
 import SkillQueryPanel from "../../src/features/skill-query/SkillQueryPanel.jsx";
 import { unpackCatalog } from "../../src/features/skill-query/catalog.js";
 import { applyS5SeasonAnnouncement, S5_SEASON_ANNOUNCEMENT } from "../../src/features/s5-preview/season-announcement.js";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 
 const catalogState = vi.hoisted(() => ({ value: null }));
 vi.mock("../../src/features/skill-query/load-catalog.js", () => ({
@@ -16,7 +17,8 @@ beforeEach(() => {
 });
 function setup(currentSnapshot = snapshot) {
   const s4 = catalogState.value.seasons.find(({ id }) => id === "S4");
-  return render(<SkillQueryPanel onClose={vi.fn()} snapshot={currentSnapshot} skills={s4.skills} spirits={s4.spirits} />);
+  return render(<SkillQueryPanel onClose={vi.fn()} snapshot={currentSnapshot}
+    skills={currentSnapshot.skills ?? s4.skills} spirits={currentSnapshot.spirits ?? s4.spirits} />);
 }
 
 test("公告快照默认查 S5，参数提示可查看 before/after，切回 S4/S3 恢复历史资料", () => {
@@ -37,6 +39,18 @@ test("公告快照默认查 S5，参数提示可查看 before/after，切回 S4/
   expect(screen.getByLabelText("查询赛季")).toHaveValue("S3");
   expect(screen.getByRole("button", { name: "找可学精灵" })).toBeInTheDocument();
   expect(catalogState.value.currentSeason).toBe("S4");
+});
+
+test("已接入完整 BWIKI 资料时赛季选项不再标记为仅公告", () => {
+  setup({ ...snapshot, meta: { s5NrcSync: { complete: true } } });
+  expect(screen.getByRole("option", { name: "S5", exact: true })).toBeVisible();
+  expect(screen.queryByRole("option", { name: "S5（公告）", exact: true })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("tab", { name: "赛季学习更新" }));
+  expect(screen.getByText("S4 → S5 · 新技能学习面与学习途径调整")).toBeVisible();
+  fireEvent.click(screen.getByRole("tab", { name: "赛季新技能" }));
+  fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "不存在的技能" } });
+  expect(screen.getByText("没有找到符合条件的技能。")).toBeVisible();
+  expect(screen.queryByText("本次公告未公布 S5 新增技能。")).not.toBeInTheDocument();
 });
 
 test("10 项旧技能改动单独汇总，公告不把这些技能列为 S5 新技能", () => {
@@ -141,4 +155,51 @@ test("同技能的 S5 与历史补丁在普通查询可读，S5 调整汇总只�
   expect(current.getByText("110 → 95")).toBeVisible();
   expect(current.queryByText("120 → 110")).not.toBeInTheDocument();
   expect(current.queryByText("S4 测试补丁")).not.toBeInTheDocument();
+});
+
+test("S5 新技能可从赛季列表反查新家族，进入后保留当前完整学习面和图标", () => {
+  const full = withWebPreview(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
+  const { container } = setup(full);
+  fireEvent.click(screen.getByRole("tab", { name: "赛季新技能" }));
+  const card = screen.getByText("矿物置换").closest("button");
+  const skill = full.skills.find(entry => entry.name === "矿物置换");
+  expect(card.querySelector("img.skill-icon")).toHaveAttribute("src", skill.iconUrl);
+  fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "不存在的技能" } });
+  expect(screen.getByText("没有找到符合条件的技能。")).toBeVisible();
+  fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "" } });
+  fireEvent.click(screen.getByText("矿物置换").closest("button"));
+  fireEvent.click(screen.getByRole("button", { name: "地绡银龙 查看技能" }));
+  const table = container.querySelector(".sq-skill-table");
+  expect(within(table).getByText("矿物置换")).toBeVisible();
+  expect(within(table).getByText("碎银")).toBeVisible();
+  const spirit = full.spirits.find(entry => entry.fullName === "地绡银龙");
+  const pool = full.learnsets.find(entry => entry.spiritId === spirit.id);
+  expect(table.querySelectorAll("[data-skill-id]")).toHaveLength(pool.skillIds.length);
+  fireEvent.change(screen.getByLabelText("查询赛季"), { target: { value: "S4" } });
+  fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "地绡银龙" } });
+  expect(screen.queryByRole("button", { name: "地绡银龙 查看技能" })).not.toBeInTheDocument();
+});
+
+test("BWIKI 后续补丁进入 S5 调整汇总，各 S5 补丁可独立切换且不带入 S4", () => {
+  const full = withWebPreview(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
+  const skill = full.skills.find(entry => entry.name === "蹦跶");
+  const announcement = { ...skill.changeInfo, patch: { ...skill.changeInfo.patch, label: "S5 首次公告" } };
+  skill.changeInfo = { entityName: skill.name,
+    patch: { id: "s5-2026-10-31", seasonId: "S5", date: "2026.10.31", label: "S5 BWIKI 补充" },
+    items: [{ kind: "stat", label: "威力", before: 95, after: 100 }],
+    history: [announcement, { entityName: skill.name,
+      patch: { id: "s4-test-before", seasonId: "S4", date: "2026.09.10", label: "S4 旧补丁" },
+      items: [{ kind: "stat", label: "威力", before: 120, after: 110 }] }],
+  };
+  setup(full);
+  fireEvent.click(screen.getByRole("tab", { name: "赛季技能调整" }));
+  fireEvent.click(screen.getByRole("button", { name: "查看蹦跶本期改动" }));
+  const dialog = within(screen.getByRole("dialog", { name: "蹦跶本期改动" }));
+  expect(dialog.getByText("95 → 100")).toBeVisible();
+  expect(dialog.getByText("2026.10.31")).toBeVisible();
+  fireEvent.click(dialog.getByRole("tab", { name: "S5 首次公告" }));
+  expect(dialog.getByText("110 → 95")).toBeVisible();
+  expect(dialog.getByText(announcement.patch.date)).toBeVisible();
+  expect(dialog.queryByText("S4 旧补丁")).not.toBeInTheDocument();
+  expect(dialog.queryByText("120 → 110")).not.toBeInTheDocument();
 });

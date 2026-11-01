@@ -1,4 +1,6 @@
 import { calculateMatchup } from "../../domain/calculate.js";
+import { supportsS5PreviewBattleLevel, withS5PreviewBattleLevels } from "../../domain/battle-level.js";
+import { withS5PreviewCalculationGuard } from "../s5-preview/calculation-guard.js";
 import { getTraitView } from "../../domain/calculator-view-model.js";
 import { getEffectiveTraits } from "../../domain/effective-traits.js";
 import { getTraitEffectRule } from "../../domain/trait-effects.js";
@@ -49,9 +51,21 @@ function skillForVariant(snapshot, setup, variant) {
   return snapshot.skills.find((skill) => skill.name === name && (variant.id !== "wish-power" || skill.type === variant.type));
 }
 
-export function panelFor(snapshot, side) {
+export function panelFor(snapshot, side, level = 60) {
   const spirit = snapshot.spirits.find((entry) => entry.id === side.spiritId);
-  return calculateAllPanelStats({ raceStats: spirit.raceStats, displayIvs: side.displayIvs, natureMultipliers: getNatureMultipliers(side.nature) });
+  return calculateAllPanelStats({ raceStats: spirit.raceStats, displayIvs: side.displayIvs, natureMultipliers: getNatureMultipliers(side.nature), level });
+}
+
+export function withDeerBattleLevels(snapshot, state) {
+  const directions = Object.fromEntries([["forward", "attacker", "defender"], ["reverse", "defender", "attacker"]].map(([direction, source, target]) => [direction, {
+    ...state.directions[direction],
+    context: {
+      ...materializeTraitContext(state.sides[source].traitValues, snapshot, state.sides[source].spiritId, "attacker"),
+      ...materializeTraitContext(state.sides[target].traitValues, snapshot, state.sides[target].spiritId, "defender"),
+      ...state.directions[direction].context,
+    },
+  }]));
+  return withS5PreviewBattleLevels(snapshot, { ...state, directions });
 }
 
 export function getDeerSpeedComparison(calculation, weather = "none") {
@@ -78,6 +92,7 @@ export function getDeerDefenseLimitations(snapshot, side) {
 export function hasDeerDefenseTrait(snapshot, side) {
   const spirit = snapshot.spirits.find((entry) => entry.id === side.spiritId);
   if (!spirit) return false;
+  if (supportsS5PreviewBattleLevel(snapshot, side)) return true;
   // 按支持的防守规则判断，不以当前层数或开关判断，避免关闭后失去恢复入口。
   const traits = getEffectiveTraits(snapshot, { ...side, spirit, ignoreTraits: false });
   return traits.some((trait) => {
@@ -98,6 +113,7 @@ export function createDeerSetup(snapshot, currentState = null) {
   if (currentState) {
     const setup = createDeerSetup(snapshot);
     setup.state = structuredClone(currentState);
+    const battleState = withDeerBattleLevels(snapshot, setup.state);
     setup.attackPreset = "current";
     setup.defenseTemplate = "current";
     const context = setup.state.directions.forward.context;
@@ -109,7 +125,7 @@ export function createDeerSetup(snapshot, currentState = null) {
     setup.stacks = Math.max(0, stackCap == null ? rawStacks : Math.min(stackCap, rawStacks));
     for (const [side, direction, key] of [["attacker", "reverse", "attackerHp"], ["defender", "forward", "defenderHp"]]) {
       if (!setup.state.sides[side].spiritId) continue;
-      const maxHp = panelFor(snapshot, setup.state.sides[side]).hp;
+      const maxHp = panelFor(snapshot, setup.state.sides[side], battleState.sides[side].level).hp;
       setup[key] = Math.max(1, Math.min(100, (setup.state.directions[direction].currentHp ?? maxHp) / maxHp * 100));
     }
     setup.weather = currentWeather(context);
@@ -145,7 +161,7 @@ export function applyDeerPreset(side, preset) {
 
 // 只编排共享内核的输入和两次出招，伤害公式与取整仍由 calculateMatchup 决定。
 export function buildDeerInput(snapshot, setup, variant, stacks) {
-  const state = structuredClone(setup.state);
+  const state = structuredClone(withDeerBattleLevels(snapshot, setup.state));
   if (snapshot.meta?.serverId === "global") state.serverId = "global";
   state.mode = "single";
   const skill = skillForVariant(snapshot, setup, variant);
@@ -159,7 +175,7 @@ export function buildDeerInput(snapshot, setup, variant, stacks) {
   for (const key of ["attacker", "defender"]) {
     const side = state.sides[key];
     side.natureMultipliers = getNatureMultipliers(side.nature);
-    side.panelStats = panelFor(snapshot, side);
+    side.panelStats = panelFor(snapshot, side, side.level);
   }
   for (const [direction, source, target] of [["forward", "attacker", "defender"], ["reverse", "defender", "attacker"]]) {
     const targetPercent = target === "attacker" ? setup.attackerHp : setup.defenderHp;
@@ -184,7 +200,13 @@ export function buildDeerInput(snapshot, setup, variant, stacks) {
 
 export function evaluateDeerAttack(snapshot, setup, variant, stacks) {
   const input = buildDeerInput(snapshot, setup, variant, stacks);
-  const calculation = calculateMatchup(snapshot, input);
+  const calculate = (state) => withS5PreviewCalculationGuard({
+    sides: Object.fromEntries(Object.entries(state.sides).map(([key, side]) => [key, {
+      spirit: snapshot.spirits.find((spirit) => spirit.id === side.spiritId),
+    }])),
+    calculation: calculateMatchup(snapshot, state),
+  }, snapshot, state).calculation;
+  const calculation = calculate(input);
   const first = calculation.forward.results[0];
   const defender = snapshot.spirits.find((entry) => entry.id === input.sides.defender.spiritId);
   const maxHp = input.sides.defender.panelStats.hp;
@@ -221,7 +243,7 @@ export function evaluateDeerAttack(snapshot, setup, variant, stacks) {
     if (!followupReason) {
       const firstStrike = snapshot.skills.find((skill) => skill.name === "先发制人");
       nextState.sides.attacker.skills.single = { skillId: firstStrike.id, context: {} };
-      followup = calculateMatchup(snapshot, nextState).forward.results[0];
+      followup = calculate(nextState).forward.results[0];
     }
   }
   const comboDamage = exact && (lethal || followup?.status === "exact") ? damage + (lethal ? 0 : followup.totalDamage) : null;

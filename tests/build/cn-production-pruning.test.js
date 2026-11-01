@@ -66,3 +66,34 @@ test("all application icon weight usages stay within retained styles, including 
   }
   files("src").forEach(filename => visit(parse(readFileSync(filename, "utf8"), { sourceType: "module", plugins: ["jsx"] }), filename));
 });
+
+
+test("CN calculator dictionary pruning retains Chinese interpolation in the shared formatter", () => {
+  const file = "src/i18n/calculator-messages.js";
+  const code = readFileSync(file, "utf8");
+  expect(pruneCnProductionModule(code, `D:/project/${file}`)).toBe("export const calculatorMessages = {};");
+  const declarations = parse(code, { sourceType: "module" }).program.body;
+  expect(declarations.map(node => node.declaration.declarations[0].id.name)).toEqual(["calculatorMessages"]);
+  const formatter = readFileSync("src/i18n/calculator-text.js", "utf8");
+  expect(pruneCnProductionModule(formatter, "D:/project/src/i18n/calculator-text.js")).toBeNull();
+});
+
+test("reviewed S5 production consumes the complete transport without the old preview overlay", () => {
+  const file = "src/features/s5-preview/with-web-preview.js";
+  const code = readFileSync(file, "utf8");
+  expect(pruneCnProductionModule(code, `D:/project/${file}`)).toBeNull();
+  const result = pruneCnProductionModule(code, `D:/project/${file}`, { reviewedS5: true });
+  expect(result).not.toContain("s5-preview-new-spirits");
+  expect(result).not.toContain("applyS5SeasonAnnouncement");
+  const events = [];
+  const compile = result.replace(/^import .*;\n/gmu, "").replace("export function", "function") + "\nreturn withWebPreview;";
+  const apply = new Function("restoreS5RuntimeRelations", "withCalculatorExtras", "withPublicResourceUrls", compile)(
+    value => { events.push("restore"); return { ...value, restored: true }; },
+    value => { events.push("extras"); return { ...value, wishes: true }; },
+    value => { events.push("urls"); return value; },
+  );
+  const snapshot = { meta: { s5NrcSync: { complete: true } }, spirits: [{ id: "bruce", raceStats: { speed: 90 } }] };
+  expect(apply(snapshot)).toEqual({ ...snapshot, restored: true, wishes: true });
+  expect(events).toEqual(["restore", "extras", "urls"]);
+  expect(() => apply({ meta: {} })).toThrow("S5资料尚未完整加载");
+});

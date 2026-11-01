@@ -3,6 +3,7 @@ import { IS_PREVIEW_BUILD } from "./runtime/preview-channel.js";
 import { metrics } from "./analytics/metrics.js";
 import { createRoot } from "react-dom/client";
 import { WebEntry } from "./runtime/WebEntry.jsx";
+import { startWebEntry } from "./runtime/browser-entry.js";
 import { installInputSelection } from "./input-selection.js";
 import "./styles.css";
 
@@ -21,11 +22,14 @@ if (import.meta.hot) import.meta.hot.dispose(() => {
 const removeInputSelection = installInputSelection(document);
 if (import.meta.hot) import.meta.hot.dispose(removeInputSelection);
 
-createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <WebEntry />
-  </React.StrictMode>,
-);
+// Resolve the independent Global destination before mounting CN or reading its session.
+startWebEntry((entry) => {
+  createRoot(document.getElementById("root")).render(
+    <React.StrictMode>
+      <WebEntry initialEntry={entry} />
+    </React.StrictMode>,
+  );
+});
 
 const isDesktopApp = window.location.protocol === "app:";
 

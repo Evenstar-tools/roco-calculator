@@ -1,0 +1,1095 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-01",
+  "evidence": "data/reviewed/nrc-s5-20261101.json",
+  "sources": {
+    "Config": [
+      {
+        "title": "模块:Pets/data/Config",
+        "revision": 20328,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20328",
+        "timestamp": "2026-10-31T19:43:12Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "Index": [
+      {
+        "title": "模块:Pets/data/Index",
+        "revision": 20329,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20329",
+        "timestamp": "2026-10-31T19:43:14Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "Catalog": [
+      {
+        "title": "模块:Pets/data/Catalog",
+        "revision": 20330,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20330",
+        "timestamp": "2026-10-31T19:43:16Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/精灵",
+        "revision": 20305,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20305",
+        "timestamp": "2026-10-31T19:42:02Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "Skills": [
+      {
+        "title": "模块:Pets/data/Skills",
+        "revision": 20323,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20323",
+        "timestamp": "2026-10-31T19:43:04Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/技能",
+        "revision": 20303,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20303",
+        "timestamp": "2026-10-31T19:41:58Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/特性",
+        "revision": 20304,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20304",
+        "timestamp": "2026-10-31T19:42:00Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "Learnsets": [
+      {
+        "title": "模块:Pets/data/Learnsets",
+        "revision": 20320,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20320",
+        "timestamp": "2026-10-31T19:43:00Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "Evolutions": [
+      {
+        "title": "模块:Pets/data/Evolutions",
+        "revision": 20321,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20321",
+        "timestamp": "2026-10-31T19:43:01Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "Handbooks": [
+      {
+        "title": "模块:Pets/data/Handbooks",
+        "revision": 20322,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20322",
+        "timestamp": "2026-10-31T19:43:03Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "Types": [
+      {
+        "title": "模块:Pets/data/Types",
+        "revision": 20326,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20326",
+        "timestamp": "2026-10-31T19:43:08Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "Terms": [
+      {
+        "title": "模块:Pets/data/Terms",
+        "revision": 20325,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20325",
+        "timestamp": "2026-10-31T19:43:07Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "History": [
+      {
+        "title": "模块:Pets/data/History",
+        "revision": 20327,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20327",
+        "timestamp": "2026-10-31T19:43:11Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "SkillStoneTopics": [
+      {
+        "title": "模块:Pets/data/SkillStoneTopics",
+        "revision": 20324,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20324",
+        "timestamp": "2026-10-31T19:43:05Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "TrainingReference": [
+      {
+        "title": "模块:Pets/data/TrainingReference",
+        "revision": 7067,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=7067",
+        "timestamp": "2026-09-09T09:59:58Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      }
+    ],
+    "Overview": [
+      {
+        "title": "模块:Pets/data/Overview",
+        "revision": 18794,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=18794",
+        "timestamp": "2026-10-19T12:28:53Z",
+        "fetchedAt": "2026-11-01T02:38:38.934Z"
+      },
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "CatalogSeasons": [
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "LegacyEvolutionAliases": [
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "LegacyStoneTopics": [
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "SeasonFeatures": [
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "SeasonLearnsets": [
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "SkillSeasons": [
+      {
+        "title": "模块:精灵图鉴/S5/数据/辅助",
+        "revision": 20397,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20397",
+        "timestamp": "2026-10-31T20:07:09Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "Targets": [
+      {
+        "title": "模块:精灵图鉴/S5/数据/关联",
+        "revision": 20396,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20396",
+        "timestamp": "2026-10-31T20:07:07Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ],
+    "Links": [
+      {
+        "title": "模块:精灵图鉴/S5/数据/关联",
+        "revision": 20396,
+        "url": "https://wiki.biligame.com/nrc/index.php?oldid=20396",
+        "timestamp": "2026-10-31T20:07:07Z",
+        "fetchedAt": "2026-11-01T02:38:39.165Z"
+      }
+    ]
+  },
+  "spirits": [
+    {
+      "nrcId": "pet_000620",
+      "id": "spirit_42e0cf61b04cb1ab",
+      "name": "云梦豚",
+      "gameId": 3784,
+      "sourceFile": "PetAvatar_3784.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000620.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/bf/gip9uhcjs2382fea9ioddzzu51r75dn.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 10178
+    },
+    {
+      "nrcId": "pet_000621",
+      "id": "spirit_a601e182f9b30ba0",
+      "name": "长江豚",
+      "gameId": 3785,
+      "sourceFile": "PetAvatar_3785.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000621.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c2/hkkoewxxs2ituo10qkpnd4j8rdhilt3.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 16040
+    },
+    {
+      "nrcId": "pet_000628",
+      "id": "spirit_4ba8f07d34a4e247",
+      "name": "护主犬（看守麦田的样子）",
+      "gameId": 3870,
+      "sourceFile": "PetAvatar_3870.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000628.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c3/tkx4gh77gcd1r51w6vgfmzygga9malj.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 10759
+    },
+    {
+      "nrcId": "pet_000629",
+      "id": "spirit_58fba21fe70be498",
+      "name": "音速犬（看守麦田的样子）",
+      "gameId": 3871,
+      "sourceFile": "PetAvatar_3871.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000629.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/69/b4lmynpsw7f11ignzpp0nulv83jjvw2.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 12238
+    },
+    {
+      "nrcId": "pet_000630",
+      "id": "spirit_95aaf0ee94680c86",
+      "name": "公平鸽（称量的样子）",
+      "gameId": 3872,
+      "sourceFile": "PetAvatar_3872.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000630.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/52/378c83fphhaznn4lf10xs8j5207oedc.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 14846
+    },
+    {
+      "nrcId": "pet_000631",
+      "id": "spirit_576805f2cd1bbd11",
+      "name": "风暴战犬（看守麦田的样子）",
+      "gameId": 5075,
+      "sourceFile": "PetAvatar_4078_1.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000631.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/88/o1plbhdcytfh63tk5wx89gh5h95moxf.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 15543
+    },
+    {
+      "nrcId": "pet_000632",
+      "id": "spirit_e09a7b2376f6e518",
+      "name": "奔波鼠（搬运果实的样子）",
+      "gameId": 3873,
+      "sourceFile": "PetAvatar_3873.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000632.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/8a/8n7kp1f866yu2eoyd4hsxf29m7f9xwi.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 11778
+    },
+    {
+      "nrcId": "pet_000633",
+      "id": "spirit_95d31f7040c570b2",
+      "name": "流浪鼠（搬运果实的样子）",
+      "gameId": 3874,
+      "sourceFile": "PetAvatar_3874.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000633.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fe/mpk8wftxxqvdzh2w113i3mnx5jl92lm.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 12020
+    },
+    {
+      "nrcId": "pet_000634",
+      "id": "spirit_bf63c954e18a8852",
+      "name": "花怨鳗（果壳铃的样子）",
+      "gameId": 3875,
+      "sourceFile": "PetAvatar_3875.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000634.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/57/0fj975taa9hhx2upcchbzn5y1v4qzot.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 10873
+    },
+    {
+      "nrcId": "pet_000635",
+      "id": "spirit_45095a4991f540a4",
+      "name": "鳗尾兽（果壳铃的样子）",
+      "gameId": 3876,
+      "sourceFile": "PetAvatar_3876.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000635.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/ce/p6mjhv61er585otcrl4j9ia2pjgz8wn.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 14227
+    },
+    {
+      "nrcId": "pet_000636",
+      "id": "spirit_0aff77799da7257f",
+      "name": "稻草人（暖和的样子）",
+      "gameId": 3877,
+      "sourceFile": "PetAvatar_3877.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000636.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7c/13rmolkku1wqzj6ai0kcj56h1f7z76m.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 10498
+    },
+    {
+      "nrcId": "pet_000637",
+      "id": "spirit_9383a26b3b5da4c5",
+      "name": "稻草守护者（暖和的样子）",
+      "gameId": 3878,
+      "sourceFile": "PetAvatar_3878.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000637.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d7/802gma509czxscum8zhhvn7wpun0fak.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 10843
+    },
+    {
+      "nrcId": "pet_000638",
+      "id": "spirit_preview_s5_little-ming-dragon",
+      "name": "小冥龙",
+      "gameId": 3797,
+      "sourceFile": "PetAvatar_3797.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000638.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a2/8bmfqrhzuwq0stf0pmzi9dm8sadqhqc.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 8857
+    },
+    {
+      "nrcId": "pet_000639",
+      "id": "spirit_preview_s5_minggulong",
+      "name": "冥古龙",
+      "gameId": 3798,
+      "sourceFile": "PetAvatar_3798.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000639.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c8/1ov856hjnz7rgj9ww8q1r7c1tpgf9yw.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 15086
+    },
+    {
+      "nrcId": "pet_000640",
+      "id": "spirit_preview_s5_silver-chain",
+      "name": "地银链",
+      "gameId": 3799,
+      "sourceFile": "PetAvatar_3799.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000640.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/99/dnrcdxf0rntpklh26swue9fp8d3ljto.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 10665
+    },
+    {
+      "nrcId": "pet_000641",
+      "id": "spirit_preview_s5_underground-silver-scale",
+      "name": "地底银鳞",
+      "gameId": 3800,
+      "sourceFile": "PetAvatar_3800.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000641.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a0/i3v35o9pnnds5vks767dlq7v7n4ub8x.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 14002
+    },
+    {
+      "nrcId": "pet_000642",
+      "id": "spirit_preview_s5_underground-silver-dragon",
+      "name": "地绡银龙",
+      "gameId": 3801,
+      "sourceFile": "PetAvatar_3801.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000642.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d1/q8doiu1t0bg7lqcjf9qt6yvncjhrb84.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 19825
+    },
+    {
+      "nrcId": "pet_000643",
+      "id": "spirit_preview_s5_sinking-gold-beast",
+      "name": "沉金兽",
+      "gameId": 3802,
+      "sourceFile": "PetAvatar_3802.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000643.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/72/2xc7dibdicg7ui2hfntuiorryn4yt8v.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 6904
+    },
+    {
+      "nrcId": "pet_000644",
+      "id": "spirit_preview_s5_dragonhead-gold",
+      "name": "龙头金",
+      "gameId": 3803,
+      "sourceFile": "PetAvatar_3803.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000644.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/1d/9atxl7o9q2ff54gumc3b781xvb9ecox.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 11832
+    },
+    {
+      "nrcId": "pet_000645",
+      "id": "spirit_preview_s5_gold-vein-dragon",
+      "name": "龙嵴金脉",
+      "gameId": 3804,
+      "sourceFile": "PetAvatar_3804.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000645.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/de/9d1k1snbyb0nywsjyb8d0vdl4mpvog6.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 13738
+    },
+    {
+      "nrcId": "pet_000646",
+      "id": "spirit_preview_s5_lele-shark",
+      "name": "乐乐鲨",
+      "gameId": 3805,
+      "sourceFile": "PetAvatar_3805.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000646.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/15/1b6e37ooe4kl86j068wdi062hjsxhc7.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 11844
+    },
+    {
+      "nrcId": "pet_000647",
+      "id": "spirit_preview_s5_awa-shark-lemon",
+      "name": "阿瓦鲨（柠檬鲨的样子）",
+      "gameId": 3806,
+      "sourceFile": "PetAvatar_3806.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000647.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c9/pgxo2at198g3kot4fujzdu3sakiywnw.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 13069
+    },
+    {
+      "nrcId": "pet_000648",
+      "id": "spirit_preview_s5_awa-shark-tiger",
+      "name": "阿瓦鲨（虎纹鲨的样子）",
+      "gameId": 3807,
+      "sourceFile": "PetAvatar_3807.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000648.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/df/0gvm745d0uy87manj5d745rmypctm69.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 14103
+    },
+    {
+      "nrcId": "pet_000649",
+      "id": "spirit_preview_s5_egg-wrap",
+      "name": "蛋包蛋",
+      "gameId": 3808,
+      "sourceFile": "PetAvatar_3808.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000649.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/72/cgkdm1vzg3nyxt8hkydazgsncs6kfmh.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 8690
+    },
+    {
+      "nrcId": "pet_000650",
+      "id": "spirit_preview_s5_chicken-mama",
+      "name": "鸡麻麻",
+      "gameId": 3809,
+      "sourceFile": "PetAvatar_3809.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000650.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/33/akj538dj28kyw324p639xi670bs2b6d.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 11226
+    },
+    {
+      "nrcId": "pet_000651",
+      "id": "spirit_preview_s5_crab-coconut",
+      "name": "蟹蟹椰",
+      "gameId": 3810,
+      "sourceFile": "PetAvatar_3810.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000651.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/8e/gx68b64q5504twpad0g8tw6jc12kodo.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 9556
+    },
+    {
+      "nrcId": "pet_000652",
+      "id": "spirit_preview_s5_sand-crab",
+      "name": "沙咔蟹",
+      "gameId": 3811,
+      "sourceFile": "PetAvatar_3811.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000652.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d6/5hsvpgimal0b5dny6pocufyekyltw48.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 14836
+    },
+    {
+      "nrcId": "pet_000653",
+      "id": "spirit_preview_s5_jingyu",
+      "name": "鲸羽",
+      "gameId": 3812,
+      "sourceFile": "PetAvatar_3812.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000653.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/26/c7maoqkjbwy23fi803jln5unhtz1a6j.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 9841
+    },
+    {
+      "nrcId": "pet_000654",
+      "id": "spirit_preview_s5_halo-jingyu",
+      "name": "圆环鲸羽",
+      "gameId": 3813,
+      "sourceFile": "PetAvatar_3813.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000654.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/2f/9bw653kbi6h5qcxtbegd3q0bd08v8f5.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 11622
+    },
+    {
+      "nrcId": "pet_000655",
+      "id": "spirit_preview_s5_doulie",
+      "name": "豆粒鹅",
+      "gameId": 3814,
+      "sourceFile": "PetAvatar_3814.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000655.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3c/r9f4nwnsaa9n9pp0yf0em55d08pv4uu.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 7603
+    },
+    {
+      "nrcId": "pet_000656",
+      "id": "spirit_preview_s5_snow-shoveling-goose",
+      "name": "刨雪鹅",
+      "gameId": 3815,
+      "sourceFile": "PetAvatar_3815.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000656.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d9/o8lsna0wsyoow1u3a54y5m2el1054h3.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 12732
+    },
+    {
+      "nrcId": "pet_000657",
+      "id": "spirit_preview_s5_watermelon-bug",
+      "name": "西瓜虫",
+      "gameId": 3816,
+      "sourceFile": "PetAvatar_3816.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000657.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e8/it8aokpan6p22t2cr2jxi64otxjyq17.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 8853
+    },
+    {
+      "nrcId": "pet_000658",
+      "id": "spirit_preview_s5_winter-bug-summer-melon",
+      "name": "冬虫夏瓜",
+      "gameId": 3817,
+      "sourceFile": "PetAvatar_3817.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000658.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/cd/8q6132qhpzhbygogize18vbnxr5wqq6.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 11327
+    },
+    {
+      "nrcId": "pet_000659",
+      "id": "spirit_preview_s5_little-scissor",
+      "name": "小剪影",
+      "gameId": 3818,
+      "sourceFile": "PetAvatar_3818.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000659.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3d/cyp990cavzswwzmwcfaifwrh0zbjlh3.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 8533
+    },
+    {
+      "nrcId": "pet_000660",
+      "id": "spirit_preview_s5_shadow-papercut",
+      "name": "影子剪纸",
+      "gameId": 3819,
+      "sourceFile": "PetAvatar_3819.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000660.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a1/7m1l8giwep06wwvlepvkwiij3644k2z.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 11292
+    },
+    {
+      "nrcId": "pet_000661",
+      "id": "spirit_preview_s5_diliutun",
+      "name": "滴溜豚",
+      "gameId": 3820,
+      "sourceFile": "PetAvatar_3820.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000661.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ef/0vjka6hsji6r2dsu36i77v3366yq7mx.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 8596
+    },
+    {
+      "nrcId": "pet_000662",
+      "id": "spirit_preview_s5_diniantun",
+      "name": "滴廿豚",
+      "gameId": 3821,
+      "sourceFile": "PetAvatar_3821.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000662.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ec/brnj115b6r51ive7xbwpuqolk7a7vfx.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 14195
+    },
+    {
+      "nrcId": "pet_000705",
+      "id": "spirit_preview_s5_boss-glass-jellyfish",
+      "name": "琉璃君主",
+      "gameId": 5066,
+      "sourceFile": "PetAvatar_4094.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000705.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f0/l63avmwp5igorrssl71ivas9lcd5o4x.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 18499
+    },
+    {
+      "nrcId": "pet_000706",
+      "id": "spirit_preview_s5_boss-ice-bruce",
+      "name": "圣冠布鲁斯",
+      "gameId": 5067,
+      "sourceFile": "PetAvatar_4110.png",
+      "localUrl": "/assets/spirits/s5-preview/nrc-pet_000706.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/0c/2mcdr6a0zn708tax8rl7wxhiojoo58f.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 13361
+    }
+  ],
+  "skills": [
+    {
+      "nrcId": "dc5a_06ba86418113b5",
+      "id": "skill_preview_s5_poison-cast",
+      "name": "投毒",
+      "gameId": 7120310,
+      "sourceFile": "Skill_111032.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_06ba86418113b5.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/b9/kpn698vo1uv2c2pzd557qyjw9sgj8qs.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 25776
+    },
+    {
+      "nrcId": "dc5a_0c61eb64fa7cd5",
+      "id": "skill_preview_s5_lovesick",
+      "name": "恋恋不舍",
+      "gameId": 7160440,
+      "sourceFile": "Skill_115032.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_0c61eb64fa7cd5.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a8/7aav701fnfqhtylt544ptw95l7a70cb.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 20666
+    },
+    {
+      "nrcId": "dc5a_22f232c8e058b4",
+      "id": "skill_preview_s5_spirit-disturbance",
+      "name": "灵扰",
+      "gameId": 7170380,
+      "sourceFile": "Skill_116038.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_22f232c8e058b4.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/cc/dwaqdxwpze0nr5zid37l3zw7dlut94s.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 23871
+    },
+    {
+      "nrcId": "dc5a_2a70f33f215ec1",
+      "id": "skill_preview_s5_external-spread",
+      "name": "外附传播",
+      "gameId": 7030630,
+      "sourceFile": "Skill_102048.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_2a70f33f215ec1.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/cd/sg7whee2txccc825c04vn763nusvait.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 25880
+    },
+    {
+      "nrcId": "dc5a_351c2b1adb8231",
+      "id": "skill_preview_s5_crimson-dragon-strike",
+      "name": "深红龙击",
+      "gameId": 7100350,
+      "sourceFile": "Skill_309022.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_351c2b1adb8231.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7c/b58vkze5fdu272kyax99gw6cd4igioy.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 22772
+    },
+    {
+      "nrcId": "dc5a_3583379d35a0b4",
+      "id": "skill_preview_s5_mixed-state",
+      "name": "混合态",
+      "gameId": 7190540,
+      "sourceFile": "Skill_118047.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_3583379d35a0b4.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/39/8y7isnx9wfigm9ck2lzjtrrvhdu7pwk.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 23291
+    },
+    {
+      "nrcId": "dc5a_3aba1f06440a4d",
+      "id": "skill_preview_s5_silver-shards",
+      "name": "碎银",
+      "gameId": 7080480,
+      "sourceFile": "Skill_207046.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_3aba1f06440a4d.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d9/frt526ah6tv3naghkqrd95fazgiuews.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 22755
+    },
+    {
+      "nrcId": "dc5a_42bd41984f65ba",
+      "id": "skill_preview_s5_fruit-pulp",
+      "name": "果粒",
+      "gameId": 7030640,
+      "sourceFile": "Skill_102050.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_42bd41984f65ba.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/86/sshw7uhylegtpeua2bv9qf134xbv7il.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 24406
+    },
+    {
+      "nrcId": "dc5a_4d57cc90d796c5",
+      "id": "skill_preview_s5_dream-building",
+      "name": "筑梦",
+      "gameId": 7160430,
+      "sourceFile": "Skill_315035.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_4d57cc90d796c5.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/57/m4mtsy5jkhw0djpk7vyzycs7xdk256e.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 23598
+    },
+    {
+      "nrcId": "dc5a_592c65edb1c59f",
+      "id": "skill_preview_s5_earthbound-spirit",
+      "name": "地缚灵",
+      "gameId": 7170390,
+      "sourceFile": "Skill_116039.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_592c65edb1c59f.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/27/0reahb0st288pfsaqtgw05h5yp7e5s8.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 23156
+    },
+    {
+      "nrcId": "dc5a_6229141f8122ad",
+      "id": "skill_preview_s5_overcharge",
+      "name": "过充电",
+      "gameId": 7110470,
+      "sourceFile": "Skill_110035.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_6229141f8122ad.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/38/jchnh2e233am0m9e3pcjr31ybjm1ppi.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 23082
+    },
+    {
+      "nrcId": "dc5a_6265fe488ea96b",
+      "id": "skill_preview_s5_barren-devour",
+      "name": "荒芜之噬",
+      "gameId": 7100370,
+      "sourceFile": "Skill_409024.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_6265fe488ea96b.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7b/ost8su1ayt6wzpmz3azdhgwykiztyfb.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 26786
+    },
+    {
+      "nrcId": "dc5a_6a123db69f1f8f",
+      "id": "skill_preview_s5_restart",
+      "name": "重启",
+      "gameId": 7110480,
+      "sourceFile": "Skill_110033.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_6a123db69f1f8f.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/8b/f2u2is7j72szmbhvd0xzt3wwlpt0cvg.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 25652
+    },
+    {
+      "nrcId": "dc5a_6c11e27543c29e",
+      "id": "skill_preview_s5_rip-current",
+      "name": "离岸流",
+      "gameId": 7050550,
+      "sourceFile": "Skill_104041.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_6c11e27543c29e.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/95/r5x3oekmz3rytwr09jm9qkjbqet74e6.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 22533
+    },
+    {
+      "nrcId": "dc5a_7c3e468f368d53",
+      "id": "skill_preview_s5_eggshell",
+      "name": "蛋壳",
+      "gameId": 7021290,
+      "sourceFile": "Skill_101117.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_7c3e468f368d53.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/52/26as0rtidbc3ib545y5dskqzl3ycius.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 23301
+    },
+    {
+      "nrcId": "dc5a_8ba45041ddc821",
+      "id": "skill_preview_s5_summer-pad",
+      "name": "夏蛰",
+      "gameId": 7130380,
+      "sourceFile": "Skill_112040.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_8ba45041ddc821.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/30/rx6447b9bof1m4h6jg1bokfvflfndj2.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 25124
+    },
+    {
+      "nrcId": "dc5a_9285990b5ae2c0",
+      "id": "skill_preview_s5_thermal-bridge",
+      "name": "热桥",
+      "gameId": 7090490,
+      "sourceFile": "Skill_108047.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_9285990b5ae2c0.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/69/492t6fsxlbvg804zbds4t2zc9a5jnfk.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 22868
+    },
+    {
+      "nrcId": "dc5a_96eb089b03c4e3",
+      "id": "skill_preview_s5_mineral-exchange",
+      "name": "矿物置换",
+      "gameId": 7080490,
+      "sourceFile": "Skill_107048.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_96eb089b03c4e3.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/b6/ij87lh6kmnq3aj73k9v0pns671bn2bz.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 24629
+    },
+    {
+      "nrcId": "dc5a_aa622d33f8d935",
+      "id": "skill_preview_s5_blue-shift",
+      "name": "蓝移",
+      "gameId": 7190530,
+      "sourceFile": "Skill_118046.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_aa622d33f8d935.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c9/cegfzuuug4lwns0p8eo1d8e9sifxmp2.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 23823
+    },
+    {
+      "nrcId": "dc5a_b4c3d3283f6708",
+      "id": "skill_preview_s5_geyser",
+      "name": "间歇泉",
+      "gameId": 7050570,
+      "sourceFile": "Skill_104043.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_b4c3d3283f6708.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a2/njmfax65r8mwvnzox39k0oy5rowr9za.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 25396
+    },
+    {
+      "nrcId": "dc5a_da5ed78bd33932",
+      "id": "skill_preview_s5_severe-frost",
+      "name": "严霜",
+      "gameId": 7090480,
+      "sourceFile": "Skill_108058.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_da5ed78bd33932.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/87/4o846a66y8w8yzmhymunjvef9gfyia2.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 23449
+    },
+    {
+      "nrcId": "dc5a_dbd6637831b924",
+      "id": "skill_preview_s5_dark-curse",
+      "name": "冥暗诅咒",
+      "gameId": 7170370,
+      "sourceFile": "Skill_216035.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_dbd6637831b924.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/47/1jugv8wxd0fal3umysgtefmf2lenl7c.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 26343
+    },
+    {
+      "nrcId": "dc5a_e3ef7437aea793",
+      "id": "skill_preview_s5_freeze",
+      "name": "冷冻",
+      "gameId": 7090500,
+      "sourceFile": "Skill_108048.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_e3ef7437aea793.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7d/miisbju5ivder9ov31uj6du940824vy.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 20307
+    },
+    {
+      "nrcId": "dc5a_e5bab8d07ad41e",
+      "id": "skill_preview_s5_vascular-restructure",
+      "name": "维管束重构",
+      "gameId": 7030650,
+      "sourceFile": "Skill_102054.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_e5bab8d07ad41e.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/8b/il4gwfjy3v737ak6bzz6gs0ijkogrq2.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 20502
+    },
+    {
+      "nrcId": "dc5a_f18af6019d34e7",
+      "id": "skill_preview_s5_dragon-claws",
+      "name": "龙之爪牙",
+      "gameId": 7100390,
+      "sourceFile": "Skill_109025.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_f18af6019d34e7.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ec/318hyc5j9a3y9ae0wdkvb1aovtaq0qz.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 24888
+    },
+    {
+      "nrcId": "dc5a_f9e3c54bcfe08d",
+      "id": "skill_preview_s5_dragon-eye-dotting",
+      "name": "画龙点睛",
+      "gameId": 7100380,
+      "sourceFile": "Skill_309024.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_f9e3c54bcfe08d.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ed/15lu2fl9yno6atnsnxb7u2u7iqzv1r1.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 24200
+    },
+    {
+      "nrcId": "dc5a_fbdaae42ca6b2d",
+      "id": "skill_preview_s5_refill",
+      "name": "续杯",
+      "gameId": 7050560,
+      "sourceFile": "Skill_104042.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_fbdaae42ca6b2d.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/5e/78hv8159af6meazrh7pwy359i3tcf38.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 24884
+    },
+    {
+      "nrcId": "dc5a_fe359911728246",
+      "id": "skill_preview_s5_curse-flame",
+      "name": "咒火",
+      "gameId": 7100360,
+      "sourceFile": "Skill_109023.png",
+      "localUrl": "/assets/skills/skill_preview_s5_bwiki_dc5a_fe359911728246.png",
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/0b/kna2tiokhjcvnouks23l4o44xpj7y7s.png",
+      "width": 128,
+      "height": 128,
+      "bytes": 23868
+    }
+  ]
+}

@@ -162,6 +162,7 @@ function configurationSignature(configuration, source) {
     natureId: configuration
       ? (configuration.natureId ?? configuration.nature ?? "neutral")
       : null,
+    level: configuration?.level ?? 60,
     source,
     spiritId: configuration?.spiritId ?? null,
   });
@@ -1054,6 +1055,7 @@ export function AbilityWorkbench({
             displayIvs: configured.displayIvs,
             natureMultipliers: getNatureMultipliers(configured.natureId),
             raceStats: configured.raceStats,
+            level: configured.level ?? 60,
           })
         : null,
     [configured],
@@ -1067,6 +1069,7 @@ export function AbilityWorkbench({
               baselineConfigured.natureId,
             ),
             raceStats: baselineConfigured.raceStats,
+            level: baselineConfigured.level ?? 60,
           })
         : null,
     [baselineConfigured],

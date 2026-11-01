@@ -1,7 +1,7 @@
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { useEffect, useRef } from "react";
-import { FEATURED_USER_RELEASE, S4_FEATURE_INTRO } from "../data/user-release-notes.js";
+import { FEATURED_USER_RELEASE } from "../data/user-release-notes.js";
 import { GLOBAL_RELEASE_SUMMARY } from "../data/global-release-summary.js";
 import { USER_MANUAL_URL } from "../data/product-links.js";
 
@@ -19,7 +19,7 @@ export function WhatsNewDialog({
   const { t } = useLocale();
   const { serverId } = useRuntime();
   const dialogRef = useRef(null);
-  const content = serverId === "global" ? GLOBAL_RELEASE_SUMMARY : S4_FEATURE_INTRO;
+  const content = serverId === "global" ? GLOBAL_RELEASE_SUMMARY : release.whatsNew;
 
   useEffect(() => {
     if (!open || !content) return undefined;

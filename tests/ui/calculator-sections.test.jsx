@@ -1064,6 +1064,21 @@ test("holding a level button repeats changes and stops on release", () => {
   }
 });
 
+test("单项防御特性在同一手调控件显示物防与魔防等级，不标成双攻", () => {
+  render(<NatureStatsStep
+    attacker={{ nature: "neutral", stats }}
+    defender={{ nature: "neutral", stats, level: { label: "防御能力等级", role: "defense", multiplier: 1, stage: 0,
+      bonusStages: { physical: -8, magical: 0 } } }}
+    onAttackerIvChange={vi.fn()} onAttackerNatureChange={vi.fn()}
+    onDefenderIvChange={vi.fn()} onDefenderNatureChange={vi.fn()} onDefenderLevelChange={vi.fn()}
+  />);
+  const defense = screen.getByRole("group", { name: "防御方能力" });
+  expect(within(defense).getByText("物防 -8层 · -80%")).toBeVisible();
+  expect(within(defense).getByText("魔防 0层 · 0%")).toBeVisible();
+  expect(within(defense).queryByText("物攻 -8层 · -80%")).not.toBeInTheDocument();
+  expect(within(defense).getAllByRole("button", { name: /等级[加减]一/ })).toHaveLength(2);
+});
+
 test("skill step has only single and four-skill top modes and keeps both editors mounted", async () => {
   const user = userEvent.setup();
 
