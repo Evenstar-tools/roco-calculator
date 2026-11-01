@@ -59,6 +59,31 @@ test("速度目标只包含已确认最终形态和首领", () => {
 });
 
 test.each([
+  "spirit_4ba8f07d34a4e247",
+  "spirit_58fba21fe70be498",
+  "spirit_576805f2cd1bbd11",
+  "spirit_95aaf0ee94680c86",
+  "spirit_e09a7b2376f6e518",
+  "spirit_95d31f7040c570b2",
+  "spirit_bf63c954e18a8852",
+  "spirit_45095a4991f540a4",
+  "spirit_0aff77799da7257f",
+  "spirit_9383a26b3b5da4c5",
+])("麦田外观仅按精准 ID 从全部速度口径去重，保留原版和其他变种：%s", id => {
+  const candidate = { ...spirits[2], id, fullName: "麦田主题形态" };
+  const original = { ...spirits[2], id: "spirit_3a0b383ca1a11675", fullName: "音速犬" };
+  const otherVariant = { ...spirits[2], id: "other-variant", fullName: "音速犬（其他样子）" };
+  const input = [candidate, original, otherVariant];
+  const before = structuredClone(input);
+
+  for (const profileId of Object.keys(SPEED_TARGET_PROFILES)) {
+    const targets = createSpeedTargets({ profileId, spirits: input });
+    expect(targets.map(target => target.spiritId).sort()).toEqual([original.id, otherVariant.id].sort());
+  }
+  expect(input).toEqual(before);
+});
+
+test.each([
   { catalogAvailable: false },
   { fullName: "圣龙阿布" },
   { previewIdentity: { catalogId: "candymo-hidden-20261101" } },
