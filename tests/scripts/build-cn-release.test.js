@@ -171,7 +171,7 @@ describe("pinned CN root release assembly", () => {
     expect(scripts.build.split(" && ")).toEqual([
       "npm run acceptance:verify", "npm run test:core-current", "npm run data:runtime", "npm run data:verify-bindings",
       "node scripts/build-cn-release.mjs", "node scripts/minify-service-worker.mjs", "npm run performance:verify",
-      "node scripts/build-preview-release.mjs", "node scripts/build-global-release.mjs",
+      "node scripts/build-preview-release.mjs", "node scripts/build-global-release.mjs", "node scripts/stamp-image-cache.mjs",
     ]);
   });
 });
