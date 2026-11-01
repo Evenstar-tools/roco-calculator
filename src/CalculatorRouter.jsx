@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { metrics } from "./analytics/metrics.js";
 import { previewRoute, unprefixedRoute } from "./runtime/preview-channel.js";
 import { App } from "./App.jsx";
@@ -6,8 +6,10 @@ import { useRuntime } from "./runtime/RuntimeContext.jsx";
 import { useLocale } from "./i18n/LocaleContext.jsx";
 import { routeFor } from "./runtime/routes.js";
 import { applyPageMetadata, DEER_PAGE_METADATA, HOME_PAGE_METADATA } from "./seo/page-metadata.js";
+import { FeatureBoundary } from "./runtime/FeatureBoundary.jsx";
+import { recoverableLazy } from "./runtime/chunk-recovery.js";
 
-const DeerPage = lazy(() => import("./features/deer/DeerPage.jsx"));
+const DeerPage = recoverableLazy(() => import("./features/deer/DeerPage.jsx"));
 const isDeerPath = () => /^\/dianlu\/?$/.test(unprefixedRoute(window.location.pathname)) || new URLSearchParams(window.location.search).get("tool") === "deer";
 
 export function CalculatorRouter({ initialSnapshot = null, active = true, onOpenGlobal }) {
@@ -43,7 +45,7 @@ export function CalculatorRouter({ initialSnapshot = null, active = true, onOpen
     setRoute({ deer: true, input: copy });
   }
   function returnHome(event) {
-    event.preventDefault();
+    event?.preventDefault();
     if (route.input && window.history.length > 1) {
       window.history.back();
     } else {
@@ -54,6 +56,6 @@ export function CalculatorRouter({ initialSnapshot = null, active = true, onOpen
   }
   return <>
     {homeVisited && <div hidden={route.deer} inert={route.deer || undefined}><App initialSnapshot={initialSnapshot} initialWorkspace={initialWorkspace} onOpenDeer={openDeer} active={active && !route.deer} onOpenGlobal={onOpenGlobal} /></div>}
-    {active && route.deer && <Suspense fallback={<p role="status">{t("正在加载电鹿斩杀线…")}</p>}><DeerPage initialState={route.input?.state} onReturn={returnHome} /></Suspense>}
+    {active && route.deer && <FeatureBoundary onClose={returnHome} fallback={<p role="status">{t("正在加载电鹿斩杀线…")}</p>}><DeerPage initialState={route.input?.state} onReturn={returnHome} /></FeatureBoundary>}
   </>;
 }
