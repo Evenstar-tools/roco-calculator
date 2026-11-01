@@ -13,6 +13,7 @@ import { useRuntime } from "../../runtime/RuntimeContext.jsx";
 import { getGlobalEntityText } from "../../runtime/global-entity-localization.js";
 import { useToolLocale as useLocale } from "../../i18n/useToolLocale.js";
 import { useModalFocus } from "../../hooks/useModalFocus.js";
+import { SpiritImage } from "../../components/SpiritImage.jsx";
 
 const SELECTABLE_TRAITS = ["向心力", "翼轴", "贪心算法", "盲拧", "机械变式", "风速仪", "正位宝剑", "宝剑王牌", "有求必应", "一意孤行"];
 const STAGE_ORDER = { "一阶": 1, "二阶": 2, "三阶": 3, "首领": 4 };
@@ -229,7 +230,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
         <div className="transmission-spirit">
           <div className="transmission-spirit-picker" data-has-portrait={Boolean(spirit?.assetUrl)}>
             <SpiritPicker label={t("推演")} side="attack" spirits={spirits} selected={spirit} onSelect={selectSpirit} showFavorite={false} />
-            {spirit?.assetUrl && <img className="transmission-spirit-portrait" src={spirit.assetUrl} alt="" aria-hidden="true" width="32" height="32" />}
+            {spirit?.assetUrl && <SpiritImage name={spirit.fullName} className="transmission-spirit-portrait" src={spirit.assetUrl} alt="" aria-hidden="true" width="32" height="32" />}
           </div>
           <div className="transmission-trait"><span>{t("特性")}</span><TransmissionTraitPicker options={relevantTraits} value={trait} placeholder={spirit ? t("无相关特性") : t("请选择特性")} onChange={selectTrait} /></div>
         </div>
