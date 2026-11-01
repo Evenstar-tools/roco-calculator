@@ -83,6 +83,8 @@ export function s5BwikiRuntimePlugin() {
     const nextStamp = ["data/snapshots/current.json", "data/reviewed/nrc-s5-20261101.json",
       "data/reviewed/s5-bwiki-assets-20261101.json", "scripts/bwiki/apply-s5-bwiki.mjs",
       "data/reviewed/candymo-s5-20261101.json", "scripts/bwiki/apply-s5-candymo.mjs",
+      "data/candidates/candymo-hidden-spirits-20261101.json",
+      "src/features/s5-preview/with-web-preview.js", "src/features/s5-preview/catalog.js",
       "data/reviewed/s5-official-video-20261031.json", "data/presets/s5-popular-configs.json"].map(file => {
       const target = path.join(ROOT, file);
       return existsSync(target) ? statSync(target).mtimeMs : 0;

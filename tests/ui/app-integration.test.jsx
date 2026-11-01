@@ -1521,15 +1521,18 @@ test("mirrors later positive ability gains to a triggered Fair Pigeon once", asy
 
   const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
   await user.clear(picker);
-  await user.type(picker, "魔法增效");
-  await user.click(screen.getByRole("option", { name: /魔法增效/ }));
-  await user.click(screen.getAllByText("自己获得魔攻+70%。")[0]);
+  await user.type(picker, "水泡盾");
+  await user.click(screen.getByRole("option", { name: /水泡盾/ }));
+  await user.click(screen.getByRole("checkbox", { name: "攻击方技能1防御应对成功" }));
+  await user.click(screen.getByText("减伤80%，应对攻击：自己获得魔攻+70%。"));
 
   const natureStep = screen.getByRole("region", { name: "性格配置" });
   const attackSide = within(natureStep).getByRole("group", { name: "攻击方能力" });
   const defenseSide = within(natureStep).getByRole("group", { name: "防御方能力" });
-  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
-  expect(within(defenseSide).getByText("7层 · +70%")).toBeVisible();
+  expect(within(attackSide).getByText("物攻 0层 · 0%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 7层 · +70%")).toBeVisible();
+  expect(within(defenseSide).getByText("物攻 0层 · 0%")).toBeVisible();
+  expect(within(defenseSide).getByText("魔攻 7层 · +70%")).toBeVisible();
 });
 
 test("caps positive power levels at 99 with ten percent per level", async () => {
@@ -2425,8 +2428,8 @@ test("requires a successful defense response before applying Water Bubble Shield
   await user.click(
     screen.getByText("减伤80%，应对攻击：自己获得魔攻+70%。"),
   );
-  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
-  expect([...document.querySelectorAll(".skill-usage__main")].map((item) => item.textContent).join(" ")).toMatch(/累计状态：已使用×2.*应对成功×1.*攻击\+7层/);
+  expect(within(attackSide).getByText("魔攻 7层 · +70%")).toBeVisible();
+  expect([...document.querySelectorAll(".skill-usage__main")].map((item) => item.textContent).join(" ")).toMatch(/累计状态：已使用×2.*应对成功×1.*魔攻\+7层/);
 });
 
 test("applies a clicked defense skill reduction and clears it after another skill is used", async () => {
@@ -2800,13 +2803,13 @@ test("reapplies a defense response gain only after its transient state was turne
 
   const description = "减伤80%，应对攻击：自己获得魔攻+70%。";
   await user.click(screen.getByText(description));
-  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 7层 · +70%")).toBeVisible();
 
   await user.click(screen.getByText(description));
-  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 7层 · +70%")).toBeVisible();
 
   await user.click(screen.getByText(description));
-  expect(within(attackSide).getByText("14层 · +140%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 14层 · +140%")).toBeVisible();
 });
 
 test("Diffuse Reflection buffs only the first attacking skill of each type", async () => {
@@ -4081,7 +4084,7 @@ test("checks built-in popular updates on entry and imports only after confirmati
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
 
-  const notice = await screen.findByText("常用精灵配置可更新（2）");
+  const notice = await screen.findByText("常用精灵配置可导入（2）");
   expect(screen.getByRole("dialog", { name: "新手引导 1/6" })).toBeVisible();
   expect(localStorage.getItem(SPIRIT_CONFIG_STORAGE_KEY)).toBeNull();
   expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teamBytes);
@@ -4103,7 +4106,7 @@ test("checks built-in popular updates on entry and imports only after confirmati
   expect(within(configEntries).getByText("音速犬", { exact: true })).toBeVisible();
   expect(within(configEntries).queryByText("风暴战犬", { exact: true }))
     .not.toBeInTheDocument();
-  await user.click(within(dialog).getByRole("button", { name: /更新配置/ }));
+  await user.click(within(dialog).getByRole("button", { name: "导入配置（2）" }));
 
   expect(screen.getByText(/已新增 2 只配置/)).toBeVisible();
   expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teamBytes);
@@ -4371,7 +4374,7 @@ test.each([["four", "攻击方"], ["single", "攻击方"], ["four", "防御方"]
   let dialog = screen.getByRole("dialog", { name: `${side} · 水泡盾条件` });
   await user.click(within(dialog).getByRole("checkbox", { name: "防御应对成功", exact: true }));
   await user.click(within(dialog).getByRole("button", { name: "使用技能", exact: true }));
-  expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("攻击+7层");
+  expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("魔攻+7层");
   expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("减伤80%");
   expect(within(dialog).getByRole("button", { name: "解除状态", exact: true })).toBeEnabled();
   await user.keyboard("{Escape}");
@@ -4384,14 +4387,14 @@ test.each([["four", "攻击方"], ["single", "攻击方"], ["four", "防御方"]
   await user.click(within(dialog).getByRole("button", { name: "解除状态", exact: true }));
   expect(within(dialog).getByRole("button", { name: "使用技能", exact: true })).toBeEnabled();
   expect(within(dialog).getByText(/已用 1 次/)).not.toHaveTextContent("减伤80%");
-  expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("攻击+7层");
+  expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("魔攻+7层");
   if (mode === "single") {
     await user.keyboard("{Escape}");
     await user.click(screen.getByRole("button", { name: /撤回上一步/ }));
     await user.click(trigger());
     dialog = screen.getByRole("dialog", { name: `${side} · 水泡盾条件` });
     expect(within(dialog).getByRole("button", { name: "解除状态", exact: true })).toBeEnabled();
-    expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("攻击+7层");
+    expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("魔攻+7层");
     expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("减伤80%");
   }
 });

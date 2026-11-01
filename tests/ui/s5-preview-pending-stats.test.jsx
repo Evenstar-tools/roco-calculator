@@ -13,6 +13,7 @@ import { s5PreviewIds } from "../../src/features/s5-preview/catalog.js";
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 
 const s5Catalog = JSON.parse(readFileSync("data/candidates/s5-preview-new-spirits.json", "utf8"));
+const recommendedS5Entries = s5Catalog.entries.filter(entry => entry.raceStats);
 
 const stats = { hp: 100, physicalAttack: 100, magicalAttack: 100,
   physicalDefense: 100, magicalDefense: 100, speed: 100 };
@@ -131,7 +132,8 @@ function s5Roster({ saved = false } = {}) {
     { id: "bruce", fullName: "冰钻布鲁斯", dexNo: "004" },
   ].map(spirit => ({ ...spirit, types: [], raceStats: stats, evolutionChainIds: [spirit.id] }));
   return withWebPreview({ meta: { id: "picker-fixture" }, spirits: ordinary,
-    traits: [], skills: [], learnsets: [] }).spirits;
+    traits: [], skills: [], learnsets: [] }).spirits.filter(spirit =>
+    !spirit.previewIdentity || spirit.previewIdentity.catalogId === s5Catalog.catalogId);
 }
 
 function pickerProps(spirits, selected = null) {
@@ -139,13 +141,12 @@ function pickerProps(spirits, selected = null) {
 }
 
 function expectS5Pinned() {
-  const first = screen.getAllByRole("option").slice(0, s5Catalog.entries.length);
-  expect(first.map(option => option.dataset.spiritId)).toEqual(s5Catalog.entries.map(entry => s5PreviewIds(entry.key).spiritId));
-  for (const [index, option] of first.entries()) {
+  const first = screen.getAllByRole("option").slice(0, recommendedS5Entries.length);
+  expect(first.map(option => option.dataset.spiritId)).toEqual(recommendedS5Entries.map(entry => s5PreviewIds(entry.key).spiritId));
+  for (const option of first) {
     expect(option.querySelector("strong")).toHaveAttribute("data-new", "true");
-    if (s5Catalog.entries[index].raceStats === undefined) expect(option).toHaveTextContent("六维100测试占位");
-    else if (s5Catalog.entries[index].raceStats === null) expect(option).toHaveTextContent("种族值待确认");
-    else expect(option).not.toHaveTextContent("六维100测试占位");
+    expect(option).not.toHaveTextContent("六维100测试占位");
+    expect(option).not.toHaveTextContent("种族值待确认");
   }
 }
 
@@ -187,7 +188,7 @@ test("真实App中S5六维100可编辑、恢复当前及上次修改，未改值
   expect(current.spirits.some(spirit => spirit.id === candidate.id)).toBe(false);
 });
 
-test("实际S5目录含官方进化形态均进入首批并排在迪莫前，全部候选卡片显示NEW", async () => {
+test("实际S5目录有真实六维的精灵进入首批并排在迪莫前，已有候选卡片仍可读取", async () => {
   const user = userEvent.setup();
   const spirits = s5Roster();
   const props = pickerProps(spirits);
@@ -195,7 +196,7 @@ test("实际S5目录含官方进化形态均进入首批并排在迪莫前，全
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
   expect(s5Catalog.entries.some(entry => entry.raceStats)).toBe(true);
   expectS5Pinned();
-  expect(screen.getAllByRole("option")[s5Catalog.entries.length]).toHaveAttribute("data-spirit-id", "dimo");
+  expect(screen.getAllByRole("option")[recommendedS5Entries.length]).toHaveAttribute("data-spirit-id", "dimo");
   await user.keyboard("{Escape}");
   for (const entry of s5Catalog.entries) {
     const selected = spirits.find(spirit => spirit.id === s5PreviewIds(entry.key).spiritId);
@@ -207,13 +208,13 @@ test("实际S5目录含官方进化形态均进入首批并排在迪莫前，全
   }
 });
 
-test("无搜索的收藏与热门预设模式都保留全部S5置顶", async () => {
+test("无搜索的收藏与热门预设模式保留真实六维S5置顶，不推荐占位", async () => {
   const user = userEvent.setup();
   const spirits = s5Roster({ saved: true });
   const first = render(<SpiritPicker {...pickerProps(spirits)} />);
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
   expectS5Pinned();
-  expect(screen.getAllByRole("option")[s5Catalog.entries.length]).toHaveAttribute("data-spirit-id", "saved");
+  expect(screen.getAllByRole("option")[recommendedS5Entries.length]).toHaveAttribute("data-spirit-id", "saved");
   first.unmount();
   localStorage.setItem(PRESET_BROWSE_STORAGE_KEY, "1");
   vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => ({ entries: [{ spiritId: "popular" }] }) })));
@@ -223,7 +224,7 @@ test("无搜索的收藏与热门预设模式都保留全部S5置顶", async () 
   await waitFor(() => expect(screen.getByRole("option", { name: /热门配置/u })).toBeVisible());
   expectS5Pinned();
   expect(screen.getAllByRole("option")[0]).toHaveClass("is-active");
-  expect(screen.getAllByRole("option").slice(s5Catalog.entries.length).map(option => option.dataset.spiritId)).toEqual(["saved", "popular"]);
+  expect(screen.getAllByRole("option").slice(recommendedS5Entries.length).map(option => option.dataset.spiritId)).toEqual(["saved", "popular"]);
   await user.keyboard("{Escape}");
   rerender(<PresetBrowseProvider><SpiritPicker {...pickerProps(spirits, popular)} /></PresetBrowseProvider>);
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
@@ -232,7 +233,30 @@ test("无搜索的收藏与热门预设模式都保留全部S5置顶", async () 
   await user.clear(screen.getByRole("combobox", { name: "攻击方精灵" }));
   expectS5Pinned();
   expect(screen.getAllByRole("option")[0]).toHaveClass("is-active");
-  expect(screen.getAllByRole("option").slice(s5Catalog.entries.length).map(option => option.dataset.spiritId)).toEqual(["saved", "popular"]);
+  expect(screen.getAllByRole("option").slice(recommendedS5Entries.length).map(option => option.dataset.spiritId)).toEqual(["saved", "popular"]);
+});
+
+test("未开放搜索涵盖缺六维与暂定六维，名称可查；圣龙阿布始终不进入候选", () => {
+  const spirits = s5Roster();
+  const searchOnly = s5Catalog.entries.filter(entry => !entry.raceStats && entry.key !== "boss-abu");
+  render(<SpiritPicker {...pickerProps(spirits)} />);
+  const input = screen.getByRole("combobox", { name: "攻击方精灵" });
+  fireEvent.change(input, { target: { value: "未开放" } });
+  expect(new Set(screen.getAllByRole("option").map(option => option.dataset.spiritId)))
+    .toEqual(new Set(searchOnly.map(entry => s5PreviewIds(entry.key).spiritId)));
+  const missing = searchOnly.find(entry => entry.raceStats === null);
+  const placeholder = searchOnly.find(entry => entry.raceStats === undefined);
+  expect(missing).toBeDefined();
+  expect(placeholder).toBeDefined();
+  for (const entry of [missing, placeholder]) {
+    fireEvent.change(input, { target: { value: entry.name } });
+    expect(screen.getAllByRole("option").some(option => option.dataset.spiritId === s5PreviewIds(entry.key).spiritId)).toBe(true);
+  }
+  for (const query of ["圣龙阿布", "阿布", "S5"]) {
+    fireEvent.change(input, { target: { value: query } });
+    expect(screen.queryAllByRole("option").some(option => option.dataset.spiritId === s5PreviewIds("boss-abu").spiritId)).toBe(false);
+  }
+  expect(spirits.some(spirit => spirit.previewIdentity?.key === "boss-abu")).toBe(true);
 });
 
 test.each([false, true])("已选同族精灵只展示相关形态，常用配置模式=%s，原同族切换保留", async (presetMode) => {
@@ -314,10 +338,10 @@ test.each([false, true])("已选无同族精灵保留名称时不置顶，空白
   else expectS5Pinned();
   await user.clear(input);
   expectS5Pinned();
-  expect(screen.getAllByRole("option")[s5Catalog.entries.length]).toHaveAttribute("data-spirit-id", "saved");
+  expect(screen.getAllByRole("option")[recommendedS5Entries.length]).toHaveAttribute("data-spirit-id", "saved");
   expect(screen.getAllByRole("option")[0]).toHaveClass("is-active");
   await user.keyboard("{Enter}");
-  expect(props.onSelect).toHaveBeenCalledWith(s5PreviewIds(s5Catalog.entries[0].key).spiritId);
+  expect(props.onSelect).toHaveBeenCalledWith(s5PreviewIds(recommendedS5Entries[0].key).spiritId);
 });
 
 test("常用配置异步读入后高亮当前选中，不跳到新精灵或第一项", async () => {
@@ -354,16 +378,14 @@ test.each([false, true])("名称搜索准确命中优先于收藏与部分匹配
   expect(screen.getByRole("option", { name: /迪莫/u })).toHaveAttribute("data-spirit-id", "dimo");
 });
 
-test("已选新精灵只显示自己的同族并保留NEW，不重复或混入其他新精灵", async () => {
+test("已选新精灵保留NEW，不自动混入同族占位或其他新精灵", async () => {
   const user = userEvent.setup();
   const spirits = s5Roster();
   const selected = spirits.find(spirit => spirit.previewIdentity?.key === "minggulong");
   render(<SpiritPicker {...pickerProps(spirits, selected)} formSide={{ spiritId: selected.id }} onFormSelect={vi.fn()} />);
   await user.click(screen.getByRole("combobox", { name: "攻击方精灵" }));
-  expect(screen.getByText("同族形态")).toBeVisible();
-  expect(screen.getAllByRole("option").map(option => option.dataset.spiritId)).toEqual([
-    selected.id, s5PreviewIds("little-ming-dragon").spiritId,
-  ]);
+  expect(screen.queryByText("同族形态")).not.toBeInTheDocument();
+  expect(screen.getAllByRole("option").map(option => option.dataset.spiritId)).toEqual([selected.id]);
   expect(screen.getByRole("option", { name: /^冥古龙 /u })).toHaveClass("is-active");
   for (const option of screen.getAllByRole("option")) expect(option.querySelector("strong")).toHaveAttribute("data-new", "true");
 });

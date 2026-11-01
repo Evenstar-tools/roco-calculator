@@ -156,7 +156,7 @@ test("原占位属性按官方图纠正并分开来源，未列圣龙阿布不�
   };
   const current = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
   const result = withWebPreview(current);
-  const typed = result.spirits.filter(spirit => spirit.previewIdentity && spirit.types.length);
+  const typed = result.spirits.filter(spirit => spirit.previewIdentity?.catalogId === catalog.catalogId && spirit.types.length);
   expect(typed).toHaveLength(30);
   for (const [name, types] of Object.entries(expected)) {
     const spirit = result.spirits.find(entry => entry.fullName === name);

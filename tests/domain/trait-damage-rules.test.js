@@ -27,6 +27,13 @@ describe("公平鸽衡量", () => {
     })).toEqual({ attack: 9, defense: -4 });
   });
 
+  test("复制独立魔攻加成不会抬高物攻，也不复制总值为负的魔攻", () => {
+    expect(copyPositiveAbilityStages({ attack: 0, magicalAttack: 7 }, { attack: 2, magicalAttack: 1 }))
+      .toEqual({ attack: 2, defense: 0, magicalAttack: 8 });
+    expect(copyPositiveAbilityStages({ attack: -10, magicalAttack: 7 }, { attack: 0 }))
+      .toEqual({ attack: 0, defense: 0, magicalAttack: 0 });
+  });
+
   test("复制结果仍限制在正负九十九层", () => {
     expect(copyPositiveAbilityStages({ attack: 8, defense: 12 }, {
       attack: 97,

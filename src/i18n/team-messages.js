@@ -117,7 +117,7 @@ export const teamMessages = Object.fromEntries([
   ["队伍与当前页面不会改变。", "Teams and the current page stay unchanged.", "チームと現在のページは変更されません。"],
   ["正在检查内置配置…", "Checking built-in setups…", "組み込み設定を確認中…"], ["选择文件后先校验，不会立即写入。", "The file is checked before you choose to import.", "ファイル選択後は検証のみ行い、すぐには書き込みません。"],
   ["展开精灵列表时浏览预设与手动收藏；输入文字仍搜索全部精灵", "Show presets and favorites in the expanded list; typing searches all Jinies", "一覧ではプリセットとお気に入りを表示し、文字入力では全キャラクターを検索します"],
-  ["仅预览配置项", "Preview configured entries only", "設定済みの項目のみ表示"], ["更新配置（{count}）", "Update setups ({count})", "設定を更新（{count}）"], ["添加收藏（{count}）", "Add favorites ({count})", "お気に入りを追加（{count}）"],
+  ["仅预览配置项", "Preview configured entries only", "設定済みの項目のみ表示"], ["更新配置（{count}）", "Update setups ({count})", "設定を更新（{count}）"], ["导入配置（{count}）", "Import setups ({count})", "設定を読み込む（{count}）"], ["添加收藏（{count}）", "Add favorites ({count})", "お気に入りを追加（{count}）"],
   ["手改配置已保留", "Manual edits preserved", "手動変更を保持しました"], ["已是最新", "Already up to date", "最新です"],
   ["另一标签页已更新会话；本标签内容已保留，请先导出再刷新", "Another tab updated this session. This tab's content is kept; export it before refreshing.", "別のタブで作業状態が更新されました。このタブの内容は保持しています。再読込前にエクスポートしてください。"],
   ["会话版本或服务器不匹配；原记录已保留，未载入", "Session version or server mismatch. The original record was preserved and not loaded.", "作業状態のバージョンまたはサーバーが一致しません。元の記録を保持し、読み込みませんでした。"],

@@ -16,7 +16,7 @@ export function PresetUpdateNotice({ loadPopularConfigLibrary, onOpen }) {
       if (controller.signal.aborted) return;
       const count = (parsed?.preview?.added ?? 0) + (parsed?.preview?.updated ?? 0);
       if (count <= 0) return;
-      setNotice({ serverId, count });
+      setNotice({ serverId, count, importOnly: !(parsed?.preview?.updated > 0) });
       timer = setTimeout(() => setNotice(null), 2000);
     }).catch(() => {}); // A background check must not interrupt calculation or imply an update.
     return () => { controller.abort(); clearTimeout(timer); };
@@ -25,7 +25,7 @@ export function PresetUpdateNotice({ loadPopularConfigLibrary, onOpen }) {
   if (!notice || notice.serverId !== serverId) return null;
   return (
     <div className="preset-update-notice" role="status">
-      <span>{t("常用精灵配置可更新（{count}）", { count: notice.count })}</span>
+      <span>{t(notice.importOnly ? "常用精灵配置可导入（{count}）" : "常用精灵配置可更新（{count}）", { count: notice.count })}</span>
       <button className="secondary-action" type="button" onClick={() => {
         setNotice(null);
         onOpen();

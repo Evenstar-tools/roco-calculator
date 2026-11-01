@@ -50,6 +50,23 @@ describe("isolated BWIKI S5 runtime", () => {
       .toBe("boss-ice-bruce");
   });
 
+  it("retains the separate unreleased directory through full S5 import and runtime compaction", () => {
+    const hidden = runtime.spirits.filter(spirit => spirit.previewIdentity?.catalogId === "candymo-hidden-20261101");
+    expect(hidden).toHaveLength(27);
+    const web = withWebPreview(runtime);
+    for (const spirit of hidden) {
+      expect(spirit.raceStats).toBeNull();
+      expect(spirit.calculationStatus).toBe("pending-race-stats");
+      expect(runtime.learnsets.find(pool => pool.spiritId === spirit.id).skillIds).toEqual([]);
+      const restored = web.spirits.find(entry => entry.id === spirit.id);
+      expect(restored.previewIdentity.source).toMatchObject({ authority: "third-party-hidden" });
+      expect(restored.raceStats).toBeNull();
+      expect(resolveSpiritFormRole(restored).formRoleStatus).not.toBe("verified");
+    }
+    expect(web.spirits.find(spirit => spirit.fullName === "呼拉猫").asset.localUrl)
+      .toContain("/assets/spirits/candymo-hidden/3217.png");
+  });
+
   it("retains rank eligibility and newly published learning methods after compaction", () => {
     const spirit = runtime.spirits.find(entry => entry.fullName === "地绡银龙");
     expect(resolveSpiritFormRole(spirit).formRole).toBe("final");

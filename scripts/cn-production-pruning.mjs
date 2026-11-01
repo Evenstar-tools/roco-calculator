@@ -16,10 +16,12 @@ export function pruneCnProductionModule(code, id, { reviewedS5 = false } = {}) {
     return `import { withCalculatorExtras } from "../../data/snapshot-extras.js";
 import { withPublicResourceUrls } from "../../runtime/public-resource-url.js";
 import { restoreS5RuntimeRelations } from "../../data/s5-runtime-relations.js";
+import { withS5PreviewCatalog } from "./catalog.js";
+import hiddenCatalog from "../../../data/candidates/candymo-hidden-spirits-20261101.json";
 export function withWebPreview(snapshot) {
   const restored = restoreS5RuntimeRelations(snapshot);
   if (restored.meta?.s5NrcSync?.complete !== true) throw new Error("S5资料尚未完整加载，请刷新重试。");
-  return withPublicResourceUrls(withCalculatorExtras(restored));
+  return withPublicResourceUrls(withS5PreviewCatalog(withCalculatorExtras(restored), hiddenCatalog));
 }`;
   }
 

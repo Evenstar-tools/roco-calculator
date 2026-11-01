@@ -1,4 +1,6 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 import {
   hasMoonMemoryTrait,
   MOON_MEMORY_TRAIT_LIMIT,
@@ -175,6 +177,27 @@ describe("searchMoonMemoryTraitOptions", () => {
 });
 
 describe("Moon Memory preview scope", () => {
+  test.each([false, true])("excludes unreleased display candidates from the actual web overlay; complete=%s", complete => {
+    const runtime = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
+    const webSnapshot = withWebPreview({ ...runtime,
+      meta: { ...runtime.meta, s5NrcSync: { complete } },
+    });
+    const hidden = webSnapshot.spirits.filter(spirit => spirit.previewIdentity?.mechanicKey === "unreleased");
+    expect(hidden).toHaveLength(27);
+    const hiddenTraitIds = new Set(hidden.flatMap(spirit => spirit.traitIds));
+    const index = createMoonMemoryTraitSearchIndex(webSnapshot);
+    expect(index.filter(option => hiddenTraitIds.has(option.traitId))).toEqual([]);
+    expect(searchMoonMemoryTraitOptions(index, "健猫教练")).toEqual([]);
+    expect(searchMoonMemoryTraitOptions(index, "四轴机床")).toEqual([]);
+    expect(searchMoonMemoryTraitOptions(index, "旧玩具").length).toBeGreaterThan(0);
+    expect(webSnapshot.traits.find(trait => hiddenTraitIds.has(trait.id))?.description).toBeTruthy();
+    // A saved invalid choice remains removable, but never exposes active controls.
+    const selected = getMoonMemorySelectedTraits(webSnapshot, { acquiredTraitIds: [hidden[0].traitIds[0]] });
+    expect(selected).toHaveLength(1);
+    expect(selected[0].support.id).toBe("display-only");
+    expect(getMoonMemoryTraitControls(selected[0].trait)).toEqual([]);
+  });
+
   test("recognizes Moon Memory from either snapshot name field", () => {
     expect(hasMoonMemoryTrait([{ name: "铭记于月亮" }])).toBe(true);
     expect(hasMoonMemoryTrait([{ displayName: "铭记于月亮" }])).toBe(true);

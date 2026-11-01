@@ -60,6 +60,18 @@
   vertical-align: 2px;
 }
 
+.spirit-unreleased-badge {
+  flex: 0 0 auto;
+  padding: 1px 5px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
 .spirit-picker__option-title .entity-change-hint,
 .skill-picker__option-name .entity-change-hint {
   width: 18px;

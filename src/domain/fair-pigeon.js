@@ -18,5 +18,10 @@ export function copyPositiveAbilityStages(source = {}, target = {}) {
     defense: clampStage(
       Number(target.defense ?? 0) + Math.max(0, Number(source.defense ?? 0)),
     ),
+    ...(source.magicalAttack !== undefined || target.magicalAttack !== undefined ? {
+      magicalAttack: clampStage(Number(target.magicalAttack ?? 0) +
+        Math.max(0, Number(source.attack ?? 0) + Number(source.magicalAttack ?? 0)) -
+        Math.max(0, Number(source.attack ?? 0))),
+    } : {}),
   };
 }

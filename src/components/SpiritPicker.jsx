@@ -13,6 +13,7 @@ import { usePickerMenuLayout } from "./picker-menu-layout.js";
 import { buildSpiritFamilyIndex } from "./spirit-family.js";
 import { canPreserveBattleFormConfig, getFormConfigPreferences } from "../state/form-config-preferences.js";
 import { hasCompleteRaceStats } from "../domain/stat.js";
+import { canRecommendSpirit, isSpiritDiscoveryHidden, isSpiritSearchOnly } from "../domain/spirit-discovery.js";
 
 function normalizeSearch(value) {
   return String(value ?? "").trim().toLocaleLowerCase("zh-CN");
@@ -57,6 +58,14 @@ function isS5PreviewSpirit(spirit) {
     typeof identity.catalogId === "string" && identity.catalogId.startsWith("s5-");
 }
 
+function isUnreleasedSpirit(spirit) {
+  return spirit?.previewIdentity?.catalogId?.startsWith("candymo-hidden-") === true;
+}
+
+function isPreviewCandidate(spirit) {
+  return isS5PreviewSpirit(spirit) || isUnreleasedSpirit(spirit);
+}
+
 function shouldShowNewBadge(spirit) {
   if (isS5PreviewSpirit(spirit)) return true;
   return Boolean(
@@ -93,9 +102,9 @@ function compareDexOrder(left, right) {
 }
 
 function compareSavedPreviewOrder(left, right) {
-  const s5Order = Number(isS5PreviewSpirit(right)) - Number(isS5PreviewSpirit(left));
-  if (s5Order) return s5Order;
-  if (isS5PreviewSpirit(left)) return 0;
+  const previewOrder = Number(isPreviewCandidate(right)) - Number(isPreviewCandidate(left));
+  if (previewOrder) return previewOrder;
+  if (isPreviewCandidate(left)) return 0;
   const leftFinal = isS4PreviewFinalSpirit(left);
   const rightFinal = isS4PreviewFinalSpirit(right);
   if (leftFinal !== rightFinal) return leftFinal ? -1 : 1;
@@ -115,9 +124,9 @@ function compareSavedPreviewOrder(left, right) {
 }
 
 function compareDefaultPreviewOrder(left, right) {
-  const s5Order = Number(isS5PreviewSpirit(right)) - Number(isS5PreviewSpirit(left));
-  if (s5Order) return s5Order;
-  if (isS5PreviewSpirit(left)) return 0;
+  const previewOrder = Number(isPreviewCandidate(right)) - Number(isPreviewCandidate(left));
+  if (previewOrder) return previewOrder;
+  if (isPreviewCandidate(left)) return 0;
   const leftDefault = left.fullName === "迪莫";
   const rightDefault = right.fullName === "迪莫";
   if (leftDefault !== rightDefault) return leftDefault ? -1 : 1;
@@ -154,7 +163,10 @@ export function SpiritPicker({
 }) {
   const { t, typeName, locale } = useLocale();
   const { serverId } = useRuntime();
-  const spirits = useMemo(() => sourceSpirits.map(spirit => serverId === "global" ? localizeGlobalSpirit(spirit, locale) : spirit).filter(spirit => spirit.catalogAvailable !== false), [sourceSpirits, serverId, locale]);
+  const spirits = useMemo(() => sourceSpirits.filter(spirit => !isSpiritDiscoveryHidden(spirit))
+    .map(spirit => serverId === "global" ? localizeGlobalSpirit(spirit, locale) : spirit)
+    .filter(spirit => !isSpiritDiscoveryHidden(spirit)), [sourceSpirits, serverId, locale]);
+  const recommendedSpirits = useMemo(() => spirits.filter(canRecommendSpirit), [spirits]);
   const selected = useMemo(() => sourceSelected && serverId === "global" ? localizeGlobalSpirit(sourceSelected, locale) : sourceSelected, [sourceSelected, serverId, locale]);
   const formPreferences = getFormConfigPreferences(serverId);
   const listboxId = useId();
@@ -185,7 +197,8 @@ export function SpiritPicker({
   const relatedFamily = useMemo(() => {
     const ownPath = new Set(family.length ? family.map(spirit => spirit.id) : selected?.evolutionChainIds ?? [selected?.id]);
     const stages = ["一阶", "二阶", "三阶", "首领"];
-    return [...(familyIndex.get(selected?.id) ?? [])].sort((left, right) => {
+    return [...(familyIndex.get(selected?.id) ?? [])]
+      .filter(spirit => canRecommendSpirit(spirit) || spirit.id === selected?.id).sort((left, right) => {
       const ownOrder = Number(ownPath.has(right.id)) - Number(ownPath.has(left.id));
       if (ownOrder) return ownOrder;
       if (!ownPath.has(left.id)) {
@@ -205,13 +218,13 @@ export function SpiritPicker({
   const browsingPresets = presetBrowse.enabled && (!searching || !query.trim()) && !browsingFamily;
   // Blank input requests recommendations, even after clearing a selected spirit.
   const pinNewSpirits = !query.trim();
-  const s5PreviewSpirits = useMemo(() => spirits.filter(isS5PreviewSpirit), [spirits]);
-  const presetSpirits = useMemo(() => spirits
-    .filter((spirit) => isS5PreviewSpirit(spirit) || presetBrowse.spiritIds.has(spirit.id) || spirit.favoriteState === "manual")
+  const previewSpirits = useMemo(() => recommendedSpirits.filter(isPreviewCandidate), [recommendedSpirits]);
+  const presetSpirits = useMemo(() => recommendedSpirits
+    .filter((spirit) => isPreviewCandidate(spirit) || presetBrowse.spiritIds.has(spirit.id) || spirit.favoriteState === "manual")
     .sort((left, right) => pinNewSpirits
-      ? Number(isS5PreviewSpirit(right)) - Number(isS5PreviewSpirit(left)) ||
-        (isS5PreviewSpirit(left) ? 0 : compareDexOrder(left, right))
-      : compareDexOrder(left, right)), [spirits, presetBrowse.spiritIds, pinNewSpirits]);
+      ? Number(isPreviewCandidate(right)) - Number(isPreviewCandidate(left)) ||
+        (isPreviewCandidate(left) ? 0 : compareDexOrder(left, right))
+      : compareDexOrder(left, right)), [recommendedSpirits, presetBrowse.spiritIds, pinNewSpirits]);
 
   const preview = useMemo(() => {
     if (browsingFamily) return {
@@ -238,6 +251,7 @@ export function SpiritPicker({
               spirit.pinyin,
               spirit.initials,
               spirit.dexNo,
+              isSpiritSearchOnly(spirit) ? "未开放" : "",
               ...(spirit.aliases ?? []),
               ...(spirit.formerNames ?? []),
             ].some((field) => normalizeSearch(field).includes(needle)),
@@ -246,7 +260,7 @@ export function SpiritPicker({
             searchMatchRank(left, needle) - searchMatchRank(right, needle)
             || compareDexOrder(left, right),
           )
-      : spirits;
+      : recommendedSpirits;
     const markedFirst = (items) =>
       [...items].sort(
         (left, right) => {
@@ -267,10 +281,10 @@ export function SpiritPicker({
       const previewBosses = direct.filter(isS4PreviewBossSpirit);
       const orderedRoster = [...direct].sort(pinNewSpirits ? compareDefaultPreviewOrder : compareDexOrder);
       const previewItems = favoriteCount
-        ? uniqueSpirits([...s5PreviewSpirits, ...previewFinals, ...previewBosses, ...favorites])
+        ? uniqueSpirits([...previewSpirits, ...previewFinals, ...previewBosses, ...favorites])
             .sort(pinNewSpirits ? compareSavedPreviewOrder : compareDexOrder)
         : orderedRoster;
-      const visibleCount = Math.min(previewItems.length, s5PreviewSpirits.length + previewLimit);
+      const visibleCount = Math.min(previewItems.length, previewSpirits.length + previewLimit);
       return {
         allFavoritesVisible:
           favoriteCount > 0 && visibleCount >= previewItems.length,
@@ -289,8 +303,9 @@ export function SpiritPicker({
     const shown = new Set();
     const expanded = [];
     for (const match of direct) {
-      for (const spirit of familyIndex.get(match.id) ?? [match]) {
-        if (!spirit || shown.has(spirit.id)) continue;
+      for (const spirit of needle === "未开放" ? [match] : familyIndex.get(match.id) ?? [match]) {
+        if (!spirit || shown.has(spirit.id) ||
+            (isSpiritSearchOnly(spirit) && !directIds.has(spirit.id))) continue;
         shown.add(spirit.id);
         expanded.push({
           related: !directIds.has(spirit.id),
@@ -310,13 +325,13 @@ export function SpiritPicker({
       items: markedFirst(expanded.map(({ spirit }) => spirit))
         .sort((left, right) => Number(directIds.has(right.id)) - Number(directIds.has(left.id)) ||
           searchMatchRank(left, needle) - searchMatchRank(right, needle))
-        .slice(0, 20)
+        .slice(0, needle === "未开放" ? expanded.length : 20)
         .map((spirit) => ({
           related: !directIds.has(spirit.id),
           spirit,
         })),
     };
-  }, [browsingFamily, relatedFamily, familyIndex, browsingPresets, presetSpirits, previewLimit, query, spirits, s5PreviewSpirits, pinNewSpirits]);
+  }, [browsingFamily, relatedFamily, familyIndex, browsingPresets, presetSpirits, previewLimit, query, spirits, recommendedSpirits, previewSpirits, pinNewSpirits]);
   const matches = preview.items;
   // Keep identity rather than a stale index when presets load or pages expand.
   const activeIndex = Math.max(0, matches.findIndex(({ spirit }) => spirit.id === activeSpiritId));
@@ -492,6 +507,7 @@ export function SpiritPicker({
                       <strong data-new={shouldShowNewBadge(spirit) || undefined}>
                         {spirit.fullName}
                       </strong>
+                      {isUnreleasedSpirit(spirit) ? <span className="spirit-unreleased-badge">{t("未开放")}</span> : null}
                       <EntityChangeHint changeInfo={spirit.changeInfo} />
                     </span>
                     <small>
@@ -559,6 +575,7 @@ export function SpiritPicker({
               <strong data-new={shouldShowNewBadge(selected) || undefined}>
                 {selected.fullName}
               </strong>
+              {isUnreleasedSpirit(selected) ? <span className="spirit-unreleased-badge">{t("未开放")}</span> : null}
               <EntityChangeHint changeInfo={selected.changeInfo} entityName={selected.fullName} active={comparisonReady && comparisonActive}
                 renderPatchAction={comparisonReady ? renderComparisonAction : undefined}>
                 {comparisonReady ? comparisonControls : null}

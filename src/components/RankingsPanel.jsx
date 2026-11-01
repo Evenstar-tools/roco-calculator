@@ -41,7 +41,7 @@ function ReadonlyDetail({ entry, attackType, templateId, onBack }) {
       {entry.passiveLabel ? <p>{t(entry.passiveDescription)} · {t("物防")} {entry.basePanelStats.physicalDefense}→{entry.panelStats.physicalDefense} · {t("魔防")} {entry.basePanelStats.magicalDefense}→{entry.panelStats.magicalDefense}</p> : null}
       <table><thead><tr><th>{t("指标")}</th><th>{t(entry.passiveLabel ? "特性后耐久" : levelVariant ? "面板耐久" : "基础耐久")}</th>{attackType || levelVariant ? <th>{attackType ? <>{typeName(attackType)}{t("系有效耐久")}</> : t("有效耐久")}</th> : null}</tr></thead><tbody>{Object.entries(RANKING_METRIC_LABELS).map(([key, label]) => <tr key={key}><th>{t(label)}</th><td>{number((entry.panelDurability ?? entry.baseDurability ?? entry.durability).display[key])}</td>{attackType || levelVariant ? <td>{number(entry.durability.display[key])}</td> : null}</tr>)}</tbody></table>
       {levelVariant ? <p>{t(attackType ? "面板耐久 ÷ 等级特性承伤倍率 ÷ 属性倍率" : "面板耐久 ÷ 等级特性承伤倍率")}</p> : null}
-      {attackType ? <p className={`rank-tone--${multiplierTone(entry.multiplier)}`}>{typeName(attackType)} ×{entry.multiplier}{entry.multiplier === 0 ? <> · {t("属性免疫，独立分组，不参与数值排名")}</> : !levelVariant ? <> · {t("基础耐久 ÷ 属性倍率")}</> : null}</p> : null}
+      {attackType ? <p className={`rank-tone--${multiplierTone(entry.multiplier)}`}>{typeName(attackType)} ×{entry.multiplier}{entry.multiplier === 0 ? <> · {t("属性免疫，独立分组，不参与数值排名")}</> : !levelVariant ? <> · {t(entry.passiveLabel ? "特性后耐久 ÷ 属性倍率" : "基础耐久 ÷ 属性倍率")}</> : null}</p> : null}
     </>}
     <p className="rank-note">{t("只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。")}</p>
   </section>;

@@ -1,4 +1,6 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 import { getEffectiveTraits } from "../../src/domain/effective-traits.js";
 import { resolveCombatant } from "../../src/domain/skill-result/loadout.js";
 import {
@@ -12,6 +14,23 @@ import { canonicalTraitControlKey } from "../../src/domain/trait-runtime.js";
 import { resolveTraitMultipliers } from "../../src/domain/traits.js";
 
 describe("getEffectiveTraits", () => {
+  test("ignores saved unreleased traits for a real Moon Memory owner while retaining their card descriptions", () => {
+    const snapshot = withWebPreview(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
+    const moon = snapshot.traits.find(trait => (trait.displayName ?? trait.name) === "铭记于月亮");
+    const spirit = snapshot.spirits.find(candidate => candidate.traitIds?.includes(moon.id));
+    const hidden = snapshot.traits.filter(trait => trait.previewIdentity?.mechanicKey === "unreleased");
+    expect(hidden).toHaveLength(27);
+    const baseline = getEffectiveTraits(snapshot, { spirit });
+    for (const trait of hidden) {
+      const storedSide = JSON.parse(JSON.stringify({ spirit, acquiredTraitIds: [trait.id],
+        acquiredTraitValues: { [trait.id]: { "trait.traitActivated": true } },
+      }));
+      const traits = getEffectiveTraits(snapshot, storedSide);
+      expect(traits).toEqual(baseline);
+      expect(snapshot.traits.find(candidate => candidate.id === trait.id)?.description).toBe(trait.description);
+    }
+  });
+
   test("comparison inputs can suppress all traits without changing the spirit", () => {
     const snapshot = { traits: [{ id: "moon", name: "铭记于月亮" }, { id: "extra", name: "旧玩具" }] };
     const spirit = { id: "wolf", traitIds: ["moon"], traitName: "铭记于月亮" };

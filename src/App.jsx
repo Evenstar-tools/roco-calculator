@@ -674,12 +674,14 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       ? {
           attack:
             currentState.directions.forward.overrides.attackLevelStage ?? 0,
+          magicalAttack: currentState.directions.forward.overrides.magicalAttackLevelStageAdd ?? 0,
           defense:
             currentState.directions.reverse.overrides.defenseLevelStage ?? 0,
         }
       : {
           attack:
             currentState.directions.reverse.overrides.attackLevelStage ?? 0,
+          magicalAttack: currentState.directions.reverse.overrides.magicalAttackLevelStageAdd ?? 0,
           defense:
             currentState.directions.forward.overrides.defenseLevelStage ?? 0,
         };
@@ -705,6 +707,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const copied = copyPositiveAbilityStages(source, target);
     updateSideAbilityLevel(targetSide, "attack", copied.attack);
     updateSideAbilityLevel(targetSide, "defense", copied.defense);
+    dispatch({ type: "direction/update", direction: targetSide === "attacker" ? "forward" : "reverse",
+      value: { overrides: { magicalAttackLevelStageAdd: clampStage(copied.magicalAttack) } } });
     recordAppliedGains(latest, { kind: "trait", id: "balance", name: "衡量" });
   }
 
@@ -1263,13 +1267,12 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const { deltas, operations = {} } = resolution;
     const doublePositive = (value) =>
       operations.doublePositiveOwnBuffs && value > 0 ? value * 2 : value;
-    const ownAttackStage = clampStage(
-      doublePositive(
-        Number(selfOverrides.attackLevelStage ?? 0) +
-          deltas.ownAttack +
-          postAttackStageAdd,
-      ),
-    );
+    const ownAttackBeforeDoubling = Number(selfOverrides.attackLevelStage ?? 0) + deltas.ownAttack + postAttackStageAdd;
+    const ownAttackStage = clampStage(doublePositive(ownAttackBeforeDoubling));
+    const magicalAttackExtra = Number(selfOverrides.magicalAttackLevelStageAdd ?? 0) + Number(operations.ownMagicalAttackStageAdd ?? 0);
+    const ownMagicalAttackStage = operations.doublePositiveOwnBuffs
+      ? clampStage(doublePositive(ownAttackBeforeDoubling + magicalAttackExtra)) - ownAttackStage
+      : clampStage(magicalAttackExtra);
     const ownDefenseStage = clampStage(
       doublePositive(
         Number(oppositeOverrides.defenseLevelStage ?? 0) + deltas.ownDefense,
@@ -1349,9 +1352,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       value: {
         overrides: {
           attackLevelStage: ownAttackStage,
-          magicalAttackLevelStageAdd: clampStage(
-            Number(selfOverrides.magicalAttackLevelStageAdd ?? 0) + Number(operations.ownMagicalAttackStageAdd ?? 0),
-          ),
+          magicalAttackLevelStageAdd: ownMagicalAttackStage,
           attackerSpeedFlat: ownSpeedFlat,
           defenderSpeedFlat:
             Number(selfOverrides.defenderSpeedFlat ?? 0) +
@@ -1424,9 +1425,13 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         0,
         ownDefenseStage - Number(oppositeOverrides.defenseLevelStage ?? 0),
       );
-      if (gainedAttack > 0 || gainedDefense > 0) {
+      const gainedMagicalAttack = Math.max(0,
+        ownAttackStage + ownMagicalAttackStage - Number(selfOverrides.attackLevelStage ?? 0) -
+          Number(selfOverrides.magicalAttackLevelStageAdd ?? 0)) - gainedAttack;
+      if (gainedAttack > 0 || gainedMagicalAttack > 0 || gainedDefense > 0) {
         copyAbilityStages(side, oppositeSide, {
           attack: gainedAttack,
+          magicalAttack: gainedMagicalAttack,
           defense: gainedDefense,
         });
       }

@@ -7,15 +7,16 @@ import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
 afterEach(() => vi.useRealTimers());
 
 test.each([
-  ["首次进入有可新增配置", { added: 3, updated: 0 }, 3],
-  ["老用户有可安全更新的预设", { added: 0, updated: 2 }, 2],
-])("%s 才显示顶部提醒，2 秒后消失且普通重绘不重弹", async (_, preview, count) => {
+  ["首次进入有可新增配置", { added: 3, updated: 0 }, "常用精灵配置可导入（3）"],
+  ["老用户有可安全更新的预设", { added: 0, updated: 2 }, "常用精灵配置可更新（2）"],
+  ["新增与更新并存时按更新表述", { added: 1, updated: 2 }, "常用精灵配置可更新（3）"],
+])("%s 才显示顶部提醒，2 秒后消失且普通重绘不重弹", async (_, preview, text) => {
   vi.useFakeTimers();
   const loadPopularConfigLibrary = vi.fn().mockResolvedValue({ preview });
   const props = { loadPopularConfigLibrary, onOpen: vi.fn() };
   const { rerender } = render(<PresetUpdateNotice {...props} />);
   await act(async () => {});
-  expect(screen.getByRole("status")).toHaveTextContent(`常用精灵配置可更新（${count}）`);
+  expect(screen.getByRole("status")).toHaveTextContent(text);
   await act(async () => vi.advanceTimersByTime(2000));
   expect(screen.queryByRole("status")).toBeNull();
   rerender(<PresetUpdateNotice {...props} loadPopularConfigLibrary={() => loadPopularConfigLibrary()} />);

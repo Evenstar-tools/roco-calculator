@@ -1,5 +1,6 @@
 import { withS5OfficialVideoSkills } from "./official-video.js";
 import catalog from "../../../data/candidates/s5-preview-new-spirits.json";
+import hiddenCatalog from "../../../data/candidates/candymo-hidden-spirits-20261101.json";
 import { withCalculatorExtras } from "../../data/snapshot-extras.js";
 import { withS5PreviewCatalog } from "./catalog.js";
 import { applyS5SeasonAnnouncement } from "./season-announcement.js";
@@ -8,8 +9,11 @@ import { restoreS5RuntimeRelations } from "../../data/s5-runtime-relations.js";
 
 // Keep unfinished S5 records out of the formal snapshot and the miniapp core.
 export function withWebPreview(snapshot) {
+  if ((snapshot?.meta?.serverId ?? snapshot?.serverId ?? "cn") !== "cn") return snapshot;
   snapshot = restoreS5RuntimeRelations(snapshot);
-  if (snapshot.meta?.s5NrcSync?.complete === true) return withPublicResourceUrls(withCalculatorExtras(snapshot));
+  if (snapshot.meta?.s5NrcSync?.complete === true) {
+    return withPublicResourceUrls(withS5PreviewCatalog(withCalculatorExtras(snapshot), hiddenCatalog));
+  }
   const preview = withS5PreviewCatalog(applyS5SeasonAnnouncement(withCalculatorExtras(snapshot)), catalog, { useTestRaceStats: true });
   let changed = false;
   const spirits = preview.spirits.map((spirit) => {
@@ -18,5 +22,6 @@ export function withWebPreview(snapshot) {
     changed = true;
     return { ...spirit, changeInfo: { ...spirit.changeInfo, isNew: false } };
   });
-  return withPublicResourceUrls(withS5OfficialVideoSkills(changed ? { ...preview, spirits } : preview));
+  return withPublicResourceUrls(withS5PreviewCatalog(
+    withS5OfficialVideoSkills(changed ? { ...preview, spirits } : preview), hiddenCatalog));
 }

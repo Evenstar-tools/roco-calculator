@@ -194,6 +194,7 @@ export function ConfigLibraryDialog({
   );
   const importIssueDetails = parsed?.issueDetails ?? [];
   const updateCount = (parsed?.preview.added ?? 0) + (parsed?.preview.updated ?? 0);
+  const importOnly = updateCount > 0 && !(parsed?.preview.updated > 0) && !parsed?.preview.different;
   const exportedFavoriteCount = serverId === "global" ? (exportSummary?.library?.favorites?.length ?? 0) : 0;
   const canExport = (exportSummary?.exportedCount ?? 0) > 0 || exportedFavoriteCount > 0;
   const canImport = Boolean(parsed) && (updateCount > 0 || parsed.preview.favoritesAdded > 0);
@@ -416,7 +417,9 @@ export function ConfigLibraryDialog({
                 <p className="config-library-note">
                   {parsed.preview.same > 0 && !parsed.preview.different && !parsed.preview.added
                     ? t("全部配置与本地一致，无需更新。")
-                    : t("旧预设更新，手改配置保留，相同跳过。")}
+                    : importOnly
+                      ? t("将新增 {count} 份配置。", { count: parsed.preview.added })
+                      : t("旧预设更新，手改配置保留，相同跳过。")}
                   {locale === "en" ? " " : ""}{t("队伍与当前页面不会改变。")}
                 </p>
               </>
@@ -449,7 +452,7 @@ export function ConfigLibraryDialog({
             onClick={isExport ? onExport : onConfirmImport}
             type="button"
           >
-            {isExport ? t("导出") : !parsed ? t("导入") : updateCount > 0 ? t("更新配置（{count}）", { count: updateCount }) : parsed?.preview.favoritesAdded > 0 ? t("添加收藏（{count}）", { count: parsed.preview.favoritesAdded }) : parsed?.preview.different > 0 ? t("手改配置已保留") : t("已是最新")}
+            {isExport ? t("导出") : !parsed ? t("导入") : updateCount > 0 ? t(importOnly ? "导入配置（{count}）" : "更新配置（{count}）", { count: updateCount }) : parsed?.preview.favoritesAdded > 0 ? t("添加收藏（{count}）", { count: parsed.preview.favoritesAdded }) : parsed?.preview.different > 0 ? t("手改配置已保留") : t("已是最新")}
           </button>
           <button className="secondary-action" onClick={onClose} type="button">
             {t("取消")}

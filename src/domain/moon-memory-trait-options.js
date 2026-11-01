@@ -9,7 +9,7 @@ import {
   hasNamedTraitEffectRule,
 } from "./trait-effects.js";
 import { getTraitHitCountInputs } from "./trait-hit-count.js";
-import { MOON_MEMORY_TRAIT_LIMIT } from "./moon-memory.js";
+import { canAcquireMoonMemoryTrait, MOON_MEMORY_TRAIT_LIMIT } from "./moon-memory.js";
 import { canonicalTraitControlKey } from "./trait-runtime.js";
 
 const MOON_MEMORY_TRAIT_NAME = "铭记于月亮";
@@ -58,6 +58,7 @@ function normalizeSearch(value) {
 }
 
 export function getMoonMemoryTraitSupport(trait) {
+  if (!canAcquireMoonMemoryTrait(trait)) return { id: "display-only", label: "仅展示" };
   const traitName = trait?.displayName ?? trait?.name;
   const supported =
     getS5PreviewTraitInputs(trait)?.some(control => control.action === "s5-stat-turn-end") ||
@@ -103,7 +104,7 @@ export function createMoonMemoryTraitSearchIndex(snapshot) {
   const options = (snapshot?.spirits ?? []).flatMap((spirit) =>
     (spirit.traitIds ?? []).flatMap((traitId) => {
       const trait = traitsById.get(traitId);
-      if (!trait) return [];
+      if (!canAcquireMoonMemoryTrait(trait)) return [];
       const spiritName = spirit.fullName ?? spirit.baseName ?? spirit.id;
       const traitName = trait.displayName ?? trait.name ?? trait.id;
       return [{

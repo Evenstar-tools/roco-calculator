@@ -60,6 +60,18 @@ function officialSkillEvidence(evidence) {
   return officialImageEvidence(evidence) || officialVideoEvidence(evidence);
 }
 
+function isHiddenCatalog(catalog) {
+  return catalog.catalogId === "candymo-hidden-20261101" &&
+    catalog.source?.authority === "third-party-hidden" && catalog.source.url === "https://app.candymo.com/";
+}
+
+function hiddenRecordEvidence(evidence, entry) {
+  return Number.isSafeInteger(entry.sourceId) && entry.sourceId > 0 &&
+    entry.key === `hidden-${entry.sourceId}` && evidence?.kind === "third-party-hidden-record" &&
+    evidence.url === `https://app.candymo.com/pets/${entry.sourceId}` && text(evidence.record) &&
+    evidence.capturedAt === "2026-11-01";
+}
+
 function recordedRaceStatsEvidence(evidence, entry) {
   return officialImageEvidence(evidence) || entry.kind === "boss" &&
     evidence?.kind === "user-confirmed-baseline" && text(entry.baseName) &&
@@ -88,6 +100,7 @@ export function validateS5PreviewCatalog(catalog) {
   require(text(catalog?.source?.url) && /^https:\/\//u.test(catalog.source.url), "缺少 HTTPS 来源 URL");
   require(catalog.source.bvid === undefined || text(catalog.source.bvid), "来源 bvid 无效");
   require(Array.isArray(catalog?.entries), "缺少 entries");
+  const hidden = isHiddenCatalog(catalog);
   const keys = new Set();
   const names = new Set();
   const skillIds = new Map();
@@ -106,6 +119,13 @@ export function validateS5PreviewCatalog(catalog) {
     require(text(entry.traitSummary), `${entry.key} 缺少已核实特性摘要`);
     require(entry.traitName === undefined || text(entry.traitName), `${entry.key} 的特性名无效`);
     require(text(entry.mechanicKey), `${entry.key} 缺少 mechanicKey`);
+    if (hidden) {
+      require(entry.raceStats === null && entry.mechanicKey === "unreleased" &&
+        ["skills", "defaultSkillIds", "announcedSkills", "officialSkillRefs"].every(key => !entry[key]?.length),
+      `${entry.key} 的未开放记录仅供展示，不能带计算数据或技能池`);
+      require(entry.sourceRecord?.id === entry.sourceId && entry.sourceRecord.availability === "unreleased" &&
+        entry.sourceRecord.dataUse === "display-only", `${entry.key} 缺少未开放来源身份`);
+    }
     require(entry.types === undefined || Array.isArray(entry.types) && entry.types.length <= 2 &&
       new Set(entry.types).size === entry.types.length && entry.types.every((type) => ELEMENT_TYPES.includes(type)),
     `${entry.key} 的属性无效`);
@@ -118,12 +138,15 @@ export function validateS5PreviewCatalog(catalog) {
         `${entry.key} 的六维缺少官方图片或用户确认的原形态来源`);
     }
     if (entry.evolutionChainKeys !== undefined) {
-      require(Array.isArray(entry.evolutionChainKeys) && entry.evolutionChainKeys.length <= 3 && entry.evolutionChainKeys.includes(entry.key) &&
+      require(Array.isArray(entry.evolutionChainKeys) && entry.evolutionChainKeys.length <= (hidden ? 9 : 3) && entry.evolutionChainKeys.includes(entry.key) &&
         new Set(entry.evolutionChainKeys).size === entry.evolutionChainKeys.length &&
-        entry.evolutionChainKeys.every(key => catalog.entries.some(member => member.key === key && member.kind === entry.kind)) &&
-        officialImageEvidence(entry.evolutionEvidence ?? entry.evidence), `${entry.key} 的进化关系或来源无效`);
+        entry.evolutionChainKeys.every(key => catalog.entries.some(member => member.key === key && (hidden || member.kind === entry.kind))) &&
+        (hidden ? hiddenRecordEvidence(entry.evolutionEvidence ?? entry.evidence, entry) :
+          officialImageEvidence(entry.evolutionEvidence ?? entry.evidence)), `${entry.key} 的进化关系或来源无效`);
     }
-    if (entry.evidence?.kind === "official-image") {
+    if (hidden) {
+      require(hiddenRecordEvidence(entry.evidence, entry), `${entry.key} 缺少对应的未开放记录来源`);
+    } else if (entry.evidence?.kind === "official-image") {
       require(httpsUrl(entry.evidence.url) && text(entry.evidence.frame), `${entry.key} 缺少官方图片来源及证据图`);
     } else {
       require(typeof entry.evidence?.seconds === "number" && Number.isFinite(entry.evidence.seconds) &&
@@ -165,7 +188,10 @@ export function validateS5PreviewCatalog(catalog) {
     }
     if (entry.asset !== undefined) {
       require(localAssetPath(entry.asset?.localUrl), `${entry.key} 的素材必须使用项目内 assets 路径`);
-      require(["reference-silhouette", "official-silhouette", "official-portrait"].includes(entry.asset.kind) && httpsUrl(entry.asset.sourceUrl) &&
+      require((hidden ? entry.asset.kind === "reference-portrait" &&
+        entry.asset.localUrl === `/assets/spirits/candymo-hidden/${entry.sourceId}.png` &&
+        entry.asset.sourceUrl.startsWith("https://api.candymo.com/assets/generated/ue/") :
+        ["reference-silhouette", "official-silhouette", "official-portrait"].includes(entry.asset.kind)) && httpsUrl(entry.asset.sourceUrl) &&
         text(entry.asset.sourceFrame), `${entry.key} 的素材缺少 HTTPS 来源及证据帧`);
     }
   }
@@ -186,6 +212,7 @@ function ownsPreview(entity, catalogId, key) {
 /** Web/Windows display overlay. It does not publish a data/rule version or infer combat data. */
 export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_ASSET_URL, useTestRaceStats = false } = {}) {
   validateS5PreviewCatalog(catalog);
+  const hidden = isHiddenCatalog(catalog);
   require((snapshot?.meta?.serverId ?? snapshot?.serverId ?? "cn") === "cn", "仅适用于国服参考快照");
   require(["spirits", "traits", "skills", "learnsets"].every((key) => Array.isArray(snapshot?.[key])), "快照集合不完整");
   require(localAssetPath(assetUrl), "剪影必须使用项目内 assets 路径");
@@ -295,8 +322,10 @@ export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_
     const identityFields = {
       mechanicKey: entry.mechanicKey, raceStatsPlaceholder,
       source: entry.evidence.kind === "official-image"
-        ? { url: entry.evidence.url, authority: "official-image" } : { ...catalog.source },
+        ? { url: entry.evidence.url, authority: "official-image" } :
+          { ...catalog.source, ...(hidden ? { url: entry.evidence.url } : {}) },
       evidence: { ...entry.evidence }, unknowns: [...entry.unknowns],
+      ...(hidden ? { sourceId: entry.sourceId, sourceRecord: { ...entry.sourceRecord } } : {}),
       ...(typesProvenance ? { typesProvenance: { ...typesProvenance } } : {}),
       ...(entry.raceStats ? { raceStatsEvidence: { ...(entry.raceStatsEvidence ?? entry.evidence) } } : {}),
       ...(entry.evolutionChainKeys ? { evolutionChainKeys: [...entry.evolutionChainKeys],
@@ -370,7 +399,7 @@ export function withS5PreviewCatalog(snapshot, catalog, { assetUrl = S5_PREVIEW_
       // Renamed bosses stay reachable by their original form name.
       ...(entry.kind === "boss" && entry.baseName && entry.baseName !== entry.name ? { formerNames: [entry.baseName] } : {}),
       variantName: entry.variantName ?? null, dexNo: null, types: [...(entry.types ?? [])],
-      stage, sourceCategory: "S5前瞻", ...(evolutionChainIds ? { evolutionChainIds } : {}),
+      stage, sourceCategory: hidden ? "未开放" : "S5前瞻", ...(evolutionChainIds ? { evolutionChainIds } : {}),
       raceStats, calculationStatus,
       ...(entry.description !== undefined ? { description: entry.description } : {}),
       traitIds: [traitId], traitName, traitDescription: entry.traitSummary,

@@ -1,6 +1,7 @@
 import { getInheritedDamageTraits } from "./trait-effects.js";
 import { s5FamilyTraitIdentity } from "../features/s5-preview/family-trait-identity.js";
 import {
+  canAcquireMoonMemoryTrait,
   hasMoonMemoryTrait,
   MOON_MEMORY_TRAIT_LIMIT,
 } from "./moon-memory.js";
@@ -54,7 +55,7 @@ export function getEffectiveTraits(snapshot, side = {}) {
       MOON_MEMORY_TRAIT_LIMIT,
     )) {
       const trait = traitsById[traitId];
-      if (!trait || seen.has(traitKey(trait))) continue;
+      if (!canAcquireMoonMemoryTrait(trait) || seen.has(traitKey(trait))) continue;
       appendUnique(result, seen, {
         ...trait,
         acquired: true,

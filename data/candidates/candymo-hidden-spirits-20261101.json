@@ -1,0 +1,1271 @@
+{
+  "catalogId": "candymo-hidden-20261101",
+  "source": {
+    "url": "https://app.candymo.com/",
+    "authority": "third-party-hidden",
+    "capturedAt": "2026-11-01",
+    "availability": "unreleased"
+  },
+  "scope": "CN Web/Windows display-only candidates; third-party hidden records, not season announcements",
+  "typesProvenance": {
+    "authority": "third-party-hidden",
+    "reviewStatus": "pending"
+  },
+  "entries": [
+    {
+      "key": "hidden-3217",
+      "sourceId": 3217,
+      "name": "呼拉猫",
+      "kind": "family",
+      "stage": "一阶",
+      "types": [
+        "武"
+      ],
+      "raceStats": null,
+      "traitName": "间歇式训练",
+      "traitSummary": "释放武系技能后，物攻永久提升20%，速度永久-10。",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3217",
+        "record": "pets-list.json#3217",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3217,
+        "evolvesFromId": null,
+        "traitId": 200179,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only",
+        "candidateRaceStats": {
+          "hp": 80,
+          "physicalAttack": 91,
+          "magicalAttack": 41,
+          "physicalDefense": 53,
+          "magicalDefense": 34,
+          "speed": 74
+        },
+        "traitEvidence": {
+          "url": "https://app.candymo.com/pets/3219",
+          "sourceId": 200179,
+          "record": "live-hidden-pets.json",
+          "sharedTraitId": true
+        }
+      },
+      "evolutionChainKeys": [
+        "hidden-3217",
+        "hidden-3218",
+        "hidden-3219"
+      ],
+      "asset": {
+        "kind": "reference-portrait",
+        "localUrl": "/assets/spirits/candymo-hidden/3217.png",
+        "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/JL_jianfeimao.png",
+        "sourceFrame": "Candymo Pet1024 3217 / 2026-11-01"
+      }
+    },
+    {
+      "key": "hidden-3218",
+      "sourceId": 3218,
+      "name": "增肌猫",
+      "kind": "family",
+      "stage": "二阶",
+      "types": [
+        "武"
+      ],
+      "raceStats": null,
+      "traitName": "间歇式训练",
+      "traitSummary": "释放武系技能后，物攻永久提升20%，速度永久-10。",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3218",
+        "record": "pets-list.json#3218",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3218,
+        "evolvesFromId": 3217,
+        "traitId": 200179,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only",
+        "candidateRaceStats": {
+          "hp": 106,
+          "physicalAttack": 121,
+          "magicalAttack": 55,
+          "physicalDefense": 70,
+          "magicalDefense": 46,
+          "speed": 99
+        },
+        "traitEvidence": {
+          "url": "https://app.candymo.com/pets/3219",
+          "sourceId": 200179,
+          "record": "live-hidden-pets.json",
+          "sharedTraitId": true
+        }
+      },
+      "evolutionChainKeys": [
+        "hidden-3217",
+        "hidden-3218",
+        "hidden-3219"
+      ],
+      "asset": {
+        "kind": "reference-portrait",
+        "localUrl": "/assets/spirits/candymo-hidden/3218.png",
+        "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/JL_jiroumao.png",
+        "sourceFrame": "Candymo Pet1024 3218 / 2026-11-01"
+      }
+    },
+    {
+      "key": "hidden-3219",
+      "sourceId": 3219,
+      "name": "健猫教练",
+      "kind": "family",
+      "stage": "三阶",
+      "types": [
+        "武"
+      ],
+      "raceStats": null,
+      "traitName": "间歇式训练",
+      "traitSummary": "释放武系技能后，物攻永久提升20%，速度永久-10。",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3219",
+        "record": "pets-list.json#3219",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3219,
+        "evolvesFromId": 3218,
+        "traitId": 200179,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only",
+        "candidateRaceStats": {
+          "hp": 133,
+          "physicalAttack": 151,
+          "magicalAttack": 69,
+          "physicalDefense": 88,
+          "magicalDefense": 57,
+          "speed": 123
+        },
+        "traitEvidence": {
+          "url": "https://app.candymo.com/pets/3219",
+          "sourceId": 200179,
+          "record": "live-hidden-pets.json",
+          "sharedTraitId": false
+        }
+      },
+      "evolutionChainKeys": [
+        "hidden-3217",
+        "hidden-3218",
+        "hidden-3219"
+      ],
+      "asset": {
+        "kind": "reference-portrait",
+        "localUrl": "/assets/spirits/candymo-hidden/3219.png",
+        "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/JL_baolizhanmao.png",
+        "sourceFrame": "Candymo Pet1024 3219 / 2026-11-01"
+      }
+    },
+    {
+      "key": "hidden-3408",
+      "sourceId": 3408,
+      "name": "齿轮小子",
+      "kind": "family",
+      "stage": "一阶",
+      "types": [
+        "机械"
+      ],
+      "raceStats": null,
+      "traitName": "四轴机床",
+      "traitSummary": "若释放的4号位技能为该精灵未使用过的技能，能耗-3。",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3408",
+        "record": "pets-list.json#3408",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3408,
+        "evolvesFromId": null,
+        "traitId": 200229,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only",
+        "candidateRaceStats": {
+          "hp": 90,
+          "physicalAttack": 43,
+          "magicalAttack": 111,
+          "physicalDefense": 72,
+          "magicalDefense": 89,
+          "speed": 68
+        },
+        "traitEvidence": {
+          "url": "https://app.candymo.com/pets/3409",
+          "sourceId": 200229,
+          "record": "live-hidden-pets.json",
+          "sharedTraitId": true
+        }
+      },
+      "evolutionChainKeys": [
+        "hidden-3408",
+        "hidden-3409"
+      ],
+      "asset": {
+        "kind": "reference-portrait",
+        "localUrl": "/assets/spirits/candymo-hidden/3408.png",
+        "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/JL_chilunxiaozi.png",
+        "sourceFrame": "Candymo Pet1024 3408 / 2026-11-01"
+      }
+    },
+    {
+      "key": "hidden-3409",
+      "sourceId": 3409,
+      "name": "机甲小子",
+      "kind": "family",
+      "stage": "二阶",
+      "types": [
+        "机械"
+      ],
+      "raceStats": null,
+      "traitName": "四轴机床",
+      "traitSummary": "若释放的4号位技能为该精灵未使用过的技能，能耗-3。",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3409",
+        "record": "pets-list.json#3409",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3409,
+        "evolvesFromId": 3408,
+        "traitId": 200229,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only",
+        "candidateRaceStats": {
+          "hp": 113,
+          "physicalAttack": 53,
+          "magicalAttack": 139,
+          "physicalDefense": 90,
+          "magicalDefense": 112,
+          "speed": 85
+        },
+        "traitEvidence": {
+          "url": "https://app.candymo.com/pets/3409",
+          "sourceId": 200229,
+          "record": "live-hidden-pets.json",
+          "sharedTraitId": false
+        }
+      },
+      "evolutionChainKeys": [
+        "hidden-3408",
+        "hidden-3409"
+      ],
+      "asset": {
+        "kind": "reference-portrait",
+        "localUrl": "/assets/spirits/candymo-hidden/3409.png",
+        "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/JL_jijiaxiaozi.png",
+        "sourceFrame": "Candymo Pet1024 3409 / 2026-11-01"
+      }
+    },
+    {
+      "key": "hidden-3416",
+      "sourceId": 3416,
+      "name": "格斗小五",
+      "kind": "family",
+      "stage": "一阶",
+      "types": [
+        "武"
+      ],
+      "raceStats": null,
+      "traitName": "格斗小五(待定)",
+      "traitSummary": "攻击技能应对成功时，回复25%生命。",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3416",
+        "record": "pets-list.json#3416",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3416,
+        "evolvesFromId": null,
+        "traitId": 200201,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only",
+        "candidateRaceStats": {
+          "hp": 110,
+          "physicalAttack": 105,
+          "magicalAttack": 105,
+          "physicalDefense": 110,
+          "magicalDefense": 85,
+          "speed": 135
+        },
+        "traitEvidence": {
+          "url": "https://app.candymo.com/pets/3416",
+          "sourceId": 200201,
+          "record": "live-hidden-pets-extra.json",
+          "sharedTraitId": false
+        }
+      },
+      "asset": {
+        "kind": "reference-portrait",
+        "localUrl": "/assets/spirits/candymo-hidden/3416.png",
+        "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/JL_gedouxiaowu.png",
+        "sourceFrame": "Candymo Pet1024 3416 / 2026-11-01"
+      }
+    },
+    {
+      "key": "hidden-3417",
+      "sourceId": 3417,
+      "name": "格斗小六",
+      "kind": "family",
+      "stage": "一阶",
+      "types": [
+        "武"
+      ],
+      "raceStats": null,
+      "traitName": "格斗小六(待定)",
+      "traitSummary": "状态技能应对成功时，获得10点能量。",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3417",
+        "record": "pets-list.json#3417",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3417,
+        "evolvesFromId": null,
+        "traitId": 200200,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only",
+        "candidateRaceStats": {
+          "hp": 76,
+          "physicalAttack": 144,
+          "magicalAttack": 63,
+          "physicalDefense": 118,
+          "magicalDefense": 88,
+          "speed": 150
+        },
+        "traitEvidence": {
+          "url": "https://app.candymo.com/pets/3417",
+          "sourceId": 200200,
+          "record": "live-hidden-pets-extra.json",
+          "sharedTraitId": false
+        }
+      },
+      "asset": {
+        "kind": "reference-portrait",
+        "localUrl": "/assets/spirits/candymo-hidden/3417.png",
+        "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/JL_gedouxiaoliu.png",
+        "sourceFrame": "Candymo Pet1024 3417 / 2026-11-01"
+      }
+    },
+    {
+      "key": "hidden-3418",
+      "sourceId": 3418,
+      "name": "格斗小八",
+      "kind": "family",
+      "stage": "一阶",
+      "types": [
+        "武"
+      ],
+      "raceStats": null,
+      "traitName": "格斗小八",
+      "traitSummary": "入场时，若敌方本回合换宠，全属性提升100%",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3418",
+        "record": "pets-list.json#3418",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3418,
+        "evolvesFromId": null,
+        "traitId": 200274,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only",
+        "candidateRaceStats": {
+          "hp": 136,
+          "physicalAttack": 135,
+          "magicalAttack": 50,
+          "physicalDefense": 104,
+          "magicalDefense": 84,
+          "speed": 66
+        },
+        "traitEvidence": {
+          "url": "https://app.candymo.com/pets/3418",
+          "sourceId": 200274,
+          "record": "live-hidden-pets-extra.json",
+          "sharedTraitId": false
+        }
+      },
+      "asset": {
+        "kind": "reference-portrait",
+        "localUrl": "/assets/spirits/candymo-hidden/3418.png",
+        "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/JL_gedouxiaoba.png",
+        "sourceFrame": "Candymo Pet1024 3418 / 2026-11-01"
+      }
+    },
+    {
+      "key": "hidden-3825",
+      "sourceId": 3825,
+      "name": "鹭灯",
+      "kind": "family",
+      "stage": "一阶",
+      "types": [
+        "光"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3825",
+        "record": "pets-list.json#3825",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3825,
+        "evolvesFromId": null,
+        "traitId": 200325,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3825",
+        "hidden-3826",
+        "hidden-5070"
+      ]
+    },
+    {
+      "key": "hidden-3826",
+      "sourceId": 3826,
+      "name": "光怪鹭",
+      "kind": "family",
+      "stage": "二阶",
+      "types": [
+        "光"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3826",
+        "record": "pets-list.json#3826",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3826,
+        "evolvesFromId": 3825,
+        "traitId": 200325,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3825",
+        "hidden-3826",
+        "hidden-5070"
+      ]
+    },
+    {
+      "key": "hidden-5070",
+      "sourceId": 5070,
+      "name": "失光迷鹭",
+      "kind": "boss",
+      "stage": "首领",
+      "types": [
+        "光"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/5070",
+        "record": "pets-list.json#5070",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 5070,
+        "evolvesFromId": 3826,
+        "traitId": 280038,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3825",
+        "hidden-3826",
+        "hidden-5070"
+      ]
+    },
+    {
+      "key": "hidden-3849",
+      "sourceId": 3849,
+      "name": "藻龙骨",
+      "kind": "family",
+      "stage": "一阶",
+      "types": [
+        "幽",
+        "草"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3849",
+        "record": "pets-list.json#3849",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3849,
+        "evolvesFromId": null,
+        "traitId": 200325,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3849",
+        "hidden-3850",
+        "hidden-3851"
+      ]
+    },
+    {
+      "key": "hidden-3850",
+      "sourceId": 3850,
+      "name": "藻目舟",
+      "kind": "family",
+      "stage": "二阶",
+      "types": [
+        "幽",
+        "草"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3850",
+        "record": "pets-list.json#3850",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3850,
+        "evolvesFromId": 3849,
+        "traitId": 200325,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3849",
+        "hidden-3850"
+      ]
+    },
+    {
+      "key": "hidden-3851",
+      "sourceId": 3851,
+      "name": "腐木船",
+      "kind": "family",
+      "stage": "二阶",
+      "types": [
+        "幽",
+        "草"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3851",
+        "record": "pets-list.json#3851",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3851,
+        "evolvesFromId": 3849,
+        "traitId": 200325,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3849",
+        "hidden-3851"
+      ]
+    },
+    {
+      "key": "hidden-3863",
+      "sourceId": 3863,
+      "name": "红顶剑龙",
+      "kind": "family",
+      "stage": "一阶",
+      "types": [
+        "萌",
+        "龙"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3863",
+        "record": "pets-list.json#3863",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3863,
+        "evolvesFromId": null,
+        "traitId": 200325,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3863",
+        "hidden-3864",
+        "hidden-3865"
+      ]
+    },
+    {
+      "key": "hidden-3864",
+      "sourceId": 3864,
+      "name": "赤顶翼龙",
+      "kind": "family",
+      "stage": "二阶",
+      "types": [
+        "萌",
+        "龙"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3864",
+        "record": "pets-list.json#3864",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3864,
+        "evolvesFromId": 3863,
+        "traitId": 200325,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3863",
+        "hidden-3864",
+        "hidden-3865"
+      ]
+    },
+    {
+      "key": "hidden-3865",
+      "sourceId": 3865,
+      "name": "幻晶龙炎",
+      "kind": "family",
+      "stage": "三阶",
+      "types": [
+        "萌",
+        "龙"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3865",
+        "record": "pets-list.json#3865",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3865,
+        "evolvesFromId": 3864,
+        "traitId": 200325,
+        "implemented": true,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3863",
+        "hidden-3864",
+        "hidden-3865"
+      ]
+    },
+    {
+      "key": "hidden-5069",
+      "sourceId": 5069,
+      "name": "古齿帝牙",
+      "kind": "boss",
+      "stage": "首领",
+      "types": [
+        "冰"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/5069",
+        "record": "pets-list.json#5069",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 5069,
+        "evolvesFromId": 3340,
+        "traitId": 299002,
+        "implemented": false,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      }
+    },
+    {
+      "key": "hidden-3640",
+      "sourceId": 3640,
+      "name": "菌宝",
+      "kind": "family",
+      "stage": "一阶",
+      "types": [
+        "普通"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3640",
+        "record": "pets-list.json#3640",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3640,
+        "evolvesFromId": null,
+        "traitId": null,
+        "implemented": false,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3640",
+        "hidden-3641",
+        "hidden-3642",
+        "hidden-3643",
+        "hidden-3644",
+        "hidden-3645",
+        "hidden-3646",
+        "hidden-3647",
+        "hidden-3648"
+      ]
+    },
+    {
+      "key": "hidden-3641",
+      "sourceId": 3641,
+      "name": "竹笙仔",
+      "kind": "family",
+      "stage": "二阶",
+      "types": [
+        "草"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3641",
+        "record": "pets-list.json#3641",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3641,
+        "evolvesFromId": 3640,
+        "traitId": null,
+        "implemented": false,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3640",
+        "hidden-3641",
+        "hidden-3642"
+      ]
+    },
+    {
+      "key": "hidden-3642",
+      "sourceId": 3642,
+      "name": "鬼笔伯爵",
+      "kind": "family",
+      "stage": "三阶",
+      "types": [
+        "草"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3642",
+        "record": "pets-list.json#3642",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3642,
+        "evolvesFromId": 3641,
+        "traitId": null,
+        "implemented": false,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3640",
+        "hidden-3641",
+        "hidden-3642"
+      ]
+    },
+    {
+      "key": "hidden-3643",
+      "sourceId": 3643,
+      "name": "芝芝酥",
+      "kind": "family",
+      "stage": "二阶",
+      "types": [
+        "地"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3643",
+        "record": "pets-list.json#3643",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3643,
+        "evolvesFromId": 3640,
+        "traitId": null,
+        "implemented": false,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3640",
+        "hidden-3643",
+        "hidden-3644"
+      ]
+    },
+    {
+      "key": "hidden-3644",
+      "sourceId": 3644,
+      "name": "药尾灵螈",
+      "kind": "family",
+      "stage": "三阶",
+      "types": [
+        "地"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3644",
+        "record": "pets-list.json#3644",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3644,
+        "evolvesFromId": 3643,
+        "traitId": null,
+        "implemented": false,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3640",
+        "hidden-3643",
+        "hidden-3644"
+      ]
+    },
+    {
+      "key": "hidden-3645",
+      "sourceId": 3645,
+      "name": "三坛枞",
+      "kind": "family",
+      "stage": "二阶",
+      "types": [
+        "武"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3645",
+        "record": "pets-list.json#3645",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3645,
+        "evolvesFromId": 3640,
+        "traitId": null,
+        "implemented": false,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3640",
+        "hidden-3645",
+        "hidden-3646"
+      ]
+    },
+    {
+      "key": "hidden-3646",
+      "sourceId": 3646,
+      "name": "六月星菌",
+      "kind": "family",
+      "stage": "三阶",
+      "types": [
+        "武"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3646",
+        "record": "pets-list.json#3646",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3646,
+        "evolvesFromId": 3645,
+        "traitId": null,
+        "implemented": false,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3640",
+        "hidden-3645",
+        "hidden-3646"
+      ]
+    },
+    {
+      "key": "hidden-3647",
+      "sourceId": 3647,
+      "name": "小红侍",
+      "kind": "family",
+      "stage": "二阶",
+      "types": [
+        "幽"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3647",
+        "record": "pets-list.json#3647",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3647,
+        "evolvesFromId": 3640,
+        "traitId": null,
+        "implemented": false,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3640",
+        "hidden-3647",
+        "hidden-3648"
+      ]
+    },
+    {
+      "key": "hidden-3648",
+      "sourceId": 3648,
+      "name": "红膏女爵",
+      "kind": "family",
+      "stage": "三阶",
+      "types": [
+        "幽"
+      ],
+      "raceStats": null,
+      "traitName": "特性待确认",
+      "traitSummary": "特性待确认",
+      "mechanicKey": "unreleased",
+      "evidence": {
+        "kind": "third-party-hidden-record",
+        "url": "https://app.candymo.com/pets/3648",
+        "record": "pets-list.json#3648",
+        "capturedAt": "2026-11-01"
+      },
+      "unknowns": [
+        "正式开放状态",
+        "正式种族值",
+        "技能学习面",
+        "特性内容及机制"
+      ],
+      "skills": [],
+      "defaultSkillIds": [],
+      "sourceRecord": {
+        "id": 3648,
+        "evolvesFromId": 3647,
+        "traitId": null,
+        "implemented": false,
+        "availability": "unreleased",
+        "dataUse": "display-only"
+      },
+      "evolutionChainKeys": [
+        "hidden-3640",
+        "hidden-3647",
+        "hidden-3648"
+      ]
+    }
+  ]
+}

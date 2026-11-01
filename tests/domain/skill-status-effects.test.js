@@ -415,6 +415,15 @@ describe("skill status effects", () => {
     });
   });
 
+  test.each([0, 1, 3])("水泡盾只加魔攻并保留 %s 层萌芽增幅", sproutStacks => {
+    const shield = skill("水泡盾", { category: "defense", description: "减伤80%，应对攻击：自己获得魔攻+70%。" });
+    expect(resolveSkillStatusActivation(shield, { defenseCounterSucceeded: true, sproutStacks })).toMatchObject({
+      applied: true, deltas: { ownAttack: 0 },
+      operations: { defenseReductionPercent: 80, ownMagicalAttackStageAdd: 7 + sproutStacks },
+    });
+    expect(resolveSkillStatusActivation(shield, { sproutStacks }).operations.ownMagicalAttackStageAdd).toBeUndefined();
+  });
+
   test("防御应对增益未触发时仍应用防御技能的基础减伤", () => {
     expect(
       resolveSkillStatusActivation(
