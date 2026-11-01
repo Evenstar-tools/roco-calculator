@@ -10,6 +10,7 @@ import "../styles/23-rankings.css";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
 import { useModalFocus } from "../hooks/useModalFocus.js";
+import { SpiritImage } from "./SpiritImage.jsx";
 
 const portrait = (spirit) => spirit?.asset?.localUrl ?? spirit?.imageUrl;
 const number = (value) => value == null ? "—" : value.toLocaleString("zh-CN");
@@ -33,7 +34,7 @@ function ReadonlyDetail({ entry, attackType, templateId, onBack }) {
   useEffect(() => { back.current?.focus(); }, [entry]);
   return <section className="rank-detail" aria-label={t("榜单配置详情")}>
     <button type="button" ref={back} onClick={onBack}><ArrowLeft size={16} />{t("返回榜单")}</button>
-    <div className="rank-detail__identity">{portrait(entry.spirit) ? <img alt="" loading="lazy" decoding="async" src={portrait(entry.spirit)} /> : null}<div><h3>{t(entry.name)}</h3><p>{t(entry.spirit.types?.map(typeName).join(" · "))}</p></div></div>
+    <div className="rank-detail__identity">{portrait(entry.spirit) ? <SpiritImage name={entry.name} alt="" loading="lazy" decoding="async" src={portrait(entry.spirit)} /> : null}<div><h3>{t(entry.name)}</h3><p>{t(entry.spirit.types?.map(typeName).join(" · "))}</p></div></div>
     {entry.speed != null ? <><h4>{t("速度")}{" "}{entry.speed}</h4><p>{t(entry.qualifier)}</p><p>{t("该档配置的显示值，不代表所有配置的速度。")}</p></> : <>
       <h4>{t(STANDARD_DURABILITY_TEMPLATES[templateId].label)} · {entry.level}{t("级统一模板")}</h4>
       <p>{t("生命／物防／魔防个体均为60 · 其他个体为0")}</p><p>HP {entry.panelStats.hp}{" "}{t("· 物防")}{" "}{entry.panelStats.physicalDefense}{" "}{t("· 魔防")}{" "}{entry.panelStats.magicalDefense}</p>
@@ -90,7 +91,7 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
       <div className="rank-table-scroll">
         <table aria-label={t("标准耐久完整榜")} className={`rank-table rank-table--${metric}`}><thead><tr><th>{t("排名")}</th><th>{t("精灵")}</th>{attackType ? <th className="rank-type-column">{typeName(attackType)}{t("倍率")}</th> : null}{tableMetrics.map((key) => <th key={key} className={`rank-value--${key}`} aria-sort={metric === key ? "descending" : "none"}>{attackType ? t("有效") : ""}{t(RANKING_METRIC_LABELS[key])}</th>)}</tr></thead><tbody>
           {rows.map((entry) => <tr aria-current={entry.id === currentEntryId ? "true" : undefined} key={entry.id} ref={entry.id === currentEntryId ? currentRowRef : undefined}>
-            <td>{entry.multiplier === 0 ? t("免疫") : entry.filteredRank[metric]}</td><th scope="row"><button className="rank-spirit" onClick={(event) => { detailTrigger.current = event.currentTarget; setDetail(entry); }} type="button">{portrait(entry.spirit) ? <img alt="" loading="lazy" decoding="async" src={portrait(entry.spirit)} /> : null}<span>{t(entry.name)}<small>{t(entry.spirit.types?.map(typeName).join(" · "))} <span className="rank-form">· {entry.formRole === "boss" ? t("首领") : t("最终形态")}</span></small>{attackType ? <small className={`rank-mobile-mult rank-tone--${multiplierTone(entry.multiplier)}`}>{typeName(attackType)} ×{entry.multiplier}</small> : null}</span></button></th>
+            <td>{entry.multiplier === 0 ? t("免疫") : entry.filteredRank[metric]}</td><th scope="row"><button className="rank-spirit" onClick={(event) => { detailTrigger.current = event.currentTarget; setDetail(entry); }} type="button">{portrait(entry.spirit) ? <SpiritImage name={entry.name} alt="" loading="lazy" decoding="async" src={portrait(entry.spirit)} /> : null}<span>{t(entry.name)}<small>{t(entry.spirit.types?.map(typeName).join(" · "))} <span className="rank-form">· {entry.formRole === "boss" ? t("首领") : t("最终形态")}</span></small>{attackType ? <small className={`rank-mobile-mult rank-tone--${multiplierTone(entry.multiplier)}`}>{typeName(attackType)} ×{entry.multiplier}</small> : null}</span></button></th>
             {attackType ? <td className={`rank-type-column rank-tone--${multiplierTone(entry.multiplier)}`}>×{entry.multiplier}</td> : null}
             {tableMetrics.map((key) => <td key={key} className={`rank-value--${key}${metric === key ? " rank-active-value" : ""}`}>{number(entry.durability.display[key])}</td>)}
           </tr>)}
