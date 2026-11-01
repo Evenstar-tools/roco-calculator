@@ -74,9 +74,11 @@ test.each(["four", "single"])("%s retains repeated positive use when a trait als
   state.sides.attacker.skills.single = { skillId: skill.id };
   state.calculationOptions.includeNegativeStatusSettlement = true;
   const first = applyBattleActivation({ side: "attacker", skillIndex: 0, skillMode, snapshot: fixture, state });
-  expect(first.state.directions.forward.overrides.attackLevelStage).toBe(7);
+  expect(first.state.directions.forward.overrides.attackLevelStage).toBe(0);
+  expect(first.state.directions.forward.overrides.magicalAttackLevelStageAdd).toBe(7);
   const second = applyBattleActivation({ side: "attacker", skillIndex: 0, skillMode, snapshot: fixture, state: first.state });
-  expect(second.state.directions.forward.overrides.attackLevelStage).toBe(14);
+  expect(second.state.directions.forward.overrides.attackLevelStage).toBe(0);
+  expect(second.state.directions.forward.overrides.magicalAttackLevelStageAdd).toBe(14);
   expect(second.state.directions.forward.context.negativeStatusUseCountsBySlot[skillMode === "single" ? "single" : "1"]).toBe(1);
 });
 
@@ -223,8 +225,50 @@ function createSnapshot() {
   };
 }
 
+test.each(["single", "four"].flatMap(mode => ["attacker", "defender"].flatMap(side => [
+  [mode, side, "咆哮", "physical", -6], [mode, side, "电离爆破", "magical", -2],
+])))("%s %s 使用%s只削目标对应攻击，手调、另一项、来源及伤害保持一致", (mode, side, name, category, delta) => {
+  const snapshot = createSnapshot();
+  snapshot.skills.push({ id: "target-debuff", name, category: "status", type: "普通", basePower: 0, cost: 1 });
+  const state = createInitialState(snapshot);
+  state.mode = mode;
+  const target = side === "attacker" ? "defender" : "attacker";
+  const selfDirection = side === "attacker" ? "forward" : "reverse";
+  const targetDirection = selfDirection === "forward" ? "reverse" : "forward";
+  for (const key of ["attacker", "defender"]) {
+    state.sides[key].spiritId = key;
+    state.sides[key].skills = { single: "scratch", four: ["scratch", "grass-skill", null, null] };
+  }
+  state.sides[side].skills = { single: "target-debuff", four: ["target-debuff", "scratch", "grass-skill", null] };
+  state.directions[targetDirection].overrides.attackLevelStage = 2;
+  const before = buildCalculatorViewModel({ snapshot, state, activeDirection: targetDirection });
+  const applied = applyBattleActivation({ side, skillIndex: 0, skillMode: mode, snapshot, state });
+  expect(applied.applied).toBe(true);
+  expect(applied.state.directions[targetDirection].overrides).toMatchObject({
+    attackLevelStage: 2, [`${category}AttackLevelStageAdd`]: delta,
+    [`${category === "physical" ? "magical" : "physical"}AttackLevelStageAdd`]: 0,
+  });
+  expect(applied.state.directions[selfDirection].overrides.attackLevelStage).toBe(0);
+  const after = buildCalculatorViewModel({ snapshot, state: applied.state, activeDirection: targetDirection });
+  const field = `${category}Attack`;
+  const otherField = category === "physical" ? "magicalAttack" : "physicalAttack";
+  expect(after.sides[target].finalPanelStats[field]).toBeLessThan(before.sides[target].finalPanelStats[field]);
+  expect(after.sides[target].finalPanelStats[otherField]).toBe(before.sides[target].finalPanelStats[otherField]);
+  expect(after.calculation[selfDirection].results[0].usageSummary.appliedEffects)
+    .toContain(`敌方${category === "physical" ? "物攻" : "魔攻"}${delta}层`);
+  if (mode === "four") {
+    const affected = category === "physical" ? 0 : 1;
+    expect(after.calculation[targetDirection].results[affected].totalDamage)
+      .toBeLessThan(before.calculation[targetDirection].results[affected].totalDamage);
+    expect(after.calculation[targetDirection].results[1 - affected].totalDamage)
+      .toBe(before.calculation[targetDirection].results[1 - affected].totalDamage);
+    expect(after.calculation[targetDirection].results[affected].gainSummary).toContain(`${name}×1`);
+    expect(after.calculation[targetDirection].results[1 - affected].gainSummary).not.toContain(name);
+  }
+});
+
 test.each([
-  ["力量增效", "status", {}, "攻击+10层"],
+  ["力量增效", "status", {}, "物攻+10层"],
   ["水泡盾", "defense", { defenseCounterSucceeded: true }, "魔攻+7层"],
   ["防御反击", "defense", { defenseCounterSucceeded: true }, "威力+40"],
   ["撒娇", "magical", {}, "威力+10"],
@@ -240,7 +284,7 @@ test.each([
   expect(view(next)[0].usageSummary).toMatchObject({ count: 1, appliedEffects: expect.arrayContaining([effect]) });
   if (name === "水泡盾") expect(view(next)[1].gainSummary).not.toContain(`${name}×1`);
   else expect(view(next)[1].gainSummary).toContain(`${name}×1`);
-  const manual = calculatorReducer(next, { type: "direction/update", direction: "forward", value: { overrides: { attackLevelStage: 0, magicalAttackLevelStageAdd: 0, fixedPowerAdd: 0 } } });
+  const manual = calculatorReducer(next, { type: "direction/update", direction: "forward", value: { overrides: { attackLevelStage: 0, physicalAttackLevelStageAdd: 0, magicalAttackLevelStageAdd: 0, fixedPowerAdd: 0 } } });
   expect(view(manual)[0].usageSummary.appliedEffects).not.toContain(effect);
   expect(view(state)[0].usageSummary).toBeUndefined();
 });
@@ -267,8 +311,8 @@ test("纯状态技能触发次数控件与摘要、来源一致，双方同名�
   const one = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot, state }).state;
   const both = applyBattleActivation({ side: "defender", skillIndex: 0, snapshot, state: one }).state;
   const result = buildCalculatorViewModel({ activeDirection: "forward", snapshot, state: both }).calculation;
-  expect(result.forward.results[0].usageSummary).toMatchObject({ count: 3, appliedEffects: ["攻击+30层"] });
-  expect(result.reverse.results[0].usageSummary).toMatchObject({ count: 1, appliedEffects: ["攻击+10层"] });
+  expect(result.forward.results[0].usageSummary).toMatchObject({ count: 3, appliedEffects: ["物攻+30层"] });
+  expect(result.reverse.results[0].usageSummary).toMatchObject({ count: 1, appliedEffects: ["物攻+10层"] });
   expect(result.forward.results[1].gainSummary).toContain("力量增效×3");
 });
 
@@ -482,16 +526,24 @@ describe("shared battle activation", () => {
     expect(second.state.directions.forward.overrides.lifestealPercent).toBe(120);
   });
 
-  test("applies Baron overflow healing as a post-attack ability stage", () => {
+  test.each(["attacker", "defender"].flatMap(side => ["single", "four"].flatMap(mode => [
+    [side, mode, "scratch", 2], [side, mode, "physical-boost", 12],
+  ])))("贪得无厌%s %s %s写回只提高物攻，普通技能结算不抬魔攻", (side, mode, skillId, extra) => {
     const snapshot = createSnapshot();
+    snapshot.skills.push({ id: "physical-boost", name: "力量增效", category: "status", type: "普通", basePower: 0 });
     const state = createInitialState(snapshot);
+    state.mode = mode;
     state.sides.attacker.spiritId = "attacker";
     state.sides.defender.spiritId = "defender";
-    state.sides.attacker.skills.four = ["scratch", null, null, null];
+    state.sides[side].skills = { single: skillId, four: [skillId, "scratch", "grass-skill", null] };
+    const direction = side === "attacker" ? "forward" : "reverse";
+    const opposite = direction === "forward" ? "reverse" : "forward";
+    state.directions[direction].overrides.attackLevelStage = 3;
+    const before = buildCalculatorViewModel({ snapshot, state, activeDirection: direction });
 
     const result = applyBattleActivation({
       calculation: {
-        forward: {
+        [direction]: {
           results: [{
             postAttackEffects: {
               attackLevelStageAdd: 2,
@@ -501,15 +553,26 @@ describe("shared battle activation", () => {
           }],
         },
       },
-      side: "attacker",
+      side,
       skillIndex: 0,
+      skillMode: mode,
       snapshot,
       state,
     });
 
     expect(result.applied).toBe(true);
-    expect(result.state.directions.forward.overrides.attackLevelStage).toBe(2);
-    expect(result.state.directions.reverse.currentHp).toBe(450);
+    expect(result.state.directions[direction].overrides).toMatchObject({
+      attackLevelStage: 3, physicalAttackLevelStageAdd: extra, magicalAttackLevelStageAdd: 0,
+    });
+    expect(result.state.directions[opposite].currentHp).toBe(450);
+    const after = buildCalculatorViewModel({ snapshot, state: result.state, activeDirection: direction });
+    expect(after.sides[side].finalPanelStats.physicalAttack).toBeGreaterThan(before.sides[side].finalPanelStats.physicalAttack);
+    expect(after.sides[side].finalPanelStats.magicalAttack).toBe(before.sides[side].finalPanelStats.magicalAttack);
+    expect(result.state.directions[direction].overrides.gainSources.physicalAttackLevelStageAdd.sources)
+      .toContainEqual(expect.objectContaining({ kind: "trait", name: "贪得无厌", amount: 2 }));
+    if (skillId === "physical-boost") {
+      expect(after.calculation[direction].results[0].usageSummary.appliedEffects).toContain("物攻+10层");
+    }
   });
 
   test("copies the opponent positive ability stages when Balance triggers", () => {
@@ -532,7 +595,7 @@ describe("shared battle activation", () => {
     expect(next.directions.forward.overrides.defenseLevelStage).toBe(7);
   });
 
-  test.each([[0, 12, 14, 12, 7], [-10, -4, 10, 6, 3], [90, 99, 0, 9, -7]])("Mud Armor doubles actual category stages with common attack %s", (common, physical, extra, copiedPhysical, copiedExtra) => {
+  test.each([[0, 0, 12, 14, 0, 12, 7], [-10, -10, 6, 7, 0, 6, 0], [90, 99, 0, 0, 9, 0, -7]])("Mud Armor doubles actual category stages with common attack %s", (common, shared, physical, magical, copiedShared, copiedPhysical, copiedMagical) => {
     const snapshot = createSnapshot();
     Object.assign(snapshot.spirits[1], { fullName: "公平鸽", traitName: "衡量", traitIds: ["balance"] });
     snapshot.traits.push({ id: "balance", name: "衡量" });
@@ -546,10 +609,12 @@ describe("shared battle activation", () => {
     state.directions.forward.overrides.attackLevelStage = common;
     state.directions.forward.overrides.magicalAttackLevelStageAdd = 7;
     const next = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot, state }).state;
-    expect(next.directions.forward.overrides.attackLevelStage).toBe(physical);
-    expect(next.directions.forward.overrides.magicalAttackLevelStageAdd).toBe(extra);
-    expect(next.directions.reverse.overrides.attackLevelStage).toBe(copiedPhysical);
-    expect(next.directions.reverse.overrides.magicalAttackLevelStageAdd).toBe(copiedExtra);
+    expect(next.directions.forward.overrides.attackLevelStage).toBe(shared);
+    expect(next.directions.forward.overrides.physicalAttackLevelStageAdd).toBe(physical);
+    expect(next.directions.forward.overrides.magicalAttackLevelStageAdd).toBe(magical);
+    expect(next.directions.reverse.overrides.attackLevelStage).toBe(copiedShared);
+    expect(next.directions.reverse.overrides.physicalAttackLevelStageAdd).toBe(copiedPhysical);
+    expect(next.directions.reverse.overrides.magicalAttackLevelStageAdd).toBe(copiedMagical);
   });
 
   test("stores battle-scoped trait controls in the active direction and mirrors roles", () => {
@@ -607,7 +672,8 @@ describe("shared battle activation", () => {
 
     expect(result).toMatchObject({ applied: true, reason: null });
     expect(result.state.directions.forward.overrides).toMatchObject({
-      attackLevelStage: 9,
+      attackLevelStage: 0,
+      physicalAttackLevelStageAdd: 9,
       attackerSpeedFlat: 60,
     });
   });
@@ -634,7 +700,8 @@ describe("shared battle activation", () => {
 
     expect(result).toMatchObject({ applied: true, reason: null });
     expect(result.state.directions.forward.overrides).toMatchObject({
-      attackLevelStage: 9,
+      attackLevelStage: 0,
+      physicalAttackLevelStageAdd: 9,
       attackerSpeedFlat: 60,
     });
     expect(result.state.directions.forward.context).toMatchObject({

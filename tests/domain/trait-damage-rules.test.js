@@ -40,6 +40,18 @@ describe("公平鸽衡量", () => {
       defense: 95,
     })).toEqual({ attack: 99, defense: 99 });
   });
+
+  test("衡量按实际物魔攻复制正等级，共同手调和单项抵消不会串到另一项", () => {
+    expect(copyPositiveAbilityStages({ attack: 7, physicalAttack: -10, magicalAttack: 3 },
+      { attack: 2, physicalAttack: 4, magicalAttack: -1 }))
+      .toEqual({ attack: 9, physicalAttack: -3, magicalAttack: 2, defense: 0 });
+    expect(copyPositiveAbilityStages({ attack: 0, physicalAttack: 50 },
+      { attack: -80, physicalAttack: 99 }))
+      .toEqual({ attack: -80, physicalAttack: 149, defense: 0 });
+    expect(copyPositiveAbilityStages({ attack: 198, physicalAttack: 0 },
+      { attack: -99, physicalAttack: 0 }, { sourceIsDelta: true }))
+      .toEqual({ attack: 99, physicalAttack: 0, defense: 0 });
+  });
 });
 
 describe("direct trait damage rules", () => {

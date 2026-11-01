@@ -16,7 +16,7 @@ import { storageError } from "./state/server-storage.js";
 import { useFeatureMetrics } from "./analytics/use-feature-metrics.js";
 import { calculatorResultKind, useCalculationMetrics, useLineupMetrics } from "./analytics/use-completion-metrics.js";
 import { buildRefractionHint, recordRefractionUsage } from "./domain/refraction.js";
-import { expireTransientGainSources, recordGainChanges } from "./domain/gain-provenance.js";
+import { expireTransientGainSources, recordGainChanges, recordSkillAndPostAttackGains } from "./domain/gain-provenance.js";
 import { recordSkillActivation } from "./domain/skill-gain-summary.js";
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { AdvancedOptions } from "./components/AdvancedOptions.jsx";
@@ -87,6 +87,7 @@ import {
   hasFairPigeonBalance,
 } from "./domain/fair-pigeon.js";
 import { getNatureMultipliers } from "./domain/natures.js";
+import { applyAttackStageChanges, positiveAttackStageGains, postAttackStageChanges } from "./domain/attack-stages.js";
 import { starfallStacksFromMarkSlot } from "./domain/marks.js";
 import { isEnemyStarfallTraitControl, linkStarfallTraitControls, linkEnemyCostTraitControls } from "./domain/trait-runtime.js";
 import { carriedSkillTotalCost } from "./domain/skill-result/loadout.js";
@@ -684,6 +685,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           attack:
             currentState.directions.forward.overrides.attackLevelStage ?? 0,
           magicalAttack: currentState.directions.forward.overrides.magicalAttackLevelStageAdd ?? 0,
+          physicalAttack: currentState.directions.forward.overrides.physicalAttackLevelStageAdd ?? 0,
           defense:
             currentState.directions.reverse.overrides.defenseLevelStage ?? 0,
         }
@@ -691,6 +693,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           attack:
             currentState.directions.reverse.overrides.attackLevelStage ?? 0,
           magicalAttack: currentState.directions.reverse.overrides.magicalAttackLevelStageAdd ?? 0,
+          physicalAttack: currentState.directions.reverse.overrides.physicalAttackLevelStageAdd ?? 0,
           defense:
             currentState.directions.forward.overrides.defenseLevelStage ?? 0,
         };
@@ -713,11 +716,12 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const latest = stateRef.current;
     const source = sourceStages ?? abilityStagesForSide(latest, sourceSide);
     const target = abilityStagesForSide(latest, targetSide);
-    const copied = copyPositiveAbilityStages(source, target);
+    const copied = copyPositiveAbilityStages(source, target, { sourceIsDelta: sourceStages !== null });
     updateSideAbilityLevel(targetSide, "attack", copied.attack);
     updateSideAbilityLevel(targetSide, "defense", copied.defense);
     dispatch({ type: "direction/update", direction: targetSide === "attacker" ? "forward" : "reverse",
-      value: { overrides: { magicalAttackLevelStageAdd: clampStage(copied.magicalAttack) } } });
+      value: { overrides: { physicalAttackLevelStageAdd: copied.physicalAttack ?? 0,
+        magicalAttackLevelStageAdd: copied.magicalAttack ?? 0 } } });
     recordAppliedGains(latest, { kind: "trait", id: "balance", name: "衡量" });
   }
 
@@ -727,8 +731,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       [key, { ...current.directions[key], overrides: { ...current.directions[key].overrides } }])) };
   }
 
-  function recordAppliedGains(before, source) {
-    const next = recordGainChanges(before, gainSnapshot(), source);
+  function recordAppliedGains(before, source, postAttack = null) {
+    const next = postAttack
+      ? recordSkillAndPostAttackGains(before, gainSnapshot(), source, postAttack)
+      : recordGainChanges(before, gainSnapshot(), source);
     for (const direction of ["forward", "reverse"]) {
       dispatch({ type: "direction/update", direction,
         value: { overrides: { gainSources: next.directions[direction].overrides.gainSources ?? {} } } });
@@ -1160,9 +1166,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       0,
       Math.floor(Number(postAttackEffects?.attackLevelStageAdd) || 0),
     );
+    const postAttackStages = postAttackStageChanges(postAttackEffects);
     const postAttackNotices = [
       postAttackStageAdd > 0
-        ? `贪得无厌：本次共加攻 +${postAttackStageAdd * 10}%`
+        ? `${postAttackEffects?.source ?? "攻击后效果"}：${postAttackStages.physical ? "物攻" : "双攻"} +${postAttackStageAdd * 10}%`
         : null,
     ].filter(Boolean);
     const rawPostAttackCurrentHp =
@@ -1183,12 +1190,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
             direction: selfDirection,
             type: "direction/update",
             value: {
-              overrides: {
-                attackLevelStage: clampStage(
-                  Number(currentOverrides.attackLevelStage ?? 0) +
-                    postAttackStageAdd,
-                ),
-              },
+              overrides: applyAttackStageChanges(currentOverrides, postAttackStages),
             },
           });
         }
@@ -1261,12 +1263,12 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const { deltas, operations = {} } = resolution;
     const doublePositive = (value) =>
       operations.doublePositiveOwnBuffs && value > 0 ? value * 2 : value;
-    const ownAttackBeforeDoubling = Number(selfOverrides.attackLevelStage ?? 0) + deltas.ownAttack + postAttackStageAdd;
-    const ownAttackStage = clampStage(doublePositive(ownAttackBeforeDoubling));
-    const magicalAttackExtra = Number(selfOverrides.magicalAttackLevelStageAdd ?? 0) + Number(operations.ownMagicalAttackStageAdd ?? 0);
-    const ownMagicalAttackStage = operations.doublePositiveOwnBuffs
-      ? clampStage(doublePositive(ownAttackBeforeDoubling + magicalAttackExtra)) - ownAttackStage
-      : clampStage(magicalAttackExtra);
+    const ownAttackStages = applyAttackStageChanges(selfOverrides, {
+      attack: deltas.ownAttack + postAttackStages.attack,
+      physical: Number(operations.ownPhysicalAttackStageAdd ?? 0) + postAttackStages.physical,
+      magical: operations.ownMagicalAttackStageAdd,
+      doublePositive: operations.doublePositiveOwnBuffs,
+    });
     const ownDefenseStage = clampStage(
       doublePositive(
         Number(oppositeOverrides.defenseLevelStage ?? 0) + deltas.ownDefense,
@@ -1345,8 +1347,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       type: "direction/update",
       value: {
         overrides: {
-          attackLevelStage: ownAttackStage,
-          magicalAttackLevelStageAdd: ownMagicalAttackStage,
+          ...ownAttackStages,
           attackerSpeedFlat: ownSpeedFlat,
           defenderSpeedFlat:
             Number(selfOverrides.defenderSpeedFlat ?? 0) +
@@ -1391,9 +1392,11 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       type: "direction/update",
       value: {
         overrides: {
-          attackLevelStage: clampStage(
-            Number(oppositeOverrides.attackLevelStage ?? 0) + deltas.targetAttack,
-          ),
+          ...applyAttackStageChanges(oppositeOverrides, {
+            attack: deltas.targetAttack,
+            physical: operations.targetPhysicalAttackStageAdd,
+            magical: operations.targetMagicalAttackStageAdd,
+          }),
           attackerSpeedFlat: targetSpeedFlat,
           defenderSpeedFlat: ownSpeedFlat,
           defenseLevelStage: ownDefenseStage,
@@ -1406,26 +1409,21 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     });
     const oppositeSide = side === "attacker" ? "defender" : "attacker";
     recordAppliedGains(latest, { kind: "skill", id: `${side}:${skill.id}`, name: skill.name,
-      countDelta: resolution.triggerCount, transient: Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0 });
+      countDelta: resolution.triggerCount, transient: Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0 },
+      { direction: selfDirection, effects: postAttackEffects });
     if (
       hasFairPigeonBalance(oppositeSide === "attacker" ? attacker : defender) &&
       balanceIsTriggered(stateRef.current, oppositeSide)
     ) {
-      const gainedAttack = Math.max(
-        0,
-        ownAttackStage - Number(selfOverrides.attackLevelStage ?? 0),
-      );
+      const gainedAttackStages = positiveAttackStageGains(selfOverrides, ownAttackStages);
       const gainedDefense = Math.max(
         0,
         ownDefenseStage - Number(oppositeOverrides.defenseLevelStage ?? 0),
       );
-      const gainedMagicalAttack = Math.max(0,
-        ownAttackStage + ownMagicalAttackStage - Number(selfOverrides.attackLevelStage ?? 0) -
-          Number(selfOverrides.magicalAttackLevelStageAdd ?? 0)) - gainedAttack;
-      if (gainedAttack > 0 || gainedMagicalAttack > 0 || gainedDefense > 0) {
+      if (gainedAttackStages.attack > 0 || gainedAttackStages.physicalAttack > 0 ||
+          gainedAttackStages.magicalAttack > 0 || gainedDefense > 0) {
         copyAbilityStages(side, oppositeSide, {
-          attack: gainedAttack,
-          magicalAttack: gainedMagicalAttack,
+          ...gainedAttackStages,
           defense: gainedDefense,
         });
       }
@@ -2052,7 +2050,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const progresses = sequence && Object.keys(sequence.nextContext).some((key) => sequence.nextContext[key] !== context[key]);
     const postAttackEffects = calculation?.[direction]?.results?.[index ?? 0]?.postAttackEffects;
     const postHp = postAttackEffects?.selfCurrentHpAfterSettlement;
-    const postChanges = (Number(postAttackEffects?.attackLevelStageAdd) > 0 && Number(state.directions[direction].overrides?.attackLevelStage ?? 0) < 99) ||
+    const postAttackLevel = Number(state.directions[direction].overrides?.attackLevelStage ?? 0) +
+      (postAttackStageChanges(postAttackEffects).physical ? Number(state.directions[direction].overrides?.physicalAttackLevelStageAdd ?? 0) : 0);
+    const postChanges = (Number(postAttackEffects?.attackLevelStageAdd) > 0 && postAttackLevel < 99) ||
       (postHp != null && Number.isFinite(Number(postHp)) && Number(postHp) !== selfHealth.currentHp);
     const togglesStatus = skill && canToggleNegativeStatusActivation(skill, context, {
       negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true,

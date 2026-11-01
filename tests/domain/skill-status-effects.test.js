@@ -8,6 +8,39 @@ import {
 const skill = (name, extra = {}) => ({ name, ...extra });
 
 describe("skill status effects", () => {
+  test.each([
+    ["力量增效", "物攻", 10, {}],
+    ["魔法增效", "魔攻", 7, {}],
+    ["三连破", "物攻", 9, {}],
+    ["花炮", "魔攻", 12, {}],
+    ["润泽", "魔攻", 19, {}],
+    ["蒸汽进行曲", "物攻", 9, { applyAttackBoost: true }],
+    ["泥浆铠甲", "物攻", 6, {}],
+    ["跌落", "物攻", -5, {}],
+    ["坍缩", "魔攻", 7, { defeatedEnemy: true }],
+  ])("%s按文案仅改变%s，不写入手动双攻字段", (name, stat, amount, context) => {
+    const result = resolveSkillStatusActivation(skill(name), context);
+    const key = stat === "物攻" ? "ownPhysicalAttackStageAdd" : "ownMagicalAttackStageAdd";
+    const other = stat === "物攻" ? "ownMagicalAttackStageAdd" : "ownPhysicalAttackStageAdd";
+    expect(result.deltas.ownAttack).toBe(0);
+    expect(result.operations[key]).toBe(amount);
+    expect(result.operations[other] ?? 0).toBe(0);
+  });
+  test.each([["咆哮", "targetPhysicalAttackStageAdd", -6], ["刺盾", "targetPhysicalAttackStageAdd", -7], ["电离爆破", "targetMagicalAttackStageAdd", -2]])(
+    "%s仅降低敌方文案指定的单攻", (name, key, amount) => {
+      const result = resolveSkillStatusActivation(skill(name), { defenseCounterSucceeded: true });
+      expect(result.deltas.targetAttack).toBe(0);
+      expect(result.operations[key]).toBe(amount);
+    },
+  );
+  test("单攻预览明确写物攻，萌芽和重复触发仍按原顺序结算", () => {
+    const power = skill("力量增效", { category: "status", basePower: null });
+    expect(getStatusSkillTriggerPreview(power, { context: { sproutStacks: 2 }, triggerCount: 3 }))
+      .toMatchObject({ repeatable: true, unitEffect: "己方物攻 +12层", cumulativeEffect: "己方物攻 +36层" });
+    expect(resolveSkillStatusActivation(power, { sproutStacks: 2, statusTriggerCount: 3 }))
+      .toMatchObject({ deltas: { ownAttack: 0 }, operations: { ownPhysicalAttackStageAdd: 36 } });
+    expect(resolveSkillStatusActivation(skill("丰饶"))).toMatchObject({ deltas: { ownAttack: 14 } });
+  });
   test.each([[0, 50], [3, 80], [5, 100], [99, 100]])("不可接触读取 %s 层中毒增加减伤", (poisonStacks, reduction) => {
     expect(resolveSkillStatusActivation(skill("不可接触", {
       category: "defense", description: "减伤50%，敌方每有1层中毒效果，本技能减伤+10%，应对攻击。",
@@ -90,7 +123,8 @@ describe("skill status effects", () => {
     });
     expect(resolveSkillStatusActivation(skill("仰望夜空"))).toMatchObject({
       applied: true,
-      deltas: { ownAttack: 7, ownDefense: 7 },
+      deltas: { ownAttack: 0, ownDefense: 7 },
+      operations: { ownMagicalAttackStageAdd: 7 },
     });
   });
 
@@ -197,7 +231,8 @@ describe("skill status effects", () => {
     expect(
       resolveSkillStatusActivation(skill("魔法增效"), { sproutStacks: 2 }),
     ).toMatchObject({
-      deltas: { ownAttack: 9 },
+      deltas: { ownAttack: 0 },
+      operations: { ownMagicalAttackStageAdd: 9 },
     });
     expect(
       resolveSkillStatusActivation(skill("怒火"), { sproutStacks: 2 }),
@@ -221,7 +256,8 @@ describe("skill status effects", () => {
         sproutStacks: 1,
       }),
     ).toMatchObject({
-      deltas: { ownAttack: 10, ownSpeedFlat: 70 },
+      deltas: { ownAttack: 0, ownSpeedFlat: 70 },
+      operations: { ownPhysicalAttackStageAdd: 10 },
     });
   });
 
@@ -232,35 +268,35 @@ describe("skill status effects", () => {
     ["乘风", {}, { ownSpeedFlat: 130 }],
     ["示弱", {}, { ownSpeedFlat: 140 }],
     ["龙吟", {}, { ownAttack: 16, ownSpeedFlat: 90 }],
-    ["嘲弄", { enemySwitchedThisTurn: true }, { ownAttack: 10, ownSpeedFlat: 80 }],
+    ["嘲弄", { enemySwitchedThisTurn: true }, { ownAttack: 0, ownSpeedFlat: 80 }, { ownMagicalAttackStageAdd: 10 }],
     ["钧势", {}, { ownDefense: 15, ownSpeedFlat: -30 }],
     ["沙石阵", {}, { ownDefense: 10, ownSpeedFlat: -20 }],
-  ])("萌芽补齐状态技能 %s 的固定正面增益", (name, context, deltas) => {
+  ])("萌芽补齐状态技能 %s 的固定正面增益", (name, context, deltas, operations = {}) => {
     expect(
       resolveSkillStatusActivation(skill(name), {
         ...context,
         sproutStacks: 1,
       }),
-    ).toMatchObject({ applied: true, deltas });
+    ).toMatchObject({ applied: true, deltas, operations });
   });
 
   test.each([
     ["地陷", {}, { ownDefense: 8 }],
     ["地陷", { counterTriggered: true }, { ownDefense: 15 }],
     ["砂石冲撞", { enemySwitchedThisTurn: true }, { ownDefense: 11 }],
-    ["崩拳", { counterTriggered: true }, { ownAttack: 11 }],
+    ["崩拳", { counterTriggered: true }, { ownAttack: 0 }, { ownPhysicalAttackStageAdd: 11 }],
     ["超导加速", {}, { ownSpeedFlat: 40 }],
-    ["坍缩", { defeatedEnemy: true }, { ownAttack: 8 }],
-    ["跌落", {}, { ownAttack: -5 }],
-    ["跌落", { counterTriggered: true }, { ownAttack: 6 }],
-    ["焚毁", { dispelledMarkStacks: 3 }, { ownAttack: 7 }],
-  ])("萌芽补齐攻击技能 %s 使用后的固定正面增益", (name, context, deltas) => {
+    ["坍缩", { defeatedEnemy: true }, { ownAttack: 0 }, { ownMagicalAttackStageAdd: 8 }],
+    ["跌落", {}, { ownAttack: 0 }, { ownPhysicalAttackStageAdd: -5 }],
+    ["跌落", { counterTriggered: true }, { ownAttack: 0 }, { ownPhysicalAttackStageAdd: 6 }],
+    ["焚毁", { dispelledMarkStacks: 3 }, { ownAttack: 0 }, { ownPhysicalAttackStageAdd: 7 }],
+  ])("萌芽补齐攻击技能 %s 使用后的固定正面增益", (name, context, deltas, operations = {}) => {
     expect(
       resolveSkillStatusActivation(skill(name), {
         ...context,
         sproutStacks: 1,
       }),
-    ).toMatchObject({ applied: true, deltas });
+    ).toMatchObject({ applied: true, deltas, operations });
   });
 
   test("萌芽不放大对敌减益、减伤和印记应用", () => {
@@ -489,31 +525,32 @@ describe("skill status effects", () => {
   });
 
   test.each([
-    ["咆哮", { ownAttack: 0, ownDefense: 0, targetAttack: -6, targetDefense: 0 }],
+    ["咆哮", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: 0 }, { targetPhysicalAttackStageAdd: -6 }],
     ["锐利眼神", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: -12 }],
     ["加固", { ownAttack: 0, ownDefense: 14, targetAttack: 0, targetDefense: 0 }],
     ["鼓劲", { ownAttack: 0, ownDefense: 17, targetAttack: 0, targetDefense: 0 }],
-    ["三连破", { ownAttack: 9, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
-    ["缓一缓", { ownAttack: 1, ownDefense: 1, targetAttack: 0, targetDefense: 0 }],
-    ["氧输送", { ownAttack: 7, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
+    ["三连破", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: 0 }, { ownPhysicalAttackStageAdd: 9 }],
+    ["缓一缓", { ownAttack: 0, ownDefense: 1, targetAttack: 0, targetDefense: 0 }, { ownMagicalAttackStageAdd: 1 }],
+    ["氧输送", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: 0 }, { ownMagicalAttackStageAdd: 7 }],
     ["丰饶", { ownAttack: 14, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
-    ["花炮", { ownAttack: 12, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
+    ["花炮", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: 0 }, { ownMagicalAttackStageAdd: 12 }],
     ["怒火", { ownAttack: 12, ownDefense: -4, targetAttack: 0, targetDefense: 0 }],
-    ["润泽", { ownAttack: 19, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
+    ["润泽", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: 0 }, { ownMagicalAttackStageAdd: 19 }],
     ["钧势", { ownAttack: 0, ownDefense: 14, targetAttack: 0, targetDefense: 0 }],
     ["沙石阵", { ownAttack: 0, ownDefense: 9, targetAttack: 0, targetDefense: 0 }],
     ["霜冻", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: -10 }],
     ["龙吟", { ownAttack: 15, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
-    ["电离爆破", { ownAttack: 0, ownDefense: 0, targetAttack: -2, targetDefense: 0 }],
+    ["电离爆破", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: 0 }, { targetMagicalAttackStageAdd: -2 }],
     ["破防", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: -7 }],
-    ["气沉丹田", { ownAttack: 13, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
+    ["气沉丹田", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: 0 }, { ownPhysicalAttackStageAdd: 13 }],
     ["耍赖", { ownAttack: 1, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
-    ["嘲弄", { ownAttack: 9, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
+    ["嘲弄", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: 0 }, { ownMagicalAttackStageAdd: 9 }],
     ["魔镜", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: -5 }],
-  ])("%s maps single stats to the shared attack or defense stage", (name, expected) => {
+  ])("%s preserves shared stages and scopes explicit single-attack gains", (name, expected, operations = {}) => {
     expect(resolveSkillStatusActivation(skill(name))).toMatchObject({
       applied: true,
       deltas: expected,
+      operations,
     });
   });
 
@@ -522,11 +559,13 @@ describe("skill status effects", () => {
       resolveSkillStatusActivation(skill("花炮"), { effectiveHitCount: 5 }),
     ).toMatchObject({
       applied: true,
-      deltas: { ownAttack: 30 },
+      deltas: { ownAttack: 0 },
+      operations: { ownMagicalAttackStageAdd: 30 },
     });
     expect(resolveSkillStatusActivation(skill("花炮"))).toMatchObject({
       applied: true,
-      deltas: { ownAttack: 12 },
+      deltas: { ownAttack: 0 },
+      operations: { ownMagicalAttackStageAdd: 12 },
     });
   });
 
@@ -539,12 +578,12 @@ describe("skill status effects", () => {
       triggerCount: 2,
     })).toMatchObject({
       count: 2,
-      cumulativeEffect: "己方双攻 +36层",
+      cumulativeEffect: "己方魔攻 +36层",
       defaultHitCount: 2,
       hitCount: 3,
       hitCountConfigurable: true,
       repeatable: true,
-      unitEffect: "己方双攻 +18层",
+      unitEffect: "己方魔攻 +18层",
     });
     expect(resolveSkillStatusActivation(skill("花炮", {
       basePower: 0,
@@ -553,30 +592,33 @@ describe("skill status effects", () => {
       effectiveHitCount: 3,
       statusTriggerCount: 2,
     })).toMatchObject({
-      deltas: { ownAttack: 36 },
+      deltas: { ownAttack: 0 },
+      operations: { ownMagicalAttackStageAdd: 36 },
     });
   });
 
-  test("三连破每次连击增加三层攻击且默认三连击", () => {
+  test("三连破每次连击增加三层物攻且默认三连击", () => {
     expect(resolveSkillStatusActivation(skill("三连破"))).toMatchObject({
       applied: true,
-      deltas: { ownAttack: 9 },
+      deltas: { ownAttack: 0 },
+      operations: { ownPhysicalAttackStageAdd: 9 },
     });
     expect(
       resolveSkillStatusActivation(skill("三连破"), { effectiveHitCount: 5 }),
     ).toMatchObject({
       applied: true,
-      deltas: { ownAttack: 15 },
+      deltas: { ownAttack: 0 },
+      operations: { ownPhysicalAttackStageAdd: 15 },
     });
   });
 
   test.each([
     ["防反", { ownAttack: 7, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
     ["纤维化", { ownAttack: 0, ownDefense: 7, targetAttack: 0, targetDefense: 0 }],
-    ["刺盾", { ownAttack: 0, ownDefense: 0, targetAttack: -7, targetDefense: 0 }],
-    ["不动如山", { ownAttack: 5, ownDefense: 0, targetAttack: 0, targetDefense: 0 }],
+    ["刺盾", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: 0 }, { targetPhysicalAttackStageAdd: -7 }],
+    ["不动如山", { ownAttack: 0, ownDefense: 0, targetAttack: 0, targetDefense: 0 }, { ownPhysicalAttackStageAdd: 5 }],
     ["虚化", { ownAttack: 0, ownDefense: 7, targetAttack: 0, targetDefense: 0 }],
-  ])("%s only applies after a successful defense response", (name, expected) => {
+  ])("%s only applies after a successful defense response", (name, expected, operations = {}) => {
     expect(resolveSkillStatusActivation(skill(name), {})).toMatchObject({
       applied: false,
     });
@@ -587,6 +629,7 @@ describe("skill status effects", () => {
     ).toMatchObject({
       applied: true,
       deltas: expected,
+      operations,
     });
   });
 
@@ -603,15 +646,17 @@ describe("skill status effects", () => {
         targetDefense: -7,
       },
     });
+    expect(resolveSkillStatusActivation(skill("破绽"), {}).operations).toEqual({});
     expect(
       resolveSkillStatusActivation(skill("破绽"), {
         counterDefenseSucceeded: true,
       }),
     ).toMatchObject({
       deltas: {
-        ownAttack: 7,
+        ownAttack: 0,
         targetDefense: -7,
       },
+      operations: { ownPhysicalAttackStageAdd: 7 },
     });
     expect(
       resolveSkillStatusActivation(skill("麻痹"), {
@@ -701,9 +746,10 @@ describe("skill status effects", () => {
     ).toMatchObject({
       applied: true,
       deltas: {
-        ownAttack: 9,
+        ownAttack: 0,
         ownSpeedFlat: 60,
       },
+      operations: { ownPhysicalAttackStageAdd: 9 },
     });
   });
 
@@ -722,7 +768,8 @@ describe("skill status effects", () => {
       }),
     ).toMatchObject({
       applied: true,
-      deltas: { ownAttack: 15 },
+      deltas: { ownAttack: 0 },
+      operations: { ownPhysicalAttackStageAdd: 15 },
     });
   });
 
@@ -730,27 +777,29 @@ describe("skill status effects", () => {
     expect(
       resolveSkillStatusActivation(skill("啮合传递"), { skillSlot: 1 }),
     ).toMatchObject({
-      deltas: { ownAttack: 8, ownSpeedFlat: 30 },
+      deltas: { ownAttack: 0, ownSpeedFlat: 30 },
+      operations: { ownPhysicalAttackStageAdd: 8 },
     });
     expect(
       resolveSkillStatusActivation(skill("啮合传递"), { skillSlot: 2 }),
     ).toMatchObject({
       deltas: { ownAttack: 0, ownSpeedFlat: 30 },
     });
+    expect(resolveSkillStatusActivation(skill("啮合传递"), { skillSlot: 2 }).operations).toEqual({});
   });
 
   test("Mud Armor doubles all positive own buffs only after a defense response", () => {
     expect(resolveSkillStatusActivation(skill("泥浆铠甲"), {})).toMatchObject({
-      deltas: { ownAttack: 6, ownDefense: 6 },
-      operations: { doublePositiveOwnBuffs: false },
+      deltas: { ownAttack: 0, ownDefense: 6 },
+      operations: { doublePositiveOwnBuffs: false, ownPhysicalAttackStageAdd: 6 },
     });
     expect(
       resolveSkillStatusActivation(skill("泥浆铠甲"), {
         defenseCounterSucceeded: true,
       }),
     ).toMatchObject({
-      deltas: { ownAttack: 6, ownDefense: 6 },
-      operations: { doublePositiveOwnBuffs: true },
+      deltas: { ownAttack: 0, ownDefense: 6 },
+      operations: { doublePositiveOwnBuffs: true, ownPhysicalAttackStageAdd: 6 },
     });
   });
 
@@ -776,12 +825,12 @@ describe("skill status effects", () => {
   });
 
   test.each([
-    ["以毒攻毒", { ownAttack: 12 }],
+    ["以毒攻毒", { ownAttack: 0 }, { ownMagicalAttackStageAdd: 12 }],
     ["腐化", { targetAttack: -12 }],
-  ])("%s reads the entered poison stacks", (name, expected) => {
+  ])("%s reads the entered poison stacks", (name, expected, operations = {}) => {
     expect(
       resolveSkillStatusActivation(skill(name), { poisonStacks: 4 }),
-    ).toMatchObject({ deltas: expected });
+    ).toMatchObject({ deltas: expected, operations });
   });
 
   test("Storage counts carried zero-cost skills and keeps its base gain", () => {
@@ -804,7 +853,8 @@ describe("skill status effects", () => {
       }),
     ).toMatchObject({
       applied: true,
-      deltas: { ownAttack: 15 },
+      deltas: { ownAttack: 0 },
+      operations: { ownPhysicalAttackStageAdd: 15 },
     });
   });
 
@@ -947,7 +997,8 @@ describe("skill status effects", () => {
         choiceTrait: "有求必应",
       }),
     ).toMatchObject({
-      deltas: { ownAttack: 9, ownSpeedFlat: 60 },
+      deltas: { ownAttack: 0, ownSpeedFlat: 60 },
+      operations: { ownPhysicalAttackStageAdd: 9 },
     });
     expect(
       resolveSkillStatusActivation(skill("蒸汽进行曲"), {
@@ -955,7 +1006,8 @@ describe("skill status effects", () => {
         choiceTrait: "一意孤行",
       }),
     ).toMatchObject({
-      deltas: { ownAttack: 18, ownSpeedFlat: 0 },
+      deltas: { ownAttack: 0, ownSpeedFlat: 0 },
+      operations: { ownPhysicalAttackStageAdd: 18 },
     });
     expect(
       resolveSkillStatusActivation(skill("马步"), {
@@ -963,14 +1015,14 @@ describe("skill status effects", () => {
         attackerHpPercent: 100,
         choiceTrait: "有求必应",
       }),
-    ).toMatchObject({ deltas: { ownAttack: 15 } });
+    ).toMatchObject({ deltas: { ownAttack: 0 }, operations: { ownPhysicalAttackStageAdd: 15 } });
     expect(
       resolveSkillStatusActivation(skill("马步"), {
         applyAttackBoost: true,
         attackerHpPercent: 100,
         choiceTrait: "一意孤行",
       }),
-    ).toMatchObject({ deltas: { ownAttack: 30 } });
+    ).toMatchObject({ deltas: { ownAttack: 0 }, operations: { ownPhysicalAttackStageAdd: 30 } });
     expect(
       resolveSkillStatusActivation(skill("沙石阵"), {
         choiceTrait: "有求必应",

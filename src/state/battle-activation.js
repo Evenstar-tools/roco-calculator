@@ -16,7 +16,8 @@ import {
   hasFairPigeonBalance,
 } from "../domain/fair-pigeon.js";
 import { recordRefractionUsage } from "../domain/refraction.js";
-import { expireTransientGainSources, recordGainChanges } from "../domain/gain-provenance.js";
+import { applyAttackStageChanges, positiveAttackStageGains, postAttackStageChanges } from "../domain/attack-stages.js";
+import { expireTransientGainSources, recordGainChanges, recordSkillAndPostAttackGains } from "../domain/gain-provenance.js";
 import { recordSkillActivation } from "../domain/skill-gain-summary.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import { normalizeNegativeStatusSide } from "../domain/negative-status.js";
@@ -156,11 +157,13 @@ function abilityStagesForSide(state, side) {
   return side === "attacker"
     ? {
         attack: state.directions.forward.overrides?.attackLevelStage ?? 0,
+        physicalAttack: state.directions.forward.overrides?.physicalAttackLevelStageAdd ?? 0,
         magicalAttack: state.directions.forward.overrides?.magicalAttackLevelStageAdd ?? 0,
         defense: state.directions.reverse.overrides?.defenseLevelStage ?? 0,
       }
     : {
         attack: state.directions.reverse.overrides?.attackLevelStage ?? 0,
+        physicalAttack: state.directions.reverse.overrides?.physicalAttackLevelStageAdd ?? 0,
         magicalAttack: state.directions.reverse.overrides?.magicalAttackLevelStageAdd ?? 0,
         defense: state.directions.forward.overrides?.defenseLevelStage ?? 0,
       };
@@ -171,7 +174,8 @@ function setAbilityStagesForSide(state, side, stages) {
   const defenseDirection = oppositeDirection(attackDirection);
   updateDirection(state, attackDirection, {
     overrides: { attackLevelStage: clampStage(stages.attack),
-      magicalAttackLevelStageAdd: clampStage(stages.magicalAttack) },
+      physicalAttackLevelStageAdd: stages.physicalAttack ?? 0,
+      magicalAttackLevelStageAdd: stages.magicalAttack ?? 0 },
   });
   updateDirection(state, defenseDirection, {
     overrides: { defenseLevelStage: clampStage(stages.defense) },
@@ -391,6 +395,7 @@ export function applyBattleActivation({
     0,
     Math.floor(Number(postAttackEffects?.attackLevelStageAdd) || 0),
   );
+  const postAttackStages = postAttackStageChanges(postAttackEffects);
   const rawPostAttackCurrentHp =
     postAttackEffects?.selfCurrentHpAfterSettlement;
   const postAttackCurrentHp = Number(rawPostAttackCurrentHp);
@@ -413,11 +418,7 @@ export function applyBattleActivation({
       const selfOverrides = next.directions[selfDirection].overrides ?? {};
       if (postAttackStageAdd > 0) {
         updateDirection(next, selfDirection, {
-          overrides: {
-            attackLevelStage: clampStage(
-              Number(selfOverrides.attackLevelStage ?? 0) + postAttackStageAdd,
-            ),
-          },
+          overrides: applyAttackStageChanges(selfOverrides, postAttackStages),
         });
       }
       if (hasPostAttackCurrentHp) {
@@ -469,12 +470,12 @@ export function applyBattleActivation({
   const { deltas, operations = {} } = resolution;
   const doublePositive = (value) =>
     operations.doublePositiveOwnBuffs && value > 0 ? value * 2 : value;
-  const ownAttackBeforeDoubling = Number(selfOverrides.attackLevelStage ?? 0) + deltas.ownAttack + postAttackStageAdd;
-  const ownAttackStage = clampStage(doublePositive(ownAttackBeforeDoubling));
-  const magicalAttackExtra = Number(selfOverrides.magicalAttackLevelStageAdd ?? 0) + Number(operations.ownMagicalAttackStageAdd ?? 0);
-  const ownMagicalAttackStage = operations.doublePositiveOwnBuffs
-    ? clampStage(doublePositive(ownAttackBeforeDoubling + magicalAttackExtra)) - ownAttackStage
-    : clampStage(magicalAttackExtra);
+  const ownAttackStages = applyAttackStageChanges(selfOverrides, {
+    attack: deltas.ownAttack + postAttackStages.attack,
+    physical: Number(operations.ownPhysicalAttackStageAdd ?? 0) + postAttackStages.physical,
+    magical: operations.ownMagicalAttackStageAdd,
+    doublePositive: operations.doublePositiveOwnBuffs,
+  });
   const ownDefenseStage = clampStage(doublePositive(
     Number(targetOverrides.defenseLevelStage ?? 0) + deltas.ownDefense,
   ));
@@ -544,8 +545,7 @@ export function applyBattleActivation({
 
   updateDirection(next, selfDirection, {
     overrides: {
-      attackLevelStage: ownAttackStage,
-      magicalAttackLevelStageAdd: ownMagicalAttackStage,
+      ...ownAttackStages,
       attackerSpeedFlat: ownSpeedFlat,
       defenderSpeedFlat:
         Number(selfOverrides.defenderSpeedFlat ?? 0) +
@@ -577,9 +577,11 @@ export function applyBattleActivation({
   });
   updateDirection(next, targetDirection, {
     overrides: {
-      attackLevelStage: clampStage(
-        Number(targetOverrides.attackLevelStage ?? 0) + deltas.targetAttack,
-      ),
+      ...applyAttackStageChanges(targetOverrides, {
+        attack: deltas.targetAttack,
+        physical: operations.targetPhysicalAttackStageAdd,
+        magical: operations.targetMagicalAttackStageAdd,
+      }),
       attackerSpeedFlat:
         Number(targetOverrides.attackerSpeedFlat ?? 0) +
         Number(deltas.targetSpeedFlat ?? 0),
@@ -594,30 +596,24 @@ export function applyBattleActivation({
     },
   });
 
-  recordGainChanges(gainBaseline, next, { kind: "skill", id: `${side}:${skill.id}`, name: skill.name, countDelta: resolution.triggerCount, transient: Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0 });
+  recordSkillAndPostAttackGains(gainBaseline, next, { kind: "skill", id: `${side}:${skill.id}`, name: skill.name, countDelta: resolution.triggerCount, transient: Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0 }, { direction: selfDirection, effects: postAttackEffects });
   const targetSpirit = getSpirit(snapshot, next.sides[targetSide]);
   if (
     hasFairPigeonBalance(targetSpirit) &&
     balanceIsTriggered(next, snapshot, targetSide)
   ) {
     const gained = {
-      attack: Math.max(
-        0,
-        ownAttackStage - Number(selfOverrides.attackLevelStage ?? 0),
-      ),
-      magicalAttack: Math.max(0,
-        ownAttackStage + ownMagicalAttackStage - Number(selfOverrides.attackLevelStage ?? 0) -
-          Number(selfOverrides.magicalAttackLevelStageAdd ?? 0)) -
-        Math.max(0, ownAttackStage - Number(selfOverrides.attackLevelStage ?? 0)),
+      ...positiveAttackStageGains(selfOverrides, ownAttackStages),
       defense: Math.max(
         0,
         ownDefenseStage - Number(targetOverrides.defenseLevelStage ?? 0),
       ),
     };
-    if (gained.attack > 0 || gained.magicalAttack > 0 || gained.defense > 0) {
+    if (gained.attack > 0 || gained.physicalAttack > 0 || gained.magicalAttack > 0 || gained.defense > 0) {
       const copied = copyPositiveAbilityStages(
         gained,
         abilityStagesForSide(next, targetSide),
+        { sourceIsDelta: true },
       );
       const beforeCopy = clone(next);
       setAbilityStagesForSide(next, targetSide, copied);

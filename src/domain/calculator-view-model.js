@@ -254,9 +254,10 @@ function previewPanelForSide(snapshot, state, sideKey, panelStats) {
   const side = state.sides[sideKey];
   const outgoing = state.directions[sideKey === "attacker" ? "forward" : "reverse"];
   const incoming = state.directions[sideKey === "attacker" ? "reverse" : "forward"];
-  let physical = 0, magical = Number(outgoing.overrides.magicalAttackLevelStageAdd ?? 0),
+  let physical = Number(outgoing.overrides.physicalAttackLevelStageAdd ?? 0),
+    magical = Number(outgoing.overrides.magicalAttackLevelStageAdd ?? 0),
     defense = 0, speedFlat = 0, speedStage = 0;
-  let hasPreviewTrait = magical !== 0;
+  let hasPreviewTrait = physical !== 0 || magical !== 0;
   for (const trait of getEffectiveTraits(snapshot, { ...side, spirit: getSpirit(snapshot, side) })) {
     const resolve = (role, category, direction) => resolveS5PreviewTraitEffect(trait, role, {
       context: { ...direction.context, ...direction.overrides?.context }, skill: { category },
