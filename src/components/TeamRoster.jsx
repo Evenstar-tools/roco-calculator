@@ -6,6 +6,7 @@ import { Shield, Sword, WarningCircle, Wrench } from "@phosphor-icons/react";
 import { getNature, NATURES, STAT_LABELS } from "../domain/natures.js";
 import { getBossBloodlineConflicts } from "../domain/skill-loadout.js";
 import { ElementIcon } from "./ElementIcon.jsx";
+import { SpiritImage } from "./SpiritImage.jsx";
 
 function entryId(entry) {
   if (typeof entry === "string") return entry;
@@ -94,7 +95,7 @@ export function TeamRoster({
               <span aria-hidden="true" className="team-slot__number">{position + 1}</span>
               {conflicts.length ? <span className="team-slot__bloodline-flag" role="img" aria-label={t("血脉技能与首领冲突")} title={t("首领与血脉技能冲突：{skills}", { skills: conflicts.map(skill => skill.name).join("、") })}><WarningCircle aria-hidden="true" size={16} weight="fill" /></span> : null}
               {spirit?.asset?.localUrl ? (
-                <img
+                <SpiritImage name={spirit.fullName}
                   alt=""
                   height="48"
                   src={spirit.asset.localUrl}
