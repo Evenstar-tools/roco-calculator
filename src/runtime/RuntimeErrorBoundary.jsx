@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { translateUi } from "../i18n/messages.js";
+import { isChunkFailure, reportLoadFailure } from "./chunk-recovery.js";
 
 // Lazy imports reject during rendering; keep their failure recoverable in the
 // active workspace language without exposing internal exception text.
@@ -8,6 +9,10 @@ export class RuntimeErrorBoundary extends Component {
 
   static getDerivedStateFromError() {
     return { failed: true };
+  }
+
+  componentDidCatch(error) {
+    reportLoadFailure(isChunkFailure(error) ? "chunk" : "render", "boundary");
   }
 
   render() {
