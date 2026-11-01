@@ -1,6 +1,6 @@
 import icons from "./trait-icons.json";
 
-const LOCAL_TRAIT_ICON = /^\/(?:pre\/|global-assets\/)?assets\/traits\/[\w-]+\.png$/u;
+const LOCAL_TRAIT_ICON = /^\/(?:pre\/|global-assets\/)?assets\/traits\/[\w-]+\.(?:png|webp)$/u;
 
 /** Presentation only: never replace a region or season's trait text or rules. */
 export function getTraitIconUrl(trait) {

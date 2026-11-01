@@ -1,10 +1,12 @@
-import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, unlink, writeFile } from "node:fs/promises";
+import { spawn } from "node:child_process";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { readImageDimensions } from "./sync-assets.mjs";
 
 const EVIDENCE = "data/reviewed/nrc-s5-20261101.json";
 const BINDINGS = "data/reviewed/nrc-trait-icons.json";
+export const TRAIT_ICON_PROFILE = "webp-128-q95";
 const readJson = async file => JSON.parse(await readFile(file, "utf8"));
 const exists = file => access(file).then(() => true, () => false);
 const fileKey = title => title.replace(/^(?:File|文件):/iu, "").replaceAll(" ", "_");
@@ -29,7 +31,7 @@ export function createTraitIconPlan(evidence, snapshots) {
     else if (!trait.iconUrl) missing.push({ id: trait.id, name: trait.name });
   }
   const assets = [...new Set(bindings.map(entry => entry.sourceFile))].sort().map(sourceFile => ({
-    sourceFile, localUrl: `/assets/traits/${sourceFile}`,
+    sourceFile, localUrl: `/assets/traits/${sourceFile.replace(/\.png$/u, ".webp")}`,
     names: [...new Set(bindings.filter(entry => entry.sourceFile === sourceFile).map(entry => entry.name))],
   }));
   const sources = evidence.moduleSources?.Skills ?? evidence.sources;
@@ -73,6 +75,29 @@ export function createTraitIconLookup(plan) {
   return { ids, names };
 }
 
+/** 44px UI icon at almost 3x density; retain the source identity and alpha. */
+export async function optimizeTraitIcon(sourceBuffer) {
+  const source = readImageDimensions(sourceBuffer);
+  const scale = Math.min(1, 128 / Math.max(source.width, source.height));
+  const width = Math.max(1, Math.round(source.width * scale));
+  const height = Math.max(1, Math.round(source.height * scale));
+  const buffer = await new Promise((resolve, reject) => {
+    const child = spawn("ffmpeg", ["-hide_banner", "-loglevel", "error", "-f", "image2pipe", "-i", "pipe:0",
+      "-vf", `scale=${width}:${height}:flags=lanczos`, "-c:v", "libwebp", "-quality", "95",
+      "-compression_level", "6", "-f", "webp", "pipe:1"], { windowsHide: true });
+    const chunks = [], errors = [];
+    child.stdout.on("data", chunk => chunks.push(chunk));
+    child.stderr.on("data", chunk => errors.push(chunk));
+    child.on("error", error => reject(new Error(`特性素材优化需要 ffmpeg/libwebp：${error.message}`)));
+    child.on("close", code => code === 0 ? resolve(Buffer.concat(chunks))
+      : reject(new Error(`特性素材优化失败：${Buffer.concat(errors).toString("utf8")}`)));
+    child.stdin.on("error", reject);
+    child.stdin.end(sourceBuffer);
+  });
+  if (buffer.toString("ascii", 0, 4) !== "RIFF" || buffer.toString("ascii", 8, 12) !== "WEBP") throw new Error("特性素材优化没有生成 WebP");
+  return { buffer, width, height, sourceWidth: source.width, sourceHeight: source.height, profile: TRAIT_ICON_PROFILE };
+}
+
 export async function syncTraitIcons(plan, { root = process.cwd(), previous, fetchImpl = fetch,
   saveProgress = async () => {} } = {}) {
   const records = plan.assets.map(asset => {
@@ -88,19 +113,29 @@ export async function syncTraitIcons(plan, { root = process.cwd(), previous, fet
   for (let start = 0; start < records.length; start += 4) {
     await Promise.all(records.slice(start, start + 4).map(async record => {
       if (!record.sourceUrl) return;
-      if (!/^\/assets\/traits\/Feature_\d+\.png$/u.test(record.localUrl)) throw new Error(`非法特性资源路径：${record.localUrl}`);
+      if (!/^\/assets\/traits\/Feature_\d+\.webp$/u.test(record.localUrl) || !/^Feature_\d+\.png$/u.test(record.sourceFile)) throw new Error(`非法特性资源路径：${record.localUrl}`);
       const output = path.join(root, "public", record.localUrl.slice(1));
+      const original = path.join(root, "public/assets/traits", record.sourceFile);
       let buffer;
-      if (record.bytes > 0 && await exists(output)) buffer = await readFile(output);
+      if (record.profile === TRAIT_ICON_PROFILE && record.bytes > 0 && await exists(output)) buffer = await readFile(output);
       else {
-        const response = await fetchImpl(record.sourceUrl, { signal: AbortSignal.timeout(20000) });
-        if (!response.ok) throw new Error(`特性图片下载 HTTP ${response.status}：${record.sourceFile}`);
-        buffer = Buffer.from(await response.arrayBuffer());
-        readImageDimensions(buffer);
+        let sourceBuffer;
+        if (await exists(original)) sourceBuffer = await readFile(original);
+        else {
+          const response = await fetchImpl(record.sourceUrl, { signal: AbortSignal.timeout(20000) });
+          if (!response.ok) throw new Error(`特性图片下载 HTTP ${response.status}：${record.sourceFile}`);
+          sourceBuffer = Buffer.from(await response.arrayBuffer());
+        }
+        const optimized = await optimizeTraitIcon(sourceBuffer);
+        ({ buffer } = optimized);
+        const { buffer: _buffer, ...metadata } = optimized;
+        Object.assign(record, metadata);
         await mkdir(path.dirname(output), { recursive: true });
         await writeFile(output, buffer);
       }
-      Object.assign(record, readImageDimensions(buffer), { bytes: buffer.length });
+      // Only remove the exact replaced trait source, after the usable WebP exists.
+      if (await exists(original)) await unlink(original);
+      Object.assign(record, { bytes: buffer.length });
     }));
     await saveProgress({ ...plan, assets: records });
   }
