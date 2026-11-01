@@ -33,18 +33,23 @@ describe("S5 explicit trait controls and evaluation", () => {
     expect(evaluate(unknown)).toMatchObject({ calcStatus: "pending", blockingReason: expect.any(String) });
   });
 
-  test("Abu and Super Abu use 30% below80 while guardian attack only counts battle gains", () => {
+  test("Abu and Super Abu use 30% below80 and one level input through150", () => {
     const ordinary = getS5PreviewTraitInputs(trait("abu"), "attacker");
     expect(ordinary).toHaveLength(1);
     expect(ordinary).toMatchObject([
-      { contextKey: "attackerTraitS5BattleLevel", label: "当前等级", defaultValue: 60, min: 1, max: 99, step: 2 },
+      { contextKey: "attackerTraitS5BattleLevel", label: "当前等级", defaultValue: 60, min: 1, max: 150, step: 2 },
     ]);
     for (const key of ["abu", "super-abu"]) {
       expect(evaluate(trait(key))).toMatchObject({ mechanicKey: key, currentLevel: 60, calcStatus: "ready" });
-      for (const BattleLevel of [1, 60, 62, 79, 80, 99]) {
+      expect(getS5PreviewTraitInputs(trait(key))).toHaveLength(1);
+      for (const BattleLevel of [1, 60, 62, 79, 80, 99, 100, 150]) {
+        const gain = key === "super-abu" ? Math.max(0, BattleLevel - 60) : 0;
         expect(evaluate(trait(key), { BattleLevel })).toMatchObject({
           currentLevel: BattleLevel, calcStatus: "ready",
-          effects: BattleLevel < 80 ? [{ kind: "incoming-damage-percent", amount: 30 }] : [],
+          effects: [
+            ...(gain ? [{ kind: "physical-attack-percent", amount: gain * 5 }] : []),
+            ...(BattleLevel < 80 ? [{ kind: "incoming-damage-percent", amount: 30 }] : []),
+          ],
         });
         expect(resolve(trait(key), "defender", { BattleLevel }).finalDamageMultiplier).toBe(BattleLevel < 80 ? 1.3 : 1);
         expect(resolve(trait(key), "attacker", { BattleLevel }).finalDamageMultiplier).toBe(1);
@@ -52,14 +57,18 @@ describe("S5 explicit trait controls and evaluation", () => {
     }
   });
 
-  test.each([0, 1, 2, 10, 39])("guardian %s battle levels add5% physical attack each, independent of current level", gain => {
+  test.each([55, 60, 61, 68, 99, 150, 999])("guardian level%s derives layers from60 and ignores former manual gains", inputLevel => {
     const entity = trait("super-abu");
-    for (const BattleLevel of [60, 79, 99]) {
-      expect(resolve(entity, "attacker", { BattleLevel, BattleLevelGain: gain })).toMatchObject({
+    const BattleLevel = Math.min(150, inputLevel);
+    const gain = Math.max(0, BattleLevel - 60);
+    for (const oldGain of [0, 1, 500]) {
+      const values = { ...context(entity, "attacker", { BattleLevel: inputLevel }), attackerTraitS5BattleLevelGain: oldGain };
+      expect(getS5PreviewTraitEvaluation(entity, "attacker", values)).toMatchObject({ currentLevel: BattleLevel, levelGain: gain });
+      expect(resolveS5PreviewTraitEffect(entity, "attacker", { context: values, skill: { category: "physical" } })).toMatchObject({
         attackLevelBonus: gain * .5, attackMultiplier: 1 + gain * .05,
       });
-      expect(resolve(entity, "attacker", { BattleLevel, BattleLevelGain: gain }, "magical").attackLevelBonus).toBe(0);
-      expect(resolve(entity, "defender", { BattleLevel, BattleLevelGain: gain }).attackLevelBonus).toBe(0);
+      expect(resolve(entity, "attacker", { BattleLevel: inputLevel }, "magical").attackLevelBonus).toBe(0);
+      expect(resolve(entity, "defender", { BattleLevel: inputLevel }).attackLevelBonus).toBe(0);
     }
     expect(resolve(trait("minggulong"), "defender", { BattleLevel: 79 }).finalDamageMultiplier).toBe(1.4);
   });

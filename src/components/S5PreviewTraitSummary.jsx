@@ -31,7 +31,9 @@ export function S5PreviewTraitSummary({ trait, role = "attacker", context = {}, 
     >
       {hasLevel ? <>
         <span>当前等级 {level}</span>
-        {physicalAttack && (owner || role === "attacker") ? <span>物攻 +{physicalAttack.amount}%</span> : null}
+        {physicalAttack && (owner || role === "attacker") ? <span>
+          {evaluation.levelGain !== undefined ? `被动 ${evaluation.levelGain} 层 · ` : ""}物攻 +{physicalAttack.amount}%
+        </span> : null}
         {incoming && (owner || role === "defender") ? <span>承伤 +{incoming.amount}%</span> : null}
       </> : <span>{summary}</span>}
       {reason ? <small>{reason}</small> : null}

@@ -4,7 +4,7 @@ import { buildCalculatorViewModel, getPanelView } from "../../src/domain/calcula
 import { getS5PreviewTraitInputs } from "../../src/domain/s5-preview-traits.js";
 import { buildBalanceComparison } from "../../src/features/balance-comparison/model.js";
 import { createInitialState } from "../../src/state/defaults.js";
-import { migrateSharedConfiguration, projectBattleLevelHealth, switchBattleForm, updateMirroredTraitContext } from "../../src/state/calculator-session.js";
+import { migrateSharedConfiguration, projectBattleLevelHealth, switchBattleForm } from "../../src/state/calculator-session.js";
 import { applyBattleActivation } from "../../src/state/battle-activation.js";
 import { selectShareableInputs } from "../../src/state/share.js";
 import { getS5SkillBattleLevelControl, resolveS5PreviewBattleLevel } from "../../src/domain/battle-level.js";
@@ -143,7 +143,7 @@ test.each(["abu", "boss-abu", "super-abu"])("%s默认满血null随直接等级�
   const args = fixture({ key, level: 60 });
   let state = args.state;
   const levelInput = getS5PreviewTraitInputs(args.snapshot.traits[0]).find(input => input.contextKey.endsWith("BattleLevel"));
-  for (const level of [60, 62, 64, 79, 80]) {
+  for (const level of [60, 62, 64, 79, 80, 99, 149, 150]) {
     state = { ...state, directions: { ...state.directions, forward: { ...state.directions.forward,
       context: { ...state.directions.forward.context, [levelInput.id]: level } } } };
     state = projectBattleLevelHealth(state, { snapshot: args.snapshot, side: "attacker", hpInputMode: "percent" });
@@ -174,7 +174,7 @@ test.each(["single", "four"])("%s真实激活不使用旧存档HP比例绕过80%
 
 test.each(["single", "four"])("%s圣龙狂斩使用后减5级，双方镜像、能力面板、HP、刷新和分享一致", mode => {
   for (const side of ["attacker", "defender"]) {
-    for (const level of [1, 4, 60, 80, 99]) {
+    for (const level of [1, 4, 60, 80, 99, 150]) {
       const args = fixture({ key: "super-abu", mode, level });
       const { snapshot } = args;
       const slash = { id: "reviewed-slash", name: "圣龙狂斩", type: "龙", category: "physical", basePower: 160, cost: 3,
@@ -190,22 +190,23 @@ test.each(["single", "four"])("%s圣龙狂斩使用后减5级，双方镜像、�
       const healthDirection = direction === "forward" ? "reverse" : "forward";
       state.sides[side].skills = { single: slash.id, four: [slash.id, null, null, null] };
       const trait = snapshot.traits[0];
-      const gainControl = getS5PreviewTraitInputs(trait).find(control => control.contextKey.endsWith("BattleLevelGain"));
-      state = updateMirroredTraitContext(state, { direction, key: gainControl.id, value: 3 }).state;
+      expect(getS5PreviewTraitInputs(trait).some(control => control.contextKey.endsWith("BattleLevelGain"))).toBe(false);
       state.directions[healthDirection].currentHp = 111;
       const before = buildCalculatorViewModel({ snapshot, state, activeDirection: direction });
+      expect(before.sides[side].finalPanelStats.physicalAttack).toBe(Math.floor(before.sides[side].panelStats.physicalAttack * (1 + Math.max(0, level - 60) * .05)));
       const applied = applyBattleActivation({ snapshot, state, calculation: before.calculation, side, skillMode: mode, skillIndex: 0 });
       expect(applied).toMatchObject({ applied: true, skillUsed: true });
       const nextLevel = Math.max(1, level - 5);
       expect(resolveS5PreviewBattleLevel(snapshot, applied.state, side)).toBe(nextLevel);
       expect(resolveS5PreviewBattleLevel(snapshot, state, side)).toBe(level);
-      expect(applied.state.directions[direction].context[gainControl.id]).toBe(3);
       const reflected = getS5PreviewTraitInputs(trait, "defender").find(control => control.contextKey.endsWith("BattleLevel"));
       expect(applied.state.directions[healthDirection].context[reflected.id]).toBe(nextLevel);
       const after = buildCalculatorViewModel({ snapshot, state: applied.state, activeDirection: direction });
       expect(after.sides[side].panelStats.physicalAttack).toBeLessThanOrEqual(before.sides[side].panelStats.physicalAttack);
-      expect(after.sides[side].finalPanelStats.physicalAttack).toBe(Math.floor(after.sides[side].panelStats.physicalAttack * 1.15));
+      expect(after.sides[side].panelStats).toEqual(calculateAllPanelStats({ raceStats: stats, displayIvs: state.sides[side].displayIvs, level: nextLevel }));
+      expect(after.sides[side].finalPanelStats.physicalAttack).toBe(Math.floor(after.sides[side].panelStats.physicalAttack * (1 + Math.max(0, nextLevel - 60) * .05)));
       expect(after.sides[side].finalPanelStats.magicalAttack).toBe(after.sides[side].panelStats.magicalAttack);
+      expect(after.skillResultsByDirection[direction][0].totalDamage).toBeLessThanOrEqual(before.skillResultsByDirection[direction][0].totalDamage);
       expect(after.sides[side].health.currentHp).toBe(Math.min(111, after.sides[side].health.maxHp));
       for (const restored of [JSON.parse(JSON.stringify(applied.state)),
         migrateSharedConfiguration(selectShareableInputs(applied.state), applied.state.versions, snapshot)]) {
@@ -236,8 +237,8 @@ test("圣龙狂斩仅稳定S5规则生效，普通3费不会让在场阿布升�
 
 test.each([["abu", "super-abu", "attacker"], ["super-abu", "abu", "attacker"],
   ["abu", "super-abu", "defender"], ["super-abu", "abu", "defender"]])(
-  "%s本场切换%s时保留%s原生特性的90级与狂斩动作，六维使用目标形态", (sourceKey, targetKey, side) => {
-    const { snapshot, state: initial } = fixture({ key: sourceKey, level: 90 });
+  "%s本场切换%s时保留%s原生特性的150级与狂斩动作，六维使用目标形态", (sourceKey, targetKey, side) => {
+    const { snapshot, state: initial } = fixture({ key: sourceKey, level: 150 });
     const source = snapshot.spirits[0];
     const sourceTrait = snapshot.traits[0];
     source.traitName = sourceTrait.name = sourceKey === "abu" ? "圣龙的心愿" : "圣龙的守护";
@@ -257,23 +258,18 @@ test.each([["abu", "super-abu", "attacker"], ["super-abu", "abu", "attacker"],
     }
     const direction = side === "attacker" ? "forward" : "reverse";
     initial.sides[side].skills.four = [slash.id, null, null, null];
-    let state = initial;
-    if (sourceKey === "super-abu") {
-      const gain = getS5PreviewTraitInputs(sourceTrait).find(control => control.contextKey.endsWith("BattleLevelGain"));
-      state = updateMirroredTraitContext(state, { direction, key: gain.id, value: 1 }).state;
-    }
-    state = switchBattleForm(state, { snapshot, side, spiritId: "other-abu-form" }).state;
+    const state = switchBattleForm(initial, { snapshot, side, spiritId: "other-abu-form" }).state;
     const resolved = resolveBattleSpirit(snapshot, state.sides[side]);
     expect(resolved).toMatchObject({ battleFormTraitRetained: true, traitIds: [sourceTrait.id], raceStats: formStats });
-    expect(resolveS5PreviewBattleLevel(snapshot, state, side)).toBe(90);
+    expect(resolveS5PreviewBattleLevel(snapshot, state, side)).toBe(150);
     expect(getS5SkillBattleLevelControl(snapshot, state, side, slash)).not.toBeNull();
     const before = buildCalculatorViewModel({ snapshot, state, activeDirection: direction });
-    const expected = calculateAllPanelStats({ raceStats: formStats, displayIvs: state.sides[side].displayIvs, level: 90 });
+    const expected = calculateAllPanelStats({ raceStats: formStats, displayIvs: state.sides[side].displayIvs, level: 150 });
     expect(before.sides[side].panelStats).toEqual(expected);
-    expect(before.sides[side].finalPanelStats.physicalAttack).toBe(Math.floor(expected.physicalAttack * (sourceKey === "super-abu" ? 1.05 : 1)));
+    expect(before.sides[side].finalPanelStats.physicalAttack).toBe(Math.floor(expected.physicalAttack * (sourceKey === "super-abu" ? 5.5 : 1)));
     const applied = applyBattleActivation({ snapshot, state, side, skillIndex: 0, calculation: before.calculation });
     expect(applied.applied).toBe(true);
-    expect(resolveS5PreviewBattleLevel(snapshot, applied.state, side)).toBe(85);
+    expect(resolveS5PreviewBattleLevel(snapshot, applied.state, side)).toBe(145);
     expect(resolveBattleSpirit(snapshot, applied.state.sides[side]).traitIds).toEqual([sourceTrait.id]);
   },
 );

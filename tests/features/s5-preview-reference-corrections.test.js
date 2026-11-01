@@ -116,10 +116,10 @@ test.each([["pre", true], ["test", false]])("share import applies correction onl
 
 const minggulongId = "spirit_preview_s5_minggulong";
 const abuIds = ["spirit_preview_s5_abu", "spirit_preview_s5_boss-abu", "spirit_preview_s5_super-abu"];
-function battleLevelControl(role = "attacker", isAbu = false) {
+function battleLevelControl(role = "attacker", isAbu = false, max = isAbu ? 150 : 99) {
   const source = `${role}Trait`;
   return normalizeTriggerControls([{ contextKey: `${source}S5BattleLevel`, type: "number",
-    defaultValue: isAbu ? 60 : 99, min: 1, max: 99, step: isAbu ? 2 : 10 }], { source, scope: "direction" })[0];
+    defaultValue: isAbu ? 60 : 99, min: 1, max, step: isAbu ? 2 : 10 }], { source, scope: "direction" })[0];
 }
 function oldLevelValues(level, count, role = "attacker", canonical = false, isAbu = false) {
   const controls = isAbu ? getLegacyAbuLevelInputs(role) : getLegacyMinggulongLevelInputs(role);
@@ -253,6 +253,62 @@ test("Abu count-only legacy values use60, but ordinary and similarly named speci
   }
 });
 
+test.each(abuIds)("%s migrates previous max99 current IDs without applying stale level gains", spiritId => {
+  const oldCurrent = battleLevelControl("attacker", true, 99);
+  const current = battleLevelControl("attacker", true);
+  expect(oldCurrent.id).not.toBe(current.id);
+  for (const oldValue of [68, 99, 150]) {
+    const expected = Math.min(oldValue, 99);
+    const oldKey = canonicalTraitControlKey(oldCurrent);
+    const currentKey = canonicalTraitControlKey(current);
+    const traitValues = { [oldKey]: oldValue, traitS5BattleLevelGain: 80 };
+    const corrected = correctS5PreviewReferences({ spiritId, traitValues });
+    expect(corrected.traitValues).toEqual({ [currentKey]: expected, traitS5BattleLevelGain: 80 });
+    expect(traitValues).toEqual({ [oldKey]: oldValue, traitS5BattleLevelGain: 80 });
+    const state = currentLevelState(150, false, spiritId);
+    delete state.directions.forward.context[current.id];
+    state.directions.forward.context[oldCurrent.id] = oldValue;
+    const result = correctS5PreviewReferences(state);
+    expect(result.directions.forward.context[current.id]).toBe(expected);
+    expect(result.directions.reverse.context[battleLevelControl("defender", true).id]).toBe(expected);
+    expect(result.directions.forward.context).not.toHaveProperty(oldCurrent.id);
+    expect(correctS5PreviewReferences(result)).toBe(result);
+  }
+});
+
+test.each(abuIds)("%s keeps explicit current150 over old values in both directions and saved configurations", spiritId => {
+  const oldCurrent = battleLevelControl("attacker", true, 99);
+  const current = battleLevelControl("attacker", true);
+  const config = { spiritId, traitValues: { ...oldLevelValues(98, 4, "attacker", true, true),
+    [canonicalTraitControlKey(oldCurrent)]: 68, [canonicalTraitControlKey(current)]: 150 } };
+  expect(correctS5PreviewReferences(config).traitValues).toEqual({ [canonicalTraitControlKey(current)]: 150 });
+  for (const newDirection of ["forward", "reverse"]) {
+    const state = levelFixture(spiritId).shared;
+    state.directions.forward.context[oldCurrent.id] = 68;
+    const newRole = newDirection === "forward" ? "attacker" : "defender";
+    state.directions[newDirection].context[battleLevelControl(newRole, true).id] = 150;
+    const result = correctS5PreviewReferences(state);
+    expect(result.directions.forward.context[current.id]).toBe(150);
+    expect(result.directions.reverse.context[battleLevelControl("defender", true).id]).toBe(150);
+    expect(result.directions.forward.context).not.toHaveProperty(oldCurrent.id);
+    expect(JSON.parse(correctS5PreviewStoredJson(JSON.stringify(state)))).toEqual(result);
+  }
+});
+
+test("Abu incoming-only previous current ID migrates, but a new-only current150 save is unchanged", () => {
+  const state = currentLevelState(150, false, abuIds[2]);
+  const raw = JSON.stringify(state);
+  expect(correctS5PreviewReferences(state)).toBe(state);
+  expect(correctS5PreviewStoredJson(raw)).toBe(raw);
+  delete state.directions.forward.context[battleLevelControl("attacker", true).id];
+  const oldIncoming = battleLevelControl("defender", true, 99);
+  state.directions.reverse.context[oldIncoming.id] = 99;
+  const corrected = correctS5PreviewReferences(state);
+  expect(corrected.directions.forward.context[battleLevelControl("attacker", true).id]).toBe(99);
+  expect(corrected.directions.reverse.context[battleLevelControl("defender", true).id]).toBe(99);
+  expect(corrected.directions.reverse.context).not.toHaveProperty(oldIncoming.id);
+});
+
 test("preview storage reads old levels as69 without rewriting raw or formal storage", () => {
   const { shared } = levelFixture();
   const key = "rock-calculator.servers.cn.calculator.session.v1";
@@ -323,7 +379,7 @@ test.each([minggulongId, ...abuIds].flatMap(spiritId => [false, true].map(mirror
   expect(store.loadSession()).toBeNull();
   const previous = [];
   let latest;
-  for (const level of [79, 80, 70]) {
+  for (const level of abuIds.includes(spiritId) ? [79, 99, 150] : [79, 80, 70]) {
     const present = currentLevelState(level, mirrored, spiritId);
     const payload = { present, past: [...previous], future: [] };
     expect(() => store.saveSession(payload)).not.toThrow();

@@ -51,8 +51,10 @@ export function getS5SkillBattleLevelControl(snapshot, state, sideKey, skill) {
 
 /** Initial Web preview level; the unknown Minggulong minimum stays guarded. */
 export function resolveS5PreviewBattleLevel(snapshot, state, sideKey) {
-  const level = getS5PreviewBattleLevelEvaluation(snapshot, state, sideKey)?.currentLevel;
-  return Number.isSafeInteger(level) && level >= 1 && level <= 99 ? level : 60;
+  const evaluation = getS5PreviewBattleLevelEvaluation(snapshot, state, sideKey);
+  const level = evaluation?.currentLevel;
+  const maximum = evaluation?.mechanicKey === "minggulong" ? 99 : 150;
+  return Number.isSafeInteger(level) && level >= 1 && level <= maximum ? level : 60;
 }
 
 /** Derived input only: do not persist this projection into the session. */

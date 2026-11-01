@@ -168,7 +168,7 @@ test.each(["single", "four"])("精简%s聚能次数在回合末增加物攻，�
   expect(primary()).toBe(before);
 });
 
-test.each([["abu", "single"], ["boss-abu", "four"], ["super-abu", "four"]])("%s %s仅用当前等级，步进2级、80承伤边界与99上限同步", (key, mode) => {
+test.each([["abu", "single"], ["boss-abu", "four"], ["super-abu", "four"]])("%s %s旧阿布机制仅用当前等级，步进2级、80承伤边界与150上限同步", (key, mode) => {
   setup(key, mode);
   if (mode === "four") fireEvent.click(screen.getByRole("button", { name: "具体版", exact: true }));
   const level = screen.getByRole("spinbutton", { name: "当前等级", exact: true });
@@ -196,12 +196,12 @@ test.each([["abu", "single"], ["boss-abu", "four"], ["super-abu", "four"]])("%s 
   expect(summary()).not.toHaveTextContent(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
   fireEvent.change(level, { target: { value: "79" } });
   expect(summary()).toHaveTextContent(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
-  fireEvent.change(level, { target: { value: "98" } });
+  fireEvent.change(level, { target: { value: "149" } });
   fireEvent.click(increase);
-  expect(level).toHaveValue(99);
+  expect(level).toHaveValue(150);
   expect(increase).toBeDisabled();
   fireEvent.click(decrease);
-  expect(level).toHaveValue(97);
+  expect(level).toHaveValue(148);
 });
 
 
@@ -409,7 +409,7 @@ test.each([["single", "compact"], ["four", "compact"], ["four", "detailed"]])("%
 
 
 test.each([["single", "compact"], ["single", "detailed"], ["four", "compact"], ["four", "detailed"]])(
-  "%s %s超能阿布累计提升与圣龙狂斩按钮联动，当前等级独立且重复使用正常", (mode, viewMode) => {
+  "%s %s超能阿布只填当前等级，60起算物攻且狂斩同步减层", (mode, viewMode) => {
     const current = structuredClone(snapshot);
     current.meta.s5NrcSync = { complete: true };
     const spirit = current.spirits.find(entry => entry.id === "spirit_preview_s5_super-abu");
@@ -427,30 +427,42 @@ test.each([["single", "compact"], ["single", "detailed"], ["four", "compact"], [
     state.sides.defender.spiritId = current.spirits.find(entry => entry.fullName === "迪莫").id;
     state.sides.attacker.skills = { single: slash.id, four: [slash.id, null, null, null] };
     render(<App initialSnapshot={current} initialWorkspace={{ state, activeDirection: "forward", viewMode }} />);
-    const gain = screen.getByRole("spinbutton", { name: "战斗中累计提升等级", exact: true });
+    expect(screen.queryByRole("spinbutton", { name: "战斗中累计提升等级", exact: true })).not.toBeInTheDocument();
     const level = screen.getByRole("spinbutton", { name: "当前等级", exact: true });
+    const summary = () => screen.getAllByRole("status", { name: "攻击特性当前效果" })[0];
     const at60 = primary();
-    expect(gain).toHaveValue(0);
-    fireEvent.change(gain, { target: { value: "1" } });
-    expect(primary()).toBeGreaterThan(at60);
     expect(level).toHaveValue(60);
-    expect(screen.getAllByRole("status", { name: "攻击特性当前效果" })[0]).toHaveTextContent("物攻 +5%");
+    expect(level).toHaveAttribute("max", "150");
+    fireEvent.keyDown(level, { key: "ArrowUp" });
+    expect(level).toHaveValue(61);
+    expect(summary()).toHaveTextContent("物攻 +5%");
+    expect(primary()).toBeGreaterThan(at60);
+    fireEvent.change(level, { target: { value: "99" } });
+    expect(summary()).toHaveTextContent("物攻 +195%");
+    const at99 = primary();
+    activateSkill(mode, { view: viewMode });
+    expect(level).toHaveValue(94);
+    expect(summary()).toHaveTextContent("物攻 +170%");
+    expect(primary()).toBeLessThan(at99);
+    fireEvent.change(level, { target: { value: "150" } });
+    expect(summary()).toHaveTextContent("物攻 +450%");
+    fireEvent.keyDown(level, { key: "ArrowUp" });
+    expect(level).toHaveValue(150);
+    const at150 = primary();
+    activateSkill(mode, { view: viewMode });
+    expect(level).toHaveValue(145);
+    expect(summary()).toHaveTextContent("物攻 +425%");
+    expect(primary()).toBeLessThan(at150);
+    fireEvent.change(level, { target: { value: "60" } });
     activateSkill(mode, { view: viewMode });
     expect(level).toHaveValue(55);
-    expect(gain).toHaveValue(1);
-    activateSkill(mode, { view: viewMode });
-    expect(level).toHaveValue(50);
-    expect(gain).toHaveValue(1);
-    fireEvent.change(level, { target: { value: "99" } });
-    expect(gain).toHaveValue(1);
-    fireEvent.change(gain, { target: { value: "0" } });
-    expect(screen.getAllByRole("status", { name: "攻击特性当前效果" })[0]).not.toHaveTextContent("物攻");
+    expect(summary()).not.toHaveTextContent(/物攻 \+[1-9]/u);
   },
 );
 
 
 test.each([["attacker", "攻击方"], ["defender", "防御方"]])(
-  "%s真实同族列表开启配置保留后，超能阿布90级降阶保留特性并可连续狂斩", (side, label) => {
+  "%s真实同族列表开启配置保留后，超能阿布150级降阶保留被动并可连续狂斩", (side, label) => {
     const read = path => JSON.parse(readFileSync(path, "utf8"));
     const current = applyS5Candymo(applyS5Bwiki(withWebPreview(read("data/snapshots/current.json")),
       read("data/reviewed/nrc-s5-20261101.json")), read("data/reviewed/candymo-s5-20261101.json"));
@@ -460,8 +472,8 @@ test.each([["attacker", "攻击方"], ["defender", "防御方"]])(
     state.sides[side === "attacker" ? "defender" : "attacker"].spiritId = current.spirits.find(entry => entry.fullName === "迪莫").id;
     state.sides[side].skills.four = ["skill_preview_s5_saint-dragon-slash", null, null, null];
     render(<App initialSnapshot={current} initialWorkspace={{ state, activeDirection: "forward", viewMode: "detailed" }} />);
-    fireEvent.change(screen.getByRole("spinbutton", { name: "当前等级", exact: true }), { target: { value: "90" } });
-    fireEvent.change(screen.getByRole("spinbutton", { name: "战斗中累计提升等级", exact: true }), { target: { value: "1" } });
+    fireEvent.change(screen.getByRole("spinbutton", { name: "当前等级", exact: true }), { target: { value: "150" } });
+    expect(screen.queryByRole("spinbutton", { name: "战斗中累计提升等级", exact: true })).not.toBeInTheDocument();
     fireEvent.focus(screen.getByRole("combobox", { name: `${label}精灵` }));
     const preserve = screen.getByRole("switch", { name: `${label}同族切换保留本场配置` });
     if (!preserve.checked) fireEvent.click(preserve);
@@ -469,11 +481,11 @@ test.each([["attacker", "攻击方"], ["defender", "防御方"]])(
     const option = screen.getAllByRole("option").find(entry => entry.querySelector("strong")?.textContent === "阿布");
     expect(option).toBeTruthy();
     fireEvent.click(option);
-    expect(screen.getByRole("spinbutton", { name: "当前等级", exact: true })).toHaveValue(90);
-    expect(screen.getByRole("spinbutton", { name: "战斗中累计提升等级", exact: true })).toHaveValue(1);
+    expect(screen.getByRole("spinbutton", { name: "当前等级", exact: true })).toHaveValue(150);
+    expect(screen.getAllByText(/物攻 \+450%/u).length).toBeGreaterThan(0);
     expect(screen.getByText(/特性沿用：/u)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: `${label}技能1使用技能`, exact: true }));
-    expect(screen.getByRole("spinbutton", { name: "当前等级", exact: true })).toHaveValue(85);
-    expect(screen.getByRole("spinbutton", { name: "战斗中累计提升等级", exact: true })).toHaveValue(1);
+    expect(screen.getByRole("spinbutton", { name: "当前等级", exact: true })).toHaveValue(145);
+    expect(screen.getAllByText(/物攻 \+425%/u).length).toBeGreaterThan(0);
   },
 );

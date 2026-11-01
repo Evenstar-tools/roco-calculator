@@ -404,7 +404,7 @@ export function applyBattleActivation({
     const levelControl = getS5SkillBattleLevelControl(snapshot, next, side, skill);
     if (levelControl) {
       const previousLevel = resolveS5PreviewBattleLevel(snapshot, next, side);
-      const level = Math.max(1, Math.min(99, previousLevel + getS5SkillBattleLevelChange(skill)));
+      const level = Math.max(levelControl.min, Math.min(levelControl.max, previousLevel + getS5SkillBattleLevelChange(skill)));
       next = updateMirroredTraitContext(next, { direction: selfDirection, key: levelControl.id, value: level }).state;
       next = projectBattleLevelHealth(next, { snapshot, side });
       recordSkillActivation(next, side, skill, context);

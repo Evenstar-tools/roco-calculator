@@ -45,7 +45,7 @@ test.each(["完整S5", "普通版推荐子集"])("%s的17只已确认推荐进�
   }
   const durability = createDurabilityRanking({ spirits: candidates });
   expect(durability.excluded).toEqual([expect.objectContaining({
-    spiritId: userPlaceholderId, reason: "UNKNOWN_FORM_ROLE",
+    spiritId: userPlaceholderId, reason: "HIDDEN_FROM_DISCOVERY",
   })]);
   expect(new Set(durability.rows.map(row => row.spiritId))).toEqual(ids);
   for (const profileId of Object.keys(SPEED_TARGET_PROFILES)) {

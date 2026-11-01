@@ -93,13 +93,10 @@ export function getS5PreviewTraitInputs(trait, role = "attacker") {
       controls = [number("BattleLevel", "当前等级", 99, { min: 1, max: 99, step: 10 })];
       break;
     case "abu":
-      controls = [number("BattleLevel", "当前等级", 60, { min: 1, max: 99, step: 2 })];
+      controls = [number("BattleLevel", "当前等级", 60, { min: 1, max: 150, step: 2 })];
       break;
     case "super-abu":
-      controls = [
-        number("BattleLevel", "当前等级", 60, { min: 1, max: 99, step: 1 }),
-        number("BattleLevelGain", "战斗中累计提升等级", 0, { step: 1 }),
-      ];
+      controls = [number("BattleLevel", "当前等级", 60, { min: 1, max: 150, step: 1 })];
       break;
     case "gold-vein-dragon":
       return [getGoldChargeCountInput(role), ...getS5PreviewTurnEndInputs(key, role)];
@@ -216,11 +213,12 @@ export function getS5PreviewTraitEvaluation(trait, role = "attacker", context = 
       result.summary = "当前等级 " + level;
       result.note = key === "abu"
         ? "入场前己方每使用一次3费技能，入场等级+2；按当前实战等级填写。"
-        : "只填写战斗中累计提升的等级；入场前获得的等级不计入物攻增益。";
+        : "以60级为基准，每提升1级物攻+5%；最高150级。";
       const incomingPercent = getS5LevelIncomingDamagePercent(level, trait.previewIdentity.key === "boss-abu" ? "boss-abu" : key);
       if (key === "super-abu") {
-        const gain = amount("BattleLevelGain");
-        result.summary += "；战斗中累计提升 " + gain + " 级 · 物攻 +" + gain * 5 + "%";
+        const gain = Math.max(0, level - 60);
+        result.levelGain = gain;
+        result.summary += "；被动 " + gain + " 层 · 物攻 +" + gain * 5 + "%";
         if (gain) result.effects.push({ kind: "physical-attack-percent", amount: gain * 5 });
       }
       if (incomingPercent) {

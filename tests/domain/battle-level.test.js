@@ -52,14 +52,19 @@ describe("trusted S5 owner battle levels", () => {
     expect(projected.sides.defender.level).toBe(70);
   });
 
-  test("the three Abu identities use direct current levels through99 without hidden increments", () => {
+  test("the three Abu identities use direct current levels through150 without hidden increments", () => {
     for (const key of levelKeys.filter(key => key !== "minggulong")) {
       const state = fixture(key);
-      for (const BattleLevel of [99, 80, 79, 62, 60, 58]) {
+      for (const BattleLevel of [150, 145, 100, 99, 80, 79, 62, 60, 58]) {
         setLevel(state, "attacker", key, { BattleLevel });
         expect(resolveS5PreviewBattleLevel(snapshot, state, "attacker")).toBe(BattleLevel);
       }
+      setLevel(state, "attacker", key, { BattleLevel: 999 });
+      expect(resolveS5PreviewBattleLevel(snapshot, state, "attacker")).toBe(150);
     }
+    const state = fixture("minggulong");
+    setLevel(state, "attacker", "minggulong", { BattleLevel: 150 });
+    expect(resolveS5PreviewBattleLevel(snapshot, state, "attacker")).toBe(99);
   });
 
   test("Minggulong never invents a minimum level; the safe resolver fallback retains evaluation blocking", () => {
