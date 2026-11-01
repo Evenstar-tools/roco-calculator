@@ -1,5 +1,9 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.2.8-attack-stages-20261101";
+const CACHE_NAME = "rock-calculator-webapp-v2.2.8-load-recovery-20261101";
 const CACHE_PREFIX = "rock-calculator-webapp-";
+// 图片长期缓存不随发布清空；摘要由 scripts/stamp-image-cache.mjs 按图片内容写入。
+const IMAGE_CACHE_PREFIX = "rock-calculator-images-";
+const IMAGE_CACHE = `${IMAGE_CACHE_PREFIX}__IMAGE_DIGEST__`;
+const STABLE_IMAGE_RE = /^\/(?:global-assets\/)?assets\/(?:spirits\/spirit_|skills\/skill_)[a-f0-9]{16}\.(?:png|webp)$/;
 const APP_SHELL = [
   "/manifest.webmanifest",
   "/manifest-global-en.webmanifest",
@@ -82,7 +86,8 @@ self.addEventListener("activate", (event) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys.filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME).map((key) => caches.delete(key)),
+          keys.filter((key) => (key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME)
+            || (key.startsWith(IMAGE_CACHE_PREFIX) && key !== IMAGE_CACHE)).map((key) => caches.delete(key)),
         ),
       )
       .then(() => self.clients.claim()),
@@ -107,9 +112,10 @@ self.addEventListener("message", (event) => {
     let failed = 0;
     if (urls.length) {
       try {
-        const cache = await caches.open(CACHE_NAME);
+        const [cache, imageCache] = await Promise.all([caches.open(CACHE_NAME), caches.open(IMAGE_CACHE)]);
         const results = await Promise.allSettled(urls.map(async (url) => {
-          if (!(await cache.match(url))) await cache.add(url);
+          const target = STABLE_IMAGE_RE.test(new URL(url).pathname) ? imageCache : cache;
+          if (!(await target.match(url))) await target.add(url);
         }));
         failed = results.filter((result) => result.status === "rejected").length;
       } catch {
@@ -143,6 +149,11 @@ async function cacheFirst(request) {
     if (precached?.headers.get("vary")?.trim().toLowerCase() === "origin") return precached;
   }
   return refreshCache(cache, request);
+}
+
+async function cacheFirstImage(request) {
+  const cache = await caches.open(IMAGE_CACHE);
+  return (await cache.match(request)) ?? (await refreshCache(cache, request)) ?? Response.error();
 }
 
 async function refreshCache(cache, request) {
@@ -199,6 +210,8 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
   // 抢先版自行加载独立资源，不进入正式版的离线缓存。
   if (url.pathname === "/pre" || url.pathname.startsWith("/pre/")) return;
+  // 版本检查必须读到服务器当前 HTML。
+  if (url.searchParams.has("build-check")) return;
 
   if (url.pathname.startsWith("/api/")) {
     event.respondWith(fetch(event.request, { cache: "no-store" }));
@@ -211,6 +224,11 @@ self.addEventListener("fetch", (event) => {
         (response) => response ?? Response.error(),
       ),
     );
+    return;
+  }
+
+  if (STABLE_IMAGE_RE.test(url.pathname)) {
+    event.respondWith(cacheFirstImage(event.request));
     return;
   }
 
