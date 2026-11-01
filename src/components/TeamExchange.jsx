@@ -9,6 +9,7 @@ import { TEAM_BLOODLINE_OPTIONS } from "../state/team-presets.js";
 import { defaultLineupMagicId, usesAutomaticLineupMagic, exportLineupCode, importLineupCode, LINEUP_MODES } from "../state/lineup-code.js";
 import { decodeLineupImage } from "../state/lineup-image.js";
 import "../styles/team-exchange.css";
+import { SpiritImage } from "./SpiritImage.jsx";
 
 let mappingRequest;
 function loadMapping() {
@@ -184,7 +185,7 @@ function TeamExchangeForm({ mode, team, snapshot, onImport, onCancel, onUpdateLi
               const spirit = snapshot.spirits.find((entry) => entry.id === member?.spiritId);
               const portrait = spirit?.asset?.localUrl ?? spirit?.assetUrl;
               return <li key={index} aria-label={t("第 {index} 位 · {name}", { index: index + 1, name: spirit?.fullName ?? t("空位") })}>
-                {portrait ? <img className="team-exchange__portrait" src={portrait} alt={spirit.fullName} width="44" height="44" /> : <span className="team-exchange__slot">{index + 1}</span>}
+                {portrait ? <SpiritImage name={spirit.fullName} className="team-exchange__portrait" src={portrait} alt={spirit.fullName} width="44" height="44" /> : <span className="team-exchange__slot">{index + 1}</span>}
                 <div><strong>{spirit?.fullName ?? t("空位")}</strong>{member ? <>
                   <span className="team-exchange__meta">{getNature(member.natureId).name} · {TEAM_BLOODLINE_OPTIONS.find((entry) => entry.value === member.bloodlineType)?.label}{t("血脉")}<small className="team-iv-pending">{recommended.includes(index) ? t("已采用推荐") : inspectLineupIvs(member.lineupSource.talents).status === "selected" ? t("原码选择 · 按 60 恢复") : inspectLineupIvs(member.lineupSource.talents).status === "unknown" ? t("原码个体待确认") : t("个体未配置")}</small></span>
                   <p>{member.skills.four.map((id) => snapshot.skills.find((entry) => entry.id === id)?.name ?? t("空技能")).join(" / ")}</p>
