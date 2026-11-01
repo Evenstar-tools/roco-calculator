@@ -4240,1201 +4240,1519 @@
   "assets": [
     {
       "sourceFile": "Feature_200074.png",
-      "localUrl": "/assets/traits/Feature_200074.png",
+      "localUrl": "/assets/traits/Feature_200074.webp",
       "names": [
         "偏振",
         "完全偏振"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e3/ccwc1ruwueid8gau7d72660s75zbtpc.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 58585
+      "width": 128,
+      "height": 128,
+      "bytes": 6982,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200075.png",
-      "localUrl": "/assets/traits/Feature_200075.png",
+      "localUrl": "/assets/traits/Feature_200075.webp",
       "names": [
         "目空",
         "夺目"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ea/razckxr0mbddn44wusprz0ojf9qc5yh.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 42793
+      "width": 128,
+      "height": 128,
+      "bytes": 5594,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200076.png",
-      "localUrl": "/assets/traits/Feature_200076.png",
+      "localUrl": "/assets/traits/Feature_200076.webp",
       "names": [
         "氧循环",
         "草木苏醒时"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/6b/ba7bcwt8s5w3i5d86zn6l5cpzrty4ag.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 43900
+      "width": 128,
+      "height": 128,
+      "bytes": 6002,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_20007601.png",
-      "localUrl": "/assets/traits/Feature_20007601.png",
+      "localUrl": "/assets/traits/Feature_20007601.webp",
       "names": [
         "深层氧循环"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f6/h8rt5yh1tuh3db0fyowzxugv9kj6llf.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 57929
+      "width": 128,
+      "height": 128,
+      "bytes": 7062,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200077.png",
-      "localUrl": "/assets/traits/Feature_200077.png",
+      "localUrl": "/assets/traits/Feature_200077.webp",
       "names": [
         "勇敢"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ee/d9kmaykrw5pz8vt6fxz80l1atifvbww.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 53425
+      "width": 128,
+      "height": 128,
+      "bytes": 6386,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200078.png",
-      "localUrl": "/assets/traits/Feature_200078.png",
+      "localUrl": "/assets/traits/Feature_200078.webp",
       "names": [
         "生物碱"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f1/lb66eos9cauclsp6665tvih4y51j9qf.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 41503
+      "width": 128,
+      "height": 128,
+      "bytes": 5634,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_20007801.png",
-      "localUrl": "/assets/traits/Feature_20007801.png",
+      "localUrl": "/assets/traits/Feature_20007801.webp",
       "names": [
         "高浓生物碱"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/52/4xkfmxpnpy0hdava4rrtg51k2wulcfk.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 51823
+      "width": 128,
+      "height": 128,
+      "bytes": 6200,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200079.png",
-      "localUrl": "/assets/traits/Feature_200079.png",
+      "localUrl": "/assets/traits/Feature_200079.webp",
       "names": [
         "得寸进尺"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/ca/hiyei6qkq6yyufsknzrgcuoombq8tcc.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 40210
+      "width": 128,
+      "height": 128,
+      "bytes": 5838,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200080.png",
-      "localUrl": "/assets/traits/Feature_200080.png",
+      "localUrl": "/assets/traits/Feature_200080.webp",
       "names": [
         "养分重吸收",
         "养分内循环"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fb/dg7kx7uqumqvat5kih00f5l283xk2oc.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 48042
+      "width": 128,
+      "height": 128,
+      "bytes": 6250,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200081.png",
-      "localUrl": "/assets/traits/Feature_200081.png",
+      "localUrl": "/assets/traits/Feature_200081.webp",
       "names": [
         "诈死"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/dc/pydnixn1bpyb0i75rbgw4h9e8mszgzn.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 50074
+      "width": 128,
+      "height": 128,
+      "bytes": 5946,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200082.png",
-      "localUrl": "/assets/traits/Feature_200082.png",
+      "localUrl": "/assets/traits/Feature_200082.webp",
       "names": [
         "木桶戏法"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/21/5n4mshi9ht7hxr93dzfj4dffethzday.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 71340
+      "width": 128,
+      "height": 128,
+      "bytes": 7940,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200083.png",
-      "localUrl": "/assets/traits/Feature_200083.png",
+      "localUrl": "/assets/traits/Feature_200083.webp",
       "names": [
         "腐植循环"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f0/pj82i5jqfvsdhmleshy7zr7sy38ljbd.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 69940
+      "width": 128,
+      "height": 128,
+      "bytes": 7424,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200084.png",
-      "localUrl": "/assets/traits/Feature_200084.png",
+      "localUrl": "/assets/traits/Feature_200084.webp",
       "names": [
         "营养液泡"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3b/dhqr0n8qtgp2kr1sp1fbrsfiqzs0gop.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 66858
+      "width": 128,
+      "height": 128,
+      "bytes": 7154,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200085.png",
-      "localUrl": "/assets/traits/Feature_200085.png",
+      "localUrl": "/assets/traits/Feature_200085.webp",
       "names": [
         "系统发育"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/0a/n5pxptbsjq1foqhhn8xbxnzfvee8g3a.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 42314
+      "width": 128,
+      "height": 128,
+      "bytes": 5324,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200087.png",
-      "localUrl": "/assets/traits/Feature_200087.png",
+      "localUrl": "/assets/traits/Feature_200087.webp",
       "names": [
         "生长"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f9/f3iewsm92ek8028yjsiqxj3nhtn4elp.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 61630
+      "width": 128,
+      "height": 128,
+      "bytes": 7534,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200088.png",
-      "localUrl": "/assets/traits/Feature_200088.png",
+      "localUrl": "/assets/traits/Feature_200088.webp",
       "names": [
         "挺起胸脯"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/cf/dxicjda2teu9byb2yznodm68mfjb9cu.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 31863
+      "width": 128,
+      "height": 128,
+      "bytes": 5082,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_20008801.png",
-      "localUrl": "/assets/traits/Feature_20008801.png",
+      "localUrl": "/assets/traits/Feature_20008801.webp",
       "names": [
         "“国王”的威严"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ea/5e2en2v29q78knov4bcfw7f8e65xo55.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 60041
+      "width": 128,
+      "height": 128,
+      "bytes": 6984,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200089.png",
-      "localUrl": "/assets/traits/Feature_200089.png",
+      "localUrl": "/assets/traits/Feature_200089.webp",
       "names": [
         "碰瓷"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a5/kfzb8rfbkjv5wxce9j3d7f3wng9n800.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 50418
+      "width": 128,
+      "height": 128,
+      "bytes": 5856,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200090.png",
-      "localUrl": "/assets/traits/Feature_200090.png",
+      "localUrl": "/assets/traits/Feature_200090.webp",
       "names": [
         "壮胆"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d3/q625f0x3idku2sr5s9ezjrh84nskdhi.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 68894
+      "width": 128,
+      "height": 128,
+      "bytes": 7438,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200091.png",
-      "localUrl": "/assets/traits/Feature_200091.png",
+      "localUrl": "/assets/traits/Feature_200091.webp",
       "names": [
         "囤积"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/00/ak4p9tegmex8lt12pezv0im3ts6qr70.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 54124
+      "width": 128,
+      "height": 128,
+      "bytes": 5980,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200092.png",
-      "localUrl": "/assets/traits/Feature_200092.png",
+      "localUrl": "/assets/traits/Feature_200092.webp",
       "names": [
         "警惕"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ef/51q19b0ekhq83r7qs3vgjjlzcywwefj.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 31185
+      "width": 128,
+      "height": 128,
+      "bytes": 5444,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200093.png",
-      "localUrl": "/assets/traits/Feature_200093.png",
+      "localUrl": "/assets/traits/Feature_200093.webp",
       "names": [
         "起飞加速"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3b/2eml042f0hhvd45vwvi7gq7ot25cis1.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 48033
+      "width": 128,
+      "height": 128,
+      "bytes": 6494,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200094.png",
-      "localUrl": "/assets/traits/Feature_200094.png",
+      "localUrl": "/assets/traits/Feature_200094.webp",
       "names": [
         "保守派"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/14/oi70yfb9qgry5norepo4bps9q04rtes.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 75761
+      "width": 128,
+      "height": 128,
+      "bytes": 8186,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200095.png",
-      "localUrl": "/assets/traits/Feature_200095.png",
+      "localUrl": "/assets/traits/Feature_200095.webp",
       "names": [
         "双向光速"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/37/2h1si7yzgqkshpa7x098u7jrawneeud.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 50916
+      "width": 128,
+      "height": 128,
+      "bytes": 6848,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200096.png",
-      "localUrl": "/assets/traits/Feature_200096.png",
+      "localUrl": "/assets/traits/Feature_200096.webp",
       "names": [
         "鼓气",
         "三鼓作气"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/ff/caltlgip00gtslp8tpzqrx6oia5j7ye.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 51612
+      "width": 128,
+      "height": 128,
+      "bytes": 5876,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200098.png",
-      "localUrl": "/assets/traits/Feature_200098.png",
+      "localUrl": "/assets/traits/Feature_200098.webp",
       "names": [
         "共鸣",
         "齐鸣"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/ce/16o87im1itjcovowjw8kjke4uyfvmve.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 54584
+      "width": 128,
+      "height": 128,
+      "bytes": 7066,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200099.png",
-      "localUrl": "/assets/traits/Feature_200099.png",
+      "localUrl": "/assets/traits/Feature_200099.webp",
       "names": [
         "不移"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/4c/p8xb04hlu5vqp60qu2erplwjn2i08e3.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 53508
+      "width": 128,
+      "height": 128,
+      "bytes": 6564,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200100.png",
-      "localUrl": "/assets/traits/Feature_200100.png",
+      "localUrl": "/assets/traits/Feature_200100.webp",
       "names": [
         "石头大餐",
         "盛宴"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/27/5cdljuk3ozqy6sjttcqaooe6fycsqft.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 47756
+      "width": 128,
+      "height": 128,
+      "bytes": 6048,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200102.png",
-      "localUrl": "/assets/traits/Feature_200102.png",
+      "localUrl": "/assets/traits/Feature_200102.webp",
       "names": [
         "地脉",
         "地脉馈赠"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/63/he7074nokfat9milqeiebr3tsrnfxqj.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 43647
+      "width": 128,
+      "height": 128,
+      "bytes": 5318,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200103.png",
-      "localUrl": "/assets/traits/Feature_200103.png",
+      "localUrl": "/assets/traits/Feature_200103.webp",
       "names": [
         "刺肤"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/b4/3zdgyx1p7jdvrnc7lihbom7tw23oy6a.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 50846
+      "width": 128,
+      "height": 128,
+      "bytes": 6380,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200104.png",
-      "localUrl": "/assets/traits/Feature_200104.png",
+      "localUrl": "/assets/traits/Feature_200104.webp",
       "names": [
         "石天平"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/bb/c5z26gyu0vn26s0ks50w72aoe3c0mbp.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 66884
+      "width": 128,
+      "height": 128,
+      "bytes": 7478,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200105.png",
-      "localUrl": "/assets/traits/Feature_200105.png",
+      "localUrl": "/assets/traits/Feature_200105.webp",
       "names": [
         "奔波命"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/26/p7drwub38sla9abdmfbninrcj3ttcue.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 47255
+      "width": 128,
+      "height": 128,
+      "bytes": 5380,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200106.png",
-      "localUrl": "/assets/traits/Feature_200106.png",
+      "localUrl": "/assets/traits/Feature_200106.webp",
       "names": [
         "观星",
         "坠星"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a9/cqfw8rzwk9gd2sdeojljsx02fhcw1vr.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 62188
+      "width": 128,
+      "height": 128,
+      "bytes": 6664,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200107.png",
-      "localUrl": "/assets/traits/Feature_200107.png",
+      "localUrl": "/assets/traits/Feature_200107.webp",
       "names": [
         "浸润",
         "浪潮"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/32/jduq1v3cwpxrrzma8h9furlgjm8x89y.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 56442
+      "width": 128,
+      "height": 128,
+      "bytes": 6756,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200108.png",
-      "localUrl": "/assets/traits/Feature_200108.png",
+      "localUrl": "/assets/traits/Feature_200108.webp",
       "names": [
         "缩壳"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/dd/krk80tulzlqcxktmplr2kvh1gjpg2a6.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 52023
+      "width": 128,
+      "height": 128,
+      "bytes": 6682,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200109.png",
-      "localUrl": "/assets/traits/Feature_200109.png",
+      "localUrl": "/assets/traits/Feature_200109.webp",
       "names": [
         "守护者"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/42/35obkgnsut0aihm8x90siqdygol7by7.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 64003
+      "width": 128,
+      "height": 128,
+      "bytes": 7076,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200110.png",
-      "localUrl": "/assets/traits/Feature_200110.png",
+      "localUrl": "/assets/traits/Feature_200110.webp",
       "names": [
         "水翼推进",
         "水翼飞升"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/88/jhn8fbglf8fidew9ligb0a3pzrj8bx9.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 50060
+      "width": 128,
+      "height": 128,
+      "bytes": 6520,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200111.png",
-      "localUrl": "/assets/traits/Feature_200111.png",
+      "localUrl": "/assets/traits/Feature_200111.webp",
       "names": [
         "溶解扩散",
         "溶解腐蚀"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/40/b7izpi62mursonwdvc1z2vu205l3ew0.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 61275
+      "width": 128,
+      "height": 128,
+      "bytes": 7004,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200112.png",
-      "localUrl": "/assets/traits/Feature_200112.png",
+      "localUrl": "/assets/traits/Feature_200112.webp",
       "names": [
         "倾轧"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/2d/o5tjews6nbmeubecuu0byo39ye54aw7.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 57648
+      "width": 128,
+      "height": 128,
+      "bytes": 7250,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200113.png",
-      "localUrl": "/assets/traits/Feature_200113.png",
+      "localUrl": "/assets/traits/Feature_200113.webp",
       "names": [
         "对流"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/4e/j8s546coph6fjrf5rxzk5jpl8k3iijb.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 53848
+      "width": 128,
+      "height": 128,
+      "bytes": 6606,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200114.png",
-      "localUrl": "/assets/traits/Feature_200114.png",
+      "localUrl": "/assets/traits/Feature_200114.webp",
       "names": [
         "洄游"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/9b/hkhczuwlj9d5v03hl1upx5axfnyya2l.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 35866
+      "width": 128,
+      "height": 128,
+      "bytes": 6628,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200115.png",
-      "localUrl": "/assets/traits/Feature_200115.png",
+      "localUrl": "/assets/traits/Feature_200115.webp",
       "names": [
         "扩散侵蚀",
         "深层侵蚀"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e7/qcnk87634wfwan696wked8ddu2qm4y1.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 30707
+      "width": 128,
+      "height": 128,
+      "bytes": 5324,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200116.png",
-      "localUrl": "/assets/traits/Feature_200116.png",
+      "localUrl": "/assets/traits/Feature_200116.webp",
       "names": [
         "捉迷藏",
         "抓到你了"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/ae/dc0dpiovoxictt8l8pf18v3o9dv8s3k.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 56780
+      "width": 128,
+      "height": 128,
+      "bytes": 7300,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200117.png",
-      "localUrl": "/assets/traits/Feature_200117.png",
+      "localUrl": "/assets/traits/Feature_200117.webp",
       "names": [
         "冰钻",
         "烈冰钻"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a7/gg9at9vivx93831buxa94hdhenn4wrs.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 31999
+      "width": 128,
+      "height": 128,
+      "bytes": 5380,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200118.png",
-      "localUrl": "/assets/traits/Feature_200118.png",
+      "localUrl": "/assets/traits/Feature_200118.webp",
       "names": [
         "结晶水"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e1/6p7z7g65r1ry9gouayvrc06tbcpjj5x.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 33889
+      "width": 128,
+      "height": 128,
+      "bytes": 6162,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200120.png",
-      "localUrl": "/assets/traits/Feature_200120.png",
+      "localUrl": "/assets/traits/Feature_200120.webp",
       "names": [
         "冻土"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/95/rmc63l28fmac2rzqlpn8jnaf17v2gjt.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 23026
+      "width": 128,
+      "height": 128,
+      "bytes": 4630,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200122.png",
-      "localUrl": "/assets/traits/Feature_200122.png",
+      "localUrl": "/assets/traits/Feature_200122.webp",
       "names": [
         "加个雪球"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/68/liehidwy3sds1n5ioddiknefitjlngp.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 38918
+      "width": 128,
+      "height": 128,
+      "bytes": 5704,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200123.png",
-      "localUrl": "/assets/traits/Feature_200123.png",
+      "localUrl": "/assets/traits/Feature_200123.webp",
       "names": [
         "冰封"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/05/grkkjg844zczj9bpv2ui2sw4jpkfkmv.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 49066
+      "width": 128,
+      "height": 128,
+      "bytes": 6858,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200124.png",
-      "localUrl": "/assets/traits/Feature_200124.png",
+      "localUrl": "/assets/traits/Feature_200124.webp",
       "names": [
         "顺风",
         "破空",
         "相争"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/46/jz85d0twywft2cx8dx5yn64qb8upifx.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 56331
+      "width": 128,
+      "height": 128,
+      "bytes": 6608,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200125.png",
-      "localUrl": "/assets/traits/Feature_200125.png",
+      "localUrl": "/assets/traits/Feature_200125.webp",
       "names": [
         "咔咔冲刺"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d5/856vpbf25z7529vjbw35xh7pk3n1sbg.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 37167
+      "width": 128,
+      "height": 128,
+      "bytes": 6746,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200126.png",
-      "localUrl": "/assets/traits/Feature_200126.png",
+      "localUrl": "/assets/traits/Feature_200126.webp",
       "names": [
         "洁癖"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/9a/3zoe4s1s2c3e3nstikwdxbmozhy2nj7.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 46808
+      "width": 128,
+      "height": 128,
+      "bytes": 5544,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200127.png",
-      "localUrl": "/assets/traits/Feature_200127.png",
+      "localUrl": "/assets/traits/Feature_200127.webp",
       "names": [
         "展翅"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3e/63qwqhd9ffua8fe014h4oeal2u6twg2.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 65477
+      "width": 128,
+      "height": 128,
+      "bytes": 7732,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200128.png",
-      "localUrl": "/assets/traits/Feature_200128.png",
+      "localUrl": "/assets/traits/Feature_200128.webp",
       "names": [
         "乘风连击"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e9/lqvtrbdfhdhpb0n92ev24t9czq35wyg.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 45469
+      "width": 128,
+      "height": 128,
+      "bytes": 6638,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200129.png",
-      "localUrl": "/assets/traits/Feature_200129.png",
+      "localUrl": "/assets/traits/Feature_200129.webp",
       "names": [
         "快锤"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/b9/mvq7710dcj4olqmt30z26fg7ppjsemv.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 32712
+      "width": 128,
+      "height": 128,
+      "bytes": 5556,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200130.png",
-      "localUrl": "/assets/traits/Feature_200130.png",
+      "localUrl": "/assets/traits/Feature_200130.webp",
       "names": [
         "异类"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fc/1fp21rs4xxsg5kxgqddjon143irs8ao.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 47308
+      "width": 128,
+      "height": 128,
+      "bytes": 5806,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200131.png",
-      "localUrl": "/assets/traits/Feature_200131.png",
+      "localUrl": "/assets/traits/Feature_200131.webp",
       "names": [
         "毒腺"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/77/c4y3gd20l0eldsdxapii2n1o2g7ravz.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 41362
+      "width": 128,
+      "height": 128,
+      "bytes": 5198,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200132.png",
-      "localUrl": "/assets/traits/Feature_200132.png",
+      "localUrl": "/assets/traits/Feature_200132.webp",
       "names": [
         "虫群鼓舞",
         "虫群突袭"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/1f/8pi8taai2ndxcvvbc407mhzb3imsgco.png",
-      "width": 500,
-      "height": 500,
-      "bytes": 69893
+      "width": 128,
+      "height": 128,
+      "bytes": 6286,
+      "sourceWidth": 500,
+      "sourceHeight": 500,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200133.png",
-      "localUrl": "/assets/traits/Feature_200133.png",
+      "localUrl": "/assets/traits/Feature_200133.webp",
       "names": [
         "振奋虫心"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/76/3wna78g8jf8k2h0jl9nmwoqems355wv.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 47422
+      "width": 128,
+      "height": 128,
+      "bytes": 6718,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200135.png",
-      "localUrl": "/assets/traits/Feature_200135.png",
+      "localUrl": "/assets/traits/Feature_200135.webp",
       "names": [
         "化茧"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/1c/lr75ycf3uknutzwemrzv4ybeyscm1sb.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 59335
+      "width": 128,
+      "height": 128,
+      "bytes": 6446,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200136.png",
-      "localUrl": "/assets/traits/Feature_200136.png",
+      "localUrl": "/assets/traits/Feature_200136.webp",
       "names": [
         "花精灵"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a0/fomg5b7xyn3cu209apwf8y1mkey8ll9.png",
-      "width": 500,
-      "height": 500,
-      "bytes": 97480
+      "width": 128,
+      "height": 128,
+      "bytes": 7454,
+      "sourceWidth": 500,
+      "sourceHeight": 500,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200137.png",
-      "localUrl": "/assets/traits/Feature_200137.png",
+      "localUrl": "/assets/traits/Feature_200137.webp",
       "names": [
         "契约的形状"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3c/sejruv5tro016nam6oqwoxw3qi2gr3u.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 45507
+      "width": 128,
+      "height": 128,
+      "bytes": 6088,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200138.png",
-      "localUrl": "/assets/traits/Feature_200138.png",
+      "localUrl": "/assets/traits/Feature_200138.webp",
       "names": [
         "坚韧铠甲"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/1a/1kuca05btq03b9aieoq6u90pbf0auit.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 60396
+      "width": 128,
+      "height": 128,
+      "bytes": 7218,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200139.png",
-      "localUrl": "/assets/traits/Feature_200139.png",
+      "localUrl": "/assets/traits/Feature_200139.webp",
       "names": [
         "渴求",
         "贪得无厌"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c1/cquast3bdkqcl9ybi00afbnq2ehbu0k.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 61087
+      "width": 128,
+      "height": 128,
+      "bytes": 7038,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200140.png",
-      "localUrl": "/assets/traits/Feature_200140.png",
+      "localUrl": "/assets/traits/Feature_200140.webp",
       "names": [
         "悲悯",
         "悼亡"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/dc/k7wuqpsqk2as3uhy027eowu6xp5xwpr.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 54468
+      "width": 128,
+      "height": 128,
+      "bytes": 6300,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200141.png",
-      "localUrl": "/assets/traits/Feature_200141.png",
+      "localUrl": "/assets/traits/Feature_200141.webp",
       "names": [
         "付给恶魔的赎价"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7b/jooq1nox3evwgopmlnp9lq90ne1vzv0.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 58040
+      "width": 128,
+      "height": 128,
+      "bytes": 6652,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200142.png",
-      "localUrl": "/assets/traits/Feature_200142.png",
+      "localUrl": "/assets/traits/Feature_200142.webp",
       "names": [
         "瞳中倒影"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/cb/r29s6hsz537ditb84pzsftomudyf7w1.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 42570
+      "width": 128,
+      "height": 128,
+      "bytes": 5084,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200143.png",
-      "localUrl": "/assets/traits/Feature_200143.png",
+      "localUrl": "/assets/traits/Feature_200143.webp",
       "names": [
         "嫁祸"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e2/kjkfje06ky6neg2otz965b8wfznfuyn.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 49319
+      "width": 128,
+      "height": 128,
+      "bytes": 5666,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200144.png",
-      "localUrl": "/assets/traits/Feature_200144.png",
+      "localUrl": "/assets/traits/Feature_200144.webp",
       "names": [
         "滴眼液"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/9a/2o6k2qx3o9yz6slm1ckcqbnb5cqhadk.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 51748
+      "width": 128,
+      "height": 128,
+      "bytes": 6944,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200146.png",
-      "localUrl": "/assets/traits/Feature_200146.png",
+      "localUrl": "/assets/traits/Feature_200146.webp",
       "names": [
         "助燃",
         "爆燃"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7e/901jemdjq21rsjjzo275wjbh6h5rm3a.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 47240
+      "width": 128,
+      "height": 128,
+      "bytes": 6630,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200147.png",
-      "localUrl": "/assets/traits/Feature_200147.png",
+      "localUrl": "/assets/traits/Feature_200147.webp",
       "names": [
         "散热"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f2/1jk9jyv6raij0zzzm7c8n4730sqj03k.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55865
+      "width": 128,
+      "height": 128,
+      "bytes": 7194,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200148.png",
-      "localUrl": "/assets/traits/Feature_200148.png",
+      "localUrl": "/assets/traits/Feature_200148.webp",
       "names": [
         "斗技"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fa/3vjwmebi5ldcdxplnwc1j5sageocbgw.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 42541
+      "width": 128,
+      "height": 128,
+      "bytes": 6280,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200149.png",
-      "localUrl": "/assets/traits/Feature_200149.png",
+      "localUrl": "/assets/traits/Feature_200149.webp",
       "names": [
         "专注力",
         "全神贯注"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/29/68czw6mqi6maifgoot0bqzxjgi3n7vm.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 28882
+      "width": 128,
+      "height": 128,
+      "bytes": 5870,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200150.png",
-      "localUrl": "/assets/traits/Feature_200150.png",
+      "localUrl": "/assets/traits/Feature_200150.webp",
       "names": [
         "灵魂灼伤"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/0d/3kf2ghiqawnxa5wlk8f505o2l7dub4x.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55804
+      "width": 128,
+      "height": 128,
+      "bytes": 7178,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200152.png",
-      "localUrl": "/assets/traits/Feature_200152.png",
+      "localUrl": "/assets/traits/Feature_200152.webp",
       "names": [
         "仁心"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/5c/qr70dcx47wr8ycbf4il2jg34xk7gj1r.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 43099
+      "width": 128,
+      "height": 128,
+      "bytes": 6036,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200153.png",
-      "localUrl": "/assets/traits/Feature_200153.png",
+      "localUrl": "/assets/traits/Feature_200153.webp",
       "names": [
         "蒸汽膨胀",
         "蒸汽革命"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e6/c8z5kl26jtx71d4i4thjpjgkqc3yxu5.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 29712
+      "width": 128,
+      "height": 128,
+      "bytes": 5774,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200154.png",
-      "localUrl": "/assets/traits/Feature_200154.png",
+      "localUrl": "/assets/traits/Feature_200154.webp",
       "names": [
         "不死鸟"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/ad/ie6efk0lkt1m7dj49pmsne26lydlr4p.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 53710
+      "width": 128,
+      "height": 128,
+      "bytes": 7322,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200155.png",
-      "localUrl": "/assets/traits/Feature_200155.png",
+      "localUrl": "/assets/traits/Feature_200155.webp",
       "names": [
         "小偷小摸",
         "大捞一笔"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/2a/b2bfbvaf8bakifdrnafud7dyjop31yn.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 31873
+      "width": 128,
+      "height": 128,
+      "bytes": 6020,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200156.png",
-      "localUrl": "/assets/traits/Feature_200156.png",
+      "localUrl": "/assets/traits/Feature_200156.webp",
       "names": [
         "下黑手"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3f/q9fauev3eobg4geil885rdhv8pex3n0.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 54303
+      "width": 128,
+      "height": 128,
+      "bytes": 5980,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200157.png",
-      "localUrl": "/assets/traits/Feature_200157.png",
+      "localUrl": "/assets/traits/Feature_200157.webp",
       "names": [
         "惊吓"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f9/iacwuz4yo7xox75t6flrhb9as9o3oy1.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 57071
+      "width": 128,
+      "height": 128,
+      "bytes": 6600,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200158.png",
-      "localUrl": "/assets/traits/Feature_200158.png",
+      "localUrl": "/assets/traits/Feature_200158.webp",
       "names": [
         "毒蘑菇"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/6c/osjcz4xh57rbpvffnuc12geikcfetzg.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 61071
+      "width": 128,
+      "height": 128,
+      "bytes": 7350,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200160.png",
-      "localUrl": "/assets/traits/Feature_200160.png",
+      "localUrl": "/assets/traits/Feature_200160.webp",
       "names": [
         "搜刮",
         "扫荡"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/8d/itlxod4rfduc9jiye3x76lmprgqmtk0.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 38399
+      "width": 128,
+      "height": 128,
+      "bytes": 5016,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200161.png",
-      "localUrl": "/assets/traits/Feature_200161.png",
+      "localUrl": "/assets/traits/Feature_200161.webp",
       "names": [
         "做噩梦"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/35/9pbhlw7rxjjc14zgt8rpaqrxmju2d9m.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 48395
+      "width": 128,
+      "height": 128,
+      "bytes": 6472,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200162.png",
-      "localUrl": "/assets/traits/Feature_200162.png",
+      "localUrl": "/assets/traits/Feature_200162.webp",
       "names": [
         "噼啪！",
         "噼啪噼啪！"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/26/6ouwwco70xtq8yg9vmoudd13zy9isoz.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 52043
+      "width": 128,
+      "height": 128,
+      "bytes": 7244,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200163.png",
-      "localUrl": "/assets/traits/Feature_200163.png",
+      "localUrl": "/assets/traits/Feature_200163.webp",
       "names": [
         "快充"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/0d/b9nbhlanka4oeids88cxk9lijodhyrv.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 37417
+      "width": 128,
+      "height": 128,
+      "bytes": 7246,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200164.png",
-      "localUrl": "/assets/traits/Feature_200164.png",
+      "localUrl": "/assets/traits/Feature_200164.webp",
       "names": [
         "电流刺激"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/6e/7odckztugky4mcttz2vmi96t9vin245.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 28474
+      "width": 128,
+      "height": 128,
+      "bytes": 5552,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200165.png",
-      "localUrl": "/assets/traits/Feature_200165.png",
+      "localUrl": "/assets/traits/Feature_200165.webp",
       "names": [
         "防过载保护"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/2f/bk5sy9nuxihogb4s1e591ad4vsyftmf.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 38841
+      "width": 128,
+      "height": 128,
+      "bytes": 7024,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200166.png",
-      "localUrl": "/assets/traits/Feature_200166.png",
+      "localUrl": "/assets/traits/Feature_200166.webp",
       "names": [
         "星地善良"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/61/048mz35c7fbhl3ui50wfgm9071qqvnu.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 33051
+      "width": 128,
+      "height": 128,
+      "bytes": 6008,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200167.png",
-      "localUrl": "/assets/traits/Feature_200167.png",
+      "localUrl": "/assets/traits/Feature_200167.webp",
       "names": [
         "生物电"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/9d/a20aihp1t7424ht19pnbk6t2dqlfia7.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 48548
+      "width": 128,
+      "height": 128,
+      "bytes": 6480,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200168.png",
-      "localUrl": "/assets/traits/Feature_200168.png",
+      "localUrl": "/assets/traits/Feature_200168.webp",
       "names": [
         "电子音乐"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/4d/34w8invcldjo2g9sb5cj60uiobhhn3z.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 52459
+      "width": 128,
+      "height": 128,
+      "bytes": 6804,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200169.png",
-      "localUrl": "/assets/traits/Feature_200169.png",
+      "localUrl": "/assets/traits/Feature_200169.webp",
       "names": [
         "蓄电池",
         "超级电池"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/50/jinv2o5jgxtam0b0en37z4qei6pbp14.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 69768
+      "width": 128,
+      "height": 128,
+      "bytes": 8898,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200170.png",
-      "localUrl": "/assets/traits/Feature_200170.png",
+      "localUrl": "/assets/traits/Feature_200170.webp",
       "names": [
         "盲拧"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/66/j2u1j164p6o5h5cgmi3yfvofnbepbhk.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55409
+      "width": 128,
+      "height": 128,
+      "bytes": 6484,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200171.png",
-      "localUrl": "/assets/traits/Feature_200171.png",
+      "localUrl": "/assets/traits/Feature_200171.webp",
       "names": [
         "贪心算法"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c2/8bnonpz8gotvqzscyhkztk1a114je3i.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 51963
+      "width": 128,
+      "height": 128,
+      "bytes": 6332,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200172.png",
-      "localUrl": "/assets/traits/Feature_200172.png",
+      "localUrl": "/assets/traits/Feature_200172.webp",
       "names": [
         "定向精炼"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a9/3k1sy2ryce99rgygm18eu41wmsie2g5.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 41198
+      "width": 128,
+      "height": 128,
+      "bytes": 5342,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200173.png",
-      "localUrl": "/assets/traits/Feature_200173.png",
+      "localUrl": "/assets/traits/Feature_200173.webp",
       "names": [
         "暴食"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c2/e0wu97rb1nb6exxm2jdvjry0u0h97fc.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 57767
+      "width": 128,
+      "height": 128,
+      "bytes": 6716,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200174.png",
-      "localUrl": "/assets/traits/Feature_200174.png",
+      "localUrl": "/assets/traits/Feature_200174.webp",
       "names": [
         "嫉妒",
         "游弋"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e3/grygw8dmt0jci0wvhvm6o518oa19m5r.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 46287
+      "width": 128,
+      "height": 128,
+      "bytes": 7012,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200177.png",
-      "localUrl": "/assets/traits/Feature_200177.png",
+      "localUrl": "/assets/traits/Feature_200177.webp",
       "names": [
         "慢热型"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/1c/2nu1igvpjtj0cb3uxpkio7rjdaapthm.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 41836
+      "width": 128,
+      "height": 128,
+      "bytes": 5558,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200178.png",
-      "localUrl": "/assets/traits/Feature_200178.png",
+      "localUrl": "/assets/traits/Feature_200178.webp",
       "names": [
         "身经百练"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f9/r3zbcv97ebay58uk0umguq6eii50q4p.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 51336
+      "width": 128,
+      "height": 128,
+      "bytes": 6596,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200180.png",
-      "localUrl": "/assets/traits/Feature_200180.png",
+      "localUrl": "/assets/traits/Feature_200180.webp",
       "names": [
         "威慑"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fe/rki4oozd9sehehs289v3x6ttnps75qr.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 45596
+      "width": 128,
+      "height": 128,
+      "bytes": 6388,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200181.png",
-      "localUrl": "/assets/traits/Feature_200181.png",
+      "localUrl": "/assets/traits/Feature_200181.webp",
       "names": [
         "拨浪鼓"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/6c/1jjdr7sz21nzpit93wunzmaemc3oysr.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 41440
+      "width": 128,
+      "height": 128,
+      "bytes": 5230,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200182.png",
-      "localUrl": "/assets/traits/Feature_200182.png",
+      "localUrl": "/assets/traits/Feature_200182.webp",
       "names": [
         "无忧无虑"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/58/n4xntxhaqpj4e9ztiixr10cc5mid12g.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55560
+      "width": 128,
+      "height": 128,
+      "bytes": 6434,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200183.png",
-      "localUrl": "/assets/traits/Feature_200183.png",
+      "localUrl": "/assets/traits/Feature_200183.webp",
       "names": [
         "自由飘"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d4/swpkzdarri1osm6nnw4t6jacw4pncm9.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55035
+      "width": 128,
+      "height": 128,
+      "bytes": 6444,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200185.png",
-      "localUrl": "/assets/traits/Feature_200185.png",
+      "localUrl": "/assets/traits/Feature_200185.webp",
       "names": [
         "毒牙"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/79/lw7rqcdye4tfsr8ozqqqag1vlh276bu.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 48110
+      "width": 128,
+      "height": 128,
+      "bytes": 6152,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200186.png",
-      "localUrl": "/assets/traits/Feature_200186.png",
+      "localUrl": "/assets/traits/Feature_200186.webp",
       "names": [
         "复方汤剂"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f2/3yuic3hf9fv80azzso3ldh0holjwlxe.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 54794
+      "width": 128,
+      "height": 128,
+      "bytes": 6072,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200187.png",
-      "localUrl": "/assets/traits/Feature_200187.png",
+      "localUrl": "/assets/traits/Feature_200187.webp",
       "names": [
         "蚀刻"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ee/cgzec96dqzl1e3vt6eiheglz8x44nif.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 51575
+      "width": 128,
+      "height": 128,
+      "bytes": 6052,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200188.png",
-      "localUrl": "/assets/traits/Feature_200188.png",
+      "localUrl": "/assets/traits/Feature_200188.webp",
       "names": [
         "盲从"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/33/0go320xhb3nnde3wpas4j6ohp0ukt36.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 69389
+      "width": 128,
+      "height": 128,
+      "bytes": 7904,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200189.png",
-      "localUrl": "/assets/traits/Feature_200189.png",
+      "localUrl": "/assets/traits/Feature_200189.webp",
       "names": [
         "吸积盘"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/da/avzr6lllj7f0fzh55ghtcojt44e2hl0.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 61092
+      "width": 128,
+      "height": 128,
+      "bytes": 7728,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200191.png",
-      "localUrl": "/assets/traits/Feature_200191.png",
+      "localUrl": "/assets/traits/Feature_200191.webp",
       "names": [
         "最好的伙伴",
         "裁决",
@@ -5443,1246 +5761,1585 @@
         "净化"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/0b/4hljadsneiflmnz36wnegj0leq38svd.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 44154
+      "width": 128,
+      "height": 128,
+      "bytes": 5720,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200192.png",
-      "localUrl": "/assets/traits/Feature_200192.png",
+      "localUrl": "/assets/traits/Feature_200192.webp",
       "names": [
         "绒粉星光"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/17/7b006got564iqfyfcndxwdp8r2vmw1s.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 46664
+      "width": 128,
+      "height": 128,
+      "bytes": 6352,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200193.png",
-      "localUrl": "/assets/traits/Feature_200193.png",
+      "localUrl": "/assets/traits/Feature_200193.webp",
       "names": [
         "月光审判"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fc/d5p7ghxnj5nvee84lfzg1cumtp55sje.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 51577
+      "width": 128,
+      "height": 128,
+      "bytes": 6428,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200196.png",
-      "localUrl": "/assets/traits/Feature_200196.png",
+      "localUrl": "/assets/traits/Feature_200196.webp",
       "names": [
         "天通地明"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/b7/i97t9miacrpnohw2mzospnhmfgme2xv.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 62050
+      "width": 128,
+      "height": 128,
+      "bytes": 8516,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200197.png",
-      "localUrl": "/assets/traits/Feature_200197.png",
+      "localUrl": "/assets/traits/Feature_200197.webp",
       "names": [
         "机械变式"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/bb/2cm0ehr0guefoca59m4smilb5zr3bft.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 49744
+      "width": 128,
+      "height": 128,
+      "bytes": 5858,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200202.png",
-      "localUrl": "/assets/traits/Feature_200202.png",
+      "localUrl": "/assets/traits/Feature_200202.webp",
       "names": [
         "吉利丁片"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e0/ibzpsrokhlmaf8nztqhwu369vymekq7.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55610
+      "width": 128,
+      "height": 128,
+      "bytes": 7114,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200203.png",
-      "localUrl": "/assets/traits/Feature_200203.png",
+      "localUrl": "/assets/traits/Feature_200203.webp",
       "names": [
         "煤渣草"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7a/tik6v72sd6o1uv6a5u4h8wo5o3zjy1z.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55534
+      "width": 128,
+      "height": 128,
+      "bytes": 7206,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200204.png",
-      "localUrl": "/assets/traits/Feature_200204.png",
+      "localUrl": "/assets/traits/Feature_200204.webp",
       "names": [
         "侵蚀"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/12/fnddkctdxtgqna1zhvz01m3nk3ukyfv.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 49436
+      "width": 128,
+      "height": 128,
+      "bytes": 5944,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200205.png",
-      "localUrl": "/assets/traits/Feature_200205.png",
+      "localUrl": "/assets/traits/Feature_200205.webp",
       "names": [
         "月牙雪糕"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/44/7r7v79s0yty6lwuq8sihe6v5v2uw89j.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 56680
+      "width": 128,
+      "height": 128,
+      "bytes": 6792,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200208.png",
-      "localUrl": "/assets/traits/Feature_200208.png",
+      "localUrl": "/assets/traits/Feature_200208.webp",
       "names": [
         "正位宝剑",
         "宝剑王牌"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fe/3hjk54cds9efhvkjncgia0m6zenj3r3.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 67330
+      "width": 128,
+      "height": 128,
+      "bytes": 7652,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200209.png",
-      "localUrl": "/assets/traits/Feature_200209.png",
+      "localUrl": "/assets/traits/Feature_200209.webp",
       "names": [
         "无差别过滤",
         "强制过滤"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/41/4ts2ozvzxod6y9elai05xi61h9c1od7.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 54757
+      "width": 128,
+      "height": 128,
+      "bytes": 7130,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200210.png",
-      "localUrl": "/assets/traits/Feature_200210.png",
+      "localUrl": "/assets/traits/Feature_200210.webp",
       "names": [
         "守望星"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c1/8xe11d71qrjqgx58pt2w98i3gciyizb.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 68840
+      "width": 128,
+      "height": 128,
+      "bytes": 7748,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200211.png",
-      "localUrl": "/assets/traits/Feature_200211.png",
+      "localUrl": "/assets/traits/Feature_200211.webp",
       "names": [
         "飓风"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/9b/mcuwyi1qxy7d7tex1fkj7to7a6qq0wm.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 54197
+      "width": 128,
+      "height": 128,
+      "bytes": 7436,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200212.png",
-      "localUrl": "/assets/traits/Feature_200212.png",
+      "localUrl": "/assets/traits/Feature_200212.webp",
       "names": [
         "御驾亲征",
         "渗透"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3c/4pezft0c1ooam9ad79vgjp3oldjrcfv.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 58623
+      "width": 128,
+      "height": 128,
+      "bytes": 7294,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200215.png",
-      "localUrl": "/assets/traits/Feature_200215.png",
+      "localUrl": "/assets/traits/Feature_200215.webp",
       "names": [
         "多人宿舍"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c8/th2oqzczit38uj241e1p7e4ob0qmrjc.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 40249
+      "width": 128,
+      "height": 128,
+      "bytes": 5280,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200216.png",
-      "localUrl": "/assets/traits/Feature_200216.png",
+      "localUrl": "/assets/traits/Feature_200216.webp",
       "names": [
         "珊瑚骨"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ea/nx74nkkbm9iw3werbeyr79a8aefzc5c.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 47690
+      "width": 128,
+      "height": 128,
+      "bytes": 6140,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200217.png",
-      "localUrl": "/assets/traits/Feature_200217.png",
+      "localUrl": "/assets/traits/Feature_200217.webp",
       "names": [
         "与星星同行"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c3/lnwu5sunpj6cdjbt82oetqiaje2cctd.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 62941
+      "width": 128,
+      "height": 128,
+      "bytes": 8064,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200218.png",
-      "localUrl": "/assets/traits/Feature_200218.png",
+      "localUrl": "/assets/traits/Feature_200218.webp",
       "names": [
         "指挥家"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f1/ju41ithas9s49v8a5fkwbxivsveixls.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 44210
+      "width": 128,
+      "height": 128,
+      "bytes": 7012,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200219.png",
-      "localUrl": "/assets/traits/Feature_200219.png",
+      "localUrl": "/assets/traits/Feature_200219.webp",
       "names": [
         "连续负荷"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/45/21z27ybtp0dbt7ci4j42vj8uovuoyon.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55091
+      "width": 128,
+      "height": 128,
+      "bytes": 6880,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200220.png",
-      "localUrl": "/assets/traits/Feature_200220.png",
+      "localUrl": "/assets/traits/Feature_200220.webp",
       "names": [
         "稀兽花宝"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/32/dwcbhtu9y8413ttwi7behg12reypff7.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55238
+      "width": 128,
+      "height": 128,
+      "bytes": 7524,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200221.png",
-      "localUrl": "/assets/traits/Feature_200221.png",
+      "localUrl": "/assets/traits/Feature_200221.webp",
       "names": [
         "衡量"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/8a/7msy9ia4esi3bxe1jc6t27cahqsfsdu.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 51333
+      "width": 128,
+      "height": 128,
+      "bytes": 6116,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200222.png",
-      "localUrl": "/assets/traits/Feature_200222.png",
+      "localUrl": "/assets/traits/Feature_200222.webp",
       "names": [
         "预警",
         "先知"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ea/8zkjtypsyi9u63irwmbgx8sj456lho4.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 49733
+      "width": 128,
+      "height": 128,
+      "bytes": 6608,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200223.png",
-      "localUrl": "/assets/traits/Feature_200223.png",
+      "localUrl": "/assets/traits/Feature_200223.webp",
       "names": [
         "铃兰晚钟"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fd/88eh7x1z57gvs5y75760bm6ttk0jkgb.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 43596
+      "width": 128,
+      "height": 128,
+      "bytes": 5364,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200224.png",
-      "localUrl": "/assets/traits/Feature_200224.png",
+      "localUrl": "/assets/traits/Feature_200224.webp",
       "names": [
         "消波块"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/30/cbofejy2uzsqqt9hraz186le45ht7ty.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 41293
+      "width": 128,
+      "height": 128,
+      "bytes": 6224,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200225.png",
-      "localUrl": "/assets/traits/Feature_200225.png",
+      "localUrl": "/assets/traits/Feature_200225.webp",
       "names": [
         "吟游之弦"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/72/id6hnm0lgokv1vh3bcmkf9yz6oytnn4.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 37659
+      "width": 128,
+      "height": 128,
+      "bytes": 5818,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200227.png",
-      "localUrl": "/assets/traits/Feature_200227.png",
+      "localUrl": "/assets/traits/Feature_200227.webp",
       "names": [
         "泛音列"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/85/0f21dgl7j51m0wled9u1dhlhdwdawsq.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 37394
+      "width": 128,
+      "height": 128,
+      "bytes": 6082,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200228.png",
-      "localUrl": "/assets/traits/Feature_200228.png",
+      "localUrl": "/assets/traits/Feature_200228.webp",
       "names": [
         "向心力"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/88/oierc2cga3tu6goiruwtf5dj9ufxmk4.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 46544
+      "width": 128,
+      "height": 128,
+      "bytes": 5994,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200230.png",
-      "localUrl": "/assets/traits/Feature_200230.png",
+      "localUrl": "/assets/traits/Feature_200230.webp",
       "names": [
         "不朽"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/b7/8ietrb1834y9a9eqiex3o3jjp6o8lo5.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 49791
+      "width": 128,
+      "height": 128,
+      "bytes": 6178,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200231.png",
-      "localUrl": "/assets/traits/Feature_200231.png",
+      "localUrl": "/assets/traits/Feature_200231.webp",
       "names": [
         "孤傲"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/dc/1pzt3sw5jdd1rfdorxl525fzgwztx6z.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 53897
+      "width": 128,
+      "height": 128,
+      "bytes": 6086,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200232.png",
-      "localUrl": "/assets/traits/Feature_200232.png",
+      "localUrl": "/assets/traits/Feature_200232.webp",
       "names": [
         "逐魂鸟"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/89/hfdcr7702t64hj9v6l91hrjxqepnqj0.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 45118
+      "width": 128,
+      "height": 128,
+      "bytes": 6480,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200234.png",
-      "localUrl": "/assets/traits/Feature_200234.png",
+      "localUrl": "/assets/traits/Feature_200234.webp",
       "names": [
         "翼轴"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/81/8fnd0vqh6thg7g2cafzcv4pbnrj0zji.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 73990
+      "width": 128,
+      "height": 128,
+      "bytes": 8320,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200235.png",
-      "localUrl": "/assets/traits/Feature_200235.png",
+      "localUrl": "/assets/traits/Feature_200235.webp",
       "names": [
         "虚假宝箱"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/de/8ss8l5bhsd28rci7zmhgl88v4ados16.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 66244
+      "width": 128,
+      "height": 128,
+      "bytes": 7198,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200236.png",
-      "localUrl": "/assets/traits/Feature_200236.png",
+      "localUrl": "/assets/traits/Feature_200236.webp",
       "names": [
         "腾挪"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/03/g8hq5852dgwpthodcb6mqzvozkhc86n.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 58820
+      "width": 128,
+      "height": 128,
+      "bytes": 7524,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200237.png",
-      "localUrl": "/assets/traits/Feature_200237.png",
+      "localUrl": "/assets/traits/Feature_200237.webp",
       "names": [
         "保卫"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/59/ay5pj6hh6erlu2yr67zhwiyi1nhyt9p.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 58839
+      "width": 128,
+      "height": 128,
+      "bytes": 7444,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200238.png",
-      "localUrl": "/assets/traits/Feature_200238.png",
+      "localUrl": "/assets/traits/Feature_200238.webp",
       "names": [
         "好象坏象"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/b4/5596xxnmprl89n3889qvm9m3dih5bdd.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 56188
+      "width": 128,
+      "height": 128,
+      "bytes": 7274,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200239.png",
-      "localUrl": "/assets/traits/Feature_200239.png",
+      "localUrl": "/assets/traits/Feature_200239.webp",
       "names": [
         "扎手"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/cc/izhbuazf8oy9t5o6wym4cnbmo67s55n.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 71528
+      "width": 128,
+      "height": 128,
+      "bytes": 8178,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200240.png",
-      "localUrl": "/assets/traits/Feature_200240.png",
+      "localUrl": "/assets/traits/Feature_200240.webp",
       "names": [
         "耐活王",
         "月相"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/23/e4pbdbeh6mb48gb8n5jwah0wan52yhc.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 63053
+      "width": 128,
+      "height": 128,
+      "bytes": 7032,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200241.png",
-      "localUrl": "/assets/traits/Feature_200241.png",
+      "localUrl": "/assets/traits/Feature_200241.webp",
       "names": [
         "陨落"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/0c/bkkzrrbei6m33qrisyvgl62atcwyfwu.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 64725
+      "width": 128,
+      "height": 128,
+      "bytes": 6804,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200242.png",
-      "localUrl": "/assets/traits/Feature_200242.png",
+      "localUrl": "/assets/traits/Feature_200242.webp",
       "names": [
         "灰色肖像"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/47/140bc8ubeou45tayooaxwg5z3ukwcdg.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 62153
+      "width": 128,
+      "height": 128,
+      "bytes": 7600,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200243.png",
-      "localUrl": "/assets/traits/Feature_200243.png",
+      "localUrl": "/assets/traits/Feature_200243.webp",
       "names": [
         "变形活画"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d0/a24swbnbowpscj86iazp4xuof989w09.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 52169
+      "width": 128,
+      "height": 128,
+      "bytes": 6760,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200244.png",
-      "localUrl": "/assets/traits/Feature_200244.png",
+      "localUrl": "/assets/traits/Feature_200244.webp",
       "names": [
         "图书守卫者"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d3/jdg7lpmukgl7iawkgi4xkiih9fu2d9j.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 56653
+      "width": 128,
+      "height": 128,
+      "bytes": 6108,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200245.png",
-      "localUrl": "/assets/traits/Feature_200245.png",
+      "localUrl": "/assets/traits/Feature_200245.webp",
       "names": [
         "构装契约者"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/52/ahcgortpg4fqef2b6nyvplipvmqs5qg.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 48016
+      "width": 128,
+      "height": 128,
+      "bytes": 6498,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200246.png",
-      "localUrl": "/assets/traits/Feature_200246.png",
+      "localUrl": "/assets/traits/Feature_200246.webp",
       "names": [
         "整点报时"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/58/kdapcec0cq0kz2yuj364d1pjlgcj68n.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 70771
+      "width": 128,
+      "height": 128,
+      "bytes": 8932,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200247.png",
-      "localUrl": "/assets/traits/Feature_200247.png",
+      "localUrl": "/assets/traits/Feature_200247.webp",
       "names": [
         "圣火骑士"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/53/fnxmzk0kazulo8c0ygb336qv9i1o6gl.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 51292
+      "width": 128,
+      "height": 128,
+      "bytes": 6312,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200248.png",
-      "localUrl": "/assets/traits/Feature_200248.png",
+      "localUrl": "/assets/traits/Feature_200248.webp",
       "names": [
         "思维之盾"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/da/mxw33ht6e8n0dfmsa911l0zryyx27oi.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 42645
+      "width": 128,
+      "height": 128,
+      "bytes": 6560,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200249.png",
-      "localUrl": "/assets/traits/Feature_200249.png",
+      "localUrl": "/assets/traits/Feature_200249.webp",
       "names": [
         "野性感官"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d9/g0beo9the6yr0pnvih7jwvb6j76jbff.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 61345
+      "width": 128,
+      "height": 128,
+      "bytes": 6990,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200251.png",
-      "localUrl": "/assets/traits/Feature_200251.png",
+      "localUrl": "/assets/traits/Feature_200251.webp",
       "names": [
         "血型吸引"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/35/hb8hfoeifvf93gl47zq7m07sf90cbbo.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 49721
+      "width": 128,
+      "height": 128,
+      "bytes": 6444,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200252.png",
-      "localUrl": "/assets/traits/Feature_200252.png",
+      "localUrl": "/assets/traits/Feature_200252.webp",
       "names": [
         "留学生"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/78/44o3f3uxptu1j1x3ynptdaojhq8nf8j.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 76804
+      "width": 128,
+      "height": 128,
+      "bytes": 9028,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200253.png",
-      "localUrl": "/assets/traits/Feature_200253.png",
+      "localUrl": "/assets/traits/Feature_200253.webp",
       "names": [
         "茶多酚"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/99/0jkkrkbocv0uywg0eb3lfvdw9a3pf9u.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 53282
+      "width": 128,
+      "height": 128,
+      "bytes": 6818,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200254.png",
-      "localUrl": "/assets/traits/Feature_200254.png",
+      "localUrl": "/assets/traits/Feature_200254.webp",
       "names": [
         "美拉德反应"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f7/5h54tqi697wr5j52iko9pusifje1fxt.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55880
+      "width": 128,
+      "height": 128,
+      "bytes": 6938,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200255.png",
-      "localUrl": "/assets/traits/Feature_200255.png",
+      "localUrl": "/assets/traits/Feature_200255.webp",
       "names": [
         "扫拖一体"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/2a/01r8ve3fn0nl9xxa2wa2ffadhr5ws2b.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 40359
+      "width": 128,
+      "height": 128,
+      "bytes": 5276,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200256.png",
-      "localUrl": "/assets/traits/Feature_200256.png",
+      "localUrl": "/assets/traits/Feature_200256.webp",
       "names": [
         "特殊清洁场景"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/86/77cl5t95htt2a77o0dse7idhpwtkamx.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 57041
+      "width": 128,
+      "height": 128,
+      "bytes": 6586,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200257.png",
-      "localUrl": "/assets/traits/Feature_200257.png",
+      "localUrl": "/assets/traits/Feature_200257.webp",
       "names": [
         "恶魔的晚宴"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e9/nenyziabeu652m3n0jxtna5qnkivy5a.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 43409
+      "width": 128,
+      "height": 128,
+      "bytes": 6044,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200262.png",
-      "localUrl": "/assets/traits/Feature_200262.png",
+      "localUrl": "/assets/traits/Feature_200262.webp",
       "names": [
         "哨兵"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e2/pwmp4gvsep4f9esdztsewyq1972elqc.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 39954
+      "width": 128,
+      "height": 128,
+      "bytes": 5554,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200264.png",
-      "localUrl": "/assets/traits/Feature_200264.png",
+      "localUrl": "/assets/traits/Feature_200264.webp",
       "names": [
         "长久保存制法"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d4/2u0d1dlrfxvb4msbor72p4lnt5qpbcy.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 48768
+      "width": 128,
+      "height": 128,
+      "bytes": 5704,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200267.png",
-      "localUrl": "/assets/traits/Feature_200267.png",
+      "localUrl": "/assets/traits/Feature_200267.webp",
       "names": [
         "涂鸦"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/15/97e5tco4f8ueetef2d7c2rggxkkt2vj.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 59228
+      "width": 128,
+      "height": 128,
+      "bytes": 6880,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200268.png",
-      "localUrl": "/assets/traits/Feature_200268.png",
+      "localUrl": "/assets/traits/Feature_200268.webp",
       "names": [
         "绝对秩序"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d7/he5mxiw80ucqr17rppscikp2otccflz.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 50212
+      "width": 128,
+      "height": 128,
+      "bytes": 6328,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200269.png",
-      "localUrl": "/assets/traits/Feature_200269.png",
+      "localUrl": "/assets/traits/Feature_200269.webp",
       "names": [
         "张弛有度"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/34/50p49usqyh9gmd1dlkhftubxgr5a729.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 45615
+      "width": 128,
+      "height": 128,
+      "bytes": 5188,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200272.png",
-      "localUrl": "/assets/traits/Feature_200272.png",
+      "localUrl": "/assets/traits/Feature_200272.webp",
       "names": [
         "魔术帽"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7c/8jza2u8tlx3rdo4pfdlqfbtwuthgrun.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 37856
+      "width": 128,
+      "height": 128,
+      "bytes": 4954,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200273.png",
-      "localUrl": "/assets/traits/Feature_200273.png",
+      "localUrl": "/assets/traits/Feature_200273.webp",
       "names": [
         "焰色反应"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7c/ojykt1km54zfunlci9vi2kjweztkt6h.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 50705
+      "width": 128,
+      "height": 128,
+      "bytes": 6052,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200275.png",
-      "localUrl": "/assets/traits/Feature_200275.png",
+      "localUrl": "/assets/traits/Feature_200275.webp",
       "names": [
         "合拍"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/eb/a5pcyxt3bf68i5yd1vmyqrm6f5g3g6c.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 49384
+      "width": 128,
+      "height": 128,
+      "bytes": 5858,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200277.png",
-      "localUrl": "/assets/traits/Feature_200277.png",
+      "localUrl": "/assets/traits/Feature_200277.webp",
       "names": [
         "爆裂玉米"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/40/76jpd2g7pyymr5idh58c3m9vkv94b7w.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 44186
+      "width": 128,
+      "height": 128,
+      "bytes": 6030,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200278.png",
-      "localUrl": "/assets/traits/Feature_200278.png",
+      "localUrl": "/assets/traits/Feature_200278.webp",
       "names": [
         "超负荷"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/75/etojmq3k5a5aivfyxtnxyebrbx3jimj.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 68068
+      "width": 128,
+      "height": 128,
+      "bytes": 9002,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200286.png",
-      "localUrl": "/assets/traits/Feature_200286.png",
+      "localUrl": "/assets/traits/Feature_200286.webp",
       "names": [
         "狂欢开始"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/70/6md5um7dwyrh16dvsiwhiudi6vbk6xk.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 41910
+      "width": 128,
+      "height": 128,
+      "bytes": 7658,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200287.png",
-      "localUrl": "/assets/traits/Feature_200287.png",
+      "localUrl": "/assets/traits/Feature_200287.webp",
       "names": [
         "换碟"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3a/pqnzxhu2f5uykqcdknern8dqcg3dlvl.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 62479
+      "width": 128,
+      "height": 128,
+      "bytes": 7002,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200288.png",
-      "localUrl": "/assets/traits/Feature_200288.png",
+      "localUrl": "/assets/traits/Feature_200288.webp",
       "names": [
         "博物"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/60/3j16u674a0v47m15z56nfsp682k8e9q.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 58489
+      "width": 128,
+      "height": 128,
+      "bytes": 6946,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200289.png",
-      "localUrl": "/assets/traits/Feature_200289.png",
+      "localUrl": "/assets/traits/Feature_200289.webp",
       "names": [
         "拉拉队长"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a8/qlqu5ain2u2gobp1i90rvaafral66cz.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 30379
+      "width": 128,
+      "height": 128,
+      "bytes": 5294,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200290.png",
-      "localUrl": "/assets/traits/Feature_200290.png",
+      "localUrl": "/assets/traits/Feature_200290.webp",
       "names": [
         "大雪球"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/46/p51geenbokeg46nxuah7joz0bzub16n.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 70665
+      "width": 128,
+      "height": 128,
+      "bytes": 8062,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200291.png",
-      "localUrl": "/assets/traits/Feature_200291.png",
+      "localUrl": "/assets/traits/Feature_200291.webp",
       "names": [
         "戏耍"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ed/s3q77m1pi7212lluek6py1ukkt0yjlb.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 27472
+      "width": 128,
+      "height": 128,
+      "bytes": 5454,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200292.png",
-      "localUrl": "/assets/traits/Feature_200292.png",
+      "localUrl": "/assets/traits/Feature_200292.webp",
       "names": [
         "大火球"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/74/agnmd2wvu5c2b1drtstuxoxar2wupp5.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 49775
+      "width": 128,
+      "height": 128,
+      "bytes": 6534,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200293.png",
-      "localUrl": "/assets/traits/Feature_200293.png",
+      "localUrl": "/assets/traits/Feature_200293.webp",
       "names": [
         "安可"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/16/nt4wykszq3l9rvakrm285u6ktsyiaot.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 39582
+      "width": 128,
+      "height": 128,
+      "bytes": 7442,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200294.png",
-      "localUrl": "/assets/traits/Feature_200294.png",
+      "localUrl": "/assets/traits/Feature_200294.webp",
       "names": [
         "王子的诺言"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/36/8j3rcj6kyjix626ptxlellqsenqf11g.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 50171
+      "width": 128,
+      "height": 128,
+      "bytes": 6030,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200295.png",
-      "localUrl": "/assets/traits/Feature_200295.png",
+      "localUrl": "/assets/traits/Feature_200295.webp",
       "names": [
         "守望者"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/bb/iqz64vbmyfg39ajsk91e74ax5c9n6gz.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 37808
+      "width": 128,
+      "height": 128,
+      "bytes": 5106,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200296.png",
-      "localUrl": "/assets/traits/Feature_200296.png",
+      "localUrl": "/assets/traits/Feature_200296.webp",
       "names": [
         "诅咒"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/59/0mhvsa6blxhk71zbvrn7vhhwrm07g9r.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 38463
+      "width": 128,
+      "height": 128,
+      "bytes": 5186,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200297.png",
-      "localUrl": "/assets/traits/Feature_200297.png",
+      "localUrl": "/assets/traits/Feature_200297.webp",
       "names": [
         "莫比乌斯"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3b/9hh1h8tkfk25i5eagytydm0gkj3ma0c.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 45524
+      "width": 128,
+      "height": 128,
+      "bytes": 5826,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200298.png",
-      "localUrl": "/assets/traits/Feature_200298.png",
+      "localUrl": "/assets/traits/Feature_200298.webp",
       "names": [
         "流沙统治者"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/cf/i77ztz791edfe1tuyw1gmw42bygeb77.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 47556
+      "width": 128,
+      "height": 128,
+      "bytes": 5812,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200299.png",
-      "localUrl": "/assets/traits/Feature_200299.png",
+      "localUrl": "/assets/traits/Feature_200299.webp",
       "names": [
         "盘根木"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c4/3ujqjegmjltt1rnvam8yl587actdxfm.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 51103
+      "width": 128,
+      "height": 128,
+      "bytes": 6358,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200300.png",
-      "localUrl": "/assets/traits/Feature_200300.png",
+      "localUrl": "/assets/traits/Feature_200300.webp",
       "names": [
         "上锁"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/1c/opi0gtzysk0d58ejngj842joaopnn42.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 45187
+      "width": 128,
+      "height": 128,
+      "bytes": 5818,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200301.png",
-      "localUrl": "/assets/traits/Feature_200301.png",
+      "localUrl": "/assets/traits/Feature_200301.webp",
       "names": [
         "友谊之果"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/ca/jtxbhnhfe6izrci4ilhg0g9ggw9n8hm.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 45877
+      "width": 128,
+      "height": 128,
+      "bytes": 6100,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200302.png",
-      "localUrl": "/assets/traits/Feature_200302.png",
+      "localUrl": "/assets/traits/Feature_200302.webp",
       "names": [
         "淬炼火"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/4f/9mo5e69p3p83wcaww2f8ixr98ctof4o.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 45860
+      "width": 128,
+      "height": 128,
+      "bytes": 5950,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200304.png",
-      "localUrl": "/assets/traits/Feature_200304.png",
+      "localUrl": "/assets/traits/Feature_200304.webp",
       "names": [
         "迎宾"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/bc/az4v30bjyy89eybo67bm4wgtg6q8jie.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 44449
+      "width": 128,
+      "height": 128,
+      "bytes": 5494,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200305.png",
-      "localUrl": "/assets/traits/Feature_200305.png",
+      "localUrl": "/assets/traits/Feature_200305.webp",
       "names": [
         "一意孤行"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3d/eqn6q2jt6ppxmsk7hpmamo3o79dqq4r.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 58685
+      "width": 128,
+      "height": 128,
+      "bytes": 7102,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200306.png",
-      "localUrl": "/assets/traits/Feature_200306.png",
+      "localUrl": "/assets/traits/Feature_200306.webp",
       "names": [
         "有求必应"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/04/bfewc3qll1ss4nn3c1z45w0zq14yqw8.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 48102
+      "width": 128,
+      "height": 128,
+      "bytes": 6710,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200307.png",
-      "localUrl": "/assets/traits/Feature_200307.png",
+      "localUrl": "/assets/traits/Feature_200307.webp",
       "names": [
         "猫精灵的礼物"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/5f/stwqlezkguapsv14f0oqcwxqb80qijd.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 50819
+      "width": 128,
+      "height": 128,
+      "bytes": 6366,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200308.png",
-      "localUrl": "/assets/traits/Feature_200308.png",
+      "localUrl": "/assets/traits/Feature_200308.webp",
       "names": [
         "安眠"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e3/mj3x9cym0lw60odq53ou00u0eg6dvmx.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55884
+      "width": 128,
+      "height": 128,
+      "bytes": 7016,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200309.png",
-      "localUrl": "/assets/traits/Feature_200309.png",
+      "localUrl": "/assets/traits/Feature_200309.webp",
       "names": [
         "守护之心"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/5d/n6tmcgiheabvhfcgfz8isxcjtfgkem2.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 50328
+      "width": 128,
+      "height": 128,
+      "bytes": 6094,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200310.png",
-      "localUrl": "/assets/traits/Feature_200310.png",
+      "localUrl": "/assets/traits/Feature_200310.webp",
       "names": [
         "和弦共振"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/19/jtt91xjgi2t1pnbwlgungtfjw0w6v85.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55022
+      "width": 128,
+      "height": 128,
+      "bytes": 6634,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200311.png",
-      "localUrl": "/assets/traits/Feature_200311.png",
+      "localUrl": "/assets/traits/Feature_200311.webp",
       "names": [
         "冰雪魂魄"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/95/7i3mfdfvlzn7rfs4aapklp1z6przvzx.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 42621
+      "width": 128,
+      "height": 128,
+      "bytes": 5864,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200312.png",
-      "localUrl": "/assets/traits/Feature_200312.png",
+      "localUrl": "/assets/traits/Feature_200312.webp",
       "names": [
         "光度换算"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/40/i369vgge8j7cvvd9jfwdky5e8iqlo6b.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 58617
+      "width": 128,
+      "height": 128,
+      "bytes": 7952,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200314.png",
-      "localUrl": "/assets/traits/Feature_200314.png",
+      "localUrl": "/assets/traits/Feature_200314.webp",
       "names": [
         "铭记于月亮"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f6/lnhkn9hehyl6j11597yjd2woais0rwr.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 49567
+      "width": 128,
+      "height": 128,
+      "bytes": 6648,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200315.png",
-      "localUrl": "/assets/traits/Feature_200315.png",
+      "localUrl": "/assets/traits/Feature_200315.webp",
       "names": [
         "热成像"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e9/eurp37543t9r9ss9n4dh6n9dv7wx2mh.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 47392
+      "width": 128,
+      "height": 128,
+      "bytes": 6840,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200316.png",
-      "localUrl": "/assets/traits/Feature_200316.png",
+      "localUrl": "/assets/traits/Feature_200316.webp",
       "names": [
         "冷光源"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/39/32h6kjiue1pb3q0ut47ney029tcaw32.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 55838
+      "width": 128,
+      "height": 128,
+      "bytes": 7506,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200317.png",
-      "localUrl": "/assets/traits/Feature_200317.png",
+      "localUrl": "/assets/traits/Feature_200317.webp",
       "names": [
         "秋收"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ef/9sen0mlu8ba8wmx70z5u1pdzu7nzpkv.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 51909
+      "width": 128,
+      "height": 128,
+      "bytes": 6666,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200318.png",
-      "localUrl": "/assets/traits/Feature_200318.png",
+      "localUrl": "/assets/traits/Feature_200318.webp",
       "names": [
         "基因编辑"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/aa/ctkmjv5564kbknwcl244p56uqwwcaau.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 48282
+      "width": 128,
+      "height": 128,
+      "bytes": 6516,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200319.png",
-      "localUrl": "/assets/traits/Feature_200319.png",
+      "localUrl": "/assets/traits/Feature_200319.webp",
       "names": [
         "风速仪"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f0/e4nfud6df4ck6dr3ppt7e67yjk8t4se.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 45726
+      "width": 128,
+      "height": 128,
+      "bytes": 5798,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200320.png",
-      "localUrl": "/assets/traits/Feature_200320.png",
+      "localUrl": "/assets/traits/Feature_200320.webp",
       "names": [
         "翻垃圾桶"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f4/t831tyni6pq4j4kxegdszdym6gid7zg.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 36725
+      "width": 128,
+      "height": 128,
+      "bytes": 4726,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200321.png",
-      "localUrl": "/assets/traits/Feature_200321.png",
+      "localUrl": "/assets/traits/Feature_200321.webp",
       "names": [
         "正模标本"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/98/a71j58pi8g8oo61rus26de60a2tav0b.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 46128
+      "width": 128,
+      "height": 128,
+      "bytes": 6266,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200322.png",
-      "localUrl": "/assets/traits/Feature_200322.png",
+      "localUrl": "/assets/traits/Feature_200322.webp",
       "names": [
         "盗魂铃"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d7/j48wrm72y5rkw668xgnxsq0rcvzc457.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 43219
+      "width": 128,
+      "height": 128,
+      "bytes": 6032,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200323.png",
-      "localUrl": "/assets/traits/Feature_200323.png",
+      "localUrl": "/assets/traits/Feature_200323.webp",
       "names": [
         "宇宙之眼"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/2d/dbzfqs5v4u1lc77i0b7z9wpx4spo3xz.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 50274
+      "width": 128,
+      "height": 128,
+      "bytes": 6456,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200324.png",
-      "localUrl": "/assets/traits/Feature_200324.png",
+      "localUrl": "/assets/traits/Feature_200324.webp",
       "names": [
         "乌龟塔理论"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/87/9ugeejgoplwbozacam3s3bbgt748hoq.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 47523
+      "width": 128,
+      "height": 128,
+      "bytes": 6582,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200325.png",
-      "localUrl": "/assets/traits/Feature_200325.png",
+      "localUrl": "/assets/traits/Feature_200325.webp",
       "names": [
         "旧玩具"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d0/qpck3bsfexqpmgrep80sulnlua1b20w.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 46685
+      "width": 128,
+      "height": 128,
+      "bytes": 6642,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200326.png",
-      "localUrl": "/assets/traits/Feature_200326.png",
+      "localUrl": "/assets/traits/Feature_200326.webp",
       "names": [
         "吐水"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/88/mwif405t3ng8pgcresj0xu2e3izu8y1.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 53390
+      "width": 128,
+      "height": 128,
+      "bytes": 6934,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200327.png",
-      "localUrl": "/assets/traits/Feature_200327.png",
+      "localUrl": "/assets/traits/Feature_200327.webp",
       "names": [
         "恶龙的奢望"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c4/mmk1c6bfsjvqpbpuxd0rhsztlfekam1.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 65402
+      "width": 128,
+      "height": 128,
+      "bytes": 7800,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200329.png",
-      "localUrl": "/assets/traits/Feature_200329.png",
+      "localUrl": "/assets/traits/Feature_200329.webp",
       "names": [
         "银头寸"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/20/bk16368mm0uee4jz70oktcppg8on5s9.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 46066
+      "width": 128,
+      "height": 128,
+      "bytes": 5756,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200330.png",
-      "localUrl": "/assets/traits/Feature_200330.png",
+      "localUrl": "/assets/traits/Feature_200330.webp",
       "names": [
         "储备金"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/4f/4npa4iqd68g4j343glc16pdv7d3ynna.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 63757
+      "width": 128,
+      "height": 128,
+      "bytes": 8858,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200331.png",
-      "localUrl": "/assets/traits/Feature_200331.png",
+      "localUrl": "/assets/traits/Feature_200331.webp",
       "names": [
         "换牙"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/5b/ozrnrvpnbafnwyos8k7zdne5u1x7lr9.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 51348
+      "width": 128,
+      "height": 128,
+      "bytes": 6728,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200332.png",
-      "localUrl": "/assets/traits/Feature_200332.png",
+      "localUrl": "/assets/traits/Feature_200332.webp",
       "names": [
         "护犊"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/89/jkximtva86fmgy15z0azkk3r7yy8ro0.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 47945
+      "width": 128,
+      "height": 128,
+      "bytes": 6570,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200333.png",
-      "localUrl": "/assets/traits/Feature_200333.png",
+      "localUrl": "/assets/traits/Feature_200333.webp",
       "names": [
         "沙滩节拍"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/45/mc1pnnr13gwpclzh2l0cfoxhhw4enoj.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 58545
+      "width": 128,
+      "height": 128,
+      "bytes": 7566,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200334.png",
-      "localUrl": "/assets/traits/Feature_200334.png",
+      "localUrl": "/assets/traits/Feature_200334.webp",
       "names": [
         "环天顶弧"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/8f/lhhtw0nnehcx9wsl3uqwezfasaqpm87.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 47691
+      "width": 128,
+      "height": 128,
+      "bytes": 6256,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200335.png",
-      "localUrl": "/assets/traits/Feature_200335.png",
+      "localUrl": "/assets/traits/Feature_200335.webp",
       "names": [
         "高吹雪"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/25/lcxmrot6h2te41m8hnfuib9uxebigri.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 46903
+      "width": 128,
+      "height": 128,
+      "bytes": 6340,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200336.png",
-      "localUrl": "/assets/traits/Feature_200336.png",
+      "localUrl": "/assets/traits/Feature_200336.webp",
       "names": [
         "虫草多糖"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/37/fx89c8f15itd9bs12fv09dsic26jcxw.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 53797
+      "width": 128,
+      "height": 128,
+      "bytes": 7108,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200337.png",
-      "localUrl": "/assets/traits/Feature_200337.png",
+      "localUrl": "/assets/traits/Feature_200337.webp",
       "names": [
         "剪影"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f2/7dr4zely82jb0mozpc6k4yloq0seg4d.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 45161
+      "width": 128,
+      "height": 128,
+      "bytes": 6106,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     },
     {
       "sourceFile": "Feature_200338.png",
-      "localUrl": "/assets/traits/Feature_200338.png",
+      "localUrl": "/assets/traits/Feature_200338.webp",
       "names": [
         "游戏的本质"
       ],
       "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/bc/r58wjrj3kz4ridlltjsqkyrrbtvrgfy.png",
-      "width": 256,
-      "height": 256,
-      "bytes": 63345
+      "width": 128,
+      "height": 128,
+      "bytes": 7782,
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "profile": "webp-128-q95"
     }
   ],
   "missing": [

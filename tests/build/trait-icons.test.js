@@ -15,7 +15,7 @@ describe("BWIKI trait icons stay separate from seasonal rules", () => {
     expect(trait).toEqual(before);
     expect(plan.bindings).toHaveLength(1);
     const lookup = createTraitIconLookup({ ...plan, assets: plan.assets.map(asset => ({ ...asset, sourceUrl: "https://patchwiki.biligame.com/icon.png", bytes: 12 })) });
-    expect(lookup.ids["global:trait-a"]).toBe("/assets/traits/Feature_123.png");
+    expect(lookup.ids["global:trait-a"]).toBe("/assets/traits/Feature_123.webp");
     expect(lookup.ids["trait-a"]).toBe(lookup.ids["global:trait-a"]);
     expect(JSON.stringify(lookup)).not.toContain("描述");
   });
@@ -41,15 +41,16 @@ describe("BWIKI trait icons stay separate from seasonal rules", () => {
   });
 
   it("keeps existing Abu art and resolves translated traits by stable identity", () => {
-    expect(getTraitIconUrl({ id: "abu", name: "圣龙的心愿", iconUrl: "/assets/traits/candymo-s5-200328.png" })).toBe("/assets/traits/candymo-s5-200328.png");
+    expect(getTraitIconUrl({ id: "abu", name: "圣龙的心愿", iconUrl: "/assets/traits/candymo-s5-200328.webp" })).toBe("/assets/traits/candymo-s5-200328.webp");
+    expect(getTraitIconUrl({ id: "future", iconUrl: "/assets/traits/future.png" })).toBe("/assets/traits/future.png");
     for (const mount of ["/pre", "/global-assets"]) {
-      const iconUrl = `${mount}/assets/traits/candymo-s5-200328.png`;
+      const iconUrl = `${mount}/assets/traits/candymo-s5-200328.webp`;
       expect(getTraitIconUrl({ id: "abu", iconUrl })).toBe(iconUrl);
     }
     for (const iconUrl of ["https://example.com/assets/traits/fake.png", "//example.com/assets/traits/fake.png", "/assets/traits/../fake.png", "/pre/assets/traits/%2e%2e/fake.png"]) {
       expect(getTraitIconUrl({ id: "unknown", iconUrl })).toBe("");
     }
-    expect(getTraitIconUrl({ id: "trait_102e1d7085a2c40b", name: "Localized title" })).toMatch(/^\/assets\/traits\/Feature_\d+\.png$/u);
+    expect(getTraitIconUrl({ id: "trait_102e1d7085a2c40b", name: "Localized title" })).toMatch(/^\/assets\/traits\/Feature_\d+\.webp$/u);
     expect(getTraitIconUrl({ id: "unknown", name: "特性待确认" })).toBe("");
   });
 
@@ -57,11 +58,20 @@ describe("BWIKI trait icons stay separate from seasonal rules", () => {
     const root = path.resolve(import.meta.dirname, "../..");
     const plan = JSON.parse(readFileSync(path.join(root, "data/reviewed/nrc-trait-icons.json"), "utf8"));
     expect(plan.assets.length).toBeGreaterThan(0);
+    expect(plan.assets.reduce((sum, asset) => sum + asset.bytes, 0)).toBeLessThan(1.7 * 1024 * 1024);
     for (const asset of plan.assets) {
       expect(asset.sourceUrl).toMatch(/^https:\/\/patchwiki\.biligame\.com\//u);
       expect(asset.width).toBeGreaterThan(0);
       expect(asset.height).toBeGreaterThan(0);
+      expect(Math.max(asset.width, asset.height)).toBeLessThanOrEqual(128);
+      expect(asset.sourceWidth).toBeGreaterThanOrEqual(asset.width);
+      expect(asset.sourceHeight).toBeGreaterThanOrEqual(asset.height);
+      expect(asset.profile).toBe("webp-128-q95");
       expect(existsSync(path.join(root, "public", asset.localUrl))).toBe(true);
+      const image = readFileSync(path.join(root, "public", asset.localUrl));
+      expect(image.toString("ascii", 0, 4)).toBe("RIFF");
+      expect(image.toString("ascii", 8, 12)).toBe("WEBP");
+      expect(image.length).toBe(asset.bytes);
     }
     const snapshot = JSON.parse(readFileSync(path.join(root, "public/data/global-runtime.json"), "utf8"));
     for (const trait of snapshot.traits) expect(getTraitIconUrl(trait), trait.name).toBeTruthy();

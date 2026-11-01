@@ -3420,24 +3420,42 @@
       "sourceId": 200328,
       "name": "圣龙的心愿",
       "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/BattleUI/Raw/Atlas/FeatureIcon/200328.png",
-      "localUrl": "/assets/traits/candymo-s5-200328.png",
-      "contentType": "image/png"
+      "localUrl": "/assets/traits/candymo-s5-200328.webp",
+      "contentType": "image/webp",
+      "sourceContentType": "image/png",
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "width": 128,
+      "height": 128,
+      "profile": "webp-128-q95"
     },
     {
       "category": "traits",
       "sourceId": 200339,
       "name": "幸福铃音",
       "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/BattleUI/Raw/Atlas/FeatureIcon/200339.png",
-      "localUrl": "/assets/traits/candymo-s5-200339.png",
-      "contentType": "image/png"
+      "localUrl": "/assets/traits/candymo-s5-200339.webp",
+      "contentType": "image/webp",
+      "sourceContentType": "image/png",
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "width": 128,
+      "height": 128,
+      "profile": "webp-128-q95"
     },
     {
       "category": "traits",
       "sourceId": 280041,
       "name": "圣龙的守护",
       "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/BattleUI/Raw/Atlas/FeatureIcon/200328.png",
-      "localUrl": "/assets/traits/candymo-s5-200328.png",
-      "contentType": "image/png"
+      "localUrl": "/assets/traits/candymo-s5-200328.webp",
+      "contentType": "image/webp",
+      "sourceContentType": "image/png",
+      "sourceWidth": 256,
+      "sourceHeight": 256,
+      "width": 128,
+      "height": 128,
+      "profile": "webp-128-q95"
     }
   ],
   "openIssues": [
