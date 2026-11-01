@@ -42,7 +42,7 @@ function TraitDescription({ trait }) {
   </div>;
 }
 
-export default function BidirectionalQuery({ season, skills = [], spirits = [], initialSpiritId, initialSkillId, gains = [], hideEffects: sharedHideEffects, onHideEffectsChange, placeholder = false }) {
+export default function BidirectionalQuery({ season, skills = [], spirits = [], initialSpiritId, initialSkillId, gains = [], hideEffects: sharedHideEffects, onHideEffectsChange, onBackToSource, placeholder = false }) {
   const { t, typeName, locale } = useLocale();
   const { serverId } = useRuntime();
   const phone = useSyncExternalStore(subscribePhone, isPhone, () => false);
@@ -213,7 +213,7 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
     </aside>
     <main className="sq-results" ref={results}>
       {spirit ? <>
-        <button className="sq-back" onClick={back}><ArrowLeft size={18} />{t("返回匹配结果")}</button>
+        <button className="sq-back" onClick={onBackToSource ?? back}><ArrowLeft size={18} />{t(onBackToSource ? "返回属性查询" : "返回匹配结果")}</button>
         <div className="sq-spirit-heading"><div className="sq-spirit-identity"><Portrait key={spirit.id} spirit={spirit} /><div><h3 ref={detailTitle} tabIndex={-1}>{spirit.fullName}</h3>{!placeholder && <EntityChangeHint changeInfo={spirit.changeInfo} />}<p>{spirit.types?.map((type) => <span key={type}><ElementIcon type={type} size={20} />{typeName(type)}</span>)}<span>{t(spirit.stage)}</span></p>{related.length > 1 && <select aria-label={t("精灵形态")} value={spirit.id} onChange={(event) => openSpirit(event.target.value)}>{related.map((item) => <option key={item.id} value={item.id}>{item.fullName}</option>)}</select>}</div></div>
           {spiritTraits.length > 0 && <section className="sq-spirit-traits" aria-label={t("精灵特性")}>{spiritTraits.map(trait => <TraitDescription key={trait.id ?? trait.name} trait={trait} />)}</section>}
         </div>

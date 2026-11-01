@@ -45,6 +45,7 @@ export default defineConfig({
             "tests/ui/preset-update-notice.test.jsx",
             "tests/ui/spirit-discovery-global.test.jsx",
             "tests/ui/skill-query-traits.test.jsx",
+            "tests/ui/skill-query-panel.test.jsx",
             "tests/hooks/calculator-session-storage.test.jsx",
             "tests/hooks/balance-comparison.test.jsx",
             "tests/ui/{global-workspace,web-entry,share-server-boundary,global-tool-boundary,locale-common,team-server-locale,season-theme,season-theme-settings,global-placeholder-workflow,global-placeholder-configuration,skill-query-placeholder}.test.jsx",

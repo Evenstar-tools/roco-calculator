@@ -1,4 +1,4 @@
-import { localizeGlobalCatalog } from "../../runtime/global-entity-localization.js";
+import { prepareSkillQueryCatalog } from "./prepare-catalog.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SkillIcon } from "../../components/SkillIcon.jsx";
 import { ElementIcon } from "../../components/ElementIcon.jsx";
@@ -12,7 +12,7 @@ import { useToolLocale as useLocale } from "../../i18n/useToolLocale.js";
 import { useModalFocus } from "../../hooks/useModalFocus.js";
 import { createPlaceholderQueryCatalog } from "./placeholder-catalog.js";
 import { EntityChangeHint, hasEntityChanges } from "../../components/EntityChangeHint.jsx";
-import { querySeasonChangeInfo, withS5AnnouncementCatalog } from "./s5-announcement-catalog.js";
+import { querySeasonChangeInfo } from "./s5-announcement-catalog.js";
 import { skillMatchesQuery } from "./query-model.js";
 
 export default function SkillQueryPanel(props) {
@@ -39,15 +39,11 @@ export default function SkillQueryPanel(props) {
   </section></div>;
 }
 
-function VerifiedSkillQueryPanel({ onClose, skills = [], spirits = [], snapshot }) {
+function VerifiedSkillQueryPanel({ onClose, skills = [], spirits = [], snapshot, initialSpiritId, onBackToSource }) {
   const { t, locale, typeName } = useLocale();
   const { serverId } = useRuntime();
   const [catalog, setCatalog] = useState(() => getCachedCatalog(serverId));
-  const canonicalData = useMemo(() => withS5AnnouncementCatalog(catalog, snapshot), [catalog, snapshot]);
-  const data = useMemo(() => serverId !== "global" || !canonicalData ? canonicalData : { ...canonicalData, seasons: canonicalData.seasons.map((season) => {
-    const display = localizeGlobalCatalog({ ...season, meta: { serverId: "global" } }, locale);
-    return { ...display, spirits: display.spirits.filter(entry => entry.catalogAvailable !== false), skills: display.skills.filter(entry => entry.catalogAvailable !== false) };
-  }) }, [canonicalData, serverId, locale]);
+  const { canonicalData, data } = useMemo(() => prepareSkillQueryCatalog(catalog, snapshot, serverId, locale), [catalog, snapshot, serverId, locale]);
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
   const [seasonId, setSeasonId] = useState("");
@@ -130,7 +126,7 @@ function VerifiedSkillQueryPanel({ onClose, skills = [], spirits = [], snapshot 
       {view === "gains" && filters}
       {view === "gains" && <p className="skill-query__context">{previous ? `${previous.id} → ${season.id} · ${season.announcementNote ?? "老精灵新学与新技能学习面"}` : t("当前赛季没有可比较的前一赛季资料")}</p>}
       {view === "all" && entry && <p className="skill-query__context">{season.id}{" "}{t("资料")}{" "}<button onClick={() => { setView(entry.fromView); setSeasonId(season.id); }}>{t("返回赛季查询")}</button></p>}
-      {view === "all" ? <BidirectionalQuery key={`${season.id}-${entry?.spiritId ?? ""}-${entry?.skillId ?? ""}`} season={season} skills={skills} spirits={spirits} initialSpiritId={entry?.spiritId} initialSkillId={entry?.skillId} gains={changes?.gains} hideEffects={hideEffects} onHideEffectsChange={setHideEffects} /> : view === "gains" ? <div className="skill-query__gains">{visibleGains.length ? visibleGains.map((entry) => <article key={entry.spiritId}><h3><button onClick={() => openQuery({ spiritId: entry.spiritId })}>{t(entry.spirit.fullName)}</button><EntityChangeHint changeInfo={entry.changeInfo} /></h3><div>{entry.skills.map((item) => <button key={item.id} onClick={() => openQuery({ skillId: item.id })}><SkillIcon skill={{ ...item, iconUrl: skillMap.get(item.id)?.iconUrl }} size={32} /><span>{t(item.name)} <small>{typeName(item.type)} · {t(categoryNames[item.category])}</small></span></button>)}</div>{entry.changeInfo?.items.map((item, index) => <p className="skill-query__learning-change" key={index}><strong>{t(item.label)}</strong>{item.before && <span>{t("调整前：")}{item.before}</span>}{item.after && <span>{t("调整后：")}{item.after}</span>}{item.note && <small>{t(item.note)}</small>}</p>)}</article>) : <p className="skill-query__empty">{previous ? t("当前资料中没有符合条件的新增记录。") : t("请切换到有前一赛季资料的赛季。")}</p>}</div> : view === "changes" ? <>
+      {view === "all" ? <BidirectionalQuery key={`${season.id}-${entry?.spiritId ?? initialSpiritId ?? ""}-${entry?.skillId ?? ""}`} season={season} skills={skills} spirits={spirits} initialSpiritId={entry ? entry.spiritId : (season.spirits.some(spirit => spirit.id === initialSpiritId) ? initialSpiritId : undefined)} onBackToSource={onBackToSource} initialSkillId={entry?.skillId} gains={changes?.gains} hideEffects={hideEffects} onHideEffectsChange={setHideEffects} /> : view === "gains" ? <div className="skill-query__gains">{visibleGains.length ? visibleGains.map((entry) => <article key={entry.spiritId}><h3><button onClick={() => openQuery({ spiritId: entry.spiritId })}>{t(entry.spirit.fullName)}</button><EntityChangeHint changeInfo={entry.changeInfo} /></h3><div>{entry.skills.map((item) => <button key={item.id} onClick={() => openQuery({ skillId: item.id })}><SkillIcon skill={{ ...item, iconUrl: skillMap.get(item.id)?.iconUrl }} size={32} /><span>{t(item.name)} <small>{typeName(item.type)} · {t(categoryNames[item.category])}</small></span></button>)}</div>{entry.changeInfo?.items.map((item, index) => <p className="skill-query__learning-change" key={index}><strong>{t(item.label)}</strong>{item.before && <span>{t("调整前：")}{item.before}</span>}{item.after && <span>{t("调整后：")}{item.after}</span>}{item.note && <small>{t(item.note)}</small>}</p>)}</article>) : <p className="skill-query__empty">{previous ? t("当前资料中没有符合条件的新增记录。") : t("请切换到有前一赛季资料的赛季。")}</p>}</div> : view === "changes" ? <>
         {filters}
         <div className="skill-query__gains skill-query__adjustments">{filtered.length ? filtered.map((skill) => <article key={skill.id}><h3><button onClick={() => openQuery({ skillId: skill.id })}><SkillIcon skill={{ ...skill, iconUrl: skillMap.get(skill.id)?.iconUrl }} size={32} />{t(skill.name)}</button><EntityChangeHint changeInfo={querySeasonChangeInfo(season, skill.changeInfo)} /></h3><p>{typeName(skill.type)} · {t(categoryNames[skill.category])}{" "}{t("· 威力")}{" "}{skill.basePower ?? "—"}{" "}{t("· 能耗")}{" "}{skill.cost ?? "—"}</p><p>{t(skill.description)}</p></article>) : <p className="skill-query__empty">{t("当前赛季没有符合条件的技能调整。")}</p>}</div>
       </> : <div className="skill-query__body">

@@ -41,6 +41,7 @@ export const skillQueryMessages = Object.fromEntries([
   ["已选满 4 个技能，请先移除一个。", "Four skills selected. Remove one to add another.", "4つ選択済みです。追加するには1つ解除してください。"],
   ["查看匹配家族（{count}）", "View matching families ({count})", "該当する系統を表示（{count}）"],
   ["返回匹配结果", "Back to results", "検索結果に戻る"],
+  ["返回属性查询", "Back to class matchups", "属性相性に戻る"],
   ["精灵形态", "Jini form", "キャラクターの形態"],
   ["技能学习来源", "Skill acquisition sources", "スキルの習得元"],
   ["全部来源", "All sources", "すべての習得元"],
