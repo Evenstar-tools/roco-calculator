@@ -22,6 +22,7 @@ import { TeamMemberEditor } from "./TeamMemberEditor.jsx";
 import { TeamRoster } from "./TeamRoster.jsx";
 import { TeamExchange } from "./TeamExchange.jsx";
 import { isShortcutInput } from "../state/shortcut-settings.js";
+import { SpiritImage } from "./SpiritImage.jsx";
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -445,7 +446,7 @@ export function TeamDrawer({
                   <header className="team-workbench__member-header">
                     <div className="team-workbench__identity">
                       {spiritAsset(activeSpirit) ? (
-                        <img alt="" src={spiritAsset(activeSpirit)} />
+                        <SpiritImage name={activeSpirit?.fullName} alt="" src={spiritAsset(activeSpirit)} />
                       ) : null}
                       <div>
                         <h3>
