@@ -1085,6 +1085,10 @@ describe("result bar and sheet", () => {
     expect(within(sharePreview).getByText(/烈焰兽 → 潮汐兽/u))
       .toBeInTheDocument();
     const configuration = within(sharePreview).getByLabelText("分享配置摘要");
+    const shareScroll = sharePreview.querySelector(".share-preview__scroll");
+    expect(shareScroll).toHaveAttribute("data-scroll-y", "true");
+    expect(shareScroll).toContainElement(configuration);
+    expect(shareScroll).not.toContainElement(within(sharePreview).getByRole("button", { name: "关闭分享预览" }));
     expect(configuration).toHaveTextContent("攻击方配置");
     expect(configuration).toHaveTextContent("防守方配置");
     expect(configuration).toHaveTextContent("能力等级");
@@ -1094,6 +1098,8 @@ describe("result bar and sheet", () => {
       name: "确认分享",
     });
     expect(shareButton).toHaveAttribute("data-open-type", "share");
+    expect(shareScroll).not.toContainElement(shareButton);
+    expect(shareScroll).not.toContainElement(within(sharePreview).getByRole("button", { name: "返回修改" }));
 
     fireEvent.click(within(sharePreview).getByRole("button", {
       name: "返回修改",

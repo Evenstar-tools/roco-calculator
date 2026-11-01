@@ -87,6 +87,10 @@ export function correctS5PreviewEnergyInputs(value) {
   if (!corrected.sides || !isRecord(directions?.forward?.context) || !isRecord(directions?.reverse?.context)) return corrected;
   for (const [side, outgoing, incoming] of [["attacker", "forward", "reverse"], ["defender", "reverse", "forward"]]) {
     if (corrected.sides[side]?.spiritId !== SILVER_SPIRIT_ID) continue;
+    // Only old percentage inputs need migration. A current-only stored session
+    // must not gain a runtime mirror while the storage reader returns its bytes.
+    if (!explicitValue(directions[outgoing].context, getLegacySilverEnergyInput("attacker")) &&
+        !explicitValue(directions[incoming].context, getLegacySilverEnergyInput("defender"))) continue;
     const amount = energySpent(directions[outgoing].context, "attacker");
     if (amount == null) continue;
     for (const [direction, role] of [[outgoing, "attacker"], [incoming, "defender"]]) {

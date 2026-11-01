@@ -24,6 +24,8 @@ export default defineConfig({
             "tests/docs/release-notes.test.js",
             "tests/build/{performance-budget,build-attribution,global-release,cn-production-pruning,stamp-image-cache}.test.js",
             "tests/scripts/{build-preview-release,build-cn-release}.test.js",
+            "tests/miniapp/shared-core.test.js",
+            "tests/data/portrait-bindings.test.js",
             "tests/cli/{current-release-cli,web-calculator}.test.js",
           ],
         },

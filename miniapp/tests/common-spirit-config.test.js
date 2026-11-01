@@ -12,17 +12,12 @@ import {
   expandBundledConfigLibrary,
   parseBundledConfigLibrary,
 } from "../src/state/config-library.js";
+import { getReleaseData } from "./release-source.js";
 
 const CONFIG_FILE = resolve(process.cwd(), "src/data/common-spirit-config.json");
-const DESKTOP_CONFIG_FILE = resolve(
-  process.cwd(),
-  "../public/data/presets/pvp-popular-configs.json",
-);
 const bundledRuntime = expandBundledRuntime(bundledRuntimePayload);
-const desktopConfigCount = JSON.parse(readFileSync(DESKTOP_CONFIG_FILE, "utf8")).entryCount;
-const rootPackage = JSON.parse(
-  readFileSync(resolve(process.cwd(), "../package.json"), "utf8"),
-);
+const { presets: desktopLibrary } = await getReleaseData();
+const desktopConfigCount = desktopLibrary.entryCount;
 
 describe("bundled common spirit configuration", () => {
   test("contains the current PVP library without sensitive fields", () => {
@@ -31,7 +26,7 @@ describe("bundled common spirit configuration", () => {
     const library = JSON.parse(text);
 
     expect(library).toMatchObject({
-      appVersion: rootPackage.version,
+      appVersion: desktopLibrary.appVersion,
       entryCount: desktopConfigCount,
       entryEncoding: "tuple-v1",
       format: "rock-calculator.favorite-config-library",
@@ -61,9 +56,6 @@ describe("bundled common spirit configuration", () => {
   });
 
   test("matches the current desktop popular configuration library", () => {
-    const desktopLibrary = JSON.parse(
-      readFileSync(DESKTOP_CONFIG_FILE, "utf8"),
-    );
     const bundledEntries = expandBundledConfigLibrary(commonSpiritConfig)
       .entries;
     const comparableDesktopEntries = desktopLibrary.entries.map((entry) => ({

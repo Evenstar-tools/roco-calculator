@@ -95,8 +95,14 @@ function collectCarriedSkills(side, mode, skillsById) {
     .filter(Boolean);
 }
 
-export function carriedSkillTotalCost(side, mode, skillsById, costOverrides) {
-  return collectCarriedSkills(side, mode, skillsById).reduce(
+export function carriedSkillTotalCost(side, mode, skillsById, costOverrides, { requireKnown = false } = {}) {
+  const skills = collectCarriedSkills(side, mode, skillsById);
+  if (requireKnown) {
+    const entries = carriedSkillEntries(side, mode).filter(entry => typeof entry === "string"
+      ? Boolean(entry) : Boolean(entry?.skill || entry?.skillId || entry?.id || entry?.category));
+    if (skills.length !== entries.length || skills.some(skill => !Number.isSafeInteger(skill.cost) || skill.cost < 0)) return null;
+  }
+  return skills.reduce(
     (total, skill) => total + (reducedSkillCost(skill.cost, costOverrides) ?? 0), 0,
   );
 }
@@ -140,6 +146,7 @@ export function resolveCombatant(
     traits,
     skillTypes: carriedSkills.map((skill) => skill.type).filter(Boolean),
     totalSkillCost: carriedSkillTotalCost(side, mode, indexes.skills, costOverrides),
+    confirmedTotalSkillCost: carriedSkillTotalCost(side, mode, indexes.skills, costOverrides, { requireKnown: true }),
   };
 }
 

@@ -1,4 +1,4 @@
-import { Button, Text, View } from "@tarojs/components";
+import { Button, ScrollView, Text, View } from "@tarojs/components";
 import { damagePresentation, resultTone } from "../view-models/result-presentation.js";
 import DamageSegments from "./DamageSegments.jsx";
 
@@ -98,7 +98,7 @@ export default function SharePreviewSheet({
           <View>
             <Text className="share-preview__title">分享给好友前确认</Text>
             <Text className="share-preview__subtitle">
-              好友打开后先看只读结果，可自行决定是否载入配置
+              好友先看结果，再自行载入配置。
             </Text>
           </View>
           <Button
@@ -111,6 +111,8 @@ export default function SharePreviewSheet({
           </Button>
         </View>
 
+        <ScrollView className="share-preview__scroll" scrollY showScrollbar>
+        <View className="share-preview__scroll-content">
         <View className="share-preview__result">
           <Text className="share-preview__matchup">
             {view?.attackerName ?? "攻击方"} → {view?.defenderName ?? "防守方"}
@@ -181,6 +183,8 @@ export default function SharePreviewSheet({
             好友只会在点击“载入配置”后替换自己当前的计算。
           </Text>
         </View>
+        </View>
+        </ScrollView>
 
         <View className="share-preview__actions">
           <Button

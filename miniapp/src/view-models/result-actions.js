@@ -84,7 +84,7 @@ function traitTriggerHint(controls) {
 
 function skillAction(snapshot, state, side, candidate, calculation, traitViews) {
   const skill = getSkill(snapshot, candidate.entry);
-  if (!skill) return null;
+  if (!skill || skill.s5StatusEffectPending) return null;
   const direction = side === "attacker" ? "forward" : "reverse";
   const context = candidate.mode === "single"
     ? state.directions[direction]?.context ?? {}
@@ -92,6 +92,9 @@ function skillAction(snapshot, state, side, candidate, calculation, traitViews) 
       ? candidate.entry.context ?? {}
       : {};
   const result = calculation?.rows?.[candidate.slotIndex];
+  const s5UseAction = result?.status === "exact" && ["physical", "magical"].includes(skill.category) &&
+    getEffectiveTraits(snapshot, { ...state.sides[side], spirit: resolveBattleSpirit(snapshot, state.sides[side]) })
+      .some(trait => ["underground-silver-dragon", "crab-coconut"].includes(trait.previewIdentity?.mechanicKey));
   const configuredSkills = (state.sides[side]?.skills?.four ?? [])
     .map((entry) => getSkill(snapshot, entry));
   const carriedSkills = candidate.mode === "single"
@@ -129,7 +132,7 @@ function skillAction(snapshot, state, side, candidate, calculation, traitViews) 
   const targetDirection = direction === "forward" ? "reverse" : "forward";
   const hasTransientDefense = Boolean(state.directions[direction]?.overrides?.activeDefenseStatus ||
     Number(state.directions[targetDirection]?.reduction ?? 1) !== 1);
-  if (!hasTransientDefense && !canApplyBattleActivation(skill, applicationContext, activationOptions)) return null;
+  if (!s5UseAction && !hasTransientDefense && !canApplyBattleActivation(skill, applicationContext, activationOptions)) return null;
   const configuredHitCount = candidate.mode === "single"
     ? state.directions[direction]?.hitCount ?? 1
     : candidate.entry?.hitCount ?? 1;
@@ -160,6 +163,7 @@ function skillAction(snapshot, state, side, candidate, calculation, traitViews) 
     ...(presentation.usageSummary ? { usageSummary: presentation.usageSummary, usage: presentation.usage, usageDetails: presentation.usageDetails } : {}),
     key: `skill:${side}:${candidate.mode}:${candidate.slotIndex}`,
     kind: "skill",
+    repeatableUse: s5UseAction,
     mode: candidate.mode,
     negativeStatusApplication: presentation.negativeStatusApplication,
     negativeStatusToggle: canToggleNegativeStatusActivation(skill, applicationContext, activationOptions),

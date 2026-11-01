@@ -30,6 +30,7 @@ function controlValue(battleContext, values, view, control) {
 
 function visibleControls(view, values, battleContext) {
   return view.controls.filter((control) => {
+    if (control.hidden === true) return false;
     const condition = control.visibleWhen ?? control.when;
     if (!condition) return true;
     const conditionKey =
@@ -122,13 +123,8 @@ export default function TraitConditionEditor({
                   input={control}
                   key={control.id}
                   onChange={(value) => {
-                    if (control.scope === "battle") {
-                      onChange(
-                        view.ownerSide,
-                        control.canonicalKey,
-                        value,
-                        control,
-                      );
+                    if (control.scope === "battle" || control.contextKey?.includes("TraitS5")) {
+                      onChange(view.ownerSide, control.canonicalKey, value, control);
                     } else {
                       onChange(view.ownerSide, control.canonicalKey, value);
                     }

@@ -145,7 +145,7 @@ describe("IndexPage", () => {
     fireEvent.change(screen.getByRole("combobox", { name: "赛季主题" }), { target: { value: "2" } });
     expect(first.container.querySelector(".page")).toHaveClass("page--season-s3", "page--classic-calculator-colors");
     expect(first.container.querySelector(".season-sky")).toHaveClass("season-sky--s3");
-    expect(first.container.querySelector(".app-header__title")).toHaveTextContent("S4「季中」");
+    expect(first.container.querySelector(".app-header__title")).toHaveTextContent("S5");
     fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
     expect(screen.getByRole("button", { name: "四技能模式" })).toHaveAttribute("aria-pressed", "true");
     first.unmount();
@@ -184,12 +184,12 @@ describe("IndexPage", () => {
     expect(Taro.getStorageSync(SEASON_THEME_STORAGE_KEY)).toBe("s1");
     expect(first.container.querySelector(".page")).toHaveClass("page--season-s1");
     expect(screen.getByRole("button", { name: "每次进入随机主题" })).toHaveAttribute("aria-pressed", "false");
-    random.mockReturnValue(0.25);
+    random.mockReturnValue(0.1);
     fireEvent.click(screen.getByRole("button", { name: "每次进入随机主题" }));
     expect(first.container.querySelector(".page")).toHaveClass("page--season-s2");
     fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
     expect(screen.getByRole("button", { name: "四技能模式" })).toHaveAttribute("aria-pressed", "true");
-    expect(first.container.querySelector(".app-header__title")).toHaveTextContent("S4「季中」");
+    expect(first.container.querySelector(".app-header__title")).toHaveTextContent("S5");
     first.unmount();
     random.mockReturnValue(0);
     const second = render(<IndexPage services={services} />);
@@ -311,7 +311,7 @@ describe("IndexPage", () => {
     expect(screen.queryByText(/数据 S3季中/u)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
     expect(
-      screen.getByText("数据快照：S4「季中」 · 41360"),
+      screen.getByText("数据快照：S3季中 · 41360"),
     ).toBeInTheDocument();
   });
 
@@ -751,7 +751,7 @@ describe("IndexPage", () => {
     );
     expect(screen.getByLabelText("防守方配置")).toHaveTextContent("水灵");
     fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
-    expect(screen.getByText("数据快照：S4「季中」 · 41360")).toBeInTheDocument();
+    expect(screen.getByText("数据快照：S3季中 · 41360")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "重置本页" }).tagName,
     ).toBe("BUTTON");

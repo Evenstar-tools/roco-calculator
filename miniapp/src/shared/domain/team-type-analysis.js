@@ -32,10 +32,14 @@ function resolveAttackingSkills({
   const effectiveBloodlineType = member.bloodlineType ?? defaultBloodlineType;
   const bloodlineType = BLOODLINE_TYPE_LABELS.get(effectiveBloodlineType);
   if (bloodlineType) {
+    const canonicalId = `calculator_wish_power_${effectiveBloodlineType}`;
+    const wishPower = skillById.get(canonicalId) ?? [...skillById.values()]
+      .find((skill) => skill.reference?.sourceId === canonicalId);
     return [
       ...carriedSkills,
       {
-        id: `calculator_wish_power_${effectiveBloodlineType}`,
+        ...wishPower,
+        id: wishPower?.id ?? canonicalId,
         name: "愿力冲击",
         sourceKind: "wish-power",
         type: bloodlineType,
@@ -48,7 +52,7 @@ function resolveAttackingSkills({
     learnsetBySpiritId.get(member.spiritId)?.skillIds ?? []
   )
     .map((skillId) => skillById.get(skillId))
-    .find((skill) => skill?.id?.startsWith("calculator_wish_power_"));
+    .find((skill) => (skill?.reference?.sourceId ?? skill?.id)?.startsWith("calculator_wish_power_"));
   return bossWishPower
     ? [...carriedSkills, { ...bossWishPower, sourceKind: "wish-power" }]
     : carriedSkills;

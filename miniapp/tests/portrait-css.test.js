@@ -44,7 +44,7 @@ describe("reference-first responsive CSS", () => {
     expect(appHeaderSource).toContain('mode="selector"');
     expect(appHeaderSource).toContain('aria-label="每次进入随机主题"');
     expect(existsSync(resolve(process.cwd(), "src/assets/icons/shuffle.png"))).toBe(true);
-    for (const id of ["s1", "s2", "s3"]) {
+    for (const id of ["s1", "s2", "s3", "s5"]) {
       expect(styles["season.css"]).toContain(`.page--season-${id}`);
       expect(styles["season.css"]).toContain(`.season-sky--${id}`);
     }
@@ -53,7 +53,7 @@ describe("reference-first responsive CSS", () => {
   test("classic calculation colors do not clear the selected scene or header palette", () => {
     const season = styles["season.css"];
     expect(appHeaderSource).toContain('aria-label="计算界面保持经典配色"');
-    for (const id of ["s1", "s2", "s3"]) {
+    for (const id of ["s1", "s2", "s3", "s5"]) {
       expect(season).toContain(`.page--season-${id}:not(.page--classic-calculator-colors)`);
     }
     expect(season).toContain("color: var(--season-title, #ecd78c)");
@@ -391,6 +391,10 @@ describe("reference-first responsive CSS", () => {
   test("aligns share confirmation actions as two equal centered controls", () => {
     const share = styles["share.css"];
 
+    expect(share).toMatch(/\.share-preview\s*\{[^}]*display:\s*flex;[^}]*height:\s*min\(86vh, 760px\);[^}]*flex-direction:\s*column;[^}]*overflow:\s*hidden;/u);
+    expect(share).toMatch(/\.share-preview__scroll\s*\{[^}]*height:\s*0;[^}]*min-height:\s*0;[^}]*flex:\s*1 1 auto;/u);
+    expect(share).toMatch(/\.share-preview__header\s*\{[^}]*flex:\s*0 0 auto;/u);
+    expect(share).toMatch(/\.share-preview__actions\s*\{[^}]*flex:\s*0 0 auto;/u);
     expect(share).toMatch(
       /\.share-preview__actions\s*\{[\s\S]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/u,
     );

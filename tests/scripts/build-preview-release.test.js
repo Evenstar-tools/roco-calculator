@@ -45,6 +45,25 @@ afterEach(() => {
 });
 
 describe("pinned /pre release assembly", () => {
+  test("miniapp archives its independent pin without changing or borrowing the Web pin", () => {
+    const root = fixture();
+    const miniappPin = "b4b2288340dc50b43d3b4dd9fce206512481e23a";
+    put(root, "config/miniapp-release.json", JSON.stringify({ schemaVersion: 1, sourceRevision: miniappPin }));
+    const calls = [];
+    const run = (command, args) => {
+      calls.push({ command, args });
+      if (command === "tar") put(args[3], "scripts/s5-bwiki-runtime.mjs", "// archived runtime");
+      return 0;
+    };
+    const result = preparePreviewSource({ root, run, mode: "miniapp", reuse: true,
+      allowFetch: false, pinFile: "config/miniapp-release.json" });
+    expect(result.sourceRevision).toBe(miniappPin);
+    expect(path.basename(result.source)).toMatch(new RegExp("^miniapp-source-" + miniappPin));
+    expect(readPreviewReleasePin(root).sourceRevision).toBe(pin);
+    expect(calls.find(({ args }) => args[0] === "archive").args.at(-1)).toBe(miniappPin);
+    expect(existsSync(path.join(root, "output/miniapp-source-" + miniappPin + ".json"))).toBe(true);
+    expect(() => readPreviewReleasePin(root, "../outside.json")).toThrow("escapes");
+  });
   test("CLI reuses only the same release pin and prepares a new source when the pin changes", () => {
     const root = fixture();
     const calls = [];

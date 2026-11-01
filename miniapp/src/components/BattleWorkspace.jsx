@@ -20,9 +20,17 @@ import {
   selectSpirit,
   switchBattleForm,
   updateGlobalWeather,
+  updateMirroredTraitContext,
 } from "../shared/state/calculator-session.js";
+import { applyS5PreviewStatTurnEnd, updateS5PreviewTurnEndCounter } from "../shared/features/s5-preview/turn-end.js";
+import { applyS5PreviewDreamTurnEnd, synchronizeS5PreviewSkillUse, synchronizeS5PreviewConfirmationFromUse } from "../shared/features/s5-preview/settlement.js";
+import { prepareS5EnergyUse, applyS5EnergyUse } from "../shared/features/s5-preview/energy-use.js";
+import { prepareS5DiscountUse, applyS5DiscountUse } from "../shared/features/s5-preview/cost-discount-use.js";
+import { applyMiniappS5Interaction } from "../state/s5-interaction.js";
+import { buildCombatState } from "../shared/build-combat-state.js";
 import { resolveBattleSpirit } from "../shared/domain/battle-form.js";
 import { getEffectiveTraits } from "../shared/domain/effective-traits.js";
+import { getMoonMemoryTraitControls } from "../shared/domain/moon-memory-trait-options.js";
 import { linkedNegativeStatusContext } from "../shared/domain/negative-status-context.js";
 import {
   createResultActionRecord,
@@ -453,6 +461,23 @@ export default function BattleWorkspace({
   }
 
   function setTraitValue(side, key, value, control) {
+    if (control?.contextKey?.includes("TraitS5")) {
+      const current = store.getState();
+      const next = applyMiniappS5Interaction(current, snapshot, (base) => {
+        if (control.action === "s5-stat-turn-end") return applyS5PreviewStatTurnEnd(base, { side, snapshot }).state;
+        if (control.action === "s5-dream-turn-end") return applyS5PreviewDreamTurnEnd(base, { side, snapshot }).state;
+        let updated = updateS5PreviewTurnEndCounter(base, { side, snapshot, control, value }) ??
+          updateMirroredTraitContext(base, { direction, key: control.id, value }).state;
+        if (control.selectionToggleKey) {
+          const ownerView = Object.values(traitViews).find(view => view?.ownerSide === side);
+          const toggle = ownerView?.controls.find(input => input.contextKey === control.selectionToggleKey);
+          if (toggle) updated = updateMirroredTraitContext(updated, { direction, key: toggle.id, value: true }).state;
+        }
+        return synchronizeS5PreviewSkillUse(updated, { side, control, value, snapshot });
+      });
+      if (next !== current) dispatchWithUndo({ type: "state/replace", value: next });
+      return;
+    }
     if (control?.contextKey === "enemyTotalSkillCost") {
       const ownerView = Object.values(traitViews).find((view) => view?.ownerSide === side && view.controls.some((input) => input.contextKey === "enemyTotalSkillCostAuto"));
       const autoControl = ownerView?.controls.find((input) => input.contextKey === "enemyTotalSkillCostAuto");
@@ -495,6 +520,31 @@ export default function BattleWorkspace({
     dispatchWithUndo({ type: "battle/set-rain", value });
   }
 
+  function setAcquiredTraitValue(side, traitId, key, value, control) {
+    const current = store.getState();
+    if (control?.contextKey?.includes("TraitS5")) {
+      const next = applyMiniappS5Interaction(current, snapshot, base => {
+        if (control.action === "s5-stat-turn-end") return applyS5PreviewStatTurnEnd(base, { side, snapshot }).state;
+        if (control.action === "s5-dream-turn-end") return applyS5PreviewDreamTurnEnd(base, { side, snapshot }).state;
+        const counter = updateS5PreviewTurnEndCounter(base, { side, snapshot, traitId, control, value });
+        if (counter) return counter;
+        const owner = base.sides[side];
+        const values = { ...owner.acquiredTraitValues?.[traitId], [key]: value };
+        if (control.selectionToggleKey) {
+          const trait = snapshot.traits.find(item => item.id === traitId);
+          const toggle = getMoonMemoryTraitControls(trait).find(input => input.contextKey === control.selectionToggleKey);
+          if (toggle) values[toggle.canonicalKey] = true;
+        }
+        return { ...base, sides: { ...base.sides, [side]: { ...owner,
+          acquiredTraitValues: { ...owner.acquiredTraitValues, [traitId]: values },
+        } } };
+      });
+      if (next !== current) dispatchWithUndo({ type: "state/replace", value: next });
+      return;
+    }
+    dispatchWithUndo({ key, side, traitId, type: "side/set-acquired-trait-value", value });
+  }
+
   function setGlobalWeather(value) {
     dispatchWithUndo({
       type: "state/replace",
@@ -523,11 +573,26 @@ export default function BattleWorkspace({
     updateDirection(direction, { context: { negativeStatusRepeatSkillsBySlot: repeatSkills } });
   }
 
+  function clearReplacedSkillAction(side, mode, slotIndex, current, next) {
+    if (getSkill(snapshot, current)?.id === getSkill(snapshot, next)?.id) return;
+    // Action records belong to the old skill, while its settled battle gains stay in state.
+    const key = `skill:${side}:${mode}:${slotIndex}`;
+    resultActionHistoryRef.current.delete(key);
+    statusAutoTriggerOptOutRef.current.delete(key);
+    setActionFeedback((feedback) => feedback?.actionKey === key ? null : feedback);
+  }
+
   function setSingleSkill(side, value) {
+    const current = state.sides[side].skills.single;
+    if (typeof value === "string" && getSkill(snapshot, current)?.id === value) return;
+    clearReplacedSkillAction(side, "single", 0, current, value);
     dispatchWithUndo({ side, type: "side/set-single-skill", value });
   }
 
   function setFourSkill(side, index, value) {
+    const current = state.sides[side].skills.four[index];
+    if (typeof value === "string" && getSkill(snapshot, current)?.id === value) return;
+    clearReplacedSkillAction(side, "four", index, current, value);
     dispatchWithUndo({ index, side, type: "side/set-four-skill", value });
   }
 
@@ -707,7 +772,7 @@ export default function BattleWorkspace({
 
   function applyResultAction(action, { automatic = false } = {}) {
     const history = resultActionHistoryRef.current;
-    const repeatableUse = action.negativeStatusApplication && !action.negativeStatusToggle;
+    const repeatableUse = action.repeatableUse || (action.negativeStatusApplication && !action.negativeStatusToggle);
     let previousRecord = history.get(action.key);
     if (!repeatableUse && !previousRecord && action.kind === "skill") {
       previousRecord = restorePersistedStatusAction(store.getState(), action);
@@ -778,7 +843,17 @@ export default function BattleWorkspace({
       return;
     }
 
+    const actionSkill = skillForResultAction(snapshot, beforeState, action);
+    if (actionSkill?.s5StatusEffectPending) {
+      setActionFeedback({ actionKey: action.key, message: actionSkill.s5StatusEffectPending });
+      return;
+    }
+    const preparedState = buildCombatState(beforeState, snapshot);
+    const actionResult = calculations[direction].rows[action.slotIndex ?? 0];
+    const energyUse = prepareS5EnergyUse(preparedState, { snapshot, side: action.side, result: actionResult });
+    const discountUse = prepareS5DiscountUse(preparedState, { snapshot, side: action.side, skill: actionSkill, result: actionResult });
     const result = applyBattleActivation({
+      allowNoEffectUse: action.repeatableUse === true,
       calculation: {
         [direction]: { results: calculations[direction].rows },
       },
@@ -786,9 +861,15 @@ export default function BattleWorkspace({
       skillIndex: action.slotIndex,
       skillMode: action.mode,
       snapshot,
-      state: beforeState,
+      state: preparedState,
     });
     if (result.applied) {
+      result.state = applyMiniappS5Interaction(result.state, snapshot, (base) => {
+        const confirmed = synchronizeS5PreviewConfirmationFromUse(base, {
+          side: action.side, snapshot, used: result.skillUsed === true, skillIndex: action.slotIndex,
+        });
+        return result.skillUsed ? applyS5DiscountUse(applyS5EnergyUse(confirmed, energyUse), discountUse) : confirmed;
+      });
       const actionDirection = SIDE_DIRECTIONS[action.side];
       const slotKey = action.mode === "single" ? "single" : String(action.slotIndex + 1);
       if (action.negativeStatusToggle &&
@@ -1071,13 +1152,7 @@ export default function BattleWorkspace({
                     traitId,
                     type: "side/remove-acquired-trait",
                   })}
-                  onValueChange={(traitId, key, value) => dispatchWithUndo({
-                    key,
-                    side: panel.side,
-                    traitId,
-                    type: "side/set-acquired-trait-value",
-                    value,
-                  })}
+                  onValueChange={(traitId, key, value, control) => setAcquiredTraitValue(panel.side, traitId, key, value, control)}
                   side={panel.side}
                   snapshot={snapshot}
                   spirit={resolveBattleSpirit(snapshot, panel.configuration)}
@@ -1093,6 +1168,7 @@ export default function BattleWorkspace({
                 overrides: { [`${role}LevelStage`]: value },
               })}
               state={activeDirectionState}
+              skillOverrides={selectedSlotDetails.overrides}
             />
           ) : null}
 
@@ -1325,6 +1401,7 @@ export default function BattleWorkspace({
                     overrides: { [`${role}LevelStage`]: value },
                   })}
                   state={activeDirectionState}
+                  skillOverrides={selectedSlotDetails.overrides}
                 />
               ) : null}
               {negativeStatusEnabled ? (

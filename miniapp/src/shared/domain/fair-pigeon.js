@@ -10,13 +10,22 @@ export function hasFairPigeonBalance(spirit) {
     spirit?.traitName === BALANCE_TRAIT_NAME;
 }
 
-export function copyPositiveAbilityStages(source = {}, target = {}) {
+export function copyPositiveAbilityStages(source = {}, target = {}, { sourceIsDelta = false } = {}) {
+  const sourceStage = value => sourceIsDelta ? Number(value) || 0 : clampStage(value);
+  const attack = clampStage(
+    Number(target.attack ?? 0) + Math.max(0, sourceStage(source.attack)),
+  );
+  const categoryStages = Object.fromEntries(["physicalAttack", "magicalAttack"]
+    .filter(key => source[key] !== undefined || target[key] !== undefined)
+    .map(key => [key, clampStage(
+      clampStage(Number(target.attack ?? 0) + Number(target[key] ?? 0)) +
+      Math.max(0, sourceStage(Number(source.attack ?? 0) + Number(source[key] ?? 0))),
+    ) - attack]));
   return {
-    attack: clampStage(
-      Number(target.attack ?? 0) + Math.max(0, Number(source.attack ?? 0)),
-    ),
+    attack,
     defense: clampStage(
       Number(target.defense ?? 0) + Math.max(0, Number(source.defense ?? 0)),
     ),
+    ...categoryStages,
   };
 }

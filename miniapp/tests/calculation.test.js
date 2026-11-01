@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { createElement } from "react";
 import { render } from "@testing-library/react";
-import { calculateMatchup as calculateWebMatchup } from "../../src/domain/calculate.js";
+import { pinnedWebCalculate as calculateWebMatchup } from "./release-source.js";
 import { buildResultFormulaAudit } from "../src/view-models/formula-audit.js";
 import ResultFormulaAudit from "../src/components/ResultFormulaAudit.jsx";
 import { calculateMatchup } from "../src/shared/domain/calculate.js";
@@ -10,6 +10,10 @@ import { buildCombatState } from "../src/shared/build-combat-state.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
 import { selectFourSkill, selectSingleSkill } from "../src/shared/state/calculator-session.js";
 import { canonicalTraitControlKey } from "../src/shared/state/trait-values.js";
+import { getS5PreviewTraitInputs } from "../src/shared/domain/s5-preview-traits.js";
+import { applyS5PreviewStatTurnEnd, updateS5PreviewTurnEndCounter } from "../src/shared/features/s5-preview/turn-end.js";
+import { applyMiniappS5Interaction } from "../src/state/s5-interaction.js";
+import { createCombatantView } from "../src/view-models/combatant.js";
 import {
   createCalculationView,
   decoratePowerResult,
@@ -130,6 +134,69 @@ function createState(snapshot) {
   };
   return state;
 }
+
+function s5TraitSnapshot(mechanicKey) {
+  const snapshot = createSnapshot();
+  const identity = { catalogId: "s5-test", key: mechanicKey, mechanicKey };
+  snapshot.meta.seasonId = "S5";
+  snapshot.spirits[0].previewIdentity = identity;
+  snapshot.traits[0] = { id: snapshot.traits[0].id, name: "S5测试特性", previewIdentity: identity };
+  return snapshot;
+}
+
+function setS5TraitValue(snapshot, state, suffix, value) {
+  const control = getS5PreviewTraitInputs(snapshot.traits[0]).find(input => input.contextKey.endsWith(suffix));
+  state.sides.attacker.traitValues[canonicalTraitControlKey(control)] = value;
+  return control;
+}
+
+test("S5 骰子双方威力进入小程序结果，不支持的骰点保留明确阻断原因", () => {
+  const snapshot = s5TraitSnapshot("diliutun");
+  snapshot.traits[0].effectDetails = { rows: [
+    { label: "1点", effects: [{ target: "场上所有精灵", label: "技能威力", value: "40" }] },
+    { label: "2点", note: "行动后", effects: [{ target: "场上所有精灵", label: "回复生命", value: "10%" }] },
+  ] };
+  const state = createState(snapshot);
+  state.mode = "single";
+  const before = ["forward", "reverse"].map(direction => createCalculationView(snapshot, state, direction).selectedResult.totalDamage);
+  setS5TraitValue(snapshot, state, "DiceRolled", true);
+  setS5TraitValue(snapshot, state, "DiceFace", 1);
+  for (const [index, direction] of ["forward", "reverse"].entries()) {
+    expect(createCalculationView(snapshot, state, direction).selectedResult.totalDamage).toBeGreaterThan(before[index]);
+  }
+  setS5TraitValue(snapshot, state, "DiceFace", 2);
+  const blocked = createCalculationView(snapshot, state, "forward");
+  expect(blocked.status).toBe("unresolved");
+  expect(blocked.rows[0].totalDamage).toBeNull();
+  expect(blocked.message).toContain("行动后结算尚未接入");
+});
+
+test("S5 等级控制同步小程序面板和目标生命且不写回派生等级", () => {
+  const snapshot = s5TraitSnapshot("minggulong");
+  const state = createState(snapshot);
+  state.mode = "single";
+  setS5TraitValue(snapshot, state, "BattleLevel", 99);
+  const high = createCalculationView(snapshot, state, "reverse");
+  setS5TraitValue(snapshot, state, "BattleLevel", 79);
+  const low = createCalculationView(snapshot, state, "reverse");
+  expect(low.defenderMaxHp).toBeLessThan(high.defenderMaxHp);
+  expect(createCombatantView(snapshot, state.sides.attacker).stats.find(stat => stat.key === "hp").panel).toBe(low.defenderMaxHp);
+  expect(state.sides.attacker.level).toBeUndefined();
+});
+
+test("S5 银龙累计输入和回合结束写回 canonical，重算不会被旧值覆盖", () => {
+  const snapshot = s5TraitSnapshot("underground-silver-dragon");
+  const state = createState(snapshot);
+  const counter = setS5TraitValue(snapshot, state, "EnergySpent", 2);
+  const settled = setS5TraitValue(snapshot, state, "SettledEnergySpent", 0);
+  const edited = applyMiniappS5Interaction(state, snapshot, base =>
+    updateS5PreviewTurnEndCounter(base, { side: "attacker", snapshot, control: counter, value: 3 }));
+  expect(edited.sides.attacker.traitValues[canonicalTraitControlKey(counter)]).toBe(3);
+  const confirmed = applyMiniappS5Interaction(edited, snapshot, base =>
+    applyS5PreviewStatTurnEnd(base, { side: "attacker", snapshot }).state);
+  expect(confirmed.sides.attacker.traitValues[canonicalTraitControlKey(settled)]).toBe(3);
+  expect(buildCombatState(confirmed, snapshot).directions.forward.context[settled.id]).toBe(3);
+});
 
 function dynamicResult(skillName, source, label, input, before, after) {
   return {

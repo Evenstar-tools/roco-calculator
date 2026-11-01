@@ -466,6 +466,25 @@
   gap: 7px;
 }
 
+.active-ability-stage__specific {
+  display: flex;
+  grid-column: 1 / -1;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.active-ability-stage__specific-summary {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .active-ability-stage__control {
   display: grid;
   min-width: 0;

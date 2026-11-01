@@ -94,11 +94,11 @@ export default function ResultActionPanel({
         <View className="result-actions__list">
         {visibleActions.length ? visibleActions.map((action) => {
           const active = actionIsActive(action, activeActionKeys);
-          const repeatableUse = action.negativeStatusApplication && !action.negativeStatusToggle;
+          const repeatableUse = action.repeatableUse || (action.negativeStatusApplication && !action.negativeStatusToggle);
           const editableControls = action.kind === "trait" &&
               action.control?.type === "boolean"
             ? []
-            : action.controls ?? [];
+            : (action.controls ?? []).filter(input => input.hidden !== true);
           const showsActionButton = action.kind === "skill" ||
             action.control?.type === "boolean";
           return (

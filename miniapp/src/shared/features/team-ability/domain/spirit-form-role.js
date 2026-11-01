@@ -1,6 +1,12 @@
 import { FORM_ROLE_MANIFEST } from "../../../data/form-role-manifest-v1.js";
 import { hasCompleteRaceStats } from "../../../domain/stat.js";
 
+const CANDYMO_S5_FORM_IDS = new Map([
+  [3168, "spirit_preview_s5_abu"], [5068, "spirit_preview_s5_super-abu"],
+  [3822, "spirit_preview_s5_daidailing"], [3823, "spirit_preview_s5_tiaotiaoling"],
+  [3824, "spirit_preview_s5_lily-of-valley"],
+]);
+
 const UNKNOWN_FORM_ROLE = Object.freeze({
   evolutionFamilyId: null,
   formRole: "unknown",
@@ -49,6 +55,24 @@ export function resolveSpiritFormRole(spirit, { spiritFilterRevision } = {}) {
       formRole: "boss",
       formRoleStatus: "verified",
     };
+  }
+  const reviewed = spirit?.formRoleEvidence;
+  if (reviewed?.kind === "bwiki-season" && Number.isSafeInteger(reviewed.revision) && reviewed.revision > 0 &&
+      /^https:\/\/wiki\.biligame\.com\/nrc\//u.test(reviewed.url ?? "") &&
+      ["growth", "final", "boss"].includes(spirit.formRole)) {
+    return {
+      evolutionFamilyId: spirit.evolutionFamilyId ?? null,
+      formRole: spirit.formRole,
+      formRoleStatus: "verified",
+    };
+  }
+  if (reviewed?.kind === "candymo-reviewed" && reviewed.reviewId === "s5-candymo-20261101" &&
+      reviewed.authority === "third-party-game-data-site" && CANDYMO_S5_FORM_IDS.get(reviewed.sourceId) === spirit.id &&
+      reviewed.url === `https://app.candymo.com/pets/${reviewed.sourceId}` &&
+      reviewed.apiUrl === `https://api.candymo.com/api/v1/pets/${reviewed.sourceId}` &&
+      ["growth", "final", "boss"].includes(spirit.formRole)) {
+    return { evolutionFamilyId: spirit.evolutionFamilyId ?? null,
+      formRole: spirit.formRole, formRoleStatus: "verified" };
   }
   const sourceId = spirit?.id?.startsWith("cn-placeholder:")
     ? spirit.reference?.sourceId ?? spirit.id.slice("cn-placeholder:".length)

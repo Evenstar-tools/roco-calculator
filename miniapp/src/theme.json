@@ -1,11 +1,11 @@
 {
   "light": {
-    "navigationBackground": "#121e38",
+    "navigationBackground": "#15373e",
     "pageBackground": "#f4f2ed",
     "backgroundTextStyle": "dark"
   },
   "dark": {
-    "navigationBackground": "#0d1730",
+    "navigationBackground": "#12303a",
     "pageBackground": "#101722",
     "backgroundTextStyle": "light"
   }

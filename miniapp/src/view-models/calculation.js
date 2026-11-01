@@ -1,6 +1,8 @@
 import { buildCombatState } from "../shared/build-combat-state.js";
 import { resolveBattleSpirit } from "../shared/domain/battle-form.js";
-import { calculateMatchup } from "../shared/domain/calculate.js";
+import { withS5PreviewBattleLevels } from "../shared/domain/battle-level.js";
+import { withS5PreviewCalculationGuard } from "../shared/features/s5-preview/calculation-guard.js";
+import { withS5PreviewSettlements } from "../shared/features/s5-preview/settlement.js";
 import {
   analyzeDefensiveTypes,
   analyzeSkillTypeCoverage,
@@ -125,12 +127,12 @@ function isRecoverableConfigurationError(error) {
   );
 }
 
-function toResultRow(result, defenderHp, defenderMaxHp) {
+function toResultRow(result, defenderHp, defenderMaxHp, preserveReason = false) {
   if (result?.status !== "exact") {
     return {
       ...result,
       hpPercent: null,
-      message: unresolvedMessage(result),
+      message: preserveReason && result.reason ? result.reason : unresolvedMessage(result),
       status: "unresolved",
       totalDamage: null,
     };
@@ -187,6 +189,7 @@ export function selectDamageResult({
 }
 
 export function createCalculationView(snapshot, state, direction) {
+  state = withS5PreviewBattleLevels(snapshot, buildCombatState(state, snapshot));
   const normalizedDirection =
     direction === "reverse" ? "reverse" : "forward";
   const attackerSide =
@@ -242,12 +245,16 @@ export function createCalculationView(snapshot, state, direction) {
 
   try {
     const combatState = buildCombatState(state, snapshot);
-    const sharedResult = buildCalculatorViewModel({
+    const missingSide = [attackerSide, defenderSide].find(side => !resolveBattleSpirit(snapshot, side));
+    if (missingSide) throw new Error(`Unknown spirit: ${missingSide.spiritId}`);
+    const baseView = buildCalculatorViewModel({
       activeDirection: normalizedDirection,
       snapshot,
       state: combatState,
-    }).result;
-    const calculation = calculateMatchup(snapshot, combatState);
+    });
+    const sharedView = withS5PreviewCalculationGuard(withS5PreviewSettlements(baseView, snapshot, combatState), snapshot, combatState);
+    const sharedResult = sharedView.result;
+    const calculation = sharedView.calculation;
     const directionResult = calculation[normalizedDirection];
     const rows = directionResult.results.map((result, index) =>
       toResultRow(
@@ -257,6 +264,7 @@ export function createCalculationView(snapshot, state, direction) {
         ),
         defenderHp,
         defenderMaxHp,
+        result.status === "unsupported" && result !== baseView.calculation[normalizedDirection].results[index],
       ),
     );
     const traitResult = directionResult.traitResult

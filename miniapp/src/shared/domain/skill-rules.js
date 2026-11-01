@@ -369,6 +369,16 @@ function resolvePositionHitCount(skill, context) {
   }], { hitCount });
 }
 
+function resolveConditionalEnergyRecovery(skill, context) {
+  const triggered = context[skill.ruleParams.contextKey] === true;
+  const energyRecovery = triggered ? Number(skill.ruleParams.energyRecovery) : 0;
+  const basePower = Number(skill.basePower);
+  return exact(basePower, [{
+    label: `回复${energyRecovery}能量（伤害不变）`, input: triggered,
+    before: basePower, after: basePower, source: "reviewed-rule:conditional-energy-recovery-v1",
+  }], { energyRecovery });
+}
+
 function resolveBooleanPowerAdd(skill, context) {
   const params = skill.ruleParams ?? {};
   const contextKey = params.contextKey ?? "conditionTriggered";
@@ -800,6 +810,28 @@ function resolveBurstCostReduction(skill, context) {
   ], { resolvedCost });
 }
 
+function resolveCountCostReduction(skill, context) {
+  const params = skill.ruleParams ?? {};
+  const rawCount = context[params.contextKey] ?? params.defaultValue;
+  if (!isFiniteNumber(rawCount)) {
+    return needsInput([numberInput(params.contextKey, params.label ?? "此前次数")], "需要此前已确认次数才能确定能耗");
+  }
+  if (!isFiniteNumber(skill.cost)) {
+    return { status: "unsupported", reason: "技能基础能耗尚未确认" };
+  }
+  const count = Math.max(0, Math.floor(Number(rawCount)));
+  const reduction = params.threshold === undefined
+    ? count * Number(params.perCount ?? 0)
+    : count >= Number(params.threshold) ? Number(params.reduction ?? 0) : 0;
+  const baseCost = Math.max(0, Number(skill.cost));
+  const resolvedCost = Math.max(0, baseCost - Math.max(0, reduction));
+  return exact(Number(skill.basePower), [{
+    label: params.label ?? "累计次数减耗", input: count,
+    before: baseCost, after: resolvedCost,
+    source: "official-video:BV1SNxq6REfb:2026-10-31",
+  }], { resolvedCost });
+}
+
 function compareThreshold(value, threshold, operator) {
   switch (operator) {
     case "eq":
@@ -1158,8 +1190,10 @@ const RULES = new Map([
   ["stack_scaled", resolveStackScaled],
   ["thunderstorm_burst", resolveThunderstormBurst],
   ["burst_cost_reduction", resolveBurstCostReduction],
+  ["count_cost_reduction", resolveCountCostReduction],
   ["position_power_add", resolvePositionPowerAdd],
   ["boolean_power_add", resolveBooleanPowerAdd],
+  ["conditional_energy_recovery", resolveConditionalEnergyRecovery],
   ["boolean_power_multiplier", resolveBooleanPowerMultiplier],
   ["boolean_power_percent_add", resolveBooleanPowerPercentAdd],
   ["boolean_damage_multiplier", resolveBooleanDamageMultiplier],

@@ -1,6 +1,7 @@
 // 来源只解释已结算的数值，不参与伤害计算。
+import { applyAttackStageChanges, postAttackStageChanges } from "./attack-stages.js";
 const FIELDS = ["fixedPowerAdd", "attackLevelStage", "defenseLevelStage",
-  "magicalDefenseLevelStageAdd", "hitCountAdd", "hitCountPercentAdd",
+  "magicalDefenseLevelStageAdd", "physicalAttackLevelStageAdd", "magicalAttackLevelStageAdd", "hitCountAdd", "hitCountPercentAdd",
   "attackerSpeedFlat", "defenderSpeedFlat", "lifestealPercent"];
 const SLOTS = ["fixedPowerAddsBySlot", "skillPowerPercentAddsBySlot"];
 const number = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
@@ -60,6 +61,24 @@ export function recordGainChanges(before, after, source) {
     if (Object.keys(ledger).length) current.gainSources = ledger;
   }
   return after;
+}
+
+export function recordSkillAndPostAttackGains(before, after, source, { direction, effects } = {}) {
+  // Separate the settled trait contribution from the skill without recalculating the final stages.
+  const changes = postAttackStageChanges(effects);
+  if (!changes.attack && !changes.physical) return recordGainChanges(before, after, source);
+  const intermediate = { ...before, directions: Object.fromEntries(
+    Object.entries(before.directions).map(([key, value]) => [key, {
+      ...value, overrides: { ...value.overrides },
+    }]),
+  ) };
+  const overrides = intermediate.directions[direction].overrides;
+  Object.assign(overrides, applyAttackStageChanges(overrides, changes));
+  recordGainChanges(before, intermediate, { kind: "trait", id: effects.source ?? "post-attack", name: effects.source ?? "攻击后效果" });
+  for (const key of ["forward", "reverse"]) {
+    after.directions[key].overrides.gainSources = intermediate.directions[key].overrides.gainSources ?? {};
+  }
+  return recordGainChanges(intermediate, after, source);
 }
 
 export function recordManualGainChanges(previous, current) {

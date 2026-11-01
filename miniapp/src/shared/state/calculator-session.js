@@ -8,6 +8,7 @@ import { normalizeTriggerControls } from "../domain/trigger-controls.js";
 import {
   chooseDefaultSkillIds,
   getSkillChoices,
+  getUserPreviewDefaultSkillIds,
 } from "../domain/skill-loadout.js";
 import {
   getSkill,
@@ -37,6 +38,17 @@ import { getLegacyAbuLevelInputs, getLegacyMinggulongLevelInputs } from "../feat
 import { getGoldChargeCountInput } from "../features/s5-preview/charge-input-migration.js";
 import { getSilverEnergySpentInput } from "../features/s5-preview/energy-input-migration.js";
 import { correctS5PreviewDiceInputs, getS5SixFaceDiceInput } from "../features/s5-preview/dice-input-migration.js";
+
+function isGlobalDraft(snapshot) {
+  return snapshot?.meta?.serverId === "global" &&
+    (!snapshot.meta.id || snapshot.meta.status === "unverified" || Boolean(snapshot.meta.placeholderSource));
+}
+
+function isCalculatingSession(state, serverId) {
+  const release = getServerRelease(serverId);
+  return release.capabilities.calculate && (serverId === "cn" ||
+    (state.versions?.data === release.dataVersion && state.versions?.rules === release.rulesVersion));
+}
 
 const S5_COUNTER_IDS = new Set(["attacker", "defender"].flatMap(role =>
   [getGoldChargeCountInput(role).id, getSilverEnergySpentInput(role).id, getS5SixFaceDiceInput(role).id]));
@@ -224,7 +236,7 @@ export function assertSnapshotReferences(sharedState, snapshot) {
 
 export function createProductInitialState(snapshot) {
   const state = createInitialState(snapshot);
-  const unverified = snapshot?.meta?.serverId === "global";
+  const unverified = isGlobalDraft(snapshot);
   const emptySkills = {
     single: null,
     four: [null, null, null, null],
@@ -293,7 +305,7 @@ function cloneMarks(marks) {
 }
 
 function createDefaultSpiritSide(initialSide, snapshot, spiritId) {
-  if (snapshot?.meta?.serverId === "global") {
+  if (isGlobalDraft(snapshot)) {
     return {
       ...cloneDraft(initialSide),
       spiritId,
@@ -585,7 +597,7 @@ function draftSkillReference(current, skillId) {
 
 function reduceSessionState(state, action, serverId) {
   getServerRelease(serverId);
-  if (serverId === "cn") return calculatorReducer(state, action);
+  if (isCalculatingSession(state, serverId)) return calculatorReducer(state, action);
   // Global drafts preserve user data. No CN weather, stat or trigger rules run here.
   switch (action.type) {
     case "state/replace":
@@ -657,7 +669,7 @@ export function reduceSessionAction(state, action, { serverId = "cn" } = {}) {
   const rememberSide =
     action.remember !== false &&
     action.side &&
-    (serverId === "global" || !nextState.sides[action.side]?.battleForm) &&
+    (!isCalculatingSession(state, serverId) || !nextState.sides[action.side]?.battleForm) &&
     REMEMBERED_SIDE_ACTIONS.has(action.type)
       ? action.side
       : null;
@@ -681,7 +693,7 @@ export function applyConfiguration(
   if (!initialState?.directions) {
     throw new TypeError("configuration initialState 无效");
   }
-  if (snapshot?.meta?.serverId === "global") {
+  if (isGlobalDraft(snapshot)) {
     return {
       activeDirection: "forward",
       persistence: persistence(remember ? side : null),
@@ -726,8 +738,8 @@ export function applyConfiguration(
       });
     } else if (snapshot) {
       const skill = getSkill(snapshot, entrySkillId(entry));
-      if (skill?.id?.startsWith("skill_preview_s5_") && skill.calculationStatus === "pending-skill-data") {
-        // Known description hits remain editable even while damage parameters are pending.
+      if (skill?.id?.startsWith("skill_preview_s5_")) {
+        // S5 defaults arrive as bare ids; keep their declared hits, editable or not yet calculable.
         nextState = calculatorReducer(nextState, {
           direction,
           type: "direction/update",
@@ -846,7 +858,7 @@ export function patchFourSkill(state, { index, patch, side, snapshot }) {
     context: { ...(details.context ?? {}), ...(patch.context ?? {}) },
     overrides: { ...(details.overrides ?? {}), ...(patch.overrides ?? {}) },
   };
-  if (snapshot?.meta?.serverId === "global") {
+  if (isGlobalDraft(snapshot)) {
     return reduceSessionAction(state, { index, side, type: "side/set-four-skill", value }, { serverId: "global" });
   }
   if (snapshot && patch.context) {
@@ -874,7 +886,7 @@ export function selectFourSkill(
   { index, side, skillId, snapshot },
 ) {
   const current = state.sides[side].skills.four[index];
-  if (snapshot?.meta?.serverId === "global") {
+  if (isGlobalDraft(snapshot)) {
     return reduceSessionAction(state, {
       index, side, type: "side/set-four-skill", value: draftSkillReference(current, skillId),
     }, { serverId: "global" });
@@ -939,7 +951,7 @@ export function getRestorableDefaultSkills(state, { side, snapshot }) {
   const configured = state.sides[side];
   if (!configured?.spiritId || configured.battleForm) return null;
   const learnset = snapshot.learnsets?.find(entry => entry.spiritId === configured.spiritId);
-  if (!Array.isArray(learnset?.defaultSkillIds)) return null;
+  if (!Array.isArray(learnset?.defaultSkillIds) && !getUserPreviewDefaultSkillIds(snapshot, configured.spiritId)) return null;
   const defaults = chooseDefaultSkillIds(snapshot, configured.spiritId);
   return defaults.some(Boolean) && defaults.some((id, index) => id !== entrySkillId(configured.skills.four[index]))
     ? defaults : null;
@@ -992,7 +1004,7 @@ export function updateGlobalWeather(state, weather) {
           weatherSandstorm: nextWeather === "sandstorm",
           weatherBlizzard: nextWeather === "blizzard",
           weatherDream: nextWeather === "dream",
-          weatherTurns: nextWeather === "none" || nextWeather === "dream" ? 0 : 8,
+          weatherTurns: nextWeather === "none" ? 0 : 8,
         },
       },
     });
@@ -1053,7 +1065,7 @@ export function rememberSingleSkill(
   state,
   { direction, side, skillId = null, snapshot },
 ) {
-  if (snapshot?.meta?.serverId === "global") return { persistence: persistence(side), state };
+  if (isGlobalDraft(snapshot)) return { persistence: persistence(side), state };
   const latestDirection = state.directions[direction];
   const currentEntry = state.sides[side].skills.single;
   const currentSkillId =
@@ -1110,7 +1122,7 @@ export function selectSingleSkill(
   { direction, side, skillId, snapshot },
 ) {
   const currentEntry = state.sides[side].skills.single;
-  if (snapshot?.meta?.serverId === "global") {
+  if (isGlobalDraft(snapshot)) {
     return reduceSessionAction(state, {
       side, type: "side/set-single-skill", value: draftSkillReference(currentEntry, skillId),
     }, { serverId: "global" });

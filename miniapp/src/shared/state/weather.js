@@ -17,7 +17,7 @@ const CONTROL_IDS = ["rainWeather", "blizzardWeather", "sandstormWeather", "drea
 );
 for (const source of ["attackerTrait", "defenderTrait"]) {
   const [control] = normalizeTriggerControls([{ key: `${source}S5DreamActive`,
-    label: "萌系天气（占位）", type: "boolean", defaultValue: false, scope: "battle" }], { source });
+    label: "霞光梦境", type: "boolean", defaultValue: false, scope: "battle" }], { source });
   CONTROL_IDS.push([control.id, "dream"]);
   const [snowControl] = normalizeTriggerControls([{ key: `${source}S5SnowActive`,
     label: "暴风雪天气", type: "boolean", defaultValue: false, scope: "battle" }], { source });
@@ -66,8 +66,7 @@ function linkedContext(context = {}, weather, global) {
 
 // 天气属于整场对战，不属于某只精灵或某个技能槽；旧槽位记忆也不能覆盖当前天气。
 export function synchronizeWeather(state, weather, turns = 8) {
-  // 萌系占位天气的时长未知，不套用已有天气的 8 回合规则。
-  const duration = weather === "none" || weather === "dream" ? 0 : Math.min(8, Math.max(1, Number(turns) || 8));
+  const duration = weather === "none" ? 0 : Math.min(8, Math.max(1, Number(turns) || 8));
   const global = {
     weatherRainTurns: weather === "rain" ? duration : 0,
     weatherThunder: weather === "thunder",

@@ -29,7 +29,7 @@ describe("BWIKI 精灵头像身份绑定", () => {
       expect(spirit.provenance.asset.file, form.title).toBe(form.image.head);
       expect(spirit.asset.sourceUrl, form.title).toBe(asset.sourceUrl);
       expect(bundled.spirits.find(({ id }) => id === spirit.id).imageUrl, form.title)
-        .toBe(asset.sourceUrl);
+        .toBe(`https://rococalc.top${asset.localFile}`);
       const image = readFileSync(`public${asset.localFile}`);
       expect(createHash("sha256").update(image).digest("hex"), form.title).toBe(asset.sha256);
     }
