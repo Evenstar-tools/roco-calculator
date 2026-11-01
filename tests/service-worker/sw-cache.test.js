@@ -395,6 +395,50 @@ describe("repeat requests and cache failures", () => {
     expect(harness.cacheApi.put).toHaveBeenCalledTimes(1);
   });
 
+  test("serves cached stable images without touching the network", async () => {
+    const response = new Response("portrait");
+    const fetchImpl = vi.fn();
+    const url = "/assets/spirits/spirit_0123456789abcdef.png";
+    const harness = createHarness({ cached: { [`https://calculator.test${url}`]: response }, fetchImpl });
+    const event = dispatchFetch(harness.listeners.fetch, url);
+    await expect(event.responsePromise).resolves.toBe(response);
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(harness.caches.open).toHaveBeenCalledWith("rock-calculator-images-__IMAGE_DIGEST__");
+  });
+
+  test.each(["/assets/skills/skill_0123456789abcdef.png", "/global-assets/assets/spirits/spirit_0123456789abcdef.png"])("stores %s in the long-lived image cache", async (url) => {
+    const fetchImpl = vi.fn(async () => new Response("image"));
+    const harness = createHarness({ fetchImpl });
+    const event = dispatchFetch(harness.listeners.fetch, url);
+    await event.responsePromise;
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(harness.caches.open).toHaveBeenCalledWith("rock-calculator-images-__IMAGE_DIGEST__");
+    expect(harness.cacheApi.put).toHaveBeenCalledTimes(1);
+  });
+
+  test("returns a network error for an uncached stable image while offline", async () => {
+    const harness = createHarness({ fetchImpl: vi.fn(async () => { throw new Error("offline"); }) });
+    const event = dispatchFetch(harness.listeners.fetch, "/assets/spirits/spirit_0123456789abcdef.png");
+    await expect(event.responsePromise).resolves.toBeInstanceOf(Response);
+  });
+
+  test("activation keeps the current image cache across releases and removes older ones", async () => {
+    const harness = createHarness();
+    for (const key of ["rock-calculator-images-__IMAGE_DIGEST__", "rock-calculator-images-oldversion"]) harness.stores.set(key, harness.cacheApi);
+    let activation;
+    harness.listeners.activate({ waitUntil(value) { activation = value; } });
+    await activation;
+    expect(harness.caches.delete.mock.calls).toEqual([["rock-calculator-images-oldversion"]]);
+  });
+
+  test("lets build checks reach the server directly", () => {
+    const fetchImpl = vi.fn();
+    const harness = createHarness({ fetchImpl });
+    const event = dispatchFetch(harness.listeners.fetch, "/?build-check=123");
+    expect(event.responsePromise).toBeUndefined();
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
   test("still refreshes mutable portraits rather than freezing their contents", async () => {
     const response = new Response("portrait");
     const fetchImpl = vi.fn(async () => new Response("updated portrait"));
