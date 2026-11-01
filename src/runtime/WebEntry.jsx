@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { IS_PREVIEW_BUILD } from "./preview-channel.js";
 import { metrics } from "../analytics/metrics.js";
 import { readThemeSetting } from "../state/display-settings.js";
@@ -12,8 +12,9 @@ import { LocaleProvider } from "../i18n/LocaleContext.jsx";
 import { pickRandomSeasonThemeId, resolveSeasonPreviewId, resolveSeasonThemeId } from "../theme/season-themes.js";
 import { readLastRandomSeasonTheme, readSeasonThemePreference, writeLastRandomSeasonTheme, writeSeasonThemePreference } from "../state/season-theme.js";
 import { SeasonThemeProvider } from "../theme/SeasonThemeContext.jsx";
+import { recoverableLazy } from "./chunk-recovery.js";
 
-const CalculatorRouter = lazy(() => import("../CalculatorRouter.jsx").then((module) => ({ default: module.CalculatorRouter })));
+const CalculatorRouter = recoverableLazy(() => import("../CalculatorRouter.jsx").then((module) => ({ default: module.CalculatorRouter })));
 const pageText = {
   en: { title: "Roco Calculator · Global", description: "Roco Kingdom damage calculator using S3 midseason stats and rules.", loading: "Loading calculator…" },
   "zh-CN": { title: "洛克计算器 · 国际服", description: "洛克王国国际服计算器，采用 S3 季中数值与规则。", loading: "正在加载计算器…" },
