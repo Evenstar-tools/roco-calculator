@@ -15,6 +15,7 @@ import TeamWeaknessSummary from "./TeamWeaknessSummary.jsx";
 import TypeCandidates from "./TypeCandidates.jsx";
 import { ElementIcon } from "./ElementIcon.jsx";
 import { TeamMemberEditor } from "./TeamMemberEditor.jsx";
+import { SpiritImage } from "./SpiritImage.jsx";
 
 function formatMultiplier(value) {
   if (value === null) return "—";
@@ -69,7 +70,7 @@ function MatrixTable({ analysis, mode, onCellSelect }) {
               <tr key={member.slotIndex}>
                 <th scope="row" title={t(member.name)}>
                   <span>{member.slotIndex + 1}</span>
-                  {member.assetUrl ? <img alt="" src={member.assetUrl} /> : null}
+                  {member.assetUrl ? <SpiritImage name={member.name} alt="" src={member.assetUrl} /> : null}
                   <strong className="sr-only">{t(member.name)}</strong>
                 </th>
                 {member[mode].map((cell) => (
@@ -166,7 +167,7 @@ function ManualOpponentEditor({
               >
                 <span>{index + 1}</span>
                 {spirit?.asset?.localUrl ? (
-                  <img alt="" src={spirit.asset.localUrl} />
+                  <SpiritImage name={spirit.fullName} alt="" src={spirit.asset.localUrl} />
                 ) : (
                   <Plus aria-hidden="true" size={20} />
                 )}
@@ -215,7 +216,7 @@ function MatchupTable({ matchup, onCellSelect }) {
             <th scope="col">{t("攻击方 \\ 防守方")}</th>
             {matchup.defenders.map((member) => (
               <th key={member.slotIndex} scope="col">
-                {member.assetUrl ? <img alt="" src={member.assetUrl} /> : null}
+                {member.assetUrl ? <SpiritImage name={member.name} alt="" src={member.assetUrl} /> : null}
                 <span>{t(member.name)}</span>
               </th>
             ))}
@@ -225,7 +226,7 @@ function MatchupTable({ matchup, onCellSelect }) {
           {matchup.attackers.map((attacker, rowIndex) => (
             <tr key={attacker.slotIndex}>
               <th scope="row">
-                {attacker.assetUrl ? <img alt="" src={attacker.assetUrl} /> : null}
+                {attacker.assetUrl ? <SpiritImage name={attacker.name} alt="" src={attacker.assetUrl} /> : null}
                 <span>{t(attacker.name)}</span>
               </th>
               {matchup.cells[rowIndex].map((cell, columnIndex) => (
@@ -430,7 +431,7 @@ export function TeamAnalysisPanel({
       {selectedCell ? (
         <div aria-label={t("单元格详情")} className="team-analysis__source-strip">
           {selectedCell.member.assetUrl ? (
-            <img alt="" src={selectedCell.member.assetUrl} />
+            <SpiritImage name={selectedCell.member.name} alt="" src={selectedCell.member.assetUrl} />
           ) : null}
           <strong>{t(selectedCell.member.name)}</strong>
           <span>→</span>
