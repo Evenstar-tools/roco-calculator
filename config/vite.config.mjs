@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { realpathSync } from "node:fs";
 
 import { buildAttributionPlugin } from "../scripts/build-attribution.mjs";
+import { userReleaseHistoryPlugin } from "../scripts/user-release-history.mjs";
 
 export default defineConfig({
   build: {
@@ -56,5 +57,5 @@ export default defineConfig({
       "dist/**",
     ],
   },
-  plugins: [react(), buildAttributionPlugin()],
+  plugins: [react(), buildAttributionPlugin(), userReleaseHistoryPlugin()],
 });

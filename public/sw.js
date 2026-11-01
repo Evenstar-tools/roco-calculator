@@ -63,7 +63,10 @@ self.addEventListener("install", (event) => {
         await Promise.all(paths.map((path) => cacheBuildAssets(cache, path)));
         // 初次加载发生在 SW 接管前；仅国服窗口补缓存已有国服数据。
         if (paths.some((path) => !isGlobalShell(path))) {
-          await Promise.allSettled([cache.add("/data/runtime.json")]);
+          await Promise.allSettled([
+            cache.add("/data/runtime.json"),
+            cache.add("/data/user-release-notes.json"),
+          ]);
         }
       })
       .then(() => self.skipWaiting()),

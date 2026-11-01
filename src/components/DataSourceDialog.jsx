@@ -2,10 +2,8 @@ import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { useEffect, useRef, useState } from "react";
 import { GLOBAL_RELEASE_SUMMARY } from "../data/global-release-summary.js";
-import {
-  FEATURED_USER_RELEASE,
-  USER_RELEASE_NOTES,
-} from "../data/user-release-notes.js";
+import { FEATURED_USER_RELEASE } from "../data/user-release-notes.js";
+import { getCachedUserReleaseHistory, loadUserReleaseHistory } from "../data/load-user-release-history.js";
 
 const BWIKI_URL = "https://wiki.biligame.com/nrc/";
 const BWIKI_LICENSE_URL =
@@ -79,6 +77,17 @@ function ReleaseItem({ release, current = false }) {
 function ReleaseNotesView({ onBack, onClose }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
+  const [releases, setReleases] = useState(getCachedUserReleaseHistory);
+  const [loadState, setLoadState] = useState(releases ? "ready" : "loading");
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    if (serverId === "global") return undefined;
+    let active = true;
+    loadUserReleaseHistory().then(history => {
+      if (active) { setReleases(history); setLoadState("ready"); }
+    }).catch(() => { if (active) setLoadState("error"); });
+    return () => { active = false; };
+  }, [serverId, attempt]);
   return (
     <section
       aria-label={t("完整版本记录")}
@@ -101,13 +110,17 @@ function ReleaseNotesView({ onBack, onClose }) {
         </div>
       </header>
       <div className="release-notes-dialog__list">
-        {serverId === "global" ? <ReleaseItem release={FEATURED_RELEASE_SUMMARY} current /> : USER_RELEASE_NOTES.map((release, index) => (
+        {serverId === "global" ? <ReleaseItem release={FEATURED_RELEASE_SUMMARY} current /> : (releases ?? [FEATURED_USER_RELEASE]).map((release, index) => (
           <ReleaseItem
             current={index === 0}
             key={release.version}
             release={release}
           />
         ))}
+        {serverId !== "global" && loadState === "loading" && <p role="status">{t("正在加载版本记录…")}</p>}
+        {serverId !== "global" && loadState === "error" && <p role="alert">{t("版本记录加载失败")}{" "}
+          <button className="secondary-action" onClick={() => { setLoadState("loading"); setAttempt(value => value + 1); }} type="button">{t("重试")}</button>
+        </p>}
       </div>
       <div className="dialog-actions">
         <button
