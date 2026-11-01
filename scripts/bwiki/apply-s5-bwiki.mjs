@@ -1,5 +1,5 @@
 import { stableId, splitFullName } from "./normalize.mjs";
-import { mergeEntityChangeInfo } from "../../src/data/entity-change-history.js";
+import { deduplicateS5ChangeInfo, mergeEntityChangeInfo } from "../../src/data/entity-change-history.js";
 import { chooseDefaultSkillIds, reconcileSkillLoadout } from "../../src/domain/skill-loadout.js";
 import { getSpiritSkillSlotCapacity } from "../../src/domain/skill-slot-capacity.js";
 
@@ -107,6 +107,7 @@ function applyBwikiHistory(snapshot, evidence, { spiritIds, skillIds, version })
   // mergeEntityChangeInfo deliberately preserves insertion order. Sort groups
   // by their own recorded date so reimporting older history cannot become latest.
   for (const entity of [...snapshot.spirits, ...snapshot.skills]) if (entity.changeInfo) {
+    entity.changeInfo = deduplicateS5ChangeInfo(entity.changeInfo);
     const groups = [entity.changeInfo, ...(entity.changeInfo.history ?? [])].map(({ history: _history, ...group }) => ({ ...group, items: group.items ?? [] }))
       .sort((a, b) => String(b.patch?.date ?? "").replace(/[^\d]/gu, "").localeCompare(String(a.patch?.date ?? "").replace(/[^\d]/gu, "")) ||
         String(b.patch?.id ?? "").localeCompare(String(a.patch?.id ?? "")));

@@ -1,5 +1,7 @@
 import { expect, test } from "vitest";
-import { mergeEntityChangeInfo } from "../../src/data/entity-change-history.js";
+import { deduplicateS5ChangeInfo, mergeEntityChangeInfo as mergeHistory } from "../../src/data/entity-change-history.js";
+
+const mergeEntityChangeInfo = (previous, incoming) => deduplicateS5ChangeInfo(mergeHistory(previous, incoming));
 
 const stats = { kind: "stat", field: "hp", label: "生命", before: 144, after: 164 };
 const announcement = {

@@ -5,6 +5,8 @@ import { applyS5Bwiki } from "../../scripts/bwiki/apply-s5-bwiki.mjs";
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 import { chooseDefaultSkillIds } from "../../src/domain/skill-loadout.js";
 import { raceStatsBeforePatch } from "../../src/features/balance-comparison/model.js";
+import { unpackCatalog } from "../../src/features/skill-query/catalog.js";
+import { prepareSkillQueryCatalog } from "../../src/features/skill-query/prepare-catalog.js";
 
 const read = file => JSON.parse(readFileSync(file, "utf8"));
 const evidence = read("data/reviewed/nrc-s5-20261101.json");
@@ -298,6 +300,17 @@ describe("complete S5 BWIKI build overlay", () => {
       magicalDefense: 88, speed: 70, total: 659,
     });
     expect(spirit.raceStats).toMatchObject({ hp: 164, physicalAttack: 160, physicalDefense: 142, magicalDefense: 98 });
+  });
+  test("browser skill-query projection keeps the imported deduplicated history for every affected entity", () => {
+    const catalog = unpackCatalog(read("public/data/skill-query/catalog.json"));
+    const { data } = prepareSkillQueryCatalog(catalog, result);
+    const season = data.seasons.find(entry => entry.id === "S5");
+    for (const kind of ["spirits", "skills"]) for (const before of original[kind]) {
+      if (!changeGroups(before.changeInfo).some(group => group.patch?.id === announcementId)) continue;
+      const projected = season[kind].find(entity => entity.id === before.id);
+      expect(projected.changeInfo).toEqual(result[kind].find(entity => entity.id === before.id).changeInfo);
+      expect(changeGroups(projected.changeInfo).some(group => group.patch?.id === announcementId)).toBe(false);
+    }
   });
   test("existing S4 history remains accessible with its original patch/date/items and new-only spirits stay NEW", () => {
     for (const kind of ["spirits", "skills"]) for (const before of original[kind]) {
