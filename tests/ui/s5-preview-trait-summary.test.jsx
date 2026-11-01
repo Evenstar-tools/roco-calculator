@@ -60,13 +60,13 @@ test("阿布按方向显示等级与承伤，不给所有技能标通用增伤",
   const summary = screen.getByRole("status", { name: "攻击特性当前效果" });
   expect(summary).toHaveTextContent("当前等级 79");
   expect(summary).not.toHaveTextContent("等级系数");
-  expect(summary).not.toHaveTextContent("承伤 +40%");
+  expect(summary).not.toHaveTextContent("承伤 +30%");
   const defense = traitView("abu", "defender");
   rerender(<S5PreviewTraitSummary trait={defense} role="defender" context={withValues(defense, {
     defenderTraitS5BattleLevel: 79,
   })} />);
   expect(screen.getByRole("status", { name: "防御特性当前效果" })).not.toHaveTextContent("等级系数");
-  expect(screen.getByRole("status", { name: "防御特性当前效果" })).toHaveTextContent("承伤 +40%");
+  expect(screen.getByRole("status", { name: "防御特性当前效果" })).toHaveTextContent("承伤 +30%");
 });
 
 test("单技能攻击类特性不出现在对方防御卡，切换方向才编辑该方增益", () => {

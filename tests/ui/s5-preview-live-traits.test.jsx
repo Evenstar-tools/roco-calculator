@@ -96,7 +96,7 @@ test.each(["single", "four"])("精简%s聚能次数在回合末增加物攻，�
   expect(primary()).toBe(before);
 });
 
-test.each([["abu", "single"], ["boss-abu", "four"], ["super-abu", "four"]])("%s %s仅用当前等级，步进2级、80承伤边界与99上限同步", (key, mode) => {
+test.each([["abu", "single"], ["boss-abu", "four"], ["super-abu", "four"]])("%s %s旧阿布机制仅用当前等级，步进2级、80承伤边界与150上限同步", (key, mode) => {
   setup(key, mode);
   if (mode === "four") fireEvent.click(screen.getByRole("button", { name: "具体版", exact: true }));
   const level = screen.getByRole("spinbutton", { name: "当前等级", exact: true });
@@ -118,18 +118,18 @@ test.each([["abu", "single"], ["boss-abu", "four"], ["super-abu", "four"]])("%s 
   fireEvent.keyDown(level, { key: "ArrowDown" });
   expect(level).toHaveValue(60);
   fireEvent.change(level, { target: { value: "78" } });
-  expect(summary()).toHaveTextContent("承伤 +40%");
+  expect(summary()).toHaveTextContent(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
   fireEvent.click(increase);
   expect(level).toHaveValue(80);
-  expect(summary()).not.toHaveTextContent("承伤 +40%");
+  expect(summary()).not.toHaveTextContent(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
   fireEvent.change(level, { target: { value: "79" } });
-  expect(summary()).toHaveTextContent("承伤 +40%");
-  fireEvent.change(level, { target: { value: "98" } });
+  expect(summary()).toHaveTextContent(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
+  fireEvent.change(level, { target: { value: "149" } });
   fireEvent.click(increase);
-  expect(level).toHaveValue(99);
+  expect(level).toHaveValue(150);
   expect(increase).toBeDisabled();
   fireEvent.click(decrease);
-  expect(level).toHaveValue(97);
+  expect(level).toHaveValue(148);
 });
 
 

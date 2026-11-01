@@ -92,7 +92,7 @@ import { isEnemyStarfallTraitControl, linkStarfallTraitControls, linkEnemyCostTr
 import { carriedSkillTotalCost } from "./domain/skill-result/loadout.js";
 import { getSnapshotIndexes } from "./domain/snapshot-indexes.js";
 import { calculateAllPanelStats } from "./domain/stat.js";
-import { resolveS5PreviewBattleLevel } from "./domain/battle-level.js";
+import { getS5SkillBattleLevelControl, resolveS5PreviewBattleLevel } from "./domain/battle-level.js";
 import { getEffectiveTraits } from "./domain/effective-traits.js";
 import { getBattleFormChoices } from "./domain/battle-form.js";
 import { createSpiritSearchIndex } from "./data/search-index.js";
@@ -1550,6 +1550,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       state.directions[direction].overrides?.activeDefenseStatus ||
       Number(state.directions[direction === "forward" ? "reverse" : "forward"].reduction ?? 1) !== 1 ||
       canApplyBattleActivation(skill, linkedNegativeStatusContext(state, side, context), {
+        levelChangeEnabled: Boolean(getS5SkillBattleLevelControl(snapshot, state, side, skill)),
         negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true,
         negativeStatusCanApply: viewModel.skillResultsByDirection[direction]?.[index]?.negativeStatusCanApply,
         postAttackEffects: calculation?.[direction]?.results?.[index]?.postAttackEffects,

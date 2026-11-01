@@ -4,13 +4,16 @@ import { buildCalculatorViewModel, getPanelView } from "../../src/domain/calcula
 import { getS5PreviewTraitInputs } from "../../src/domain/s5-preview-traits.js";
 import { buildBalanceComparison } from "../../src/features/balance-comparison/model.js";
 import { createInitialState } from "../../src/state/defaults.js";
-import { projectBattleLevelHealth, switchBattleForm } from "../../src/state/calculator-session.js";
+import { migrateSharedConfiguration, projectBattleLevelHealth, switchBattleForm } from "../../src/state/calculator-session.js";
 import { applyBattleActivation } from "../../src/state/battle-activation.js";
+import { selectShareableInputs } from "../../src/state/share.js";
+import { getS5SkillBattleLevelControl, resolveS5PreviewBattleLevel } from "../../src/domain/battle-level.js";
+import { resolveBattleSpirit } from "../../src/domain/battle-form.js";
 import { resolveSkillStatusActivation } from "../../src/domain/skill-status-effects.js";
 
 const stats = { hp: 100, physicalAttack: 100, magicalAttack: 100, physicalDefense: 100, magicalDefense: 100, speed: 100 };
 function fixture({ key = "minggulong", level = 99, mode = "four" } = {}) {
-  const identity = { catalogId: "s5-level-hp-fixture", key, mechanicKey: key === "minggulong" ? key : "abu" };
+  const identity = { catalogId: "s5-level-hp-fixture", key, mechanicKey: ["minggulong", "super-abu"].includes(key) ? key : "abu" };
   const trait = { id: "level-trait", name: "前瞻特性", description: "等级机制", previewIdentity: identity };
   const snapshot = { meta: { id: "s5-level-hp", rulesVersion: "fixture" },
     spirits: [
@@ -140,7 +143,7 @@ test.each(["abu", "boss-abu", "super-abu"])("%s默认满血null随直接等级�
   const args = fixture({ key, level: 60 });
   let state = args.state;
   const levelInput = getS5PreviewTraitInputs(args.snapshot.traits[0]).find(input => input.contextKey.endsWith("BattleLevel"));
-  for (const level of [60, 62, 64, 79, 80]) {
+  for (const level of [60, 62, 64, 79, 80, 99, 149, 150]) {
     state = { ...state, directions: { ...state.directions, forward: { ...state.directions.forward,
       context: { ...state.directions.forward.context, [levelInput.id]: level } } } };
     state = projectBattleLevelHealth(state, { snapshot: args.snapshot, side: "attacker", hpInputMode: "percent" });
@@ -167,3 +170,105 @@ test.each(["single", "four"])("%s真实激活不使用旧存档HP比例绕过80%
   expect(result.state.directions.reverse.context.currentHpPercent).toBe(350 / expectedPanel(args, 99).hp * 100);
   expect(result.state.directions.forward.overrides.attackLevelStage ?? 0).toBe(0);
 });
+
+test.each(["single", "four"])("%s圣龙狂斩使用后减5级，双方镜像、能力面板、HP、刷新和分享一致", mode => {
+  for (const side of ["attacker", "defender"]) {
+    for (const level of [1, 4, 60, 80, 99, 150]) {
+      const args = fixture({ key: "super-abu", mode, level });
+      const { snapshot } = args;
+      const slash = { id: "reviewed-slash", name: "圣龙狂斩", type: "龙", category: "physical", basePower: 160, cost: 3,
+        s5LevelChangeRule: "saint-dragon-slash" };
+      snapshot.skills.push(slash);
+      snapshot.learnsets[0].skillIds.push(slash.id);
+      let state = args.state;
+      if (side === "defender") {
+        [state.sides.attacker, state.sides.defender] = [state.sides.defender, state.sides.attacker];
+        [state.directions.forward, state.directions.reverse] = [state.directions.reverse, state.directions.forward];
+      }
+      const direction = side === "attacker" ? "forward" : "reverse";
+      const healthDirection = direction === "forward" ? "reverse" : "forward";
+      state.sides[side].skills = { single: slash.id, four: [slash.id, null, null, null] };
+      const trait = snapshot.traits[0];
+      expect(getS5PreviewTraitInputs(trait).some(control => control.contextKey.endsWith("BattleLevelGain"))).toBe(false);
+      state.directions[healthDirection].currentHp = 111;
+      const before = buildCalculatorViewModel({ snapshot, state, activeDirection: direction });
+      expect(before.sides[side].finalPanelStats.physicalAttack).toBe(Math.floor(before.sides[side].panelStats.physicalAttack * (1 + Math.max(0, level - 60) * .05)));
+      const applied = applyBattleActivation({ snapshot, state, calculation: before.calculation, side, skillMode: mode, skillIndex: 0 });
+      expect(applied).toMatchObject({ applied: true, skillUsed: true });
+      const nextLevel = Math.max(1, level - 5);
+      expect(resolveS5PreviewBattleLevel(snapshot, applied.state, side)).toBe(nextLevel);
+      expect(resolveS5PreviewBattleLevel(snapshot, state, side)).toBe(level);
+      const reflected = getS5PreviewTraitInputs(trait, "defender").find(control => control.contextKey.endsWith("BattleLevel"));
+      expect(applied.state.directions[healthDirection].context[reflected.id]).toBe(nextLevel);
+      const after = buildCalculatorViewModel({ snapshot, state: applied.state, activeDirection: direction });
+      expect(after.sides[side].panelStats.physicalAttack).toBeLessThanOrEqual(before.sides[side].panelStats.physicalAttack);
+      expect(after.sides[side].panelStats).toEqual(calculateAllPanelStats({ raceStats: stats, displayIvs: state.sides[side].displayIvs, level: nextLevel }));
+      expect(after.sides[side].finalPanelStats.physicalAttack).toBe(Math.floor(after.sides[side].panelStats.physicalAttack * (1 + Math.max(0, nextLevel - 60) * .05)));
+      expect(after.sides[side].finalPanelStats.magicalAttack).toBe(after.sides[side].panelStats.magicalAttack);
+      expect(after.skillResultsByDirection[direction][0].totalDamage).toBeLessThanOrEqual(before.skillResultsByDirection[direction][0].totalDamage);
+      expect(after.sides[side].health.currentHp).toBe(Math.min(111, after.sides[side].health.maxHp));
+      for (const restored of [JSON.parse(JSON.stringify(applied.state)),
+        migrateSharedConfiguration(selectShareableInputs(applied.state), applied.state.versions, snapshot)]) {
+        const view = buildCalculatorViewModel({ snapshot, state: restored, activeDirection: direction });
+        expect(view.sides[side].health).toEqual(after.sides[side].health);
+        expect(view.sides[side].finalPanelStats).toEqual(after.sides[side].finalPanelStats);
+        expect(view.skillResultsByDirection[direction][0].totalDamage).toBe(after.skillResultsByDirection[direction][0].totalDamage);
+      }
+    }
+  }
+});
+
+test("圣龙狂斩仅稳定S5规则生效，普通3费不会让在场阿布升级", () => {
+  const args = fixture({ key: "abu", level: 60 });
+  const skill = args.snapshot.skills[0];
+  skill.cost = 3;
+  skill.name = "圣龙狂斩";
+  expect(getS5SkillBattleLevelControl(args.snapshot, args.state, "attacker", skill)).toBeNull();
+  skill.s5LevelChangeRule = "saint-dragon-slash";
+  skill.calculationRuleset = "s3-midseason-2026-08-13";
+  expect(getS5SkillBattleLevelControl(args.snapshot, args.state, "attacker", skill)).toBeNull();
+  delete skill.s5LevelChangeRule;
+  const applied = applyBattleActivation({ ...args, side: "attacker", skillIndex: 0, allowNoEffectUse: true });
+  expect(applied.applied).toBe(true);
+  expect(resolveS5PreviewBattleLevel(args.snapshot, applied.state, "attacker")).toBe(60);
+});
+
+
+test.each([["abu", "super-abu", "attacker"], ["super-abu", "abu", "attacker"],
+  ["abu", "super-abu", "defender"], ["super-abu", "abu", "defender"]])(
+  "%s本场切换%s时保留%s原生特性的150级与狂斩动作，六维使用目标形态", (sourceKey, targetKey, side) => {
+    const { snapshot, state: initial } = fixture({ key: sourceKey, level: 150 });
+    const source = snapshot.spirits[0];
+    const sourceTrait = snapshot.traits[0];
+    source.traitName = sourceTrait.name = sourceKey === "abu" ? "圣龙的心愿" : "圣龙的守护";
+    source.evolutionChainIds = [source.id, "other-abu-form"];
+    const formStats = { ...stats, hp: 50, physicalAttack: 70, magicalAttack: 140 };
+    const identity = { ...source.previewIdentity, key: targetKey, mechanicKey: targetKey };
+    const otherTrait = { id: "other-abu-trait", name: targetKey === "abu" ? "圣龙的心愿" : "圣龙的守护", previewIdentity: identity };
+    snapshot.traits.push(otherTrait);
+    snapshot.spirits.push({ ...source, id: "other-abu-form", fullName: "另一阿布形态", raceStats: formStats,
+      traitIds: [otherTrait.id], traitName: otherTrait.name, previewIdentity: identity });
+    const slash = { id: "form-slash", name: "圣龙狂斩", type: "龙", category: "physical", basePower: 160, cost: 3,
+      s5LevelChangeRule: "saint-dragon-slash" };
+    snapshot.skills.push(slash);
+    if (side === "defender") {
+      [initial.sides.attacker, initial.sides.defender] = [initial.sides.defender, initial.sides.attacker];
+      [initial.directions.forward, initial.directions.reverse] = [initial.directions.reverse, initial.directions.forward];
+    }
+    const direction = side === "attacker" ? "forward" : "reverse";
+    initial.sides[side].skills.four = [slash.id, null, null, null];
+    const state = switchBattleForm(initial, { snapshot, side, spiritId: "other-abu-form" }).state;
+    const resolved = resolveBattleSpirit(snapshot, state.sides[side]);
+    expect(resolved).toMatchObject({ battleFormTraitRetained: true, traitIds: [sourceTrait.id], raceStats: formStats });
+    expect(resolveS5PreviewBattleLevel(snapshot, state, side)).toBe(150);
+    expect(getS5SkillBattleLevelControl(snapshot, state, side, slash)).not.toBeNull();
+    const before = buildCalculatorViewModel({ snapshot, state, activeDirection: direction });
+    const expected = calculateAllPanelStats({ raceStats: formStats, displayIvs: state.sides[side].displayIvs, level: 150 });
+    expect(before.sides[side].panelStats).toEqual(expected);
+    expect(before.sides[side].finalPanelStats.physicalAttack).toBe(Math.floor(expected.physicalAttack * (sourceKey === "super-abu" ? 5.5 : 1)));
+    const applied = applyBattleActivation({ snapshot, state, side, skillIndex: 0, calculation: before.calculation });
+    expect(applied.applied).toBe(true);
+    expect(resolveS5PreviewBattleLevel(snapshot, applied.state, side)).toBe(145);
+    expect(resolveBattleSpirit(snapshot, applied.state.sides[side]).traitIds).toEqual([sourceTrait.id]);
+  },
+);
