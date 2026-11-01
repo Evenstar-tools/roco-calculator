@@ -11,6 +11,8 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   webServer: {
+    // Match CI's analytics-enabled bundle gate; reporting stays off on localhost.
+    env: { VITE_RUM_ENABLED: "true", VITE_RUM_ID: process.env.VITE_RUM_ID || "ci-build-validation" },
     // CI 在同一工作区先构建一次；本地默认仍从源码重新构建，避免验收旧包。
     // 本地启动还包括数据校验和生产构建，不能与仅启动预览服务共用 60 秒预算。
     timeout: process.env.E2E_PREBUILT === "1" ? 60_000 : 180_000,
