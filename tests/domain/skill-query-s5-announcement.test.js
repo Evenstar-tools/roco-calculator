@@ -32,6 +32,10 @@ test("公告投影需要本轮快照标记与正式 S4 目录，保留缓存和�
   for (const original of catalog.seasons) {
     expect(projected.seasons.find(({ id }) => id === original.id)).toBe(original);
   }
+  const currentTraits = [{ id: "new-trait", name: "本季特性", description: "本季效果" }];
+  const withTraits = withS5AnnouncementCatalog(catalog, { ...snapshot, traits: currentTraits });
+  expect(withTraits.seasons.find(({ id }) => id === "S5").traits).toBe(currentTraits);
+  expect(withTraits.seasons.find(({ id }) => id === "S4").traits).toBe(catalog.seasons.find(({ id }) => id === "S4").traits);
   const s5 = projected.seasons.find(({ id }) => id === "S5");
   expect(s5.skills.filter(({ changeInfo }) => changeInfo?.patch?.id === snapshot.seasonAnnouncement.id)).toHaveLength(10);
   expect(s5.skills.some(({ introducedSeason }) => introducedSeason === "S5")).toBe(false);

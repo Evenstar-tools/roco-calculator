@@ -4,6 +4,7 @@ import { metrics } from "./analytics/metrics.js";
 import { createRoot } from "react-dom/client";
 import { WebEntry } from "./runtime/WebEntry.jsx";
 import { startWebEntry } from "./runtime/browser-entry.js";
+import { preloadServerSnapshot } from "./runtime/preload-snapshot.js";
 import { installInputSelection } from "./input-selection.js";
 import "./styles.css";
 
@@ -24,6 +25,7 @@ if (import.meta.hot) import.meta.hot.dispose(removeInputSelection);
 
 // Resolve the independent Global destination before mounting CN or reading its session.
 startWebEntry((entry) => {
+  preloadServerSnapshot(entry.serverId);
   createRoot(document.getElementById("root")).render(
     <React.StrictMode>
       <WebEntry initialEntry={entry} />

@@ -59,6 +59,7 @@ function currentSnapshotSeason(projected, snapshot) {
     });
   }
   return { ...projected, skills,
+    traits: snapshot.traits ?? projected.traits ?? [],
     spirits: spirits.map(spirit => ({ ...spirit, familyId: families.get(spirit.id) })),
     learnsets: [...pools.values()],
   };

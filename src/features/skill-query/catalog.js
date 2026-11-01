@@ -16,11 +16,12 @@ export function unpackCatalog(data) {
   if (data.sharedSkills) data = { ...data, seasons: data.seasons.map((season) => ({ ...season,
     methodTexts: data.methodTexts,
     skills: season.skills.map((index) => data.sharedSkills[index]),
+    ...(data.sharedTraits ? { traits: season.traits.map((index) => data.sharedTraits[index]) } : {}),
     spirits: data.sharedSpirits ? season.spirits.map((index) => {
       const entry = data.sharedSpirits[index];
       if (!Array.isArray(entry)) return entry;
-      const [id, fullName, types, stage, familyId] = entry;
-      return { id, fullName, types, stage, familyId };
+      const [id, fullName, types, stage, familyId, traitIds] = entry;
+      return { id, fullName, types, stage, familyId, ...(traitIds ? { traitIds } : {}) };
     }) : season.spirits,
     relations: season.relations.map((index) => data.sharedRelations[index]),
   })) };

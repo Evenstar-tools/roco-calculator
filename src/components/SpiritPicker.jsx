@@ -38,6 +38,8 @@ function searchMatchRank(spirit, needle) {
 
 const INITIAL_PREVIEW_COUNT = 16;
 const PREVIEW_PAGE_SIZE = 20;
+const dexCollator = new Intl.Collator("zh-CN", { numeric: true });
+const nameCollator = new Intl.Collator("zh-CN");
 const S4_PREVIEW_BOSS_ORDER = new Map([
   ["烈焰狂战士", 0],
   ["满月砣", 1],
@@ -88,17 +90,12 @@ function compareDexOrder(left, right) {
   const leftDexNo = dexNo(left);
   const rightDexNo = dexNo(right);
   if (leftDexNo && rightDexNo) {
-    const dexOrder = leftDexNo.localeCompare(rightDexNo, "zh-CN", {
-      numeric: true,
-    });
+    const dexOrder = dexCollator.compare(leftDexNo, rightDexNo);
     if (dexOrder !== 0) return dexOrder;
   } else if (leftDexNo || rightDexNo) {
     return leftDexNo ? -1 : 1;
   }
-  return String(left.fullName ?? "").localeCompare(
-    String(right.fullName ?? ""),
-    "zh-CN",
-  );
+  return nameCollator.compare(String(left.fullName ?? ""), String(right.fullName ?? ""));
 }
 
 function compareSavedPreviewOrder(left, right) {

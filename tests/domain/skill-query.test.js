@@ -5,6 +5,18 @@ import { getServerRelease } from "../../src/domain/server-environment.js";
 import { parseSkillSeasons } from "../../scripts/import-skill-query-seasons.mjs";
 
 describe("技能查询赛季对比", () => {
+  it("压缩目录按赛季保留特性关系和原描述，兼容旧的五列精灵资料", () => {
+    const packed = { schemaVersion: 1, sharedSkills: [], sharedRelations: [], methodTexts: [],
+      sharedSpirits: [["s", "精灵", [], "一阶", "s", ["t"]], ["legacy", "旧精灵", [], "一阶", "legacy"]],
+      sharedTraits: [{ id: "t", name: "特性", description: "旧季效果" }, { id: "t", name: "特性", description: "新季效果" }],
+      seasons: [{ id: "S3", skills: [], spirits: [0, 1], traits: [0], relations: [] },
+        { id: "S4", skills: [], spirits: [0], traits: [1], relations: [] }] };
+    const { seasons } = unpackCatalog(packed);
+    expect(seasons[0].spirits[0].traitIds).toEqual(["t"]);
+    expect(seasons[0].traits[0].description).toBe("旧季效果");
+    expect(seasons[1].traits[0].description).toBe("新季效果");
+    expect(seasons[0].spirits[1]).not.toHaveProperty("traitIds");
+  });
   it("正式目录匹配发布环境，未来赛季按显式发布配置校验而不写死S4", () => {
     const current = unpackCatalog(JSON.parse(readFileSync("public/data/skill-query/catalog.json", "utf8")));
     expect(assertCatalogRelease(current, getServerRelease("cn"))).toBe(current);

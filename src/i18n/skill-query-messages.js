@@ -1,5 +1,7 @@
 export const skillQueryMessages = Object.fromEntries([
   ["暂无图片", "No image", "画像なし"],
+  ["精灵特性", "Jini trait", "キャラの特性"],
+  ["特性描述待确认", "Trait description pending", "特性の説明は確認待ち"],
   ["查询方向", "Search direction", "検索方法"],
   ["找可学精灵", "Find learners", "習得キャラを探す"],
   ["查精灵技能", "Find Jini skills", "キャラのスキルを探す"],

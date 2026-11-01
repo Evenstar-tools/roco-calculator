@@ -10,6 +10,7 @@ import { useLocale } from "../../i18n/LocaleContext.jsx";
 import { localizeAcquisitionMethods } from "./acquisition-text.js";
 import { useRuntime } from "../../runtime/RuntimeContext.jsx";
 import { publicResourceUrl } from "../../runtime/public-resource-url.js";
+import { getTraitIconUrl } from "../../data/trait-icons.js";
 import "./bidirectional-query.css";
 
 const SOURCES = [["", "全部来源"], ["default", "自学"], ["血脉", "血脉"], ["技能石", "技能石"]];
@@ -28,6 +29,17 @@ function Portrait({ spirit }) {
   const sourceId = spirit.reference?.sourceId ?? (spirit.id?.startsWith("cn-placeholder:") ? null : spirit.id);
   const url = publicResourceUrl(spirit.asset?.localUrl ?? (sourceId ? `/assets/spirits/${sourceId}.png` : null));
   return failed || !url ? <span className="sq-portrait sq-portrait--empty">{t("暂无图片")}</span> : <img className="sq-portrait" src={url} alt="" loading="lazy" onError={() => setFailed(true)} />;
+}
+
+function TraitDescription({ trait }) {
+  const { t } = useLocale();
+  const [failedUrl, setFailedUrl] = useState(null);
+  const url = publicResourceUrl(getTraitIconUrl(trait));
+  return <div className="sq-spirit-trait">
+    {url && url !== failedUrl ? <img src={url} width={44} height={44} alt="" loading="lazy" decoding="async" onError={() => setFailedUrl(url)} />
+      : <span className="sq-trait-icon-empty" aria-hidden="true">—</span>}
+    <div><h4>{trait.name}</h4><p>{trait.description || t("特性描述待确认")}</p></div>
+  </div>;
 }
 
 export default function BidirectionalQuery({ season, skills = [], spirits = [], initialSpiritId, initialSkillId, gains = [], hideEffects: sharedHideEffects, onHideEffectsChange, placeholder = false }) {
@@ -67,6 +79,8 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
   const iconSkill = (skill) => ({ ...skill, iconUrl: skillMap.get(skill.id)?.iconUrl });
   const chosen = season.skills.filter(({ id }) => selected.includes(id));
   const spirit = season.spirits.find(({ id }) => id === spiritId);
+  const traitMap = useMemo(() => new Map((season.traits ?? []).map(trait => [trait.id, trait])), [season.traits]);
+  const spiritTraits = spirit?.traitIds?.map(id => traitMap.get(id)).filter(Boolean) ?? spirit?.reference?.traits ?? [];
   const filtered = useMemo(() => season.skills.filter((skill) =>
     skillMatchesQuery(skill, query) &&
     (!type || skill.type === type) && (!category || skill.category === category) && (!introduced || skill.introducedSeason === introduced)), [season, query, type, category, introduced]);
@@ -200,7 +214,9 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
     <main className="sq-results" ref={results}>
       {spirit ? <>
         <button className="sq-back" onClick={back}><ArrowLeft size={18} />{t("返回匹配结果")}</button>
-        <div className="sq-spirit-heading"><Portrait key={spirit.id} spirit={spirit} /><div><h3 ref={detailTitle} tabIndex={-1}>{spirit.fullName}</h3>{!placeholder && <EntityChangeHint changeInfo={spirit.changeInfo} />}<p>{spirit.types?.map((type) => <span key={type}><ElementIcon type={type} size={20} />{typeName(type)}</span>)}<span>{t(spirit.stage)}</span></p>{related.length > 1 && <select aria-label={t("精灵形态")} value={spirit.id} onChange={(event) => openSpirit(event.target.value)}>{related.map((item) => <option key={item.id} value={item.id}>{item.fullName}</option>)}</select>}</div></div>
+        <div className="sq-spirit-heading"><div className="sq-spirit-identity"><Portrait key={spirit.id} spirit={spirit} /><div><h3 ref={detailTitle} tabIndex={-1}>{spirit.fullName}</h3>{!placeholder && <EntityChangeHint changeInfo={spirit.changeInfo} />}<p>{spirit.types?.map((type) => <span key={type}><ElementIcon type={type} size={20} />{typeName(type)}</span>)}<span>{t(spirit.stage)}</span></p>{related.length > 1 && <select aria-label={t("精灵形态")} value={spirit.id} onChange={(event) => openSpirit(event.target.value)}>{related.map((item) => <option key={item.id} value={item.id}>{item.fullName}</option>)}</select>}</div></div>
+          {spiritTraits.length > 0 && <section className="sq-spirit-traits" aria-label={t("精灵特性")}>{spiritTraits.map(trait => <TraitDescription key={trait.id ?? trait.name} trait={trait} />)}</section>}
+        </div>
         <div className="sq-detail-filters">{!placeholder && <div className="sq-sources" aria-label={t("技能学习来源")}>{SOURCES.map(([id, label]) => <button key={id} aria-label={t(label)} aria-pressed={source === id} onClick={() => setSource(id)}>{t(label)}<small>{learnset.filter(skill => !id || skill.methods.some(method => matchesSource(method, id))).length}</small></button>)}</div>}<input aria-label={t("筛选精灵技能")} placeholder={t("技能名称或效果")} value={detailQuery} onChange={(event) => setDetailQuery(event.target.value)} />{typeSelect(detailType, setDetailType, "精灵技能属性", [...new Set(learnset.map(skill => skill.type))])}{categorySelect(detailCategory, setDetailCategory, "精灵技能种类")}{effectToggle}</div>
         <div className="sq-count-line"><p className="sq-count" role="status">{t("{count} / {total} 个技能", { count: rows.length, total: learnset.length })}</p>{hasDetailFilters && <button className="sq-clear-filters" aria-label={t("清除精灵技能筛选")} onClick={clearDetailFilters}>{t("清除筛选")}</button>}</div>
         <div className="sq-skill-table">{rows.map((skill) => <article data-skill-id={skill.id} className={expanded === skill.id ? "is-expanded" : ""} key={skill.id}>
