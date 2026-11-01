@@ -136,7 +136,7 @@ const STATUS_EFFECTS = Object.freeze({
   润泽: { ownAttack: 19 },
   水泡盾: {
     inputs: [booleanInput("defenseCounterSucceeded", "防御应对成功")],
-    ownAttack: 7,
+    operations: context => ({ ownMagicalAttackStageAdd: 7 + integerInput(context.sproutStacks, 0, 99, 0) }),
     requiresCounter: true,
   },
   伺机而动: { ownFixedPower: 70 },

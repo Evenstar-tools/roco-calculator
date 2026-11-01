@@ -897,7 +897,7 @@ test("walks through compact mode, opens detailed mode, and imports the library f
     expect(screen.queryByRole("dialog", { name: /新手引导/ }))
       .not.toBeInTheDocument();
   });
-  expect(fetchMock).toHaveBeenCalledWith("/data/presets/pvp-popular-configs.json");
+  expect(fetchMock).toHaveBeenCalledWith("/data/presets/pvp-popular-configs.json", expect.objectContaining({ signal: undefined }));
   expect(localStorage.getItem(FIRST_RUN_GUIDE_STORAGE_KEY)).toBe("1");
   expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teamBytes);
   expect(screen.getByRole("combobox", { name: "攻击方精灵" })).toHaveValue("音速犬");
@@ -1521,15 +1521,18 @@ test("mirrors later positive ability gains to a triggered Fair Pigeon once", asy
 
   const picker = screen.getByRole("combobox", { name: "攻击方技能1" });
   await user.clear(picker);
-  await user.type(picker, "魔法增效");
-  await user.click(screen.getByRole("option", { name: /魔法增效/ }));
-  await user.click(screen.getAllByText("自己获得魔攻+70%。")[0]);
+  await user.type(picker, "水泡盾");
+  await user.click(screen.getByRole("option", { name: /水泡盾/ }));
+  await user.click(screen.getByRole("checkbox", { name: "攻击方技能1防御应对成功" }));
+  await user.click(screen.getByText("减伤80%，应对攻击：自己获得魔攻+70%。"));
 
   const natureStep = screen.getByRole("region", { name: "性格配置" });
   const attackSide = within(natureStep).getByRole("group", { name: "攻击方能力" });
   const defenseSide = within(natureStep).getByRole("group", { name: "防御方能力" });
-  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
-  expect(within(defenseSide).getByText("7层 · +70%")).toBeVisible();
+  expect(within(attackSide).getByText("物攻 0层 · 0%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 7层 · +70%")).toBeVisible();
+  expect(within(defenseSide).getByText("物攻 0层 · 0%")).toBeVisible();
+  expect(within(defenseSide).getByText("魔攻 7层 · +70%")).toBeVisible();
 });
 
 test("caps positive power levels at 99 with ten percent per level", async () => {
@@ -2425,8 +2428,8 @@ test("requires a successful defense response before applying Water Bubble Shield
   await user.click(
     screen.getByText("减伤80%，应对攻击：自己获得魔攻+70%。"),
   );
-  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
-  expect([...document.querySelectorAll(".skill-usage__main")].map((item) => item.textContent).join(" ")).toMatch(/累计状态：已使用×2.*应对成功×1.*攻击\+7层/);
+  expect(within(attackSide).getByText("魔攻 7层 · +70%")).toBeVisible();
+  expect([...document.querySelectorAll(".skill-usage__main")].map((item) => item.textContent).join(" ")).toMatch(/累计状态：已使用×2.*应对成功×1.*魔攻\+7层/);
 });
 
 test("applies a clicked defense skill reduction and clears it after another skill is used", async () => {
@@ -2800,13 +2803,13 @@ test("reapplies a defense response gain only after its transient state was turne
 
   const description = "减伤80%，应对攻击：自己获得魔攻+70%。";
   await user.click(screen.getByText(description));
-  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 7层 · +70%")).toBeVisible();
 
   await user.click(screen.getByText(description));
-  expect(within(attackSide).getByText("7层 · +70%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 7层 · +70%")).toBeVisible();
 
   await user.click(screen.getByText(description));
-  expect(within(attackSide).getByText("14层 · +140%")).toBeVisible();
+  expect(within(attackSide).getByText("魔攻 14层 · +140%")).toBeVisible();
 });
 
 test("Diffuse Reflection buffs only the first attacking skill of each type", async () => {
@@ -4086,7 +4089,7 @@ test("loads the built-in popular library only on demand and imports through the 
   await user.click(screen.getByRole("button", { name: "常用精灵配置" }));
 
   const dialog = await screen.findByRole("dialog", { name: "常用精灵配置" });
-  expect(fetchMock).toHaveBeenCalledWith("/data/presets/pvp-popular-configs.json");
+  expect(fetchMock).toHaveBeenCalledWith("/data/presets/pvp-popular-configs.json", expect.objectContaining({ signal: undefined }));
   expect(within(dialog).getByText("新增").nextElementSibling).toHaveTextContent("2");
   expect(within(dialog).getByText("不同").nextElementSibling)
     .toHaveTextContent("0");
@@ -4100,7 +4103,7 @@ test("loads the built-in popular library only on demand and imports through the 
   expect(within(configEntries).getByText("音速犬", { exact: true })).toBeVisible();
   expect(within(configEntries).queryByText("风暴战犬", { exact: true }))
     .not.toBeInTheDocument();
-  await user.click(within(dialog).getByRole("button", { name: /更新配置/ }));
+  await user.click(within(dialog).getByRole("button", { name: "导入配置（2）", exact: true }));
 
   expect(screen.getByText(/已新增 2 只配置/)).toBeVisible();
   expect(localStorage.getItem(TEAM_STORAGE_KEY)).toBe(teamBytes);
@@ -4253,9 +4256,10 @@ test("moves focus into the mobile result dialog and closes it with Escape", asyn
 });
 
 
-async function selectCompactConditionSkill(user, name, mode = "four") {
+async function selectCompactConditionSkill(user, name, mode = "four", side = "攻击方") {
   if (mode === "single") await user.click(screen.getByRole("tab", { name: "单技能" }));
-  const picker = screen.getByRole("combobox", { name: mode === "four" ? "攻击方技能1" : "音速犬当前技能", exact: true });
+  if (mode === "single" && side === "防御方") await user.click(screen.getByRole("button", { name: "切换计算方向" }));
+  const picker = screen.getByRole("combobox", { name: mode === "four" ? `${side}技能1` : `${side === "攻击方" ? "音速犬" : "水灵"}当前技能`, exact: true });
   await user.clear(picker);
   await user.type(picker, name);
   await user.click(screen.getAllByRole("option").find((option) => within(option).queryByText(name, { selector: "strong", exact: true })));
@@ -4354,27 +4358,70 @@ test("精简条件 打开状态技能面板与关闭操作不施放技能，不�
   expect(document.querySelector(".compact-skill-side--attacker .skill-usage")?.textContent).toBe(usage);
 });
 
-test.each(["four", "single"])("精简适配 %s 水泡盾条件可用，点击列表不施放，应用后可撤回", async (mode) => {
+test.each([["four", "攻击方"], ["single", "攻击方"], ["four", "防御方"], ["single", "防御方"]])("精简适配 %s %s 水泡盾应用后可撤回和解除", async (mode, side) => {
   const user = userEvent.setup();
-  render(<App initialSnapshot={snapshot} />);
+  let mounted = render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
-  await selectCompactConditionSkill(user, "水泡盾", mode);
+  const readAttacks = () => {
+    const group = screen.getByRole("group", { name: `${side}能力`, exact: true });
+    const panel = label => Number(within(group).getByText(label, { exact: true }).closest(".stat-tile").querySelector(".stat-tile__panel").textContent);
+    return { physical: panel("物攻"), magical: panel("魔攻") };
+  };
+  await user.click(screen.getByRole("button", { name: "具体版", exact: true }));
+  const initialAttacks = readAttacks();
+  await user.click(screen.getByRole("button", { name: "精简版", exact: true }));
+  await selectCompactConditionSkill(user, "水泡盾", mode, side);
   const before = screen.getByRole("button", { name: /撤回上一步/ }).getAttribute("aria-label");
-  if (mode === "four") await user.click(screen.getByRole("group", { name: "攻击方技能1，当前选中", exact: true }));
+  if (mode === "four") await user.click(screen.getByRole("group", { name: `${side}技能1，当前选中`, exact: true }));
   expect(screen.getByRole("button", { name: /撤回上一步/ })).toHaveAttribute("aria-label", before);
-  const trigger = () => screen.getByRole("button", { name: mode === "four" ? "攻击方技能1条件" : "攻击方当前技能条件", exact: true });
+  const trigger = () => screen.getByRole("button", { name: mode === "four" ? `${side}技能1条件` : `${side}当前技能条件`, exact: true });
   await user.click(trigger());
-  let dialog = screen.getByRole("dialog", { name: "攻击方 · 水泡盾条件" });
+  let dialog = screen.getByRole("dialog", { name: `${side} · 水泡盾条件` });
   await user.click(within(dialog).getByRole("checkbox", { name: "防御应对成功", exact: true }));
   await user.click(within(dialog).getByRole("button", { name: "使用技能", exact: true }));
-  expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("攻击+7层");
+  expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("魔攻+7层");
   expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("减伤80%");
+  expect(within(dialog).getByRole("button", { name: "解除状态", exact: true })).toBeEnabled();
   await user.keyboard("{Escape}");
+  await user.click(screen.getByRole("button", { name: "具体版", exact: true }));
+  const expectedAttacks = { physical: initialAttacks.physical, magical: Math.floor(initialAttacks.magical * 1.7) };
+  expect(readAttacks()).toEqual(expectedAttacks);
+  expect(screen.getByRole("button", { name: mode === "four" ? `${side}技能1解除状态` : "解除状态", exact: true })).toBeEnabled();
+  expect(within(screen.getByRole("group", { name: `${side}能力`, exact: true })).getByText("魔攻 7层 · +70%")).toBeVisible();
   await user.click(screen.getByRole("button", { name: /撤回上一步/ }));
+  expect(readAttacks()).toEqual(initialAttacks);
+  await user.click(screen.getByRole("button", { name: "精简版", exact: true }));
   await user.click(trigger());
-  dialog = screen.getByRole("dialog", { name: "攻击方 · 水泡盾条件" });
+  dialog = screen.getByRole("dialog", { name: `${side} · 水泡盾条件` });
   expect(within(dialog).queryByText(/已用 1 次/)).not.toBeInTheDocument();
   expect(within(dialog).getByRole("checkbox", { name: "防御应对成功", exact: true })).toBeChecked();
+  await user.click(within(dialog).getByRole("button", { name: "使用技能", exact: true }));
+  await user.click(within(dialog).getByRole("button", { name: "解除状态", exact: true }));
+  expect(within(dialog).getByRole("button", { name: "使用技能", exact: true })).toBeEnabled();
+  expect(within(dialog).getByText(/已用 1 次/)).not.toHaveTextContent("减伤80%");
+  expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("魔攻+7层");
+  if (mode === "single") {
+    await user.keyboard("{Escape}");
+    await user.click(screen.getByRole("button", { name: /撤回上一步/ }));
+    await user.click(trigger());
+    dialog = screen.getByRole("dialog", { name: `${side} · 水泡盾条件` });
+    expect(within(dialog).getByRole("button", { name: "解除状态", exact: true })).toBeEnabled();
+    expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("魔攻+7层");
+    expect(within(dialog).getByText(/已用 1 次/)).toHaveTextContent("减伤80%");
+  }
+  await user.keyboard("{Escape}");
+  await user.click(screen.getByRole("button", { name: "具体版", exact: true }));
+  expect(readAttacks()).toEqual(expectedAttacks);
+  mounted.unmount();
+  mounted = render(<App initialSnapshot={snapshot} />);
+  expect(readAttacks()).toEqual(expectedAttacks);
+  if (mode === "single") {
+    if (side === "防御方") await user.click(screen.getByRole("button", { name: "切换计算方向" }));
+    expect(screen.getByRole("button", { name: "解除状态", exact: true })).toBeEnabled();
+    await user.click(screen.getByRole("button", { name: "解除状态", exact: true }));
+    expect(readAttacks()).toEqual(expectedAttacks);
+    expect(screen.getByRole("button", { name: "使用技能", exact: true })).toBeEnabled();
+  }
 });
 
 test("精简适配 选择分支按实际生命条件显隐，驱赶与未接入效果不显示空应用按钮", async () => {

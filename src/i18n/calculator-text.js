@@ -7,6 +7,10 @@ import * as entityText from "../runtime/global-entity-localization.js";
 import { GLOBAL_ENTITY_TEXT } from "../data/global-entity-text.js";
 
 const missing = new Set();
+const skillActionMessages = new Set([
+  "{v0}：本回合", "{v0}的使用已取消", "{v0}的后续变化已应用",
+  "{v0}的状态已解除", "{v0}的状态已应用", "{v0}的负面状态已取消", "{v0}已记为使用{v1}次",
+]);
 const translatedStrings = Object.fromEntries(["en", "ja"].map((locale) => [locale, new Set([
   ...Object.values(UI_MESSAGES).map((entry) => entry[locale]),
   ...Object.values(GLOBAL_ENTITY_TEXT).flatMap((entries) => Object.values(entries).flatMap((entry) => [entry.name?.[locale], entry.description?.[locale], entry.form?.[locale]])),
@@ -30,8 +34,12 @@ export function clearMissingCalculatorTexts() { missing.clear(); }
 export function translateCalculatorText(source, locale = "zh-CN", values, depth = 0) {
   if (typeof source !== "string") return source;
   const render = (key, substitutions = {}) => translateUi(locale, key,
-    Object.fromEntries(Object.entries(substitutions).map(([name, value]) =>
-      [name, typeof value === "string" && depth < 8 ? translateCalculatorText(value, locale, undefined, depth + 1) : value])));
+    Object.fromEntries(Object.entries(substitutions).map(([name, value]) => {
+      const skillName = name === "v0" && skillActionMessages.has(key)
+        ? entityText.getGlobalEntityTextByName?.("skill", value, "name", locale, "") : "";
+      const localized = skillName || value;
+      return [name, typeof localized === "string" && depth < 8 ? translateCalculatorText(localized, locale, undefined, depth + 1) : localized];
+    })));
   if (values) return render(source, values);
   if (locale === "zh-CN" || !source || depth > 8) return source;
   if (UI_MESSAGES[source]) return render(source);
@@ -47,6 +55,12 @@ export function translateCalculatorText(source, locale = "zh-CN", values, depth 
   for (const { key, names, pattern } of patterns) {
     const match = pattern.exec(source);
     if (match) return render(key, Object.fromEntries(names.map((name, index) => [name, match[index + 1]])));
+  }
+  // Gain provenance uses skill names with a use count; resolve the skill before UI homonyms.
+  const countedSkill = /^([^｜；　·]+)×([1-9]\d*)$/u.exec(source);
+  if (countedSkill) {
+    const name = entityText.getGlobalEntityTextByName?.("skill", countedSkill[1], "name", locale, "");
+    if (name) return render("{v0}×{v1}", { v0: name, v1: countedSkill[2] });
   }
   // Calculation summaries are explicitly separated clauses; translate each clause independently.
   for (const separator of ["　", "｜", " · ", " ＋ ", "；", " → ", "·", "、"]) {

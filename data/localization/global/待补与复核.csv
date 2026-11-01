@@ -5983,15 +5983,9 @@ ui:{stage}层 · {percent}%,ui,{stage}层 · {percent}%,ja,project_existing,revi
 ui:{v0} +{v1},ui,{v0} +{v1},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:{v0} +{v1},ui,{v0} +{v1},en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:{v0} +{v1},ui,{v0} +{v1},ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:{v0} +{v1} 层,ui,{v0} +{v1} 层,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:{v0} +{v1} 层,ui,{v0} +{v1} 层,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:{v0} +{v1} 层,ui,{v0} +{v1} 层,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:{v0} -{v1},ui,{v0} -{v1},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:{v0} -{v1},ui,{v0} -{v1},en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:{v0} -{v1},ui,{v0} -{v1},ja,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:{v0} -{v1} 层,ui,{v0} -{v1} 层,,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
-ui:{v0} -{v1} 层,ui,{v0} -{v1} 层,en,project_existing,review,保留现有值，待语境或原文问题复核。
-ui:{v0} -{v1} 层,ui,{v0} -{v1} 层,ja,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:{v0} {v1} / 目标 {v2} · {v3},ui,{v0} {v1} / 目标 {v2} · {v3},,needs_review,review,项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。
 ui:{v0} {v1} / 目标 {v2} · {v3},ui,{v0} {v1} / 目标 {v2} · {v3},en,project_existing,review,保留现有值，待语境或原文问题复核。
 ui:{v0} {v1} / 目标 {v2} · {v3},ui,{v0} {v1} / 目标 {v2} · {v3},ja,project_existing,review,保留现有值，待语境或原文问题复核。

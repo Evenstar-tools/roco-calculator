@@ -178,7 +178,7 @@ function SideStats({
         const magicalStage = clampAbilityStage((Number(level.stage) || 0) + magicalBonusStage);
         const splitAttackStages = displayedStage !== magicalStage;
         const levelHint = bonusStage !== magicalBonusStage
-          ? t("手调 {stage}层（双攻） · 特性：物攻 {physical}层、魔攻 {magical}层", { stage: level.stage, physical: `${bonusStage > 0 ? "+" : ""}${bonusStage}`, magical: `${magicalBonusStage > 0 ? "+" : ""}${magicalBonusStage}` })
+          ? t("手调 {stage}层（双攻） · 加成：物攻 {physical}层、魔攻 {magical}层", { stage: level.stage, physical: `${bonusStage > 0 ? "+" : ""}${bonusStage}`, magical: `${magicalBonusStage > 0 ? "+" : ""}${magicalBonusStage}` })
           : bonusStage
             ? t("手调 {stage}层 · 特性 {bonus}层；{hint}", { stage: level.stage, bonus: `${bonusStage > 0 ? "+" : ""}${bonusStage}`, hint: abilityLevelHint(abilityAdjustedStat(1, displayedStage), t) })
             : abilityLevelHint(level.multiplier, t);

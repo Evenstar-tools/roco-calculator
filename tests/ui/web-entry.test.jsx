@@ -120,7 +120,7 @@ test("a verified Global share on a CN URL waits for an explicit switch without c
   localStorage.setItem(MANUAL_PREFERENCE_KEY, JSON.stringify({ serverId: "cn", locale: "zh-CN" }));
   history.replaceState(null, "", `/cn/${hash}`);
   render(<WebEntry />);
-  expect(await screen.findByRole("alert")).toHaveTextContent("这份分享草稿属于国际服");
+  expect(await screen.findByRole("alert")).toHaveTextContent("这份分享配置属于国际服");
   expect(location.pathname).toBe("/cn/");
   fireEvent.click(screen.getByRole("button", { name: "在国际服打开" }));
   await waitFor(() => expect(location.pathname).toBe("/jp/"));

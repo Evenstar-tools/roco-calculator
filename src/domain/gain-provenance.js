@@ -1,6 +1,6 @@
 // 来源只解释已结算的数值，不参与伤害计算。
 const FIELDS = ["fixedPowerAdd", "attackLevelStage", "defenseLevelStage",
-  "magicalDefenseLevelStageAdd", "hitCountAdd", "hitCountPercentAdd",
+  "magicalDefenseLevelStageAdd", "magicalAttackLevelStageAdd", "hitCountAdd", "hitCountPercentAdd",
   "attackerSpeedFlat", "defenderSpeedFlat", "lifestealPercent"];
 const SLOTS = ["fixedPowerAddsBySlot", "skillPowerPercentAddsBySlot"];
 const number = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;

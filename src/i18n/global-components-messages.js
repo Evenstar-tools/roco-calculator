@@ -112,6 +112,7 @@ export const globalComponentsMessages = Object.fromEntries([
   ["原值的 {percent}%", "{percent}% of the base value", "元の値の{percent}%"],
   ["{stage}层 · {percent}%", "Stage {stage} · {percent}%", "{stage}段階 · {percent}%"],
   ["手调 {stage}层（双攻） · 特性：物攻 {physical}层、魔攻 {magical}层", "Manual: {stage} stages (both attacks) · Trait: P. ATK {physical}, M. ATK {magical}", "手動：両攻{stage}段階 · 特性：物攻{physical}段階、魔攻{magical}段階"],
+  ["手调 {stage}层（双攻） · 加成：物攻 {physical}层、魔攻 {magical}层", "Manual: {stage} stages (both attacks) · Bonuses: P. ATK {physical}, M. ATK {magical}", "手動：両攻{stage}段階 · 補正：物攻{physical}段階、魔攻{magical}段階"],
   ["手调 {stage}层 · 特性 {bonus}层；{hint}", "Manual: {stage} stages · Trait: {bonus} stages; {hint}", "手動：{stage}段階 · 特性：{bonus}段階；{hint}"],
   ["{label}耐久概览", "{label} durability overview", "{label}の耐久値一覧"],
   ["点击进入能力分析", "Open stat analysis", "能力分析を開く"],

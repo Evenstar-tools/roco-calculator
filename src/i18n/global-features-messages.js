@@ -638,4 +638,7 @@ export const globalFeaturesMessages = Object.fromEntries([
   ["{value}族", "Base {value}", "種族資質{value}"],
   ["按国际客户端修正英日术语，统一传动、血脉、技能石、资质与赛季名称。", "Corrected English and Japanese terminology against the international client, including Gearshift, Bloodlines, Skill Tablets, Aptitudes and season names.", "国際版クライアントに合わせ、位置変動・血統・スキルストーン・資質・シーズン名などの英日用語を修正しました。"],
   ["按客户端统一英日术语，修正工具标题、配置说明与记录，切换语言保留配置。", "Official English and Japanese terms across tool titles, setup instructions and logs. Language switching keeps your setup.", "ツール名・設定説明・記録の英日用語をクライアントに統一。言語を切り替えても設定は保持されます。"],
+  ["操作修复", "Interaction fixes", "操作の修正"],
+  ["单技能防御状态可再次点击解除，改善窄屏技能名称显示。", "Click again to remove defensive effects in single-skill mode; skill names fit better on narrow screens.", "単一スキルモードで防御状態を再クリックして解除できます。狭い画面でのスキル名表示も改善しました。"],
+  ["修正单技能防御解除、水泡盾增益与窄屏技能名，补齐增益摘要译文。", "Fixed defense toggles in single-skill mode, Bubble Shield bonuses, narrow-screen skill names and bonus translations.", "単一スキルの防御解除、バブルシールドの強化、狭い画面のスキル名、強化効果の翻訳を修正。"],
 ].map(([source, en, ja]) => [source, { en, ja }]));

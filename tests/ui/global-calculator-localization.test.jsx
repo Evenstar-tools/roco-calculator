@@ -3,12 +3,13 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import { afterEach, expect, test, vi } from "vitest";
 import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
 import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
-import { translateCalculatorText, useCalculatorLocale } from "../../src/i18n/calculator-text.js";
+import { translateCalculatorText, useCalculatorLocale, clearMissingCalculatorTexts, getMissingCalculatorTexts } from "../../src/i18n/calculator-text.js";
 import { translateUi } from "../../src/i18n/messages.js";
 import { getGlobalEntityText, localizeGlobalSpirit } from "../../src/runtime/global-entity-localization.js";
 import { buildCalculatorViewModel, getTraitView } from "../../src/domain/calculator-view-model.js";
 import { createInitialState } from "../../src/state/defaults.js";
 import { selectSingleSkill } from "../../src/state/calculator-session.js";
+import { gainLabels, gainTermLabel } from "../../src/domain/gain-provenance.js";
 import { ResultRail } from "../../src/components/ResultRail.jsx";
 import { createTeamMember } from "../../src/state/team-presets.js";
 import { TraitHint } from "../../src/components/TraitHint.jsx";
@@ -106,11 +107,52 @@ test("core stat and battle labels retain the official English and Japanese termi
   const terms = {
     物攻: ["P. ATK", "物攻"], 魔攻: ["M. ATK", "魔攻"], 物防: ["P. DEF", "物防"], 魔防: ["M. DEF", "魔防"],
     速度: ["SPD", "速さ"], 生命: ["HP", "HP"], 特性: ["Trait", "特性"], 个体: ["Ind. Apt.", "個体資質"],
-    威力: ["Power", "威力"], 连击: ["Combo", "連撃"],
+    威力: ["Power", "威力"], 连击: ["Combo", "連撃数"],
   };
   for (const [zh, [en, ja]] of Object.entries(terms)) {
     expect(translateUi("en", zh)).toBe(en); expect(translateUi("ja", zh)).toBe(ja);
   }
+  const bonusLabel = "手调 {stage}层（双攻） · 加成：物攻 {physical}层、魔攻 {magical}层";
+  const bonusValues = { stage: 0, physical: 0, magical: "+7" };
+  expect(translateUi("en", bonusLabel, bonusValues)).toBe("Manual: 0 stages (both attacks) · Bonuses: P. ATK 0, M. ATK +7");
+  expect(translateUi("ja", bonusLabel, bonusValues)).toBe("手動：両攻0段階 · 補正：物攻0段階、魔攻+7段階");
+  expect(translateCalculatorText("水泡盾的状态已解除", "en")).toBe("Bubble Shield: effect removed");
+  expect(translateCalculatorText("水泡盾的状态已解除", "ja")).toBe("バブルシールドの効果を解除しました");
+});
+
+test.each(["en", "ja"])("%s gain provenance resolves counted skills through their official names", locale => {
+  const sources = ["水泡盾", "防御", "折射"].map((name, index) => {
+    const skill = snapshot.skills.find(entry => entry.name === name);
+    return { kind: "skill", id: skill.id, name, count: index + 1, amount: 7 };
+  });
+  const before = JSON.stringify(sources);
+  const expected = sources.map(source => `${getGlobalEntityText("skill", snapshot.skills.find(skill => skill.id === source.id), "name", locale)} ×${source.count}`);
+  clearMissingCalculatorTexts();
+  expect(translateCalculatorText(gainLabels(sources), locale)).toBe(expected.join(" · "));
+  expect(translateCalculatorText(gainTermLabel("魔攻", [sources[0]], "层"), locale))
+    .toBe(locale === "en" ? `M. ATK · +7 stages (${expected[0]})` : `魔攻 · +7段階（${expected[0]}）`);
+  for (const source of sources) {
+    const skillName = getGlobalEntityText("skill", snapshot.skills.find(skill => skill.id === source.id), "name", locale);
+    const actions = [
+      ["：本回合", ": this turn", "：このターン"],
+      ["的使用已取消", ": use cancelled", "の使用を取り消しました"],
+      ["的后续变化已应用", ": follow-up changes applied", "の追加変化を適用しました"],
+      ["的状态已解除", ": effect removed", "の効果を解除しました"],
+      ["的状态已应用", ": effect applied", "の効果を適用しました"],
+      ["的负面状态已取消", ": negative status cancelled", "の状態異常を取り消しました"],
+      ["已记为使用1次", ": use recorded (×1)", "の使用を1回記録しました"],
+    ];
+    for (const [suffix, en, ja] of actions) {
+      expect(translateCalculatorText(source.name + suffix, locale)).toBe(skillName + (locale === "en" ? en : ja));
+    }
+  }
+  expect(getMissingCalculatorTexts()).toEqual([]);
+  const result = buildCalculatorViewModel({ activeDirection: "forward", snapshot, state: createInitialState(snapshot), serverId: "global" }).result;
+  result.selectedResult.gainSummary = gainLabels(sources);
+  const { container } = render(wrap(locale, <ResultRail result={result} />));
+  expect(container.querySelector(".result-rail__gains strong").textContent).toBe(expected.join(" · "));
+  expect(JSON.stringify(sources)).toBe(before);
+  expect(result.selectedResult.gainSummary).toBe("水泡盾×1 · 防御×2 · 折射×3");
 });
 
 // These messages come from real supported skills with their required conditions unset.

@@ -248,14 +248,15 @@ export function getPanelView(spirit, side, stages = {}) {
   });
 }
 
-// S5's explicitly confirmed stat gains exist before a skill is selected. Reuse
-// their resolver; selected-skill projections remain authoritative when present.
+// Applied stat gains remain visible before a skill is selected.
+// Selected-skill projections remain authoritative when present.
 function previewPanelForSide(snapshot, state, sideKey, panelStats) {
   const side = state.sides[sideKey];
   const outgoing = state.directions[sideKey === "attacker" ? "forward" : "reverse"];
   const incoming = state.directions[sideKey === "attacker" ? "reverse" : "forward"];
-  let physical = 0, magical = 0, defense = 0, speedFlat = 0, speedStage = 0;
-  let hasPreviewTrait = false;
+  let physical = 0, magical = Number(outgoing.overrides.magicalAttackLevelStageAdd ?? 0),
+    defense = 0, speedFlat = 0, speedStage = 0;
+  let hasPreviewTrait = magical !== 0;
   for (const trait of getEffectiveTraits(snapshot, { ...side, spirit: getSpirit(snapshot, side) })) {
     const resolve = (role, category, direction) => resolveS5PreviewTraitEffect(trait, role, {
       context: { ...direction.context, ...direction.overrides?.context }, skill: { category },

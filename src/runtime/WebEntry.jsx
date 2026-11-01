@@ -136,7 +136,7 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
   function navigate(serverId, locale, { remember = true, hash = "", replace = false } = {}) {
     if ((IS_PREVIEW_BUILD && serverId === "global") || (import.meta.env.MODE === "global" && serverId === "cn")) {
       if (remember) writeManualPreference({ serverId, locale: serverId === "cn" ? "zh-CN" : locale });
-      window.location.assign(`${routeFor(serverId, locale)}${hash}`);
+      window.location.assign(`${routeFor(serverId, locale)}${location.search}${hash}`);
       return;
     }
     const next = { serverId, locale: serverId === "cn" ? "zh-CN" : locale };

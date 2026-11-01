@@ -98323,13 +98323,13 @@
       "context": "src/i18n/messages.js",
       "zh": "{v0} +{v1} 层",
       "zh_project": "{v0} +{v1} 层",
-      "en": "{v0} +{v1} levels",
-      "ja": "{v0} +{v1}レベル",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
-      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{v0} +{v1} 层",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "en": "{v0} +{v1} stages",
+      "ja": "{v0} +{v1}段階",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#{v0} +{v1} 层",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。 | 2026-11-01：已核实用于能力变化摘要，与现有NatureStatsStep能力栏统一为stages/段階，区别于战斗等级levels/レベル；仅修订此能力模板。"
     },
     {
       "key": "ui:{v0} -{v1}",
@@ -98357,13 +98357,13 @@
       "context": "src/i18n/messages.js",
       "zh": "{v0} -{v1} 层",
       "zh_project": "{v0} -{v1} 层",
-      "en": "{v0} −{v1} levels",
-      "ja": "{v0} −{v1}レベル",
-      "en_status": "project_existing",
-      "ja_status": "project_existing",
-      "review_status": "needs_review",
-      "source_ref": "src/i18n/messages.js#UI_MESSAGES/{v0} -{v1} 层",
-      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。"
+      "en": "{v0} −{v1} stages",
+      "ja": "{v0} −{v1}段階",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#{v0} -{v1} 层",
+      "notes": "项目中文为实际i18n键。正式来源与项目旧译分开；不是运行时替换指令。 | 2026-11-01：已核实用于能力变化摘要，与现有NatureStatsStep能力栏统一为stages/段階，区别于战斗等级levels/レベル；仅修订此能力模板。"
     },
     {
       "key": "ui:{v0} {v1} / 目标 {v2} · {v3}",
@@ -125207,6 +125207,346 @@
       "review_status": "manual_reviewed",
       "source_ref": "src/i18n/messages.js#UI_MESSAGES/常用精灵配置可更新（{count}）",
       "notes": "2026-10-30：复用国服配置通知；英日区分新增导入与安全更新，保留数量参数与手改保护语义。"
+    },
+    {
+      "key": "ui:操作修复",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "操作修复",
+      "zh_project": "操作修复",
+      "en": "Interaction fixes",
+      "ja": "操作の修正",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/global-features-messages.js#操作修复",
+      "notes": "2026-11-01国际服通用操作修复说明；依据已实现的单技能防御解除与窄屏技能名显示按语境校对，属于项目文案，非客户端原句。"
+    },
+    {
+      "key": "ui:单技能防御状态可再次点击解除，改善窄屏技能名称显示。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "单技能防御状态可再次点击解除，改善窄屏技能名称显示。",
+      "zh_project": "单技能防御状态可再次点击解除，改善窄屏技能名称显示。",
+      "en": "Click again to remove defensive effects in single-skill mode; skill names fit better on narrow screens.",
+      "ja": "単一スキルモードで防御状態を再クリックして解除できます。狭い画面でのスキル名表示も改善しました。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/global-features-messages.js#单技能防御状态可再次点击解除，改善窄屏技能名称显示。",
+      "notes": "2026-11-01国际服通用操作修复说明；依据已实现的单技能防御解除与窄屏技能名显示按语境校对，属于项目文案，非客户端原句。"
+    },
+    {
+      "key": "ui:{v0}+{v1}层",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{v0}+{v1}层",
+      "zh_project": "{v0}+{v1}层",
+      "en": "{v0} +{v1} stages",
+      "ja": "{v0}+{v1}段階",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#{v0}+{v1}层",
+      "notes": "2026-11-01技能持久增益摘要与分项能力加成；采用项目语言表正式P. ATK/M. ATK/P. DEF/M. DEF/SPD术语，保留动态占位符，按实际输出语境校对。项目模板，非客户端原句。 | 2026-11-01：已核实用于能力变化摘要，与现有NatureStatsStep能力栏统一为stages/段階，区别于战斗等级levels/レベル；仅修订此能力模板。"
+    },
+    {
+      "key": "ui:{v0}-{v1}层",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{v0}-{v1}层",
+      "zh_project": "{v0}-{v1}层",
+      "en": "{v0} −{v1} stages",
+      "ja": "{v0}−{v1}段階",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#{v0}-{v1}层",
+      "notes": "2026-11-01技能持久增益摘要与分项能力加成；采用项目语言表正式P. ATK/M. ATK/P. DEF/M. DEF/SPD术语，保留动态占位符，按实际输出语境校对。项目模板，非客户端原句。 | 2026-11-01：已核实用于能力变化摘要，与现有NatureStatsStep能力栏统一为stages/段階，区别于战斗等级levels/レベル；仅修订此能力模板。"
+    },
+    {
+      "key": "ui:敌方{v0}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "敌方{v0}",
+      "zh_project": "敌方{v0}",
+      "en": "Opponent {v0}",
+      "ja": "相手の{v0}",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#敌方{v0}",
+      "notes": "2026-11-01技能持久增益摘要与分项能力加成；采用项目语言表正式P. ATK/M. ATK/P. DEF/M. DEF/SPD术语，保留动态占位符，按实际输出语境校对。项目模板，非客户端原句。"
+    },
+    {
+      "key": "ui:速度+{v0}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "速度+{v0}",
+      "zh_project": "速度+{v0}",
+      "en": "SPD +{v0}",
+      "ja": "速さ+{v0}",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#速度+{v0}",
+      "notes": "2026-11-01技能持久增益摘要与分项能力加成；采用项目语言表正式P. ATK/M. ATK/P. DEF/M. DEF/SPD术语，保留动态占位符，按实际输出语境校对。项目模板，非客户端原句。"
+    },
+    {
+      "key": "ui:速度-{v0}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "速度-{v0}",
+      "zh_project": "速度-{v0}",
+      "en": "SPD −{v0}",
+      "ja": "速さ−{v0}",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#速度-{v0}",
+      "notes": "2026-11-01技能持久增益摘要与分项能力加成；采用项目语言表正式P. ATK/M. ATK/P. DEF/M. DEF/SPD术语，保留动态占位符，按实际输出语境校对。项目模板，非客户端原句。"
+    },
+    {
+      "key": "ui:手调 {stage}层（双攻） · 加成：物攻 {physical}层、魔攻 {magical}层",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "手调 {stage}层（双攻） · 加成：物攻 {physical}层、魔攻 {magical}层",
+      "zh_project": "手调 {stage}层（双攻） · 加成：物攻 {physical}层、魔攻 {magical}层",
+      "en": "Manual: {stage} stages (both attacks) · Bonuses: P. ATK {physical}, M. ATK {magical}",
+      "ja": "手動：両攻{stage}段階 · 補正：物攻{physical}段階、魔攻{magical}段階",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/global-components-messages.js#手调 {stage}层（双攻） · 加成：物攻 {physical}层、魔攻 {magical}层",
+      "notes": "2026-11-01技能持久增益摘要与分项能力加成；采用项目语言表正式P. ATK/M. ATK/P. DEF/M. DEF/SPD术语，保留动态占位符，按实际输出语境校对。项目模板，非客户端原句。"
+    },
+    {
+      "key": "ui:修正单技能防御解除、水泡盾增益与窄屏技能名，补齐增益摘要译文。",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "修正单技能防御解除、水泡盾增益与窄屏技能名，补齐增益摘要译文。",
+      "zh_project": "修正单技能防御解除、水泡盾增益与窄屏技能名，补齐增益摘要译文。",
+      "en": "Fixed defense toggles in single-skill mode, Bubble Shield bonuses, narrow-screen skill names and bonus translations.",
+      "ja": "単一スキルの防御解除、バブルシールドの強化、狭い画面のスキル名、強化効果の翻訳を修正。",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/global-features-messages.js#修正单技能防御解除、水泡盾增益与窄屏技能名，补齐增益摘要译文。",
+      "notes": "2026-11-01国际服通用操作修复说明；补充水泡盾仅魔攻增益与动态摘要翻译，技能名采用既有客户端正式译名。项目文案，非客户端原句。"
+    },
+    {
+      "key": "ui:减伤{v0}%",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "减伤{v0}%",
+      "zh_project": "减伤{v0}%",
+      "en": "Damage reduction {v0}%",
+      "ja": "ダメージ軽減 {v0}%",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#减伤{v0}%",
+      "notes": "2026-11-01单技能与四技能共用的减伤摘要/解除提示；沿用减伤和Remove effect既有译法，技能名由实际实体正式译文代入，保留动态占位符。项目模板，非客户端原句。"
+    },
+    {
+      "key": "ui:{v0}的状态已解除",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{v0}的状态已解除",
+      "zh_project": "{v0}的状态已解除",
+      "en": "{v0}: effect removed",
+      "ja": "{v0}の効果を解除しました",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#{v0}的状态已解除",
+      "notes": "2026-11-01单技能与四技能共用的减伤摘要/解除提示；沿用减伤和Remove effect既有译法，技能名由实际实体正式译文代入，保留动态占位符。项目模板，非客户端原句。"
+    },
+    {
+      "key": "ui:{v0}×{v1}",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{v0}×{v1}",
+      "zh_project": "{v0}×{v1}",
+      "en": "{v0} ×{v1}",
+      "ja": "{v0} ×{v1}",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#{v0}×{v1}",
+      "notes": "2026-11-01持久增益来源与公式分项；技能名按skill类别采用客户端正式译名，×次数保留，能力变化与能力栏统一stages/段階。项目动态模板，非客户端原句。"
+    },
+    {
+      "key": "ui:+{v0}层（{v1}）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "+{v0}层（{v1}）",
+      "zh_project": "+{v0}层（{v1}）",
+      "en": "+{v0} stages ({v1})",
+      "ja": "+{v0}段階（{v1}）",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#+{v0}层（{v1}）",
+      "notes": "2026-11-01持久增益来源与公式分项；技能名按skill类别采用客户端正式译名，×次数保留，能力变化与能力栏统一stages/段階。项目动态模板，非客户端原句。"
+    },
+    {
+      "key": "ui:-{v0}层（{v1}）",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "-{v0}层（{v1}）",
+      "zh_project": "-{v0}层（{v1}）",
+      "en": "−{v0} stages ({v1})",
+      "ja": "−{v0}段階（{v1}）",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#-{v0}层（{v1}）",
+      "notes": "2026-11-01持久增益来源与公式分项；技能名按skill类别采用客户端正式译名，×次数保留，能力变化与能力栏统一stages/段階。项目动态模板，非客户端原句。"
+    },
+    {
+      "key": "ui:{v0}：本回合",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{v0}：本回合",
+      "zh_project": "{v0}：本回合",
+      "en": "{v0}: this turn",
+      "ja": "{v0}：このターン",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#{v0}：本回合",
+      "notes": "2026-11-01单技能/四技能使用、取消、后续变化、解除同一操作链提示；技能名按skill类别代入正式客户端译名，保留动态占位符。项目文案，非客户端原句。"
+    },
+    {
+      "key": "ui:{v0}的使用已取消",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{v0}的使用已取消",
+      "zh_project": "{v0}的使用已取消",
+      "en": "{v0}: use cancelled",
+      "ja": "{v0}の使用を取り消しました",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#{v0}的使用已取消",
+      "notes": "2026-11-01单技能/四技能使用、取消、后续变化、解除同一操作链提示；技能名按skill类别代入正式客户端译名，保留动态占位符。项目文案，非客户端原句。"
+    },
+    {
+      "key": "ui:{v0}的后续变化已应用",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{v0}的后续变化已应用",
+      "zh_project": "{v0}的后续变化已应用",
+      "en": "{v0}: follow-up changes applied",
+      "ja": "{v0}の追加変化を適用しました",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#{v0}的后续变化已应用",
+      "notes": "2026-11-01单技能/四技能使用、取消、后续变化、解除同一操作链提示；技能名按skill类别代入正式客户端译名，保留动态占位符。项目文案，非客户端原句。"
+    },
+    {
+      "key": "ui:{v0}的状态已应用",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{v0}的状态已应用",
+      "zh_project": "{v0}的状态已应用",
+      "en": "{v0}: effect applied",
+      "ja": "{v0}の効果を適用しました",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#{v0}的状态已应用",
+      "notes": "2026-11-01单技能/四技能使用、取消、后续变化、解除同一操作链提示；技能名按skill类别代入正式客户端译名，保留动态占位符。项目文案，非客户端原句。"
+    },
+    {
+      "key": "ui:{v0}的负面状态已取消",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{v0}的负面状态已取消",
+      "zh_project": "{v0}的负面状态已取消",
+      "en": "{v0}: negative status cancelled",
+      "ja": "{v0}の状態異常を取り消しました",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#{v0}的负面状态已取消",
+      "notes": "2026-11-01单技能/四技能使用、取消、后续变化、解除同一操作链提示；技能名按skill类别代入正式客户端译名，保留动态占位符。项目文案，非客户端原句。"
+    },
+    {
+      "key": "ui:{v0}已记为使用{v1}次",
+      "group": "ui",
+      "field": "message",
+      "entity_id": "",
+      "game_id": "",
+      "context": "src/i18n/messages.js",
+      "zh": "{v0}已记为使用{v1}次",
+      "zh_project": "{v0}已记为使用{v1}次",
+      "en": "{v0}: use recorded (×{v1})",
+      "ja": "{v0}の使用を{v1}回記録しました",
+      "en_status": "manual_reviewed",
+      "ja_status": "manual_reviewed",
+      "review_status": "manual_reviewed",
+      "source_ref": "src/i18n/calculator-messages.js#{v0}已记为使用{v1}次",
+      "notes": "2026-11-01单技能/四技能使用、取消、后续变化、解除同一操作链提示；技能名按skill类别代入正式客户端译名，保留动态占位符。项目文案，非客户端原句。"
     }
   ],
   "plainByKey": {
@@ -154127,8 +154467,8 @@
     },
     "ui:{v0} +{v1} 层": {
       "zh": "{v0} +{v1} 层",
-      "en": "{v0} +{v1} levels",
-      "ja": "{v0} +{v1}レベル"
+      "en": "{v0} +{v1} stages",
+      "ja": "{v0} +{v1}段階"
     },
     "ui:{v0} -{v1}": {
       "zh": "{v0} -{v1}",
@@ -154137,8 +154477,8 @@
     },
     "ui:{v0} -{v1} 层": {
       "zh": "{v0} -{v1} 层",
-      "en": "{v0} −{v1} levels",
-      "ja": "{v0} −{v1}レベル"
+      "en": "{v0} −{v1} stages",
+      "ja": "{v0} −{v1}段階"
     },
     "ui:{v0} {v1} / 目标 {v2} · {v3}": {
       "zh": "{v0} {v1} / 目标 {v2} · {v3}",
@@ -162034,6 +162374,106 @@
       "zh": "常用精灵配置可更新（{count}）",
       "en": "Recommended setups: {count} updates",
       "ja": "おすすめ設定を更新できます（{count}件）"
+    },
+    "ui:操作修复": {
+      "zh": "操作修复",
+      "en": "Interaction fixes",
+      "ja": "操作の修正"
+    },
+    "ui:单技能防御状态可再次点击解除，改善窄屏技能名称显示。": {
+      "zh": "单技能防御状态可再次点击解除，改善窄屏技能名称显示。",
+      "en": "Click again to remove defensive effects in single-skill mode; skill names fit better on narrow screens.",
+      "ja": "単一スキルモードで防御状態を再クリックして解除できます。狭い画面でのスキル名表示も改善しました。"
+    },
+    "ui:{v0}+{v1}层": {
+      "zh": "{v0}+{v1}层",
+      "en": "{v0} +{v1} stages",
+      "ja": "{v0}+{v1}段階"
+    },
+    "ui:{v0}-{v1}层": {
+      "zh": "{v0}-{v1}层",
+      "en": "{v0} −{v1} stages",
+      "ja": "{v0}−{v1}段階"
+    },
+    "ui:敌方{v0}": {
+      "zh": "敌方{v0}",
+      "en": "Opponent {v0}",
+      "ja": "相手の{v0}"
+    },
+    "ui:速度+{v0}": {
+      "zh": "速度+{v0}",
+      "en": "SPD +{v0}",
+      "ja": "速さ+{v0}"
+    },
+    "ui:速度-{v0}": {
+      "zh": "速度-{v0}",
+      "en": "SPD −{v0}",
+      "ja": "速さ−{v0}"
+    },
+    "ui:手调 {stage}层（双攻） · 加成：物攻 {physical}层、魔攻 {magical}层": {
+      "zh": "手调 {stage}层（双攻） · 加成：物攻 {physical}层、魔攻 {magical}层",
+      "en": "Manual: {stage} stages (both attacks) · Bonuses: P. ATK {physical}, M. ATK {magical}",
+      "ja": "手動：両攻{stage}段階 · 補正：物攻{physical}段階、魔攻{magical}段階"
+    },
+    "ui:修正单技能防御解除、水泡盾增益与窄屏技能名，补齐增益摘要译文。": {
+      "zh": "修正单技能防御解除、水泡盾增益与窄屏技能名，补齐增益摘要译文。",
+      "en": "Fixed defense toggles in single-skill mode, Bubble Shield bonuses, narrow-screen skill names and bonus translations.",
+      "ja": "単一スキルの防御解除、バブルシールドの強化、狭い画面のスキル名、強化効果の翻訳を修正。"
+    },
+    "ui:减伤{v0}%": {
+      "zh": "减伤{v0}%",
+      "en": "Damage reduction {v0}%",
+      "ja": "ダメージ軽減 {v0}%"
+    },
+    "ui:{v0}的状态已解除": {
+      "zh": "{v0}的状态已解除",
+      "en": "{v0}: effect removed",
+      "ja": "{v0}の効果を解除しました"
+    },
+    "ui:{v0}×{v1}": {
+      "zh": "{v0}×{v1}",
+      "en": "{v0} ×{v1}",
+      "ja": "{v0} ×{v1}"
+    },
+    "ui:+{v0}层（{v1}）": {
+      "zh": "+{v0}层（{v1}）",
+      "en": "+{v0} stages ({v1})",
+      "ja": "+{v0}段階（{v1}）"
+    },
+    "ui:-{v0}层（{v1}）": {
+      "zh": "-{v0}层（{v1}）",
+      "en": "−{v0} stages ({v1})",
+      "ja": "−{v0}段階（{v1}）"
+    },
+    "ui:{v0}：本回合": {
+      "zh": "{v0}：本回合",
+      "en": "{v0}: this turn",
+      "ja": "{v0}：このターン"
+    },
+    "ui:{v0}的使用已取消": {
+      "zh": "{v0}的使用已取消",
+      "en": "{v0}: use cancelled",
+      "ja": "{v0}の使用を取り消しました"
+    },
+    "ui:{v0}的后续变化已应用": {
+      "zh": "{v0}的后续变化已应用",
+      "en": "{v0}: follow-up changes applied",
+      "ja": "{v0}の追加変化を適用しました"
+    },
+    "ui:{v0}的状态已应用": {
+      "zh": "{v0}的状态已应用",
+      "en": "{v0}: effect applied",
+      "ja": "{v0}の効果を適用しました"
+    },
+    "ui:{v0}的负面状态已取消": {
+      "zh": "{v0}的负面状态已取消",
+      "en": "{v0}: negative status cancelled",
+      "ja": "{v0}の状態異常を取り消しました"
+    },
+    "ui:{v0}已记为使用{v1}次": {
+      "zh": "{v0}已记为使用{v1}次",
+      "en": "{v0}: use recorded (×{v1})",
+      "ja": "{v0}の使用を{v1}回記録しました"
     }
   }
 }

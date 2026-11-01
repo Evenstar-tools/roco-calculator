@@ -505,6 +505,7 @@ export function calculateSkillResult({
     const categoryResolution = categoryTraitResolutions[category];
     return (
       (attackLevelStage ?? 0) +
+      (category === "magical" ? finiteNumber(directionOverrides.magicalAttackLevelStageAdd) ?? 0 : 0) +
       markAttackLevelBonus +
       (categoryResolution?.status === "exact"
         ? categoryResolution.attackLevelBonus
@@ -771,6 +772,8 @@ export function calculateSkillResult({
       : resolvedTypeMultiplier;
   const categoryKey =
     statKeys.attack === "magicalAttack" ? "magical" : "physical";
+  const categoryAttackLevelStageAdd = categoryKey === "magical"
+    ? finiteNumber(directionOverrides.magicalAttackLevelStageAdd) ?? 0 : 0;
   const categoryDefenseLevelStageAdd = categoryKey === "magical" ? magicalDefenseLevelStageAdd : 0;
   const bloodlineAttackLevelBonus =
     attackerBloodline.attackLevelBonusByCategory[categoryKey] +
@@ -786,6 +789,7 @@ export function calculateSkillResult({
     attackerContract.targetDefenseLevelBonusByCategory[categoryKey];
   const hasStageInput =
     markAttackLevelBonus !== 0 ||
+    categoryAttackLevelStageAdd !== 0 ||
     categoryDefenseLevelStageAdd !== 0 ||
     attackLevelStage !== undefined ||
     defenseLevelStage !== undefined ||
@@ -797,6 +801,7 @@ export function calculateSkillResult({
     contractDefenseLevelBonus !== 0;
   const totalAttackLevelStage =
     (attackLevelStage ?? 0) +
+    categoryAttackLevelStageAdd +
     markAttackLevelBonus +
     traitResolution.attackLevelBonus +
     bloodlineAttackLevelBonus +
@@ -1586,6 +1591,7 @@ export function calculateSkillResult({
     ],
     attack: panelPowerOverride ? [] : limitGainSources([
       ...stateGains("attackLevelStage", attackLevelStage ?? 0, slotOverrides.attackLevelStage !== undefined),
+      ...stateGains("magicalAttackLevelStageAdd", categoryAttackLevelStageAdd),
       ...traitGains("attackLevelBonus"),
       ...namedGain(attackerBloodline.label || defenderBloodline.label || "血脉", bloodlineAttackLevelBonus),
       ...namedGain(attackerContract.label || defenderContract.label || "契约形态", contractAttackLevelBonus),

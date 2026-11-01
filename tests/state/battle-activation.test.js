@@ -11,7 +11,7 @@ import {
   decodeShareState,
   encodeShareState,
 } from "../../src/state/share.js";
-import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
+import { buildCalculatorViewModel, getTraitView } from "../../src/domain/calculator-view-model.js";
 
 test("explicit pure-negative activation toggles once while attacks never apply preview status history", () => {
   const fixture = createSnapshot();
@@ -225,7 +225,7 @@ function createSnapshot() {
 
 test.each([
   ["力量增效", "status", {}, "攻击+10层"],
-  ["水泡盾", "defense", { defenseCounterSucceeded: true }, "攻击+7层"],
+  ["水泡盾", "defense", { defenseCounterSucceeded: true }, "魔攻+7层"],
   ["防御反击", "defense", { defenseCounterSucceeded: true }, "威力+40"],
   ["撒娇", "magical", {}, "威力+10"],
 ])("%s 原位显示实际生效增益，次数与连击分开", (name, category, context, effect) => {
@@ -238,8 +238,9 @@ test.each([
   expect(view(state)[0].usageSummary).toBeUndefined();
   const next = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot, state }).state;
   expect(view(next)[0].usageSummary).toMatchObject({ count: 1, appliedEffects: expect.arrayContaining([effect]) });
-  expect(view(next)[1].gainSummary).toContain(`${name}×1`);
-  const manual = calculatorReducer(next, { type: "direction/update", direction: "forward", value: { overrides: { attackLevelStage: 0, fixedPowerAdd: 0 } } });
+  if (name === "水泡盾") expect(view(next)[1].gainSummary).not.toContain(`${name}×1`);
+  else expect(view(next)[1].gainSummary).toContain(`${name}×1`);
+  const manual = calculatorReducer(next, { type: "direction/update", direction: "forward", value: { overrides: { attackLevelStage: 0, magicalAttackLevelStageAdd: 0, fixedPowerAdd: 0 } } });
   expect(view(manual)[0].usageSummary.appliedEffects).not.toContain(effect);
   expect(view(state)[0].usageSummary).toBeUndefined();
 });
@@ -515,17 +516,40 @@ describe("shared battle activation", () => {
     const state = createInitialState(createSnapshot());
     state.directions.forward.overrides = {
       attackLevelStage: 8,
+      magicalAttackLevelStageAdd: 7,
       defenseLevelStage: 3,
     };
     state.directions.reverse.overrides = {
       attackLevelStage: 6,
+      magicalAttackLevelStageAdd: 1,
       defenseLevelStage: 4,
     };
 
     const next = applyBalanceTraitTrigger({ side: "defender", state });
 
     expect(next.directions.reverse.overrides.attackLevelStage).toBe(14);
+    expect(next.directions.reverse.overrides.magicalAttackLevelStageAdd).toBe(8);
     expect(next.directions.forward.overrides.defenseLevelStage).toBe(7);
+  });
+
+  test.each([[0, 12, 14, 12, 7], [-10, -4, 10, 6, 3], [90, 99, 0, 9, -7]])("Mud Armor doubles actual category stages with common attack %s", (common, physical, extra, copiedPhysical, copiedExtra) => {
+    const snapshot = createSnapshot();
+    Object.assign(snapshot.spirits[1], { fullName: "公平鸽", traitName: "衡量", traitIds: ["balance"] });
+    snapshot.traits.push({ id: "balance", name: "衡量" });
+    snapshot.skills.push({ id: "mud-armor", name: "泥浆铠甲", category: "defense", basePower: 0, type: "地" });
+    const state = createInitialState(snapshot);
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides.attacker.skills.four = [{ skillId: "mud-armor", context: { defenseCounterSucceeded: true } }, null, null, null];
+    const balance = getTraitView(snapshot, snapshot.spirits[1]).inputs.find(input => input.contextKey === "balanceTriggered");
+    state.directions.reverse.context[balance.id] = true;
+    state.directions.forward.overrides.attackLevelStage = common;
+    state.directions.forward.overrides.magicalAttackLevelStageAdd = 7;
+    const next = applyBattleActivation({ side: "attacker", skillIndex: 0, snapshot, state }).state;
+    expect(next.directions.forward.overrides.attackLevelStage).toBe(physical);
+    expect(next.directions.forward.overrides.magicalAttackLevelStageAdd).toBe(extra);
+    expect(next.directions.reverse.overrides.attackLevelStage).toBe(copiedPhysical);
+    expect(next.directions.reverse.overrides.magicalAttackLevelStageAdd).toBe(copiedExtra);
   });
 
   test("stores battle-scoped trait controls in the active direction and mirrors roles", () => {
@@ -618,6 +642,84 @@ describe("shared battle activation", () => {
       applySpeedBoost: true,
     });
   });
+
+  test.each([
+    ["attacker", false], ["attacker", true], ["defender", false], ["defender", true],
+  ])("single %s defense cancels reduction without replaying permanent gains (counter %s)", (side, counter) => {
+    const snapshot = createSnapshot();
+    const skill = { id: "single-bubble-shield", name: "水泡盾", category: "defense", type: "水", basePower: 0, description: "减伤80%，应对攻击：自己获得魔攻+70%。" };
+    snapshot.skills.push(skill);
+    const state = createInitialState(snapshot);
+    const selfDirection = side === "attacker" ? "forward" : "reverse";
+    const targetDirection = side === "attacker" ? "reverse" : "forward";
+    state.mode = "single";
+    state.sides.attacker.spiritId = "attacker";
+    state.sides.defender.spiritId = "defender";
+    state.sides[side].skills.single = skill.id;
+    state.directions[selfDirection].context = { defenseCounterSucceeded: counter };
+    const apply = (current) => applyBattleActivation({ side, skillIndex: 0, skillMode: "single", snapshot, state: current });
+    const first = apply(state);
+    expect(first.state.directions[targetDirection].reduction).toBeCloseTo(0.2);
+    expect(first.state.directions[selfDirection].overrides.activeDefenseStatus).toMatchObject({ skillId: skill.id, slotIndex: 0 });
+    const released = apply(first.state);
+    expect(released.state.directions[targetDirection].reduction).toBe(1);
+    expect(released.state.directions[selfDirection].overrides.activeDefenseStatus).toBeNull();
+    expect(released.state.directions[selfDirection].overrides.attackLevelStage).toBe(0);
+    expect(released.state.directions[selfDirection].overrides.magicalAttackLevelStageAdd).toBe(counter ? 7 : 0);
+    const reapplied = apply(released.state);
+    expect(reapplied.state.directions[targetDirection].reduction).toBeCloseTo(0.2);
+    expect(reapplied.state.directions[selfDirection].overrides.attackLevelStage).toBe(0);
+    expect(reapplied.state.directions[selfDirection].overrides.magicalAttackLevelStageAdd).toBe(counter ? 14 : 0);
+  });
+
+  test.each([["attacker", "single"], ["defender", "single"], ["attacker", "four"], ["defender", "four"]])(
+    "Bubble Shield only raises %s magic attack in %s, including reload and share", async (side, mode) => {
+      const snapshot = createSnapshot();
+      const shield = { id: "bubble-shield", name: "水泡盾", category: "defense", type: "水", basePower: 0,
+        calculationRuleset: "s3-midseason-2026-08-13", description: "减伤80%，应对攻击：自己获得魔攻+70%。" };
+      const magic = { id: "magic-probe", name: "魔法测试", category: "magical", type: "普通", basePower: 35 };
+      snapshot.skills.push(shield, magic);
+      const state = createInitialState(snapshot);
+      state.mode = mode;
+      state.sides.attacker.spiritId = "attacker";
+      state.sides.defender.spiritId = "defender";
+      const direction = side === "attacker" ? "forward" : "reverse";
+      state.sides[side].skills.single = shield.id;
+      state.sides[side].skills.four = [{ skillId: shield.id, context: { defenseCounterSucceeded: true } }, "scratch", magic.id, null];
+      state.directions[direction].context.defenseCounterSucceeded = true;
+      const view = current => buildCalculatorViewModel({ activeDirection: direction, snapshot, state: current });
+      const before = view(state).sides[side].panelStats;
+      const resultFor = (current, skillId) => {
+        const probe = structuredClone(current);
+        probe.mode = "single";
+        probe.sides[side].skills.single = skillId;
+        return view(probe).calculation[direction].selectedResult;
+      };
+      const baselinePhysical = resultFor(state, "scratch");
+      const baselineMagical = resultFor(state, magic.id);
+      const applied = applyBattleActivation({ side, skillIndex: 0, skillMode: mode, snapshot, state }).state;
+      expect(applied.directions[direction].overrides.attackLevelStage).toBe(0);
+      expect(applied.directions[direction].overrides.magicalAttackLevelStageAdd).toBe(7);
+      for (const current of [applied, JSON.parse(JSON.stringify(applied)), await decodeShareState(await encodeShareState(applied))]) {
+        const model = view(current);
+        expect(model.sides[side].finalPanelStats).toMatchObject({
+          physicalAttack: before.physicalAttack, magicalAttack: Math.floor(before.magicalAttack * 1.7),
+        });
+        expect(model.sides[side].abilityStageBonuses.attackByCategory).toEqual({ physical: 0, magical: 7 });
+        const physical = resultFor(current, "scratch");
+        const magical = resultFor(current, magic.id);
+        expect(physical.totalDamage).toBe(baselinePhysical.totalDamage);
+        expect(magical.totalDamage).toBeGreaterThan(baselineMagical.totalDamage);
+        expect(magical.combatPanel.attacker.magicalAttack).toBe(Math.floor(before.magicalAttack * 1.7));
+        expect(physical.gainSummary).not.toContain("水泡盾");
+        expect(magical.gainSummary).toContain("水泡盾×1");
+      }
+      const empty = structuredClone(applied);
+      for (const entry of Object.values(empty.sides)) entry.skills = { single: null, four: [null, null, null, null] };
+      expect(view(empty).sides[side].finalPanelStats).toMatchObject({ physicalAttack: before.physicalAttack,
+        magicalAttack: Math.floor(before.magicalAttack * 1.7) });
+    },
+  );
 
   test("clears the previous defense reduction when another skill is used", () => {
     const snapshot = createSnapshot();

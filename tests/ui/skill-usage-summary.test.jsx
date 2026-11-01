@@ -63,7 +63,7 @@ test.each(["en", "ja"])("%s shows translated accumulated effects and next-use pr
   clearMissingCalculatorTexts();
   const result = { usageSummary: { count: 2, powerGain: 20, hitCountGain: 2,
     hitCountCapped: true, hitCountLimit: 99, currentEffects: ["魔攻 +3 层", "速度 +20"] } };
-  const { container } = render(<LocaleProvider locale={locale}><SkillUsageSummary result={result}
+  const { container, rerender } = render(<LocaleProvider locale={locale}><SkillUsageSummary result={result}
     nextHint="本次可得：普·威力+10　翼·连击+1" /></LocaleProvider>);
   expect(container.querySelector(".skill-usage__main").textContent).toContain(translateCalculatorText("已使用×2", locale));
   expect(container.querySelector(".skill-usage__main").textContent).toContain(translateCalculatorText("威力+20", locale));
@@ -71,4 +71,38 @@ test.each(["en", "ja"])("%s shows translated accumulated effects and next-use pr
   expect(container.querySelector(".skill-usage__next").textContent).toContain(translateCalculatorText("普·威力+10", locale));
   expect(getMissingCalculatorTexts(), JSON.stringify(getMissingCalculatorTexts())).toEqual([]);
   expect(result.usageSummary.powerGain).toBe(20);
+
+  const persistentEffects = [
+    ["减伤80%", "Damage reduction 80%", "ダメージ軽減 80%"],
+    ["魔攻+7层", "M. ATK +7 stages", "魔攻+7段階"],
+    ["魔攻 +3 层", "M. ATK +3 stages", "魔攻 +3段階"],
+    ["敌方魔防 -4 层", "Opponent M. DEF −4 stages", "相手の魔防 −4段階"],
+    ["魔攻+8层", "M. ATK +8 stages", "魔攻+8段階"],
+    ["攻击+7层", "Attack +7 stages", "攻撃+7段階"],
+    ["双攻+4层", "Both attacks +4 stages", "物攻・魔攻+4段階"],
+    ["双防+3层", "Both defenses +3 stages", "物防・魔防+3段階"],
+    ["物攻+2层", "P. ATK +2 stages", "物攻+2段階"],
+    ["物防+16层", "P. DEF +16 stages", "物防+16段階"],
+    ["魔防-6层", "M. DEF −6 stages", "魔防−6段階"],
+    ["防御+4层", "Defense +4 stages", "防御+4段階"],
+    ["敌方攻击-3层", "Opponent Attack −3 stages", "相手の攻撃−3段階"],
+    ["敌方魔攻+8层", "Opponent M. ATK +8 stages", "相手の魔攻+8段階"],
+    ["敌方防御-4层", "Opponent Defense −4 stages", "相手の防御−4段階"],
+    ["敌方双防-4层", "Opponent Both defenses −4 stages", "相手の物防・魔防−4段階"],
+    ["敌方物防-9层", "Opponent P. DEF −9 stages", "相手の物防−9段階"],
+    ["敌方魔防-4层", "Opponent M. DEF −4 stages", "相手の魔防−4段階"],
+    ["速度+30", "SPD +30", "速さ+30"],
+    ["速度-40", "SPD −40", "速さ−40"],
+    ["敌方速度-40", "Opponent SPD −40", "相手の速さ−40"],
+  ];
+  const persistent = { usageSummary: { count: 1, successCount: 1,
+    appliedEffects: persistentEffects.map(([source]) => source) } };
+  const original = JSON.stringify(persistent);
+  rerender(<LocaleProvider locale={locale}><SkillUsageSummary result={persistent} /></LocaleProvider>);
+  const main = container.querySelector(".skill-usage__main");
+  expect(main).toHaveTextContent(locale === "en" ? "Used ×1 · Counter successes ×1" : "使用×1 · カウンター成功×1");
+  for (const [, en, ja] of persistentEffects) expect(main).toHaveTextContent(locale === "en" ? en : ja);
+  expect(getMissingCalculatorTexts(), JSON.stringify(getMissingCalculatorTexts())).toEqual([]);
+  if (locale === "en") expect(main.textContent).not.toMatch(/[\u3400-\u9fff]/u);
+  expect(JSON.stringify(persistent)).toBe(original);
 });

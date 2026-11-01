@@ -672,12 +672,14 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       ? {
           attack:
             currentState.directions.forward.overrides.attackLevelStage ?? 0,
+          magicalAttack: currentState.directions.forward.overrides.magicalAttackLevelStageAdd ?? 0,
           defense:
             currentState.directions.reverse.overrides.defenseLevelStage ?? 0,
         }
       : {
           attack:
             currentState.directions.reverse.overrides.attackLevelStage ?? 0,
+          magicalAttack: currentState.directions.reverse.overrides.magicalAttackLevelStageAdd ?? 0,
           defense:
             currentState.directions.forward.overrides.defenseLevelStage ?? 0,
         };
@@ -703,6 +705,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const copied = copyPositiveAbilityStages(source, target);
     updateSideAbilityLevel(targetSide, "attack", copied.attack);
     updateSideAbilityLevel(targetSide, "defense", copied.defense);
+    dispatch({ type: "direction/update", direction: targetSide === "attacker" ? "forward" : "reverse",
+      value: { overrides: { magicalAttackLevelStageAdd: clampStage(copied.magicalAttack) } } });
     recordAppliedGains(latest, { kind: "trait", id: "balance", name: "衡量" });
   }
 
@@ -1246,13 +1250,12 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     const { deltas, operations = {} } = resolution;
     const doublePositive = (value) =>
       operations.doublePositiveOwnBuffs && value > 0 ? value * 2 : value;
-    const ownAttackStage = clampStage(
-      doublePositive(
-        Number(selfOverrides.attackLevelStage ?? 0) +
-          deltas.ownAttack +
-          postAttackStageAdd,
-      ),
-    );
+    const ownAttackBeforeDoubling = Number(selfOverrides.attackLevelStage ?? 0) + deltas.ownAttack + postAttackStageAdd;
+    const ownAttackStage = clampStage(doublePositive(ownAttackBeforeDoubling));
+    const magicalAttackExtra = Number(selfOverrides.magicalAttackLevelStageAdd ?? 0) + Number(operations.ownMagicalAttackStageAdd ?? 0);
+    const ownMagicalAttackStage = operations.doublePositiveOwnBuffs
+      ? clampStage(doublePositive(ownAttackBeforeDoubling + magicalAttackExtra)) - ownAttackStage
+      : clampStage(magicalAttackExtra);
     const ownDefenseStage = clampStage(
       doublePositive(
         Number(oppositeOverrides.defenseLevelStage ?? 0) + deltas.ownDefense,
@@ -1332,6 +1335,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       value: {
         overrides: {
           attackLevelStage: ownAttackStage,
+          magicalAttackLevelStageAdd: ownMagicalAttackStage,
           attackerSpeedFlat: ownSpeedFlat,
           defenderSpeedFlat:
             Number(selfOverrides.defenderSpeedFlat ?? 0) +
@@ -1404,9 +1408,13 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         0,
         ownDefenseStage - Number(oppositeOverrides.defenseLevelStage ?? 0),
       );
-      if (gainedAttack > 0 || gainedDefense > 0) {
+      const gainedMagicalAttack = Math.max(0,
+        ownAttackStage + ownMagicalAttackStage - Number(selfOverrides.attackLevelStage ?? 0) -
+          Number(selfOverrides.magicalAttackLevelStageAdd ?? 0)) - gainedAttack;
+      if (gainedAttack > 0 || gainedMagicalAttack > 0 || gainedDefense > 0) {
         copyAbilityStages(side, oppositeSide, {
           attack: gainedAttack,
+          magicalAttack: gainedMagicalAttack,
           defense: gainedDefense,
         });
       }
@@ -1537,10 +1545,22 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       }));
   }
 
+  function canReleaseSkillStatus(side, index, mode = "four") {
+    const direction = side === "attacker" ? "forward" : "reverse";
+    const entry = mode === "single" ? state.sides[side].skills.single : state.sides[side].skills.four[index];
+    const skill = getSkill(snapshot, entry);
+    const activeStatus = state.directions[direction].overrides?.activeDefenseStatus;
+    const context = mode === "single" ? state.directions[direction].context ?? {}
+      : linkedNegativeStatusContext(state, side, entry?.context ?? {});
+    return Boolean(skill && activeStatus?.skillId === skill.id && activeStatus?.slotIndex === index &&
+      matchesSkillActivationContext(skill, activeStatus.contextSignature, context));
+  }
+
   function skillActivationLabel(side, index, mode = "four") {
     const direction = side === "attacker" ? "forward" : "reverse";
     const entry = mode === "single" ? state.sides[side].skills.single : state.sides[side].skills.four[index];
     const skill = getSkill(snapshot, entry);
+    if (skill?.category === "defense" && canReleaseSkillStatus(side, index, mode)) return "解除状态";
     if (!["status", "defense"].includes(skill?.category)) {
       const args = { snapshot, side, skill, result: calculation?.[direction]?.results?.[index] };
       return prepareS5EnergyUse(state, args) || prepareS5DiscountUse(state, args) ? "使用技能" : "应用后续变化";
@@ -1579,7 +1599,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     }
     setToast(applied.applied
       ? actionLabel === "取消使用" ? `${selectedSingleSkill.name}的使用已取消`
-        : `${selectedSingleSkill.name}${actionLabel === "应用后续变化" ? "的后续变化已应用" : "：本回合"}`
+        : actionLabel === "解除状态" ? `${selectedSingleSkill.name}的状态已解除`
+          : `${selectedSingleSkill.name}${actionLabel === "应用后续变化" ? "的后续变化已应用" : "：本回合"}`
       : applied.reason);
   }
 
@@ -2025,12 +2046,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       negativeStatusEnabled: state.calculationOptions?.includeNegativeStatusSettlement === true,
       negativeStatusCanApply: result?.negativeStatusCanApply, postAttackEffects,
     });
-    const activeStatus = state.directions[direction].overrides?.activeDefenseStatus;
-    const entry = state.sides[side].skills.four[index];
-    const activeContext = state.mode === "single" ? state.directions[direction].context ?? {}
-      : linkedNegativeStatusContext(state, side, entry?.context ?? {});
-    const canRelease = activeStatus?.skillId === skill?.id &&
-      activeStatus?.slotIndex === (index ?? 0) && matchesSkillActivationContext(skill, activeStatus?.contextSignature, activeContext);
+    const canRelease = canReleaseSkillStatus(side, index ?? 0, state.mode);
     const s5Action = skill && !skill.s5StatusEffectPending && (
       prepareS5EnergyUse(state, { snapshot, side, result }) ||
       prepareS5DiscountUse(state, { snapshot, side, skill, result })
