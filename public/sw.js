@@ -2,7 +2,8 @@ const CACHE_NAME = "rock-calculator-webapp-v2.2.8-load-recovery-20261101";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 // 图片长期缓存不随发布清空；摘要由 scripts/stamp-image-cache.mjs 按图片内容写入。
 const IMAGE_CACHE_PREFIX = "rock-calculator-images-";
-const IMAGE_CACHE = `${IMAGE_CACHE_PREFIX}__IMAGE_DIGEST__`;
+const IMAGE_VERSION = "__IMAGE_DIGEST__";
+const IMAGE_CACHE = `${IMAGE_CACHE_PREFIX}${IMAGE_VERSION}`;
 const STABLE_IMAGE_RE = /^\/(?:global-assets\/)?assets\/(?:spirits\/spirit_|skills\/skill_)[a-f0-9]{16}\.(?:png|webp)$/;
 const APP_SHELL = [
   "/manifest.webmanifest",
@@ -103,7 +104,7 @@ self.addEventListener("message", (event) => {
       if (!/^https?:$/.test(url.protocol) || url.origin !== self.location.origin
         || !(url.pathname.startsWith("/assets/") || url.pathname.startsWith("/global-assets/assets/")) || url.username || url.password) return [];
       url.hash = "";
-      return [url.href];
+      return [stableImageUrl(url.href)?.href ?? url.href];
     } catch {
       return [];
     }
@@ -112,10 +113,14 @@ self.addEventListener("message", (event) => {
     let failed = 0;
     if (urls.length) {
       try {
-        const [cache, imageCache] = await Promise.all([caches.open(CACHE_NAME), caches.open(IMAGE_CACHE)]);
+        const cache = await caches.open(CACHE_NAME);
         const results = await Promise.allSettled(urls.map(async (url) => {
-          const target = STABLE_IMAGE_RE.test(new URL(url).pathname) ? imageCache : cache;
-          if (!(await target.match(url))) await target.add(url);
+          const imageUrl = stableImageUrl(url);
+          if (imageUrl) {
+            // 访问记录只补缓存，不重复触发组件已经发起的强制重试。
+            const response = await cacheFirstImage(new Request(imageUrl.href));
+            if (!isImageResponse(response)) throw new Error("Image cache fill failed");
+          } else if (!(await cache.match(url))) await cache.add(url);
         }));
         failed = results.filter((result) => result.status === "rejected").length;
       } catch {
@@ -151,9 +156,42 @@ async function cacheFirst(request) {
   return refreshCache(cache, request);
 }
 
+function stableImageUrl(value) {
+  const url = new URL(value, self.location.origin);
+  if (url.origin !== self.location.origin || !STABLE_IMAGE_RE.test(url.pathname)
+    || (url.search && url.search !== "?image-retry=1")) return null;
+  url.search = "";
+  return url;
+}
+
+function isImageResponse(response) {
+  return response?.ok && /^image\//i.test(response.headers.get("content-type") ?? "");
+}
+
 async function cacheFirstImage(request) {
-  const cache = await caches.open(IMAGE_CACHE);
-  return (await cache.match(request)) ?? (await refreshCache(cache, request)) ?? Response.error();
+  const url = stableImageUrl(request.url);
+  const key = new Request(url.href, request);
+  const retry = new URL(request.url).searchParams.get("image-retry") === "1";
+  let cache;
+  try {
+    cache = await caches.open(IMAGE_CACHE);
+    const cached = await cache.match(key);
+    if (!retry && isImageResponse(cached)) return cached;
+    if (cached) await cache.delete(key);
+  } catch { /* 缓存不可用时仍直接取图。 */ }
+  // 图片 ID 固定：换代必须同时换网络 URL，避免把旧 HTTP/CDN 缓存写回新缓存。
+  url.searchParams.set("image-cache", IMAGE_VERSION);
+  if (retry) url.searchParams.set("image-retry", "1");
+  try {
+    const response = await fetch(new Request(url.href, request), { cache: "reload" });
+    if (isImageResponse(response) && cache) {
+      try { await cache.put(key, response.clone()); }
+      catch { /* 存储失败不影响在线图片。 */ }
+    }
+    return response;
+  } catch {
+    return Response.error();
+  }
 }
 
 async function refreshCache(cache, request) {
@@ -227,7 +265,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (STABLE_IMAGE_RE.test(url.pathname)) {
+  if (stableImageUrl(url.href)) {
     event.respondWith(cacheFirstImage(event.request));
     return;
   }

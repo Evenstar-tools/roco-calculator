@@ -28,6 +28,7 @@ function createHarness({ cached = {}, cachedRequestHeaders = {}, fetchImpl, clie
   const cacheApi = {
     add: vi.fn(),
     addAll: vi.fn(async () => undefined),
+    delete: vi.fn(async (request) => delete cached[requestKey(request)]),
     match: vi.fn(match),
     put: vi.fn(async (request, response) => {
       cached[requestKey(request)] = response;
@@ -56,6 +57,7 @@ function createHarness({ cached = {}, cachedRequestHeaders = {}, fetchImpl, clie
   };
   vm.runInNewContext(serviceWorkerSource, {
     URL,
+    Request,
     Response,
     caches,
     fetch: fetchImpl ?? vi.fn(),
@@ -396,7 +398,7 @@ describe("repeat requests and cache failures", () => {
   });
 
   test("serves cached stable images without touching the network", async () => {
-    const response = new Response("portrait");
+    const response = new Response("portrait", { headers: { "Content-Type": "image/png" } });
     const fetchImpl = vi.fn();
     const url = "/assets/spirits/spirit_0123456789abcdef.png";
     const harness = createHarness({ cached: { [`https://calculator.test${url}`]: response }, fetchImpl });
@@ -407,13 +409,70 @@ describe("repeat requests and cache failures", () => {
   });
 
   test.each(["/assets/skills/skill_0123456789abcdef.png", "/global-assets/assets/spirits/spirit_0123456789abcdef.png"])("stores %s in the long-lived image cache", async (url) => {
-    const fetchImpl = vi.fn(async () => new Response("image"));
+    const fetchImpl = vi.fn(async () => new Response("image", { headers: { "Content-Type": "image/png" } }));
     const harness = createHarness({ fetchImpl });
     const event = dispatchFetch(harness.listeners.fetch, url);
     await event.responsePromise;
     expect(fetchImpl).toHaveBeenCalledTimes(1);
     expect(harness.caches.open).toHaveBeenCalledWith("rock-calculator-images-__IMAGE_DIGEST__");
     expect(harness.cacheApi.put).toHaveBeenCalledTimes(1);
+  });
+
+  test("a new image-cache generation bypasses the old immutable HTTP URL", async () => {
+    const path = "/assets/spirits/spirit_0123456789abcdef.png";
+    const fetchImpl = vi.fn(async () => new Response("new image", { headers: { "Content-Type": "image/png" } }));
+    const harness = createHarness({ fetchImpl });
+    await dispatchFetch(harness.listeners.fetch, path).responsePromise;
+    expect(fetchImpl).toHaveBeenCalledWith(expect.objectContaining({
+      url: `https://calculator.test${path}?image-cache=__IMAGE_DIGEST__`,
+    }), { cache: "reload" });
+    expect(harness.cacheApi.put.mock.calls[0][0].url).toBe(`https://calculator.test${path}`);
+  });
+
+  test("does not keep a successful HTML error response as an image", async () => {
+    const path = "/assets/spirits/spirit_0123456789abcdef.png";
+    const broken = new Response("error page", { headers: { "Content-Type": "text/html" } });
+    const healthy = new Response("image", { headers: { "Content-Type": "image/png" } });
+    const fetchImpl = vi.fn().mockResolvedValueOnce(broken).mockResolvedValue(healthy);
+    const harness = createHarness({ fetchImpl });
+    await dispatchFetch(harness.listeners.fetch, path).responsePromise;
+    expect(harness.cacheApi.put).not.toHaveBeenCalled();
+    await expect(dispatchFetch(harness.listeners.fetch, path).responsePromise).resolves.toBe(healthy);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  test.each(["text/html", "image/png"])("explicit image retry replaces a cached broken %s response using one canonical key", async (contentType) => {
+    const path = "/global-assets/assets/spirits/spirit_0123456789abcdef.png";
+    const key = `https://calculator.test${path}`;
+    const cached = { [key]: new Response("broken", { headers: { "Content-Type": contentType } }) };
+    const healthy = new Response("valid image", { headers: { "Content-Type": "image/png" } });
+    const fetchImpl = vi.fn(async () => healthy);
+    const harness = createHarness({ cached, fetchImpl });
+    await expect(dispatchFetch(harness.listeners.fetch, `${path}?image-retry=1`).responsePromise).resolves.toBe(healthy);
+    expect(fetchImpl.mock.calls[0][1]).toEqual({ cache: "reload" });
+    expect(harness.cacheApi.delete).toHaveBeenCalledWith(expect.objectContaining({ url: key }));
+    expect(Object.keys(cached)).toEqual([key]);
+    await expect(dispatchFetch(harness.listeners.fetch, path).responsePromise).resolves.toBe(cached[key]);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
+  test("visited images use the same validated versioned path without replaying recovery requests", async () => {
+    const path = "/assets/spirits/spirit_0123456789abcdef.png";
+    const fetchImpl = vi.fn(async () => new Response("image", { headers: { "Content-Type": "image/png" } }));
+    const harness = createHarness({ fetchImpl });
+    let completed;
+    const visit = () => harness.listeners.message({
+      data: { type: "CACHE_VISITED_ASSETS", urls: [path, `${path}?image-retry=1`] },
+      waitUntil(value) { completed = value; },
+    });
+    visit();
+    await completed;
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(harness.cacheApi.add).not.toHaveBeenCalled();
+    fetchImpl.mockClear();
+    visit();
+    await completed;
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
   test("returns a network error for an uncached stable image while offline", async () => {
