@@ -2,7 +2,7 @@ const copy = {
   en: {
     checking: "Checking shared setup…",
     conflictCn: "This shared setup belongs to the CN server",
-    conflictGlobal: "This shared draft belongs to Global",
+    conflictGlobal: "This shared setup belongs to Global",
     conflictBody: "Open it on the matching server. Your current workspace stays on this server.",
     openCn: "Open on CN server", openGlobal: "Open on Global", cancel: "Keep current workspace",
     invalid: "This shared setup could not be opened.",
@@ -22,7 +22,7 @@ const copy = {
   },
   "zh-CN": {
     checking: "正在校验分享配置…",
-    conflictCn: "这份分享配置属于国服", conflictGlobal: "这份分享草稿属于国际服",
+    conflictCn: "这份分享配置属于国服", conflictGlobal: "这份分享配置属于国际服",
     conflictBody: "请在对应服务器打开，当前工作区仍保留在原服务器。",
     openCn: "在国服打开", openGlobal: "在国际服打开", cancel: "保留当前工作区",
     invalid: "无法打开这份分享配置。", dismiss: "关闭提示",
@@ -39,7 +39,7 @@ const copy = {
   },
   ja: {
     checking: "共有設定を確認中…",
-    conflictCn: "この共有設定は中国版用です", conflictGlobal: "この共有下書きはグローバル版用です",
+    conflictCn: "この共有設定は中国版用です", conflictGlobal: "この共有設定はグローバル版用です",
     conflictBody: "対応するサーバーで開いてください。現在の作業内容は元のサーバーに保持されます。",
     openCn: "中国版で開く", openGlobal: "グローバル版で開く", cancel: "現在の作業を続ける",
     invalid: "この共有設定を開けませんでした。", dismiss: "閉じる",

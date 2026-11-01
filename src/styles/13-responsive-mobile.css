@@ -780,6 +780,14 @@
   .calculator-layout--compact .compact-skill__row {
     grid-template-columns: 11px minmax(105px, 1fr) 19px minmax(74px, 0.68fr);
   }
+
+  .calculator-layout--compact .compact-skill__row .skill-picker input {
+    padding-inline: 1px;
+  }
+
+  .calculator-layout--compact .compact-skill__row .skill-picker__selected-icon {
+    margin-left: 3px;
+  }
 }
 
 /* 窄屏导航与精灵卡片：保留控件语义，并让名称、收藏和特性各自占位。 */
