@@ -2,12 +2,13 @@ const SESSION_TIMEOUT = 30 * 60 * 1000;
 const VISITOR_KEY = "rococalc.metrics.visitor.v1";
 const SESSION_KEY = "rococalc.metrics.session.v1";
 const FEATURES = new Set(["calculator", "teams", "rankings", "skills", "desktop", "deer", "types", "transmission", "speed", "durability"]);
-const EVENTS = new Set(["page_view", "session_start", "feature_view", "calculation_ready", "lineup_use", "download_click"]);
+const EVENTS = new Set(["page_view", "session_start", "feature_view", "calculation_ready", "lineup_use", "download_click", "load_failure"]);
 
 export function eventMetadata(name, metadata = {}) {
   const allowed = name === "feature_view" ? { entry_source: ["initial", "navigate", "reopen"] }
     : name === "calculation_ready" ? { result_kind: ["damage", "status", "threshold", "range_not_reached"] }
-      : name === "lineup_use" ? { action: ["apply_member"], side: ["attacker", "defender"] } : {};
+      : name === "lineup_use" ? { action: ["apply_member"], side: ["attacker", "defender"] }
+        : name === "load_failure" ? { kind: ["chunk", "render", "image"], outcome: ["reload", "boundary", "placeholder"] } : {};
   return Object.fromEntries(Object.entries(allowed).filter(([key, values]) => values.includes(metadata?.[key])).map(([key]) => [key, metadata[key]]));
 }
 
