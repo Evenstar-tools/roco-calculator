@@ -192,7 +192,11 @@ for (const [width, height, theme] of [[1920, 1080, "light"], [320, 740, "dark"]]
         };
       }));
       expect(rows).toHaveLength(8);
-      expect(rows.every((row) => Object.values(row).every(Boolean))).toBe(true);
+      for (const [index, row] of rows.entries()) {
+        expect(row, `compact skill row ${index + 1}`).toEqual({
+          originalColumns: true, nameFits: true, nameWidth: true, resultWidth: true, resultFits: true, rowFits: true,
+        });
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       await side.scrollIntoViewIfNeeded();
       await page.screenshot({ path: testInfo.outputPath(`adapt-list-${width}-${theme}.png`) });

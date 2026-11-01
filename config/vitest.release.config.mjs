@@ -23,7 +23,7 @@ export default defineConfig({
             "tests/service-worker/*.test.js",
             "tests/docs/release-notes.test.js",
             "tests/build/{performance-budget,build-attribution,global-release,cn-production-pruning}.test.js",
-            "tests/scripts/build-preview-release.test.js",
+            "tests/scripts/{build-preview-release,build-cn-release}.test.js",
           ],
         },
       },

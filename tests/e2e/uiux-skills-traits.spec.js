@@ -28,14 +28,21 @@ test("keeps portrait mode switch styling stable", async ({ page }) => {
         const rect = button.getBoundingClientRect();
         const outer = el.getBoundingClientRect();
         const title = getComputedStyle(document.querySelector('.app-header__title-short .app-header__season-title'));
-        return { direction: style.flexDirection, background: style.backgroundColor,
+        const swatch = document.createElement("i");
+        swatch.style.backgroundColor = "var(--season-control-selected-bg)";
+        el.append(swatch);
+        const selectedBackground = getComputedStyle(swatch).backgroundColor;
+        swatch.remove();
+        return { direction: style.flexDirection, background: style.backgroundColor, selectedBackground,
           color: style.color, width: rect.width, height: rect.height,
           outerWidth: outer.width, outerHeight: outer.height,
           padding: getComputedStyle(el).padding, titleSize: title.fontSize,
           titleWeight: title.fontWeight, titleLineHeight: title.lineHeight };
       });
       const before = await readStyle();
-      expect(before).toMatchObject({ direction: "row", background: "rgb(224, 206, 149)",
+      expect(before.background).toBe(before.selectedBackground);
+      expect(before.background).not.toBe("rgba(0, 0, 0, 0)");
+      expect(before).toMatchObject({ direction: "row",
         width: 42, height: 38, outerWidth: 48, outerHeight: 44, padding: "2px", titleSize: "14px", titleWeight: "800" });
       await button.click();
       await expect(button).toHaveAccessibleName("当前具体版，切换到精简版");

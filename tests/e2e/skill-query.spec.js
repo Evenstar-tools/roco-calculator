@@ -50,6 +50,9 @@ for (const width of [320, 390, 1440]) for (const theme of ["light", "dark"]) {
     await expect(panel.getByRole("button", { name: "技能石", exact: true })).toHaveAttribute("aria-pressed", "true");
     await panel.getByRole("button", { name: "全部来源", exact: true }).click();
     await panel.getByRole("tab", { name: "赛季新技能" }).click();
+    await expect(panel.getByLabel("查询赛季")).toHaveValue("S5");
+    await expect(panel.locator(".skill-query__list")).toContainText("荒芜之噬");
+    await panel.getByLabel("查询赛季").selectOption("S4");
     await expect(panel.locator(".skill-query__list")).toContainText("重组");
     await panel.getByLabel("查询赛季").selectOption("S3");
     await expect(panel.locator(".skill-query__list > p").first()).toHaveText("57 个技能");

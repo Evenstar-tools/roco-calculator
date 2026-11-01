@@ -1,3 +1,4 @@
+import { selectSpirit } from "./helpers/uiux-helpers.js";
 import { expect, test } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 
@@ -132,10 +133,8 @@ test("SEO CN recognizes a released Global share and opens the matching /en/ work
   expect(envelope.rulesVersion).toBe("global-s3-midseason-2026-08-13");
 
   await page.goto("/cn/");
-  await page.getByRole("combobox", { name: "攻击方精灵", exact: true }).fill("音速犬");
-  await page.getByRole("option", { name: /^音速犬/ }).click();
-  await page.getByRole("combobox", { name: "防御方精灵", exact: true }).fill("水灵");
-  await page.getByRole("option", { name: /^水灵/ }).click();
+  await selectSpirit(page, "攻击方", "音速犬");
+  await selectSpirit(page, "防御方", "水灵");
   const readCnStorage = () => page.evaluate(() => Object.fromEntries(Object.entries(localStorage).filter(([key]) => key.startsWith("rock-calculator.servers.cn."))));
   await expect.poll(async () => Object.keys(await readCnStorage()).length).toBeGreaterThan(0);
   const savedCn = await readCnStorage();

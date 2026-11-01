@@ -5,7 +5,7 @@ import { getNatureMultipliers } from "../../src/domain/natures.js";
 import { serverStorageKey } from "../../src/state/server-storage.js";
 
 test.use({ serviceWorkers: "block" });
-const runtime = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
+const runtime = JSON.parse(readFileSync("dist/client/data/runtime.json", "utf8"));
 const bosses = runtime.spirits.filter(spirit => spirit.stage === "首领" && spirit.sourceCategory === "首领形态");
 const raceStats = { hp: 100, physicalAttack: 100, magicalAttack: 100, physicalDefense: 100, magicalDefense: 100, speed: 100 };
 const fixture = structuredClone(runtime);

@@ -22,9 +22,10 @@ export async function resetUiuxStorage(page) {
 export async function selectSpirit(page, side, name) {
   const picker = page.getByRole("combobox", { name: `${side}精灵` });
   await picker.fill(name);
-  await page
-    .getByRole("option", { name: new RegExp(`^${name}`) })
-    .click();
+  // Exact name text avoids selecting a seasonal form or the row's change-info button.
+  await page.getByRole("option").getByText(name, { exact: true }).click();
+  await expect(picker).toHaveValue(name);
+  await expect(picker).toHaveAttribute("aria-expanded", "false");
 }
 
 export async function selectDefaultSpirits(page) {

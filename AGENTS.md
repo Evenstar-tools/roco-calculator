@@ -23,6 +23,11 @@
 - 依既有明确授权执行每轮命中结果的一次进入验证，单独记录监控/验收访问；不为累计点击重复操作，不把自身点击或无法分离的 RUM 变化当自然获客证据，不估算扣减汇总。
 - 每轮给实际值、可比变化、证据边界及最多一个有新证据的下一步验收；无证据支持改动时保持产品和标题稳定，明确未改善或尚未核验，不用静默成功、重复建议或新增内容制造进展。
 
+## 当前 Web 发布源码入口
+
+- 国服正式网页与 `/pre/` 从 `config/preview-release.json` 的同一固定 S5 源码分别构建，入口为 `scripts/build-cn-release.mjs` 与 `scripts/build-preview-release.mjs`。修改国服网页时先核对该固定源码及其维护分支，更新源码并验证后再接续发布 pin；只修改主线旧 `src/` 不会进入这两个网页产物。
+- 国际服仍从 `config/global-release.json` 独立构建。主线现有共享核心和小程序保持独立维护，不因 Web 切 S5 自动同步。详细边界和本次验收见 [S5 正式接续](docs/maintenance/s5-bwiki-sync-20261101.md)。
+
 ## 赛季主题设计
 
 - 为洛克计算器新增、调整或审阅赛季背景、招牌精灵、配色及主题切换时，使用项目 Skill [roco-season-design](.agents/skills/roco-season-design/SKILL.md)，执行根目录 [design.md](design.md)。用户说“按 design.md 做 S5 主题”也进入同一流程。

@@ -49,11 +49,11 @@ describe("版本记录", () => {
     expect(versions.every((version) => /^v\d+\.\d+\.\d+$/u.test(version))).toBe(true);
   });
 
-  test("S4 月涌狂想作为当前桌面版本置顶", () => {
+  test("当前正式赛季记录置顶", () => {
     expect(featuredRelease.status).not.toBe("preview");
     expect(featuredRelease.version).toBe(`v${packageVersion}`);
     expect(featuredRelease.title.trim().length).toBeGreaterThan(0);
-    expect(featuredRelease.title).toContain("S4");
+    expect(featuredRelease.title).toContain(featuredRelease.seasonId);
     expect(featuredRelease.highlights.join("\n")).not.toContain("9月10日");
     expect(JSON.stringify(USER_RELEASE_NOTES)).not.toMatch(/前瞻/u);
     expect(featuredRelease.title).not.toMatch(/S3[\s-]*季中/u);
@@ -63,7 +63,7 @@ describe("版本记录", () => {
   test("新功能弹窗只展示用户可直接使用的功能", () => {
     const titles = featuredRelease.whatsNew.items.map(({ title }) => title.trim());
     expect(titles.length).toBeGreaterThan(0);
-    expect(titles).toEqual(["传动计算器", "属性查询", "电鹿计算器", "耐久排行", "速度线排行", "S4 赛季主题"]);
+    expect(titles).toEqual(["传动计算器", "属性查询", "电鹿计算器", "耐久排行", "速度线排行", `${featuredRelease.seasonId} 赛季主题`]);
     expect(titles.every((title) => title.length > 0 && title.length <= 16)).toBe(true);
     expect(new Set(titles).size).toBe(titles.length);
     expect(featuredRelease.whatsNew.items.every(({ description }) =>

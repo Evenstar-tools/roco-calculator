@@ -1,16 +1,14 @@
 import { expect, test } from "@playwright/test";
+import { selectSpirit } from "./helpers/uiux-helpers.js";
+import { CURRENT_USER_RELEASE } from "../../src/data/user-release-notes.js";
+
+const currentHeading = new RegExp(`洛克计算器 · ${CURRENT_USER_RELEASE.seasonId}`);
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem("rock-calculator.first-run-guide.v1", "1");
   });
 });
-
-async function selectSpirit(page, side, name) {
-  const picker = page.getByRole("combobox", { name: `${side}精灵` });
-  await picker.fill(name);
-  await page.getByRole("option", { name: new RegExp(`^${name}`) }).click();
-}
 
 test("works offline after the service worker caches the production app", async ({
   context,
@@ -33,7 +31,7 @@ test("works offline after the service worker caches the production app", async (
   await context.setOffline(true);
   try {
     await page.reload({ waitUntil: "domcontentloaded" });
-    await expect(page.getByRole("heading", { name: "洛克计算器 · S4「季中」" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: currentHeading })).toBeVisible();
     const cachedRuntime = await page.evaluate(async () => {
       const response = await fetch("/data/runtime.json");
       const runtime = await response.json();
@@ -54,7 +52,7 @@ test("works offline after the service worker caches the production app", async (
 test("stays within cold warm and skill search budgets", async ({ page }) => {
   const coldStartedAt = Date.now();
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "洛克计算器 · S4「季中」" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: currentHeading })).toBeVisible();
   expect(Date.now() - coldStartedAt).toBeLessThan(10_000);
 
   const warmStartedAt = Date.now();
@@ -68,7 +66,8 @@ test("stays within cold warm and skill search budgets", async ({ page }) => {
     const runtime = await fetch("/data/runtime.json").then((response) => response.json());
     const spirit = runtime.spirits.find((entry) => entry.fullName === "音速犬");
     const learnset = runtime.learnsets.find((entry) => entry.spiritId === spirit.id);
-    return runtime.skills.find((entry) => entry.id === learnset.skillIds[0]).name;
+    const first = learnset.skillIds[0];
+    return (runtime.s5CompactRelations ? runtime.skills[first] : runtime.skills.find((entry) => entry.id === first)).name;
   });
   const skillPicker = page.getByRole("combobox", { name: "攻击方技能1" });
   const searchStartedAt = Date.now();

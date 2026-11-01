@@ -30,7 +30,7 @@ function execute(command, args, { cwd, allowFailure = false } = {}) {
   return result.status;
 }
 
-function requirePlainTree(directory) {
+export function requirePlainTree(directory) {
   if (!lstatSync(directory).isDirectory() || lstatSync(directory).isSymbolicLink()) {
     throw new Error("Preview artifact directory cannot be a link: " + directory);
   }
@@ -71,7 +71,8 @@ export function copyPreviewRelease(root, sourceDirectory) {
 }
 
 /** Build only a pinned Git archive; never copy a dirty checkout as preview source. */
-export function buildPreviewRelease({ root = ROOT, run = execute } = {}) {
+export function buildPreviewSource({ root = ROOT, run = execute, mode = "pre" } = {}) {
+  if (!["pre", "cn"].includes(mode)) throw new Error("Unsupported pinned source build mode: " + mode);
   root = realpathSync(root);
   const { sourceRevision } = readPreviewReleasePin(root);
   const modules = path.join(root, "node_modules");
@@ -80,7 +81,7 @@ export function buildPreviewRelease({ root = ROOT, run = execute } = {}) {
   const output = requireInside(root, path.join(root, "output"));
   mkdirSync(output, { recursive: true });
   requireInside(root, realpathSync(output));
-  const source = mkdtempSync(path.join(output, "preview-source-" + sourceRevision + "-"));
+  const source = mkdtempSync(path.join(output, (mode === "pre" ? "preview" : "cn") + "-source-" + sourceRevision + "-"));
   const archive = requireInside(output, source + ".tar");
   const gitOptions = { cwd: root };
   if (run("git", ["cat-file", "-e", sourceRevision + "^{commit}"], { ...gitOptions, allowFailure: true }) !== 0) {
@@ -98,7 +99,13 @@ export function buildPreviewRelease({ root = ROOT, run = execute } = {}) {
     "public/data/runtime.json", "public/assets/spirits/manifest.json",
   ], childOptions);
   run(process.execPath, ["scripts/build-skill-query-data.mjs"], childOptions);
-  run(process.execPath, [vite, "build", "--config", "config/vite.preview.config.mjs", "--mode", "pre"], childOptions);
+  const config = mode === "pre" ? "config/vite.preview.config.mjs" : "config/vite.cn.config.mjs";
+  run(process.execPath, [vite, "build", "--config", config, "--mode", mode], childOptions);
+  return { sourceRevision, source };
+}
+
+export function buildPreviewRelease({ root = ROOT, run = execute } = {}) {
+  const { sourceRevision, source } = buildPreviewSource({ root, run });
   const target = copyPreviewRelease(root, source);
   console.log("Preview source " + sourceRevision + " assembled only at " + target);
   return { sourceRevision, source, target };
