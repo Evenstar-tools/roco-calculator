@@ -8,6 +8,7 @@ import { normalizeTriggerControls } from "../domain/trigger-controls.js";
 import {
   chooseDefaultSkillIds,
   getSkillChoices,
+  getUserPreviewDefaultSkillIds,
 } from "../domain/skill-loadout.js";
 import {
   getSkill,
@@ -950,7 +951,7 @@ export function getRestorableDefaultSkills(state, { side, snapshot }) {
   const configured = state.sides[side];
   if (!configured?.spiritId || configured.battleForm) return null;
   const learnset = snapshot.learnsets?.find(entry => entry.spiritId === configured.spiritId);
-  if (!Array.isArray(learnset?.defaultSkillIds)) return null;
+  if (!Array.isArray(learnset?.defaultSkillIds) && !getUserPreviewDefaultSkillIds(snapshot, configured.spiritId)) return null;
   const defaults = chooseDefaultSkillIds(snapshot, configured.spiritId);
   return defaults.some(Boolean) && defaults.some((id, index) => id !== entrySkillId(configured.skills.four[index]))
     ? defaults : null;

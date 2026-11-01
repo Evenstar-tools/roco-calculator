@@ -12,32 +12,46 @@ import { getS5LevelIncomingDamagePercent } from "../../src/domain/s5-preview-tra
 
 const base = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
 const legacyPreview = withWebPreview(base);
-const ids = new Set(recommendations.entries.map(entry => entry.spiritId));
+const userPlaceholderId = "spirit_preview_s5_boss-abu";
+const configuredIds = new Set(recommendations.entries.map(entry => entry.spiritId));
+const ids = new Set([...configuredIds].filter(id => id !== userPlaceholderId));
 let preview, spirits, subset;
 beforeAll(async () => {
   preview = await buildS5BwikiRuntime();
-  spirits = preview.spirits.filter(spirit => ids.has(spirit.id));
+  spirits = preview.spirits.filter(spirit => configuredIds.has(spirit.id));
   // A recommended subset can omit growth forms without losing recorded final/boss roles.
   subset = spirits.map(spirit => ({ ...spirit,
-    evolutionChainIds: spirit.evolutionChainIds?.filter(id => ids.has(id)),
+    evolutionChainIds: spirit.evolutionChainIds?.filter(id => configuredIds.has(id)),
   }));
 }, 30000);
 
-test.each(["完整S5", "普通版推荐子集"])("%s的17只推荐进入速度和耐久榜，冥古龙保留四档等级", label => {
+test.each(["完整S5", "普通版推荐子集"])("%s的17只已确认推荐进入速度和耐久榜，圣龙用户占位排除，冥古龙保留四档等级", label => {
   const candidates = label === "完整S5" ? spirits : subset;
-  expect(candidates).toHaveLength(17);
-  for (const spirit of candidates) {
+  expect(candidates).toHaveLength(18);
+  const confirmed = candidates.filter(spirit => ids.has(spirit.id));
+  expect(confirmed).toHaveLength(17);
+  const placeholders = candidates.filter(spirit => !ids.has(spirit.id));
+  expect(placeholders.map(spirit => spirit.id)).toEqual([userPlaceholderId]);
+  expect(placeholders[0]).toMatchObject({
+    previewIdentity: { formalIdPending: true, raceStatsPlaceholder: true },
+    previewDefaults: { authority: "user" },
+  });
+  expect(resolveSpiritFormRole(placeholders[0]).formRole).toBe("unknown");
+  for (const spirit of confirmed) {
     expect(resolveSpiritFormRole(spirit)).toMatchObject({
       formRole: spirit.stage === "首领" ? "boss" : "final",
       formRoleStatus: "verified",
     });
   }
   const durability = createDurabilityRanking({ spirits: candidates });
-  expect(durability.excluded).toEqual([]);
+  expect(durability.excluded).toEqual([expect.objectContaining({
+    spiritId: userPlaceholderId, reason: "UNKNOWN_FORM_ROLE",
+  })]);
+  expect(new Set(durability.rows.map(row => row.spiritId))).toEqual(ids);
   for (const profileId of Object.keys(SPEED_TARGET_PROFILES)) {
     const speed = createSpeedTargets({ spirits: candidates, profileId });
     expect(new Set(speed.map(row => row.spiritId))).toEqual(ids);
-    for (const spirit of candidates) {
+    for (const spirit of confirmed) {
       const levels = spirit.previewIdentity.key === "minggulong" ? [69, 79, 89, 99] : [60];
       expect(speed.filter(row => row.spiritId === spirit.id).map(row => row.level).sort((a, b) => a - b)).toEqual(levels);
       expect(durability.rows.filter(row => row.spiritId === spirit.id).map(row => row.level).sort((a, b) => a - b)).toEqual(levels);
@@ -92,7 +106,7 @@ test("S4原有精灵角色不因新推荐目录改变", () => {
   }
 });
 
-test("默认伤害对比含17只推荐，并沿用各自用户预设性格及个体", async () => {
+test("默认伤害对比含17只已确认推荐，排除圣龙用户占位并沿用各自用户预设性格及个体", async () => {
   const snapshot = { ...preview, spirits: subset };
   const state = createInitialState(snapshot);
   const ming = recommendations.entries[0];

@@ -180,6 +180,26 @@ describe("skill loadouts", () => {
     ]);
   });
 
+  test("only explicit user CN S5 placeholder defaults can use existing skills outside their unknown learnset", () => {
+    const snapshot = { meta: { serverId: "cn" }, spirits: [{ id: "pending",
+      previewIdentity: { catalogId: "s5-preview", formalIdPending: true },
+      previewDefaults: { authority: "user", skillIds: ["a", "a", "missing", "b", "c"] } }],
+      skills: [{ id: "a" }, { id: "b" }, { id: "c" }], learnsets: [{ spiritId: "pending", skillIds: [] }] };
+    expect(chooseDefaultSkillIds(snapshot, "pending")).toEqual(["a", null, null, "b"]);
+    expect(getLegalSkillIds(snapshot, "pending")).toEqual([]);
+    expect(getSkillChoices(snapshot, "pending").every(skill => !skill.learnable)).toBe(true);
+    for (const change of [
+      value => { value.meta.serverId = "global"; },
+      value => { value.spirits[0].previewIdentity.formalIdPending = false; },
+      value => { value.spirits[0].previewIdentity.catalogId = "s4-preview"; },
+      value => { delete value.spirits[0].previewDefaults.authority; },
+    ]) {
+      const isolated = structuredClone(snapshot);
+      change(isolated);
+      expect(chooseDefaultSkillIds(isolated, "pending")).toEqual([null, null, null, null]);
+    }
+  });
+
   test("deduplicates repeated learnset entries before rendering skill choices", () => {
     const snapshot = {
       learnsets: [

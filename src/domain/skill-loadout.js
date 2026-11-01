@@ -63,17 +63,28 @@ export function getSkillChoices(snapshot, spiritId) {
   return choices;
 }
 
+/** Explicit CN placeholder configuration does not assert a learnable relation. */
+export function getUserPreviewDefaultSkillIds(snapshot, spiritId) {
+  const spirit = getSnapshotIndexes(snapshot).spirits[spiritId];
+  const defaults = spirit?.previewDefaults;
+  return (snapshot.meta?.serverId ?? snapshot.serverId ?? "cn") === "cn" &&
+    /^s5(?:[-_:]|$)/iu.test(spirit?.previewIdentity?.catalogId ?? "") &&
+    spirit.previewIdentity.formalIdPending === true && defaults?.authority === "user" &&
+    Array.isArray(defaults.skillIds) ? defaults.skillIds : null;
+}
+
 export function chooseDefaultSkillIds(snapshot, spiritId) {
   const capacity = getSpiritSkillSlotCapacity(snapshot, spiritId);
   const legalIds = getLegalSkillIds(snapshot, spiritId);
   const byId = getSnapshotIndexes(snapshot).skills;
-  const explicitDefaultIds = getSnapshotIndexes(snapshot)
+  const userDefaultIds = getUserPreviewDefaultSkillIds(snapshot, spiritId);
+  const explicitDefaultIds = userDefaultIds ?? getSnapshotIndexes(snapshot)
     .learnsets[spiritId]?.defaultSkillIds;
   if (Array.isArray(explicitDefaultIds)) {
     const legalSet = new Set(legalIds);
     const used = new Set();
     const explicitDefaults = explicitDefaultIds.slice(0, capacity).map(id => {
-      if (!legalSet.has(id) || !byId[id] || isWishPowerExtra(byId[id]) || used.has(id)) return null;
+      if ((!userDefaultIds && !legalSet.has(id)) || !byId[id] || isWishPowerExtra(byId[id]) || used.has(id)) return null;
       used.add(id);
       return id;
     });

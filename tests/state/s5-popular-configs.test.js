@@ -34,8 +34,8 @@ afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); });
 
 test("14份用户推荐按精确形态、性格与三项60录入，未指定技能沿用旧默认", () => {
   const snapshot = legacySnapshot;
-  expect(additions.entries).toHaveLength(17);
-  expect(additions.entryCount).toBe(17);
+  expect(additions.entries).toHaveLength(18);
+  expect(additions.entryCount).toBe(18);
   additions.entries.slice(0, 14).forEach((entry, index) => {
     const [name, nature, spread] = specs[index];
     const spirit = snapshot.spirits.find(candidate => candidate.id === entry.spiritId);
@@ -54,9 +54,9 @@ test("14份用户推荐按精确形态、性格与三项60录入，未指定技�
   });
 });
 
-test("合并库新增17份可导入配置，保留原231份；导入、选中和再检查一致", () => {
+test("合并库新增18份可导入配置，保留原231份；导入、选中和再检查一致", () => {
   const library = buildS5PopularConfigLibrary();
-  expect(library.entryCount).toBe(248);
+  expect(library.entryCount).toBe(249);
   expect(library.entries.slice(0, base.entryCount)).toEqual(base.entries);
   const data = new Map();
   const storage = { getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, value), removeItem: key => data.delete(key) };
@@ -68,7 +68,7 @@ test("合并库新增17份可导入配置，保留原231份；导入、选中和
   apply(parse(base));
   const parsed = parse(library);
   expect(parsed.warnings).toEqual([]);
-  expect(parsed.preview).toMatchObject({ added: 17, same: 231, missingSpirits: 0, missingSkills: 0, invalidEntries: 0 });
+  expect(parsed.preview).toMatchObject({ added: 18, same: 231, missingSpirits: 0, missingSkills: 0, invalidEntries: 0 });
   apply(parsed);
   const saved = configs.load(snapshot).configs;
   const initialState = createInitialState(snapshot);
@@ -79,7 +79,7 @@ test("合并库新增17份可导入配置，保留原231份；导入、选中和
     expect(state.sides.attacker).toMatchObject({ nature: entry.natureId, displayIvs: entry.displayIvs });
     expect(state.sides.attacker.skills.four.map(skill => typeof skill === "string" ? skill : skill?.skillId ?? null)).toEqual(entry.skills);
   }
-  expect(parse(library).preview).toMatchObject({ added: 0, updated: 0, same: 248 });
+  expect(parse(library).preview).toMatchObject({ added: 0, updated: 0, same: 249 });
   const custom = saved[additions.entries[0].spiritId];
   custom.displayIvs.hp = 17;
   configs.replace({ schemaVersion: 2, configs: saved }, snapshot);
@@ -107,10 +107,10 @@ test("预览开发接口和构建资源一致，其他接口与正式库保持�
 test("BWIKI 刷新只修复系统热门模板的非法和空槽，保留性格个体及合法招式", () => {
   const old = buildS5PopularConfigLibrary();
   const library = buildS5PopularConfigLibrary(currentSnapshot);
-  expect(library.entryCount).toBe(248);
+  expect(library.entryCount).toBe(249);
   for (const entry of library.entries) {
     const previous = old.entries.find(candidate => candidate.spiritId === entry.spiritId);
-    const legal = new Set(getLegalSkillIds(currentSnapshot, entry.spiritId));
+    const legal = new Set([...getLegalSkillIds(currentSnapshot, entry.spiritId), ...chooseDefaultSkillIds(currentSnapshot, entry.spiritId)]);
     expect(entry).toMatchObject({ natureId: previous.natureId, displayIvs: previous.displayIvs, traitValues: previous.traitValues });
     expect(entry.skills.every(id => id && legal.has(id)), entry.spiritId).toBe(true);
     if (new Set(previous.skills).size === previous.skills.length) {
@@ -147,9 +147,9 @@ test("更新系统预设时保留用户手动清空的技能与自定义个体",
     personalConfiguration: before }).state.sides.attacker.skills.four).toEqual([null, null, null, null]);
 });
 
-test("S5显示248份，正式构建仍显示231份", async () => {
+test("S5显示249份，正式构建仍显示231份", async () => {
   vi.stubEnv("MODE", "pre");
-  expect((await import("../../src/data/preset-metadata.js")).POPULAR_CONFIG_COUNT).toBe(248);
+  expect((await import("../../src/data/preset-metadata.js")).POPULAR_CONFIG_COUNT).toBe(249);
   vi.resetModules();
   vi.stubEnv("MODE", "production");
   expect((await import("../../src/data/preset-metadata.js")).POPULAR_CONFIG_COUNT).toBe(231);

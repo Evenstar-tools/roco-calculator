@@ -2,7 +2,7 @@
   "format": "rock-calculator.favorite-config-library",
   "schemaVersion": 1,
   "exportedAt": "2026-11-01T00:00:00+08:00",
-  "entryCount": 17,
+  "entryCount": 18,
   "entries": [
     {
       "spiritId": "spirit_preview_s5_minggulong",
@@ -272,41 +272,49 @@
     },
     {
       "spiritId": "spirit_preview_s5_abu",
-      "natureId": "adamant",
+      "natureId": "naughty",
       "displayIvs": {
         "hp": 60,
         "physicalAttack": 60,
-        "physicalDefense": 0,
         "magicalAttack": 0,
-        "magicalDefense": 0,
-        "speed": 60
+        "speed": 60,
+        "physicalDefense": 0,
+        "magicalDefense": 0
       },
       "skills": [
         "skill_preview_s5_saint-dragon-slash",
         "skill_preview_s5_dragon-claws",
         "skill_preview_s5_dragon-eye-dotting",
-        "skill_a3f4f08b6e1a60b3"
+        "skill_794ee1751d9411e8"
       ],
-      "traitValues": {}
+      "traitValues": {},
+      "source": {
+        "authority": "user",
+        "confirmedAt": "2026-11-01"
+      }
     },
     {
       "spiritId": "spirit_preview_s5_super-abu",
-      "natureId": "adamant",
+      "natureId": "naughty",
       "displayIvs": {
         "hp": 60,
         "physicalAttack": 60,
-        "physicalDefense": 0,
         "magicalAttack": 0,
-        "magicalDefense": 0,
-        "speed": 60
+        "speed": 60,
+        "physicalDefense": 0,
+        "magicalDefense": 0
       },
       "skills": [
         "skill_preview_s5_saint-dragon-slash",
         "skill_preview_s5_dragon-claws",
         "skill_preview_s5_dragon-eye-dotting",
-        "skill_a3f4f08b6e1a60b3"
+        "skill_794ee1751d9411e8"
       ],
-      "traitValues": {}
+      "traitValues": {},
+      "source": {
+        "authority": "user",
+        "confirmedAt": "2026-11-01"
+      }
     },
     {
       "spiritId": "spirit_preview_s5_lily-of-valley",
@@ -326,6 +334,29 @@
         "skill_d17a107af466ecbe"
       ],
       "traitValues": {}
+    },
+    {
+      "spiritId": "spirit_preview_s5_boss-abu",
+      "natureId": "naughty",
+      "displayIvs": {
+        "hp": 60,
+        "physicalAttack": 60,
+        "magicalAttack": 0,
+        "speed": 60,
+        "physicalDefense": 0,
+        "magicalDefense": 0
+      },
+      "skills": [
+        "skill_preview_s5_saint-dragon-slash",
+        "skill_preview_s5_dragon-claws",
+        "skill_preview_s5_dragon-eye-dotting",
+        "skill_794ee1751d9411e8"
+      ],
+      "traitValues": {},
+      "source": {
+        "authority": "user",
+        "confirmedAt": "2026-11-01"
+      }
     }
   ]
 }

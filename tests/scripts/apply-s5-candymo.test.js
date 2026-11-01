@@ -5,13 +5,14 @@ import { applyS5Candymo } from "../../scripts/bwiki/apply-s5-candymo.mjs";
 import { buildS5BwikiSnapshot, buildS5BwikiRuntime } from "../../scripts/s5-bwiki-runtime.mjs";
 import { buildS5PopularConfigLibrary } from "../../scripts/s5-preview-presets.mjs";
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
-import { chooseDefaultSkillIds } from "../../src/domain/skill-loadout.js";
+import { chooseDefaultSkillIds, getLegalSkillIds } from "../../src/domain/skill-loadout.js";
 import { getNature } from "../../src/domain/natures.js";
 import { unpackCatalog, skillLearners } from "../../src/features/skill-query/catalog.js";
 import { withS5AnnouncementCatalog } from "../../src/features/skill-query/s5-announcement-catalog.js";
 import { spiritSkills } from "../../src/features/skill-query/query-model.js";
 import { packS5RuntimeRelations, restoreS5RuntimeRelations } from "../../src/data/s5-runtime-relations.js";
 import { resolveSpiritFormRole } from "../../src/features/team-ability/domain/spirit-form-role.js";
+import { selectSpirit, selectFourSkill, getRestorableDefaultSkills, restoreDefaultSkills } from "../../src/state/calculator-session.js";
 import { createInitialState } from "../../src/state/defaults.js";
 import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
@@ -22,7 +23,7 @@ import { withS5PreviewCalculationGuard } from "../../src/features/s5-preview/cal
 const read = file => JSON.parse(readFileSync(file, "utf8"));
 const evidence = read("data/reviewed/candymo-s5-20261101.json");
 const names = ["阿布", "超能阿布", "呆呆铃", "跳跳铃", "铃兰夫人"];
-const dragonDefaults = ["圣龙狂斩", "龙之爪牙", "画龙点睛", "防御"];
+const dragonDefaults = ["圣龙狂斩", "龙之爪牙", "画龙点睛", "光之矛"];
 const lilyDefaults = ["维管束重构", "恋恋不舍", "筑梦", "根吸收"];
 
 describe("reviewed Candymo S5 gaps", () => {
@@ -56,7 +57,10 @@ describe("reviewed Candymo S5 gaps", () => {
     expect(runtime.spirits.some(entry => entry.fullName === "铃兰")).toBe(false);
     const old = withWebPreview(read("data/snapshots/current.json"));
     const id = "spirit_preview_s5_boss-abu";
-    expect(snapshot.spirits.find(entry => entry.id === id)).toEqual(old.spirits.find(entry => entry.id === id));
+    const { previewDefaults, ...unchangedBoss } = snapshot.spirits.find(entry => entry.id === id);
+    expect(unchangedBoss).toEqual(old.spirits.find(entry => entry.id === id));
+    expect(previewDefaults).toMatchObject({ authority: "user", natureId: "naughty" });
+    expect(resolveSpiritFormRole(unchangedBoss).formRole).toBe("unknown");
     expect(snapshot.learnsets.find(entry => entry.spiritId === id).skillIds).toEqual([]);
   });
 
@@ -96,19 +100,44 @@ describe("reviewed Candymo S5 gaps", () => {
     }
   });
 
-  test("presets contain three complete legal additions with valid natures and preserve the original library", () => {
+  test("presets contain four complete configured additions with valid natures and preserve the original library", () => {
     const base = read("public/data/presets/pvp-popular-configs.json");
     const raw = buildS5PopularConfigLibrary();
     expect(raw.entries.slice(0, base.entries.length)).toEqual(base.entries);
     const library = buildS5PopularConfigLibrary(runtime);
-    expect(library.entryCount).toBe(248);
-    for (const name of ["阿布", "超能阿布", "铃兰夫人"]) {
+    expect(library.entryCount).toBe(249);
+    for (const name of ["阿布", "超能阿布", "铃兰夫人", "圣龙阿布"]) {
       const spirit = runtime.spirits.find(entry => entry.fullName === name);
       const entry = library.entries.find(item => item.spiritId === spirit.id);
       expect(entry.skills).toEqual(chooseDefaultSkillIds(runtime, spirit.id));
       expect(getNature(entry.natureId).id).toBe(entry.natureId);
       expect(Object.values(entry.displayIvs).filter(value => value === 60)).toHaveLength(3);
     }
+  });
+
+  test("user Abu family defaults apply on selection and restore without inventing boss learning relations", () => {
+    const ivs = { hp: 60, physicalAttack: 60, physicalDefense: 0, magicalAttack: 0, magicalDefense: 0, speed: 60 };
+    for (const name of ["阿布", "超能阿布", "圣龙阿布"]) {
+      const spirit = runtime.spirits.find(entry => entry.fullName === name);
+      for (const side of ["attacker", "defender"]) {
+        const initialState = createInitialState(runtime);
+        const selected = selectSpirit(initialState, { initialState, side, snapshot: runtime, spiritId: spirit.id }).state;
+        expect(selected.sides[side]).toMatchObject({ nature: "naughty", displayIvs: ivs });
+        const defaults = chooseDefaultSkillIds(runtime, spirit.id);
+        expect(defaults.map(id => runtime.skills.find(skill => skill.id === id).name)).toEqual(dragonDefaults);
+        expect(selected.sides[side].skills.four.map(entry => typeof entry === "string" ? entry : entry.skillId)).toEqual(defaults);
+        const cleared = selectFourSkill(selected, { side, snapshot: runtime, index: 3, skillId: null }).state;
+        expect(getRestorableDefaultSkills(cleared, { side, snapshot: runtime })).toEqual(defaults);
+        const restored = restoreDefaultSkills(cleared, { side, snapshot: runtime }).state;
+        expect(restored.sides[side].skills.four.map(entry => typeof entry === "string" ? entry : entry.skillId)).toEqual(defaults);
+        const personalConfiguration = { ...selected.sides[side], natureId: "adamant", nature: "adamant",
+          displayIvs: { ...ivs, hp: 17 }, skills: { single: null, four: [null, null, null, null] } };
+        const personal = selectSpirit(initialState, { initialState, side, snapshot: runtime, spiritId: spirit.id, personalConfiguration }).state;
+        expect(personal.sides[side]).toMatchObject({ nature: "adamant", displayIvs: { hp: 17 }, skills: { four: [null, null, null, null] } });
+      }
+    }
+    expect(getLegalSkillIds(runtime, "spirit_preview_s5_boss-abu")).toEqual([]);
+    expect(runtime.learnsets.find(pool => pool.spiritId === "spirit_preview_s5_boss-abu").acquisitions ?? {}).toEqual({});
   });
 
   test("Lily's two default attacks calculate, persist their conditions and keep energy recovery separate from cost", () => {

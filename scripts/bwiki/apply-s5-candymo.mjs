@@ -1,3 +1,4 @@
+import recommendations from "../../data/presets/s5-popular-configs.json" with { type: "json" };
 import { mergeEntityChangeInfo } from "../../src/data/entity-change-history.js";
 
 const required = (condition, message) => { if (!condition) throw new Error(`S5 Candymo 补充：${message}`); };
@@ -105,6 +106,16 @@ export function applyS5Candymo(snapshot, evidence) {
     required(pool.skillIds.length === raw.uniqueSkillCount, `学习面数量不完整：${raw.name}`);
     const poolIndex = next.learnsets.findIndex(item => item.spiritId === spirit.id);
     if (poolIndex < 0) next.learnsets.push(pool); else next.learnsets[poolIndex] = pool;
+  }
+  // User-selected defaults are configuration, not evidence of an unconfirmed form's learnset.
+  for (const key of ["abu", "super-abu", "boss-abu"]) {
+    const spirit = next.spirits.find(item => item.id === `spirit_preview_s5_${key}`);
+    const preset = recommendations.entries.find(item => item.spiritId === spirit?.id);
+    required(preset?.source?.authority === "user" && preset.skills.length === 4 &&
+      preset.skills.every(id => next.skills.some(skill => skill.id === id)), `用户默认配置不完整：${key}`);
+    spirit.previewDefaults = { natureId: preset.natureId, displayIvs: { ...preset.displayIvs },
+      authority: "user", confirmedAt: preset.source.confirmedAt,
+      ...(spirit.previewIdentity?.formalIdPending === true ? { skillIds: [...preset.skills] } : {}) };
   }
   next.currentPatchChanges = { ...next.currentPatchChanges,
     spirits: next.spirits.map(entity => entity.changeInfo).filter(Boolean),
