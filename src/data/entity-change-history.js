@@ -1,11 +1,15 @@
 // These two sources describe the same Nov 5 release. Only retire the preview
 // when the reviewed record covers every announced change; never fold dates.
-function removeCoveredS5Announcement(records) {
+// Called once by the reviewed importer, not by browser-side history merges.
+export function deduplicateS5ChangeInfo(info) {
+  if (!info) return info;
+  const records = new Map([info, ...(info.history ?? [])]
+    .map(({ history: _history, ...record }) => [record.patch?.id, record]));
   const announcement = records.get("s5-season-announcement-2026-11-05");
   const reviewed = records.get("s5-2026-10-31");
-  if (!announcement?.items?.length || !reviewed?.items?.length) return;
+  if (!announcement?.items?.length || !reviewed?.items?.length) return info;
   if (![announcement, reviewed].every(({ patch }) => patch.seasonId === "S5"
-    && (patch.displayDate ?? patch.date ?? "").replace(/\D/g, "") === "20261105")) return;
+    && (patch.displayDate ?? patch.date ?? "").replace(/\D/g, "") === "20261105")) return info;
   const equal = (left, right) => JSON.stringify(left) === JSON.stringify(right);
   const covered = announcement.items.every(item => {
     if (item.kind === "learnset") {
@@ -31,7 +35,10 @@ function removeCoveredS5Announcement(records) {
       if (key === announcement.patch.id) records.set(reviewed.patch.id, reviewed);
       else records.set(key, record);
     }
+    const [latest, ...history] = records.values();
+    return { ...latest, ...(history.length ? { history } : {}) };
   }
+  return info;
 }
 
 // Keep every patch's own before/after and date. Latest fields remain at the top
@@ -54,7 +61,6 @@ export function mergeEntityChangeInfo(previous, incoming) {
   }
   append(incoming);
   append(previous);
-  removeCoveredS5Announcement(records);
   const [latest, ...history] = records.values();
   return { ...latest, ...(history.length ? { history } : {}) };
 }
