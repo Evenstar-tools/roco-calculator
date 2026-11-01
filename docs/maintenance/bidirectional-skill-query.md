@@ -1,5 +1,13 @@
 # 技能检索双向查询：实现与验收
 
+## 2026-11-01：精灵特性
+
+- 当前入口为工具箱 → 技能检索 → 查精灵技能。精灵详情同时展示所选形态的特性原图、名称和完整描述；桌面并排、手机上下排，沿用详情区滚动，不新增内层滚动条。
+- catalog 保存逐赛季 `traitIds` 与 `traits`，紧凑格式共用 `sharedTraits`；兼容旧五列精灵记录。S5 使用 S5 当前资料，历史赛季保留各自效果；国际服仅使用独立数据与对应英日文本。
+- 图标与数据分开绑定。来源为 BWIKI 基础特性 revision 20323、S5 revision 20304，记录于 `data/reviewed/nrc-trait-icons.json`；BWIKI 缺图时保留已核实本地图片，未确认图标不编造。图片只在详情中按需加载。
+- 国服同步：`node scripts/bwiki/sync-trait-icons.mjs --s5 --assets`。国际服限定现有实体：`node scripts/bwiki/sync-trait-icons.mjs --evidence=data/reviewed/nrc-trait-icons.json --snapshots=public/data/global-runtime.json --assets`。
+- 回归入口：`tests/ui/skill-query-traits.test.jsx`、`tests/build/trait-icons.test.js`、`tests/domain/skill-query.test.js`。截图位于本地 `output/playwright/trait-detail-*-20261101.png`；网页验收不代表已重新生成安装包。
+
 日期：2026-09-09。范围：Web 与同源桌面；不涉及小程序、数据改写、配置改写或版本号变更。
 
 ## 使用入口与行为

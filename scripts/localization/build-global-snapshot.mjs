@@ -74,9 +74,10 @@ export function buildGlobalSkillQueryCatalog(snapshot, runtime) {
     spirits: snapshot.spirits.map((spirit) => {
       const view = runtimeSpirits.get(spirit.id);
       return { id: spirit.id, fullName: spirit.fullName, baseName: spirit.baseName, variantName: spirit.variantName,
-        types: spirit.types, stage: spirit.stage, familyId: families.get(spirit.id),
+        types: spirit.types, stage: spirit.stage, traitIds: spirit.traitIds, familyId: families.get(spirit.id),
         asset: view.asset, reference: spirit.reference, aliases: view.aliases, pinyin: view.pinyin, initials: view.initials };
     }),
+    traits: snapshot.traits.map(({ id, name, description, reference, iconUrl }) => ({ id, name, description, reference, ...(iconUrl ? { iconUrl } : {}) })),
     skills: snapshot.skills.map((skill) => ({ id: skill.id, name: skill.name, type: skill.type, category: skill.category,
       cost: skill.cost, basePower: skill.basePower, description: skill.description, introducedSeason: null,
       reference: skill.reference, iconUrl: runtimeSkills.get(skill.id).iconUrl, searchText: runtimeSkills.get(skill.id).searchText })),

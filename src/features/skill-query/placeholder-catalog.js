@@ -44,7 +44,7 @@ export function createPlaceholderQueryCatalog(snapshot) {
     spirits: availableSpirits.map((spirit) => ({
       ...copyFields(spirit, ["id", "fullName", "baseName", "variantName", "dexNo", "pinyin", "initials", "aliases", "sourceCategory", "stage", "asset", "types", "evolutionChainIds"]),
       familyId: families.get(spirit.id),
-      reference: { sourceId: spirit.reference.sourceId },
+      reference: copyFields(spirit.reference, ["sourceId", "traits"]),
     })),
     skills: availableSkills.map((skill) => copyFields(skill,
       ["id", "name", "type", "category", "description", "iconUrl", "searchText", "aliases"])),

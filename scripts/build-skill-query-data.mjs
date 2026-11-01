@@ -58,7 +58,8 @@ const compact = (snapshot, season) => {
       introducedSeason: wikiSeasons.records[skill.name] ?? record?.introducedSeason ?? (baselineSkills.has(skill.id) ? null : season),
       detailUrl: skill.detailUrl };
   }),
-  spirits: snapshot.spirits.map(({ id, fullName, types, stage }) => ({ id, fullName, types, stage, familyId: families.get(id) })),
+  spirits: snapshot.spirits.map(({ id, fullName, types, stage, traitIds }) => ({ id, fullName, types, stage, traitIds, familyId: families.get(id) })),
+  traits: snapshot.traits.map(({ id, name, description, iconUrl }) => ({ id, name, description, ...(iconUrl ? { iconUrl } : {}) })),
   learnsets: mergedLearnsets(snapshot),
 }; };
 const seasons = await Promise.all(manifest.seasons.map(async ({ id, snapshot }) => compact(await read(snapshot), id)));
@@ -99,6 +100,7 @@ packed.methodTexts = methodTexts;
 const sharedSkills = [];
 const sharedRelations = [];
 const sharedSpirits = [];
+const sharedTraits = [];
 const pool = (items, entry) => {
   const key = JSON.stringify(entry);
   let index = items.findIndex((item) => JSON.stringify(item) === key);
@@ -109,10 +111,12 @@ for (const season of packed.seasons) {
   season.skills = season.skills.map((skill) => pool(sharedSkills, skill));
   season.relations = season.relations.map((relation) => pool(sharedRelations, relation));
   season.spirits = season.spirits.map((spirit) => pool(sharedSpirits, spirit));
+  season.traits = season.traits.map((trait) => pool(sharedTraits, trait));
 }
 packed.sharedSkills = sharedSkills;
 packed.sharedRelations = sharedRelations;
-packed.sharedSpirits = sharedSpirits.map(({ id, fullName, types, stage, familyId }) => [id, fullName, types, stage, familyId]);
+packed.sharedSpirits = sharedSpirits.map(({ id, fullName, types, stage, familyId, traitIds }) => [id, fullName, types, stage, familyId, traitIds]);
+packed.sharedTraits = sharedTraits;
 await mkdir("public/data/skill-query", { recursive: true });
 await writeFile("public/data/skill-query/catalog.json", JSON.stringify(packed) + "\n", "utf8");
 const report = { sourceSkills: source.skills.length, mappedSourceSkills: source.skills.filter((skill) => baseline.skills.some((entry) => entry.name === skill.name)).length, unresolved, sourceSupplements: supplements,

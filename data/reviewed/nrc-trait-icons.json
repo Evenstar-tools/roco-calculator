@@ -1,0 +1,4228 @@
+{
+  "schemaVersion": 1,
+  "evidence": "https://wiki.biligame.com/nrc/index.php?oldid=20323",
+  "sources": [
+    {
+      "title": "模块:Pets/data/Skills",
+      "revision": 20323,
+      "url": "https://wiki.biligame.com/nrc/index.php?oldid=20323",
+      "timestamp": "2026-10-31T19:43:04Z",
+      "fetchedAt": "2026-11-01T02:38:38.934Z"
+    }
+  ],
+  "bindings": [
+    {
+      "id": "cn-placeholder:trait_102e1d7085a2c40b",
+      "sourceId": "trait_102e1d7085a2c40b",
+      "name": "最好的伙伴",
+      "sourceFile": "Feature_200191.png",
+      "nrcIds": [
+        "skill_000101"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_17cabf4a1e921ed5",
+      "sourceId": "trait_17cabf4a1e921ed5",
+      "name": "裁决",
+      "sourceFile": "Feature_200191.png",
+      "nrcIds": [
+        "skill_000233"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_ab2898ecf2366fc1",
+      "sourceId": "trait_ab2898ecf2366fc1",
+      "name": "滋养",
+      "sourceFile": "Feature_200191.png",
+      "nrcIds": [
+        "skill_000234"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_90a574eda10c8675",
+      "sourceId": "trait_90a574eda10c8675",
+      "name": "点燃",
+      "sourceFile": "Feature_200191.png",
+      "nrcIds": [
+        "skill_000235"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_8b28a4b70c393a47",
+      "sourceId": "trait_8b28a4b70c393a47",
+      "name": "净化",
+      "sourceFile": "Feature_200191.png",
+      "nrcIds": [
+        "skill_000236"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_825ed63e44cea866",
+      "sourceId": "trait_825ed63e44cea866",
+      "name": "氧循环",
+      "sourceFile": "Feature_200076.png",
+      "nrcIds": [
+        "skill_000003"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_4542254ec518fded",
+      "sourceId": "trait_4542254ec518fded",
+      "name": "深层氧循环",
+      "sourceFile": "Feature_20007601.png",
+      "nrcIds": [
+        "skill_000210"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_0832c661dfd016a0",
+      "sourceId": "trait_0832c661dfd016a0",
+      "name": "草木苏醒时",
+      "sourceFile": "Feature_200076.png",
+      "nrcIds": [
+        "skill_000239"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_7ed1e76d8ca5f1b6",
+      "sourceId": "trait_7ed1e76d8ca5f1b6",
+      "name": "助燃",
+      "sourceFile": "Feature_200146.png",
+      "nrcIds": [
+        "skill_000064"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_8730f13eb7bfc229",
+      "sourceId": "trait_8730f13eb7bfc229",
+      "name": "爆燃",
+      "sourceFile": "Feature_200146.png",
+      "nrcIds": [
+        "skill_000211"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_3acbc4fcc1b2fd44",
+      "sourceId": "trait_3acbc4fcc1b2fd44",
+      "name": "浸润",
+      "sourceFile": "Feature_200107.png",
+      "nrcIds": [
+        "skill_000030"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_6f20f84a18f42efb",
+      "sourceId": "trait_6f20f84a18f42efb",
+      "name": "浪潮",
+      "sourceFile": "Feature_200107.png",
+      "nrcIds": [
+        "skill_000209"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_9167525cc599ce80",
+      "sourceId": "trait_9167525cc599ce80",
+      "name": "挺起胸脯",
+      "sourceFile": "Feature_200088.png",
+      "nrcIds": [
+        "skill_000013"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_9053614884437d35",
+      "sourceId": "trait_9053614884437d35",
+      "name": "“国王”的威严",
+      "sourceFile": "Feature_20008801.png",
+      "nrcIds": [
+        "skill_000212"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_a781530d17a5644a",
+      "sourceId": "trait_a781530d17a5644a",
+      "name": "缩壳",
+      "sourceFile": "Feature_200108.png",
+      "nrcIds": [
+        "skill_000031"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_2e31fa91026b6a0e",
+      "sourceId": "trait_2e31fa91026b6a0e",
+      "name": "碰瓷",
+      "sourceFile": "Feature_200089.png",
+      "nrcIds": [
+        "skill_000014"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_eda3ec47525c9d74",
+      "sourceId": "trait_eda3ec47525c9d74",
+      "name": "顺风",
+      "sourceFile": "Feature_200124.png",
+      "nrcIds": [
+        "skill_000045"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_156e9995a8170af2",
+      "sourceId": "trait_156e9995a8170af2",
+      "name": "破空",
+      "sourceFile": "Feature_200124.png",
+      "nrcIds": [
+        "skill_000231"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_53a3fdfbeb6de38e",
+      "sourceId": "trait_53a3fdfbeb6de38e",
+      "name": "毒蘑菇",
+      "sourceFile": "Feature_200158.png",
+      "nrcIds": [
+        "skill_000075"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_f1a6868d0fe7b2c4",
+      "sourceId": "trait_f1a6868d0fe7b2c4",
+      "name": "刺肤",
+      "sourceFile": "Feature_200103.png",
+      "nrcIds": [
+        "skill_000026"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_73f46b34cb2ebe9b",
+      "sourceId": "trait_73f46b34cb2ebe9b",
+      "name": "地脉",
+      "sourceFile": "Feature_200102.png",
+      "nrcIds": [
+        "skill_000025"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_f3f7497cc9d16d1a",
+      "sourceId": "trait_f3f7497cc9d16d1a",
+      "name": "地脉馈赠",
+      "sourceFile": "Feature_200102.png",
+      "nrcIds": [
+        "skill_000215"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_36774458de2319a8",
+      "sourceId": "trait_36774458de2319a8",
+      "name": "渴求",
+      "sourceFile": "Feature_200139.png",
+      "nrcIds": [
+        "skill_000058"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_b9a54a7321caeae4",
+      "sourceId": "trait_b9a54a7321caeae4",
+      "name": "贪得无厌",
+      "sourceFile": "Feature_200139.png",
+      "nrcIds": [
+        "skill_000240"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_b042027ddc2f57f1",
+      "sourceId": "trait_b042027ddc2f57f1",
+      "name": "化茧",
+      "sourceFile": "Feature_200135.png",
+      "nrcIds": [
+        "skill_000104"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_e475a00cfa43d795",
+      "sourceId": "trait_e475a00cfa43d795",
+      "name": "小偷小摸",
+      "sourceFile": "Feature_200155.png",
+      "nrcIds": [
+        "skill_000072"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_7dbd92ac8df1d7c8",
+      "sourceId": "trait_7dbd92ac8df1d7c8",
+      "name": "大捞一笔",
+      "sourceFile": "Feature_200155.png",
+      "nrcIds": [
+        "skill_000223"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_20aaad382b5c0e46",
+      "sourceId": "trait_20aaad382b5c0e46",
+      "name": "保守派",
+      "sourceFile": "Feature_200094.png",
+      "nrcIds": [
+        "skill_000019"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_e41ac97a6aa03865",
+      "sourceId": "trait_e41ac97a6aa03865",
+      "name": "偏振",
+      "sourceFile": "Feature_200074.png",
+      "nrcIds": [
+        "skill_000001"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_70099d6ceef2ea92",
+      "sourceId": "trait_70099d6ceef2ea92",
+      "name": "完全偏振",
+      "sourceFile": "Feature_200074.png",
+      "nrcIds": [
+        "skill_000218"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_0d9b6974d54c51d4",
+      "sourceId": "trait_0d9b6974d54c51d4",
+      "name": "养分重吸收",
+      "sourceFile": "Feature_200080.png",
+      "nrcIds": [
+        "skill_000006"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_380641f602f80edf",
+      "sourceId": "trait_380641f602f80edf",
+      "name": "养分内循环",
+      "sourceFile": "Feature_200080.png",
+      "nrcIds": [
+        "skill_000221"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_abb43466da58cdc9",
+      "sourceId": "trait_abb43466da58cdc9",
+      "name": "诈死",
+      "sourceFile": "Feature_200081.png",
+      "nrcIds": [
+        "skill_000007"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_0109a0ad7c38a2ce",
+      "sourceId": "trait_0109a0ad7c38a2ce",
+      "name": "专注力",
+      "sourceFile": "Feature_200149.png",
+      "nrcIds": [
+        "skill_000067"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_c8a4ef85bf5106aa",
+      "sourceId": "trait_c8a4ef85bf5106aa",
+      "name": "全神贯注",
+      "sourceFile": "Feature_200149.png",
+      "nrcIds": [
+        "skill_000222"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_33ae72e80c389cdb",
+      "sourceId": "trait_33ae72e80c389cdb",
+      "name": "囤积",
+      "sourceFile": "Feature_200091.png",
+      "nrcIds": [
+        "skill_000016"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_9525b09edffa387f",
+      "sourceId": "trait_9525b09edffa387f",
+      "name": "复方汤剂",
+      "sourceFile": "Feature_200186.png",
+      "nrcIds": [
+        "skill_000097"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_b11d238c83b39a36",
+      "sourceId": "trait_b11d238c83b39a36",
+      "name": "惊吓",
+      "sourceFile": "Feature_200157.png",
+      "nrcIds": [
+        "skill_000074"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_25f4a03c3e4923cb",
+      "sourceId": "trait_25f4a03c3e4923cb",
+      "name": "做噩梦",
+      "sourceFile": "Feature_200161.png",
+      "nrcIds": [
+        "skill_000077"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_04caae19a6519f30",
+      "sourceId": "trait_04caae19a6519f30",
+      "name": "稀兽花宝",
+      "sourceFile": "Feature_200220.png",
+      "nrcIds": [
+        "skill_000121"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_44c6238e4014f81d",
+      "sourceId": "trait_44c6238e4014f81d",
+      "name": "壮胆",
+      "sourceFile": "Feature_200090.png",
+      "nrcIds": [
+        "skill_000015"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_776798e696294969",
+      "sourceId": "trait_776798e696294969",
+      "name": "生物碱",
+      "sourceFile": "Feature_200078.png",
+      "nrcIds": [
+        "skill_000005"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_632d5defc31b16ee",
+      "sourceId": "trait_632d5defc31b16ee",
+      "name": "高浓生物碱",
+      "sourceFile": "Feature_20007801.png",
+      "nrcIds": [
+        "skill_000216"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_200e9959ad60cb6e",
+      "sourceId": "trait_200e9959ad60cb6e",
+      "name": "快充",
+      "sourceFile": "Feature_200163.png",
+      "nrcIds": [
+        "skill_000079"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_cdbfaed82e01a4e2",
+      "sourceId": "trait_cdbfaed82e01a4e2",
+      "name": "勇敢",
+      "sourceFile": "Feature_200077.png",
+      "nrcIds": [
+        "skill_000004"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_dbd7a597db1715dd",
+      "sourceId": "trait_dbd7a597db1715dd",
+      "name": "腐植循环",
+      "sourceFile": "Feature_200083.png",
+      "nrcIds": [
+        "skill_000009"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_a9af0be15bd8c4f8",
+      "sourceId": "trait_a9af0be15bd8c4f8",
+      "name": "慢热型",
+      "sourceFile": "Feature_200177.png",
+      "nrcIds": [
+        "skill_000090"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_3438b7113f85c321",
+      "sourceId": "trait_3438b7113f85c321",
+      "name": "溶解扩散",
+      "sourceFile": "Feature_200111.png",
+      "nrcIds": [
+        "skill_000034"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_40aa89d1be037fd7",
+      "sourceId": "trait_40aa89d1be037fd7",
+      "name": "溶解腐蚀",
+      "sourceFile": "Feature_200111.png",
+      "nrcIds": [
+        "skill_000230"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_3a40b7fc19fa0a60",
+      "sourceId": "trait_3a40b7fc19fa0a60",
+      "name": "无忧无虑",
+      "sourceFile": "Feature_200182.png",
+      "nrcIds": [
+        "skill_000094"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_29bd15f9c360dcd6",
+      "sourceId": "trait_29bd15f9c360dcd6",
+      "name": "电流刺激",
+      "sourceFile": "Feature_200164.png",
+      "nrcIds": [
+        "skill_000080"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_639e6004a3f0df4a",
+      "sourceId": "trait_639e6004a3f0df4a",
+      "name": "虫群鼓舞",
+      "sourceFile": "Feature_200132.png",
+      "nrcIds": [
+        "skill_000053"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_b3fb0e1b618b82ee",
+      "sourceId": "trait_b3fb0e1b618b82ee",
+      "name": "虫群突袭",
+      "sourceFile": "Feature_200132.png",
+      "nrcIds": [
+        "skill_000214"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_6bc6d191b788658d",
+      "sourceId": "trait_6bc6d191b788658d",
+      "name": "嫁祸",
+      "sourceFile": "Feature_200143.png",
+      "nrcIds": [
+        "skill_000062"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_de2cc07c88e01c34",
+      "sourceId": "trait_de2cc07c88e01c34",
+      "name": "洁癖",
+      "sourceFile": "Feature_200126.png",
+      "nrcIds": [
+        "skill_000047"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_4a1e4ed6c9730781",
+      "sourceId": "trait_4a1e4ed6c9730781",
+      "name": "孤傲",
+      "sourceFile": "Feature_200231.png",
+      "nrcIds": [
+        "skill_000130"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_709dd11b933dc111",
+      "sourceId": "trait_709dd11b933dc111",
+      "name": "快锤",
+      "sourceFile": "Feature_200129.png",
+      "nrcIds": [
+        "skill_000050"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_1854eda8ca3519f4",
+      "sourceId": "trait_1854eda8ca3519f4",
+      "name": "木桶戏法",
+      "sourceFile": "Feature_200082.png",
+      "nrcIds": [
+        "skill_000008"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_2575c4b075ff56b9",
+      "sourceId": "trait_2575c4b075ff56b9",
+      "name": "不移",
+      "sourceFile": "Feature_200099.png",
+      "nrcIds": [
+        "skill_000023"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_bbb937babda20271",
+      "sourceId": "trait_bbb937babda20271",
+      "name": "咔咔冲刺",
+      "sourceFile": "Feature_200125.png",
+      "nrcIds": [
+        "skill_000046"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_ba90d690036139b3",
+      "sourceId": "trait_ba90d690036139b3",
+      "name": "花精灵",
+      "sourceFile": "Feature_200136.png",
+      "nrcIds": [
+        "skill_000055"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_2d0084a448c118ff",
+      "sourceId": "trait_2d0084a448c118ff",
+      "name": "自由飘",
+      "sourceFile": "Feature_200183.png",
+      "nrcIds": [
+        "skill_000095"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_f22c7f88b657413b",
+      "sourceId": "trait_f22c7f88b657413b",
+      "name": "石头大餐",
+      "sourceFile": "Feature_200100.png",
+      "nrcIds": [
+        "skill_000024"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_a6b6e38b279ee229",
+      "sourceId": "trait_a6b6e38b279ee229",
+      "name": "盛宴",
+      "sourceFile": "Feature_200100.png",
+      "nrcIds": [
+        "skill_000238"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_07143d22261e7e55",
+      "sourceId": "trait_07143d22261e7e55",
+      "name": "水翼推进",
+      "sourceFile": "Feature_200110.png",
+      "nrcIds": [
+        "skill_000033"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_fc5aea0dff9f0d8e",
+      "sourceId": "trait_fc5aea0dff9f0d8e",
+      "name": "水翼飞升",
+      "sourceFile": "Feature_200110.png",
+      "nrcIds": [
+        "skill_000213"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_41b18ce5ff2f388c",
+      "sourceId": "trait_41b18ce5ff2f388c",
+      "name": "石天平",
+      "sourceFile": "Feature_200104.png",
+      "nrcIds": [
+        "skill_000027"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_72eba1c1d6943b87",
+      "sourceId": "trait_72eba1c1d6943b87",
+      "name": "观星",
+      "sourceFile": "Feature_200106.png",
+      "nrcIds": [
+        "skill_000029"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_3a5d0e1e9a6f2b6b",
+      "sourceId": "trait_3a5d0e1e9a6f2b6b",
+      "name": "坠星",
+      "sourceFile": "Feature_200106.png",
+      "nrcIds": [
+        "skill_000219"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_c942891884d1855c",
+      "sourceId": "trait_c942891884d1855c",
+      "name": "目空",
+      "sourceFile": "Feature_200075.png",
+      "nrcIds": [
+        "skill_000002"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_ce949faa7ce3280f",
+      "sourceId": "trait_ce949faa7ce3280f",
+      "name": "夺目",
+      "sourceFile": "Feature_200075.png",
+      "nrcIds": [
+        "skill_000217"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_367ac5fe6cb017d4",
+      "sourceId": "trait_367ac5fe6cb017d4",
+      "name": "共鸣",
+      "sourceFile": "Feature_200098.png",
+      "nrcIds": [
+        "skill_000022"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_4910ba2ca1615aef",
+      "sourceId": "trait_4910ba2ca1615aef",
+      "name": "齐鸣",
+      "sourceFile": "Feature_200098.png",
+      "nrcIds": [
+        "skill_000242"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_80cf15f507c74acb",
+      "sourceId": "trait_80cf15f507c74acb",
+      "name": "预警",
+      "sourceFile": "Feature_200222.png",
+      "nrcIds": [
+        "skill_000123"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_7251ee843cd40243",
+      "sourceId": "trait_7251ee843cd40243",
+      "name": "先知",
+      "sourceFile": "Feature_200222.png",
+      "nrcIds": [
+        "skill_000229"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_1fd81158bdc2c8c7",
+      "sourceId": "trait_1fd81158bdc2c8c7",
+      "name": "下黑手",
+      "sourceFile": "Feature_200156.png",
+      "nrcIds": [
+        "skill_000073"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_a36b1876608b1144",
+      "sourceId": "trait_a36b1876608b1144",
+      "name": "毒牙",
+      "sourceFile": "Feature_200185.png",
+      "nrcIds": [
+        "skill_000096"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_ba531623e0af2e2d",
+      "sourceId": "trait_ba531623e0af2e2d",
+      "name": "吸积盘",
+      "sourceFile": "Feature_200189.png",
+      "nrcIds": [
+        "skill_000100"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_72b7699e2c594e2b",
+      "sourceId": "trait_72b7699e2c594e2b",
+      "name": "悲悯",
+      "sourceFile": "Feature_200140.png",
+      "nrcIds": [
+        "skill_000059"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_c94a72f9978ba590",
+      "sourceId": "trait_c94a72f9978ba590",
+      "name": "悼亡",
+      "sourceFile": "Feature_200140.png",
+      "nrcIds": [
+        "skill_000232"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_be7f37f5a17edad6",
+      "sourceId": "trait_be7f37f5a17edad6",
+      "name": "超负荷",
+      "sourceFile": "Feature_200278.png",
+      "nrcIds": [
+        "skill_000163"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_6b61e878a4ab5c62",
+      "sourceId": "trait_6b61e878a4ab5c62",
+      "name": "结晶水",
+      "sourceFile": "Feature_200118.png",
+      "nrcIds": [
+        "skill_000041"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_cb7e69b95d68e4cd",
+      "sourceId": "trait_cb7e69b95d68e4cd",
+      "name": "冻土",
+      "sourceFile": "Feature_200120.png",
+      "nrcIds": [
+        "skill_000042"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_15d62976d08e02d4",
+      "sourceId": "trait_15d62976d08e02d4",
+      "name": "冰封",
+      "sourceFile": "Feature_200123.png",
+      "nrcIds": [
+        "skill_000044"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_7a5d5f3451a645a7",
+      "sourceId": "trait_7a5d5f3451a645a7",
+      "name": "捉迷藏",
+      "sourceFile": "Feature_200116.png",
+      "nrcIds": [
+        "skill_000039"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_6926b12f65ae49d3",
+      "sourceId": "trait_6926b12f65ae49d3",
+      "name": "抓到你了",
+      "sourceFile": "Feature_200116.png",
+      "nrcIds": [
+        "skill_000220"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_af929287e195bbe5",
+      "sourceId": "trait_af929287e195bbe5",
+      "name": "机械变式",
+      "sourceFile": "Feature_200197.png",
+      "nrcIds": [
+        "skill_000105"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_3e52ddcaa16ba452",
+      "sourceId": "trait_3e52ddcaa16ba452",
+      "name": "灵魂灼伤",
+      "sourceFile": "Feature_200150.png",
+      "nrcIds": [
+        "skill_000068"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_508df371cc3ff55f",
+      "sourceId": "trait_508df371cc3ff55f",
+      "name": "飓风",
+      "sourceFile": "Feature_200211.png",
+      "nrcIds": [
+        "skill_000113"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_4ef798225a4f1262",
+      "sourceId": "trait_4ef798225a4f1262",
+      "name": "野性感官",
+      "sourceFile": "Feature_200249.png",
+      "nrcIds": [
+        "skill_000147"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_940ef791ac59e4c7",
+      "sourceId": "trait_940ef791ac59e4c7",
+      "name": "圣火骑士",
+      "sourceFile": "Feature_200247.png",
+      "nrcIds": [
+        "skill_000145"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_5a12a5593fc64289",
+      "sourceId": "trait_5a12a5593fc64289",
+      "name": "思维之盾",
+      "sourceFile": "Feature_200248.png",
+      "nrcIds": [
+        "skill_000146"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_dd3a6fc02889bbe9",
+      "sourceId": "trait_dd3a6fc02889bbe9",
+      "name": "衡量",
+      "sourceFile": "Feature_200221.png",
+      "nrcIds": [
+        "skill_000122"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_c1611e0f2ee58193",
+      "sourceId": "trait_c1611e0f2ee58193",
+      "name": "威慑",
+      "sourceFile": "Feature_200180.png",
+      "nrcIds": [
+        "skill_000092"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_b8b64454f2badbf1",
+      "sourceId": "trait_b8b64454f2badbf1",
+      "name": "乘风连击",
+      "sourceFile": "Feature_200128.png",
+      "nrcIds": [
+        "skill_000049"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_f1cf55e1134082f6",
+      "sourceId": "trait_f1cf55e1134082f6",
+      "name": "毒腺",
+      "sourceFile": "Feature_200131.png",
+      "nrcIds": [
+        "skill_000052"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_e91fb0bd759b0be3",
+      "sourceId": "trait_e91fb0bd759b0be3",
+      "name": "消波块",
+      "sourceFile": "Feature_200224.png",
+      "nrcIds": [
+        "skill_000125"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_070dc47c3a228e5e",
+      "sourceId": "trait_070dc47c3a228e5e",
+      "name": "多人宿舍",
+      "sourceFile": "Feature_200215.png",
+      "nrcIds": [
+        "skill_000116"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_aaa4816e731707c2",
+      "sourceId": "trait_aaa4816e731707c2",
+      "name": "逐魂鸟",
+      "sourceFile": "Feature_200232.png",
+      "nrcIds": [
+        "skill_000131"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_43bd62cc6f0c44ea",
+      "sourceId": "trait_43bd62cc6f0c44ea",
+      "name": "得寸进尺",
+      "sourceFile": "Feature_200079.png",
+      "nrcIds": [
+        "skill_000115"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_8c0f8bbeb48e0156",
+      "sourceId": "trait_8c0f8bbeb48e0156",
+      "name": "身经百练",
+      "sourceFile": "Feature_200178.png",
+      "nrcIds": [
+        "skill_000091"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_bdbba20bbbd9216d",
+      "sourceId": "trait_bdbba20bbbd9216d",
+      "name": "泛音列",
+      "sourceFile": "Feature_200227.png",
+      "nrcIds": [
+        "skill_000127"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_f63bbc862cd0badf",
+      "sourceId": "trait_f63bbc862cd0badf",
+      "name": "守护者",
+      "sourceFile": "Feature_200109.png",
+      "nrcIds": [
+        "skill_000032"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_e40700c4d1b32596",
+      "sourceId": "trait_e40700c4d1b32596",
+      "name": "腾挪",
+      "sourceFile": "Feature_200236.png",
+      "nrcIds": [
+        "skill_000134"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_71e6645f0560e7cb",
+      "sourceId": "trait_71e6645f0560e7cb",
+      "name": "御驾亲征",
+      "sourceFile": "Feature_200212.png",
+      "nrcIds": [
+        "skill_000227"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_568e7368c8c69a76",
+      "sourceId": "trait_568e7368c8c69a76",
+      "name": "保卫",
+      "sourceFile": "Feature_200237.png",
+      "nrcIds": [
+        "skill_000135"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_20ae7ab3b2ef1e9c",
+      "sourceId": "trait_20ae7ab3b2ef1e9c",
+      "name": "好象坏象",
+      "sourceFile": "Feature_200238.png",
+      "nrcIds": [
+        "skill_000136"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_d8245de26c287e7b",
+      "sourceId": "trait_d8245de26c287e7b",
+      "name": "渗透",
+      "sourceFile": "Feature_200212.png",
+      "nrcIds": [
+        "skill_000114"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_5f078f0a14ae635d",
+      "sourceId": "trait_5f078f0a14ae635d",
+      "name": "奔波命",
+      "sourceFile": "Feature_200105.png",
+      "nrcIds": [
+        "skill_000028"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_815c30e3a2c3e39e",
+      "sourceId": "trait_815c30e3a2c3e39e",
+      "name": "营养液泡",
+      "sourceFile": "Feature_200084.png",
+      "nrcIds": [
+        "skill_000010"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_5b5f3097136cd6af",
+      "sourceId": "trait_5b5f3097136cd6af",
+      "name": "鼓气",
+      "sourceFile": "Feature_200096.png",
+      "nrcIds": [
+        "skill_000021"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_6f0891936e934711",
+      "sourceId": "trait_6f0891936e934711",
+      "name": "三鼓作气",
+      "sourceFile": "Feature_200096.png",
+      "nrcIds": [
+        "skill_000228"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_b89317bc847673e7",
+      "sourceId": "trait_b89317bc847673e7",
+      "name": "铃兰晚钟",
+      "sourceFile": "Feature_200223.png",
+      "nrcIds": [
+        "skill_000124"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_207cdd024741d018",
+      "sourceId": "trait_207cdd024741d018",
+      "name": "嫉妒",
+      "sourceFile": "Feature_200174.png",
+      "nrcIds": [
+        "skill_000089"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_1b54f9208d25f5dd",
+      "sourceId": "trait_1b54f9208d25f5dd",
+      "name": "游弋",
+      "sourceFile": "Feature_200174.png",
+      "nrcIds": [
+        "skill_000226"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_eab7640202c05c97",
+      "sourceId": "trait_eab7640202c05c97",
+      "name": "噼啪！",
+      "sourceFile": "Feature_200162.png",
+      "nrcIds": [
+        "skill_000078"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_0f1cbd17edc7f650",
+      "sourceId": "trait_0f1cbd17edc7f650",
+      "name": "噼啪噼啪！",
+      "sourceFile": "Feature_200162.png",
+      "nrcIds": [
+        "skill_000241"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_f99e16a36eef3cc2",
+      "sourceId": "trait_f99e16a36eef3cc2",
+      "name": "防过载保护",
+      "sourceFile": "Feature_200165.png",
+      "nrcIds": [
+        "skill_000081"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_2c1e253a1be8fabf",
+      "sourceId": "trait_2c1e253a1be8fabf",
+      "name": "虚假宝箱",
+      "sourceFile": "Feature_200235.png",
+      "nrcIds": [
+        "skill_000133"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_279b8d2f02a561da",
+      "sourceId": "trait_279b8d2f02a561da",
+      "name": "拨浪鼓",
+      "sourceFile": "Feature_200181.png",
+      "nrcIds": [
+        "skill_000093"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_9db3b18df406efa5",
+      "sourceId": "trait_9db3b18df406efa5",
+      "name": "振奋虫心",
+      "sourceFile": "Feature_200133.png",
+      "nrcIds": [
+        "skill_000054"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_63d753438506d245",
+      "sourceId": "trait_63d753438506d245",
+      "name": "蒸汽膨胀",
+      "sourceFile": "Feature_200153.png",
+      "nrcIds": [
+        "skill_000071"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_222ed572ccd278a9",
+      "sourceId": "trait_222ed572ccd278a9",
+      "name": "吟游之弦",
+      "sourceFile": "Feature_200225.png",
+      "nrcIds": [
+        "skill_000126"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_2b01267d47cf4b92",
+      "sourceId": "trait_2b01267d47cf4b92",
+      "name": "珊瑚骨",
+      "sourceFile": "Feature_200216.png",
+      "nrcIds": [
+        "skill_000117"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_843f0284d0407874",
+      "sourceId": "trait_843f0284d0407874",
+      "name": "定向精炼",
+      "sourceFile": "Feature_200172.png",
+      "nrcIds": [
+        "skill_000087"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_c8dc59001b1eaf55",
+      "sourceId": "trait_c8dc59001b1eaf55",
+      "name": "暴食",
+      "sourceFile": "Feature_200173.png",
+      "nrcIds": [
+        "skill_000088"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_ba5c839f5bda3f0d",
+      "sourceId": "trait_ba5c839f5bda3f0d",
+      "name": "蓄电池",
+      "sourceFile": "Feature_200169.png",
+      "nrcIds": [
+        "skill_000084"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_d35044e05d731fe9",
+      "sourceId": "trait_d35044e05d731fe9",
+      "name": "超级电池",
+      "sourceFile": "Feature_200169.png",
+      "nrcIds": [
+        "skill_000224"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_57da98775aecea79",
+      "sourceId": "trait_57da98775aecea79",
+      "name": "向心力",
+      "sourceFile": "Feature_200228.png",
+      "nrcIds": [
+        "skill_000128"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_39fb93ef4943bf7e",
+      "sourceId": "trait_39fb93ef4943bf7e",
+      "name": "起飞加速",
+      "sourceFile": "Feature_200093.png",
+      "nrcIds": [
+        "skill_000018"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_6f2139b2d297e32c",
+      "sourceId": "trait_6f2139b2d297e32c",
+      "name": "相争",
+      "sourceFile": "Feature_200124.png",
+      "nrcIds": [
+        "skill_000237"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_b9cecb1b9fecc46f",
+      "sourceId": "trait_b9cecb1b9fecc46f",
+      "name": "加个雪球",
+      "sourceFile": "Feature_200122.png",
+      "nrcIds": [
+        "skill_000043"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_961d8b1f9d0d07ed",
+      "sourceId": "trait_961d8b1f9d0d07ed",
+      "name": "耐活王",
+      "sourceFile": "Feature_200240.png",
+      "nrcIds": [
+        "skill_000138"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_9eeffb3baed24dea",
+      "sourceId": "trait_9eeffb3baed24dea",
+      "name": "洄游",
+      "sourceFile": "Feature_200114.png",
+      "nrcIds": [
+        "skill_000037"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_85c72eb0067c94ce",
+      "sourceId": "trait_85c72eb0067c94ce",
+      "name": "生物电",
+      "sourceFile": "Feature_200167.png",
+      "nrcIds": [
+        "skill_000083"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_536385ba60386c67",
+      "sourceId": "trait_536385ba60386c67",
+      "name": "扩散侵蚀",
+      "sourceFile": "Feature_200115.png",
+      "nrcIds": [
+        "skill_000038"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_461fb8b32099688b",
+      "sourceId": "trait_461fb8b32099688b",
+      "name": "蚀刻",
+      "sourceFile": "Feature_200187.png",
+      "nrcIds": [
+        "skill_000098"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_5ea89d34c13ae7af",
+      "sourceId": "trait_5ea89d34c13ae7af",
+      "name": "散热",
+      "sourceFile": "Feature_200147.png",
+      "nrcIds": [
+        "skill_000065"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_6a7f811eb72ea1ce",
+      "sourceId": "trait_6a7f811eb72ea1ce",
+      "name": "冰钻",
+      "sourceFile": "Feature_200117.png",
+      "nrcIds": [
+        "skill_000040"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_002b61bce0b1de5f",
+      "sourceId": "trait_002b61bce0b1de5f",
+      "name": "仁心",
+      "sourceFile": "Feature_200152.png",
+      "nrcIds": [
+        "skill_000070"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_bb27bf26c633616a",
+      "sourceId": "trait_bb27bf26c633616a",
+      "name": "恶魔的晚宴",
+      "sourceFile": "Feature_200257.png",
+      "nrcIds": [
+        "skill_000154"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_9eede2917008226c",
+      "sourceId": "trait_9eede2917008226c",
+      "name": "翼轴",
+      "sourceFile": "Feature_200234.png",
+      "nrcIds": [
+        "skill_000132"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_235c9133ff215d54",
+      "sourceId": "trait_235c9133ff215d54",
+      "name": "盲拧",
+      "sourceFile": "Feature_200170.png",
+      "nrcIds": [
+        "skill_000085"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_0bf7668e47c102e3",
+      "sourceId": "trait_0bf7668e47c102e3",
+      "name": "斗技",
+      "sourceFile": "Feature_200148.png",
+      "nrcIds": [
+        "skill_000066"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_dece590aadb9e522",
+      "sourceId": "trait_dece590aadb9e522",
+      "name": "指挥家",
+      "sourceFile": "Feature_200218.png",
+      "nrcIds": [
+        "skill_000119"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_fd02a3235d32a28d",
+      "sourceId": "trait_fd02a3235d32a28d",
+      "name": "哨兵",
+      "sourceFile": "Feature_200262.png",
+      "nrcIds": [
+        "skill_000155"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_d8f4daa5c833e4ab",
+      "sourceId": "trait_d8f4daa5c833e4ab",
+      "name": "连续负荷",
+      "sourceFile": "Feature_200219.png",
+      "nrcIds": [
+        "skill_000120"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_228f7095061a962f",
+      "sourceId": "trait_228f7095061a962f",
+      "name": "倾轧",
+      "sourceFile": "Feature_200112.png",
+      "nrcIds": [
+        "skill_000035"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_4c1a950b7200f574",
+      "sourceId": "trait_4c1a950b7200f574",
+      "name": "生长",
+      "sourceFile": "Feature_200087.png",
+      "nrcIds": [
+        "skill_000012"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_8908aabcf0d7cc59",
+      "sourceId": "trait_8908aabcf0d7cc59",
+      "name": "警惕",
+      "sourceFile": "Feature_200092.png",
+      "nrcIds": [
+        "skill_000017"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_b5979083bbc6df55",
+      "sourceId": "trait_b5979083bbc6df55",
+      "name": "涂鸦",
+      "sourceFile": "Feature_200267.png",
+      "nrcIds": [
+        "skill_000157"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_ba48267865da0c6f",
+      "sourceId": "trait_ba48267865da0c6f",
+      "name": "绝对秩序",
+      "sourceFile": "Feature_200268.png",
+      "nrcIds": [
+        "skill_000158"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_398b934d2956800b",
+      "sourceId": "trait_398b934d2956800b",
+      "name": "坚韧铠甲",
+      "sourceFile": "Feature_200138.png",
+      "nrcIds": [
+        "skill_000057"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_aeac0357a7a1b9a0",
+      "sourceId": "trait_aeac0357a7a1b9a0",
+      "name": "正位宝剑",
+      "sourceFile": "Feature_200208.png",
+      "nrcIds": [
+        "skill_000110"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_d396ed76f72b488d",
+      "sourceId": "trait_d396ed76f72b488d",
+      "name": "宝剑王牌",
+      "sourceFile": "Feature_200208.png",
+      "nrcIds": [
+        "skill_000225"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_a60600ffd3f86b58",
+      "sourceId": "trait_a60600ffd3f86b58",
+      "name": "无差别过滤",
+      "sourceFile": "Feature_200209.png",
+      "nrcIds": [
+        "skill_000111"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_4dba4c9d0030dd78",
+      "sourceId": "trait_4dba4c9d0030dd78",
+      "name": "强制过滤",
+      "sourceFile": "Feature_200209.png",
+      "nrcIds": [
+        "skill_000243"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_a36b331d5e1e78dd",
+      "sourceId": "trait_a36b331d5e1e78dd",
+      "name": "不朽",
+      "sourceFile": "Feature_200230.png",
+      "nrcIds": [
+        "skill_000129"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_6243ae6fe9f2f978",
+      "sourceId": "trait_6243ae6fe9f2f978",
+      "name": "侵蚀",
+      "sourceFile": "Feature_200204.png",
+      "nrcIds": [
+        "skill_000108"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_b0b9d0d7a734d0bc",
+      "sourceId": "trait_b0b9d0d7a734d0bc",
+      "name": "付给恶魔的赎价",
+      "sourceFile": "Feature_200141.png",
+      "nrcIds": [
+        "skill_000060"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_a63e1e1f1674854a",
+      "sourceId": "trait_a63e1e1f1674854a",
+      "name": "扫拖一体",
+      "sourceFile": "Feature_200255.png",
+      "nrcIds": [
+        "skill_000152"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_73f5e504c84fad24",
+      "sourceId": "trait_73f5e504c84fad24",
+      "name": "特殊清洁场景",
+      "sourceFile": "Feature_200256.png",
+      "nrcIds": [
+        "skill_000153"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_b69af12ec1862e49",
+      "sourceId": "trait_b69af12ec1862e49",
+      "name": "灰色肖像",
+      "sourceFile": "Feature_200242.png",
+      "nrcIds": [
+        "skill_000140"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_e7ae3fb03a60b742",
+      "sourceId": "trait_e7ae3fb03a60b742",
+      "name": "变形活画",
+      "sourceFile": "Feature_200243.png",
+      "nrcIds": [
+        "skill_000141"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_e3ea9935dcf2108c",
+      "sourceId": "trait_e3ea9935dcf2108c",
+      "name": "图书守卫者",
+      "sourceFile": "Feature_200244.png",
+      "nrcIds": [
+        "skill_000142"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_348c34b9606162d9",
+      "sourceId": "trait_348c34b9606162d9",
+      "name": "构装契约者",
+      "sourceFile": "Feature_200245.png",
+      "nrcIds": [
+        "skill_000143"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_975a6c354f368691",
+      "sourceId": "trait_975a6c354f368691",
+      "name": "绒粉星光",
+      "sourceFile": "Feature_200192.png",
+      "nrcIds": [
+        "skill_000102"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_399a39b8ef770bdb",
+      "sourceId": "trait_399a39b8ef770bdb",
+      "name": "月光审判",
+      "sourceFile": "Feature_200193.png",
+      "nrcIds": [
+        "skill_000103"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_d083e0f204df9c04",
+      "sourceId": "trait_d083e0f204df9c04",
+      "name": "茶多酚",
+      "sourceFile": "Feature_200253.png",
+      "nrcIds": [
+        "skill_000106"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_bef8d961ca8d7981",
+      "sourceId": "trait_bef8d961ca8d7981",
+      "name": "吉利丁片",
+      "sourceFile": "Feature_200202.png",
+      "nrcIds": [
+        "skill_000150"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_a6b21f8752c2be97",
+      "sourceId": "trait_a6b21f8752c2be97",
+      "name": "美拉德反应",
+      "sourceFile": "Feature_200254.png",
+      "nrcIds": [
+        "skill_000151"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_3892542271c11647",
+      "sourceId": "trait_3892542271c11647",
+      "name": "契约的形状",
+      "sourceFile": "Feature_200137.png",
+      "nrcIds": [
+        "skill_000056"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_e542ca62f155a51b",
+      "sourceId": "trait_e542ca62f155a51b",
+      "name": "对流",
+      "sourceFile": "Feature_200113.png",
+      "nrcIds": [
+        "skill_000036"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_03f608df26069077",
+      "sourceId": "trait_03f608df26069077",
+      "name": "月牙雪糕",
+      "sourceFile": "Feature_200205.png",
+      "nrcIds": [
+        "skill_000109"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_3404ad1421894f34",
+      "sourceId": "trait_3404ad1421894f34",
+      "name": "血型吸引",
+      "sourceFile": "Feature_200251.png",
+      "nrcIds": [
+        "skill_000148"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_f699505d0fca8d1e",
+      "sourceId": "trait_f699505d0fca8d1e",
+      "name": "煤渣草",
+      "sourceFile": "Feature_200203.png",
+      "nrcIds": [
+        "skill_000107"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_e3f79cceb9580ecc",
+      "sourceId": "trait_e3f79cceb9580ecc",
+      "name": "搜刮",
+      "sourceFile": "Feature_200160.png",
+      "nrcIds": [
+        "skill_000076"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_fe6e986b534c7c24",
+      "sourceId": "trait_fe6e986b534c7c24",
+      "name": "扫荡",
+      "sourceFile": "Feature_200160.png",
+      "nrcIds": [
+        "skill_000244"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_856d18d7c1b872a8",
+      "sourceId": "trait_856d18d7c1b872a8",
+      "name": "星地善良",
+      "sourceFile": "Feature_200166.png",
+      "nrcIds": [
+        "skill_000082"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_e40dfef1f7ed8cb2",
+      "sourceId": "trait_e40dfef1f7ed8cb2",
+      "name": "贪心算法",
+      "sourceFile": "Feature_200171.png",
+      "nrcIds": [
+        "skill_000086"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_90679dcfe0fa13c4",
+      "sourceId": "trait_90679dcfe0fa13c4",
+      "name": "双向光速",
+      "sourceFile": "Feature_200095.png",
+      "nrcIds": [
+        "skill_000020"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_74a843e47805b79e",
+      "sourceId": "trait_74a843e47805b79e",
+      "name": "陨落",
+      "sourceFile": "Feature_200241.png",
+      "nrcIds": [
+        "skill_000139"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_a46247a24f8370da",
+      "sourceId": "trait_a46247a24f8370da",
+      "name": "张弛有度",
+      "sourceFile": "Feature_200269.png",
+      "nrcIds": [
+        "skill_000159"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_8ba6bcad16353d3d",
+      "sourceId": "trait_8ba6bcad16353d3d",
+      "name": "天通地明",
+      "sourceFile": "Feature_200196.png",
+      "nrcIds": [
+        "skill_000167"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_35c7e95d1e324416",
+      "sourceId": "trait_35c7e95d1e324416",
+      "name": "系统发育",
+      "sourceFile": "Feature_200085.png",
+      "nrcIds": [
+        "skill_000011"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_df07c5c316290e24",
+      "sourceId": "trait_df07c5c316290e24",
+      "name": "守望星",
+      "sourceFile": "Feature_200210.png",
+      "nrcIds": [
+        "skill_000112"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_a6f6bceb6b733e21",
+      "sourceId": "trait_a6f6bceb6b733e21",
+      "name": "狂欢开始",
+      "sourceFile": "Feature_200286.png",
+      "nrcIds": [
+        "skill_000168"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_dbcf8cadeb3d4989",
+      "sourceId": "trait_dbcf8cadeb3d4989",
+      "name": "展翅",
+      "sourceFile": "Feature_200127.png",
+      "nrcIds": [
+        "skill_000048"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_b7d63d4abf49503f",
+      "sourceId": "trait_b7d63d4abf49503f",
+      "name": "大雪球",
+      "sourceFile": "Feature_200290.png",
+      "nrcIds": [
+        "skill_000173"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_61f7bdfd0dda3318",
+      "sourceId": "trait_61f7bdfd0dda3318",
+      "name": "大火球",
+      "sourceFile": "Feature_200292.png",
+      "nrcIds": [
+        "skill_000174"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_57afe553a26a273d",
+      "sourceId": "trait_57afe553a26a273d",
+      "name": "换碟",
+      "sourceFile": "Feature_200287.png",
+      "nrcIds": [
+        "skill_000169"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_3b96266fa3c1687b",
+      "sourceId": "trait_3b96266fa3c1687b",
+      "name": "拉拉队长",
+      "sourceFile": "Feature_200289.png",
+      "nrcIds": [
+        "skill_000170"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_0fd18e7799ab760e",
+      "sourceId": "trait_0fd18e7799ab760e",
+      "name": "戏耍",
+      "sourceFile": "Feature_200291.png",
+      "nrcIds": [
+        "skill_000171"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_d9a08fb184d1ef5c",
+      "sourceId": "trait_d9a08fb184d1ef5c",
+      "name": "焰色反应",
+      "sourceFile": "Feature_200273.png",
+      "nrcIds": [
+        "skill_000161"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_8b462855179241dd",
+      "sourceId": "trait_8b462855179241dd",
+      "name": "魔术帽",
+      "sourceFile": "Feature_200272.png",
+      "nrcIds": [
+        "skill_000160"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_91f83eb633d59a4a",
+      "sourceId": "trait_91f83eb633d59a4a",
+      "name": "安可",
+      "sourceFile": "Feature_200293.png",
+      "nrcIds": [
+        "skill_000172"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_cddb79180437b4c9",
+      "sourceId": "trait_cddb79180437b4c9",
+      "name": "合拍",
+      "sourceFile": "Feature_200275.png",
+      "nrcIds": [
+        "skill_000162"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_17ad646f9f7fb661",
+      "sourceId": "trait_17ad646f9f7fb661",
+      "name": "盲从",
+      "sourceFile": "Feature_200188.png",
+      "nrcIds": [
+        "skill_000099"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_731c315f1c469260",
+      "sourceId": "trait_731c315f1c469260",
+      "name": "留学生",
+      "sourceFile": "Feature_200252.png",
+      "nrcIds": [
+        "skill_000149"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_e8c61c550abefa0d",
+      "sourceId": "trait_e8c61c550abefa0d",
+      "name": "不死鸟",
+      "sourceFile": "Feature_200154.png",
+      "nrcIds": [
+        "skill_000069"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_1e52c367a184112a",
+      "sourceId": "trait_1e52c367a184112a",
+      "name": "上锁",
+      "sourceFile": "Feature_200300.png",
+      "nrcIds": [
+        "skill_000182"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_cf060dc6a92a0dc7",
+      "sourceId": "trait_cf060dc6a92a0dc7",
+      "name": "流沙统治者",
+      "sourceFile": "Feature_200298.png",
+      "nrcIds": [
+        "skill_000180"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_3376e31b5b398d2e",
+      "sourceId": "trait_3376e31b5b398d2e",
+      "name": "盘根木",
+      "sourceFile": "Feature_200299.png",
+      "nrcIds": [
+        "skill_000181"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_70e6adf9fb775856",
+      "sourceId": "trait_70e6adf9fb775856",
+      "name": "电子音乐",
+      "sourceFile": "Feature_200168.png",
+      "nrcIds": [
+        "skill_000185"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_69acba3c65243d59",
+      "sourceId": "trait_69acba3c65243d59",
+      "name": "冰雪魂魄",
+      "sourceFile": "Feature_200311.png",
+      "nrcIds": [
+        "skill_000193"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_8d1d20656dd4169f",
+      "sourceId": "trait_8d1d20656dd4169f",
+      "name": "淬炼火",
+      "sourceFile": "Feature_200302.png",
+      "nrcIds": [
+        "skill_000184"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_23394c87876d718c",
+      "sourceId": "trait_23394c87876d718c",
+      "name": "友谊之果",
+      "sourceFile": "Feature_200301.png",
+      "nrcIds": [
+        "skill_000183"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_df69c971b6807b58",
+      "sourceId": "trait_df69c971b6807b58",
+      "name": "莫比乌斯",
+      "sourceFile": "Feature_200297.png",
+      "nrcIds": [
+        "skill_000179"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_36fe89fbaf0a0030",
+      "sourceId": "trait_36fe89fbaf0a0030",
+      "name": "瞳中倒影",
+      "sourceFile": "Feature_200142.png",
+      "nrcIds": [
+        "skill_000061"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_1998c4375b11d069",
+      "sourceId": "trait_1998c4375b11d069",
+      "name": "异类",
+      "sourceFile": "Feature_200130.png",
+      "nrcIds": [
+        "skill_000051"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_6f178063da05ea08",
+      "sourceId": "trait_6f178063da05ea08",
+      "name": "滴眼液",
+      "sourceFile": "Feature_200144.png",
+      "nrcIds": [
+        "skill_000063"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_8f8a1acf02a4bf18",
+      "sourceId": "trait_8f8a1acf02a4bf18",
+      "name": "与星星同行",
+      "sourceFile": "Feature_200217.png",
+      "nrcIds": [
+        "skill_000118"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_50c865423cdeaf66",
+      "sourceId": "trait_50c865423cdeaf66",
+      "name": "迎宾",
+      "sourceFile": "Feature_200304.png",
+      "nrcIds": [
+        "skill_000186"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_4651e3e91db71923",
+      "sourceId": "trait_4651e3e91db71923",
+      "name": "整点报时",
+      "sourceFile": "Feature_200246.png",
+      "nrcIds": [
+        "skill_000144"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_3337f06b287f1149",
+      "sourceId": "trait_3337f06b287f1149",
+      "name": "有求必应",
+      "sourceFile": "Feature_200306.png",
+      "nrcIds": [
+        "skill_000188"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_c1df1d8c8edf84a6",
+      "sourceId": "trait_c1df1d8c8edf84a6",
+      "name": "一意孤行",
+      "sourceFile": "Feature_200305.png",
+      "nrcIds": [
+        "skill_000187"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_f736a280d9cc3a05",
+      "sourceId": "trait_f736a280d9cc3a05",
+      "name": "守护之心",
+      "sourceFile": "Feature_200309.png",
+      "nrcIds": [
+        "skill_000191"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_055bf83a2f3aab10",
+      "sourceId": "trait_055bf83a2f3aab10",
+      "name": "和弦共振",
+      "sourceFile": "Feature_200310.png",
+      "nrcIds": [
+        "skill_000192"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_6601a195a0b3f119",
+      "sourceId": "trait_6601a195a0b3f119",
+      "name": "猫精灵的礼物",
+      "sourceFile": "Feature_200307.png",
+      "nrcIds": [
+        "skill_000189"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_e63e2935442bc580",
+      "sourceId": "trait_e63e2935442bc580",
+      "name": "爆裂玉米",
+      "sourceFile": "Feature_200277.png",
+      "nrcIds": [
+        "skill_000175"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_06e590fc298033cc",
+      "sourceId": "trait_06e590fc298033cc",
+      "name": "王子的诺言",
+      "sourceFile": "Feature_200294.png",
+      "nrcIds": [
+        "skill_000176"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_e2295a051dffd60d",
+      "sourceId": "trait_e2295a051dffd60d",
+      "name": "诅咒",
+      "sourceFile": "Feature_200296.png",
+      "nrcIds": [
+        "skill_000178"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_08e5bbe852abacdc",
+      "sourceId": "trait_08e5bbe852abacdc",
+      "name": "光度换算",
+      "sourceFile": "Feature_200312.png",
+      "nrcIds": [
+        "skill_000194"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_c6decc38d831e692",
+      "sourceId": "trait_c6decc38d831e692",
+      "name": "长久保存制法",
+      "sourceFile": "Feature_200264.png",
+      "nrcIds": [
+        "skill_000156"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_8e6b0c960c5d1796",
+      "sourceId": "trait_8e6b0c960c5d1796",
+      "name": "守望者",
+      "sourceFile": "Feature_200295.png",
+      "nrcIds": [
+        "skill_000177"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_611872cdf7f65b6a",
+      "sourceId": "trait_611872cdf7f65b6a",
+      "name": "扎手",
+      "sourceFile": "Feature_200239.png",
+      "nrcIds": [
+        "skill_000137"
+      ]
+    },
+    {
+      "id": "cn-placeholder:trait_1ee789a922229e40",
+      "sourceId": "trait_1ee789a922229e40",
+      "name": "安眠",
+      "sourceFile": "Feature_200308.png",
+      "nrcIds": [
+        "skill_000190"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "sourceFile": "Feature_200074.png",
+      "localUrl": "/assets/traits/Feature_200074.png",
+      "names": [
+        "偏振",
+        "完全偏振"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e3/ccwc1ruwueid8gau7d72660s75zbtpc.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 58585
+    },
+    {
+      "sourceFile": "Feature_200075.png",
+      "localUrl": "/assets/traits/Feature_200075.png",
+      "names": [
+        "目空",
+        "夺目"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ea/razckxr0mbddn44wusprz0ojf9qc5yh.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 42793
+    },
+    {
+      "sourceFile": "Feature_200076.png",
+      "localUrl": "/assets/traits/Feature_200076.png",
+      "names": [
+        "氧循环",
+        "草木苏醒时"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/6b/ba7bcwt8s5w3i5d86zn6l5cpzrty4ag.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 43900
+    },
+    {
+      "sourceFile": "Feature_20007601.png",
+      "localUrl": "/assets/traits/Feature_20007601.png",
+      "names": [
+        "深层氧循环"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f6/h8rt5yh1tuh3db0fyowzxugv9kj6llf.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 57929
+    },
+    {
+      "sourceFile": "Feature_200077.png",
+      "localUrl": "/assets/traits/Feature_200077.png",
+      "names": [
+        "勇敢"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ee/d9kmaykrw5pz8vt6fxz80l1atifvbww.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 53425
+    },
+    {
+      "sourceFile": "Feature_200078.png",
+      "localUrl": "/assets/traits/Feature_200078.png",
+      "names": [
+        "生物碱"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f1/lb66eos9cauclsp6665tvih4y51j9qf.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 41503
+    },
+    {
+      "sourceFile": "Feature_20007801.png",
+      "localUrl": "/assets/traits/Feature_20007801.png",
+      "names": [
+        "高浓生物碱"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/52/4xkfmxpnpy0hdava4rrtg51k2wulcfk.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 51823
+    },
+    {
+      "sourceFile": "Feature_200079.png",
+      "localUrl": "/assets/traits/Feature_200079.png",
+      "names": [
+        "得寸进尺"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/ca/hiyei6qkq6yyufsknzrgcuoombq8tcc.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 40210
+    },
+    {
+      "sourceFile": "Feature_200080.png",
+      "localUrl": "/assets/traits/Feature_200080.png",
+      "names": [
+        "养分重吸收",
+        "养分内循环"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fb/dg7kx7uqumqvat5kih00f5l283xk2oc.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 48042
+    },
+    {
+      "sourceFile": "Feature_200081.png",
+      "localUrl": "/assets/traits/Feature_200081.png",
+      "names": [
+        "诈死"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/dc/pydnixn1bpyb0i75rbgw4h9e8mszgzn.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 50074
+    },
+    {
+      "sourceFile": "Feature_200082.png",
+      "localUrl": "/assets/traits/Feature_200082.png",
+      "names": [
+        "木桶戏法"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/21/5n4mshi9ht7hxr93dzfj4dffethzday.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 71340
+    },
+    {
+      "sourceFile": "Feature_200083.png",
+      "localUrl": "/assets/traits/Feature_200083.png",
+      "names": [
+        "腐植循环"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f0/pj82i5jqfvsdhmleshy7zr7sy38ljbd.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 69940
+    },
+    {
+      "sourceFile": "Feature_200084.png",
+      "localUrl": "/assets/traits/Feature_200084.png",
+      "names": [
+        "营养液泡"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3b/dhqr0n8qtgp2kr1sp1fbrsfiqzs0gop.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 66858
+    },
+    {
+      "sourceFile": "Feature_200085.png",
+      "localUrl": "/assets/traits/Feature_200085.png",
+      "names": [
+        "系统发育"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/0a/n5pxptbsjq1foqhhn8xbxnzfvee8g3a.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 42314
+    },
+    {
+      "sourceFile": "Feature_200087.png",
+      "localUrl": "/assets/traits/Feature_200087.png",
+      "names": [
+        "生长"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f9/f3iewsm92ek8028yjsiqxj3nhtn4elp.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 61630
+    },
+    {
+      "sourceFile": "Feature_200088.png",
+      "localUrl": "/assets/traits/Feature_200088.png",
+      "names": [
+        "挺起胸脯"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/cf/dxicjda2teu9byb2yznodm68mfjb9cu.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 31863
+    },
+    {
+      "sourceFile": "Feature_20008801.png",
+      "localUrl": "/assets/traits/Feature_20008801.png",
+      "names": [
+        "“国王”的威严"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ea/5e2en2v29q78knov4bcfw7f8e65xo55.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 60041
+    },
+    {
+      "sourceFile": "Feature_200089.png",
+      "localUrl": "/assets/traits/Feature_200089.png",
+      "names": [
+        "碰瓷"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a5/kfzb8rfbkjv5wxce9j3d7f3wng9n800.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 50418
+    },
+    {
+      "sourceFile": "Feature_200090.png",
+      "localUrl": "/assets/traits/Feature_200090.png",
+      "names": [
+        "壮胆"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d3/q625f0x3idku2sr5s9ezjrh84nskdhi.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 68894
+    },
+    {
+      "sourceFile": "Feature_200091.png",
+      "localUrl": "/assets/traits/Feature_200091.png",
+      "names": [
+        "囤积"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/00/ak4p9tegmex8lt12pezv0im3ts6qr70.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 54124
+    },
+    {
+      "sourceFile": "Feature_200092.png",
+      "localUrl": "/assets/traits/Feature_200092.png",
+      "names": [
+        "警惕"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ef/51q19b0ekhq83r7qs3vgjjlzcywwefj.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 31185
+    },
+    {
+      "sourceFile": "Feature_200093.png",
+      "localUrl": "/assets/traits/Feature_200093.png",
+      "names": [
+        "起飞加速"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3b/2eml042f0hhvd45vwvi7gq7ot25cis1.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 48033
+    },
+    {
+      "sourceFile": "Feature_200094.png",
+      "localUrl": "/assets/traits/Feature_200094.png",
+      "names": [
+        "保守派"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/14/oi70yfb9qgry5norepo4bps9q04rtes.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 75761
+    },
+    {
+      "sourceFile": "Feature_200095.png",
+      "localUrl": "/assets/traits/Feature_200095.png",
+      "names": [
+        "双向光速"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/37/2h1si7yzgqkshpa7x098u7jrawneeud.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 50916
+    },
+    {
+      "sourceFile": "Feature_200096.png",
+      "localUrl": "/assets/traits/Feature_200096.png",
+      "names": [
+        "鼓气",
+        "三鼓作气"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/ff/caltlgip00gtslp8tpzqrx6oia5j7ye.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 51612
+    },
+    {
+      "sourceFile": "Feature_200098.png",
+      "localUrl": "/assets/traits/Feature_200098.png",
+      "names": [
+        "共鸣",
+        "齐鸣"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/ce/16o87im1itjcovowjw8kjke4uyfvmve.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 54584
+    },
+    {
+      "sourceFile": "Feature_200099.png",
+      "localUrl": "/assets/traits/Feature_200099.png",
+      "names": [
+        "不移"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/4c/p8xb04hlu5vqp60qu2erplwjn2i08e3.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 53508
+    },
+    {
+      "sourceFile": "Feature_200100.png",
+      "localUrl": "/assets/traits/Feature_200100.png",
+      "names": [
+        "石头大餐",
+        "盛宴"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/27/5cdljuk3ozqy6sjttcqaooe6fycsqft.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 47756
+    },
+    {
+      "sourceFile": "Feature_200102.png",
+      "localUrl": "/assets/traits/Feature_200102.png",
+      "names": [
+        "地脉",
+        "地脉馈赠"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/63/he7074nokfat9milqeiebr3tsrnfxqj.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 43647
+    },
+    {
+      "sourceFile": "Feature_200103.png",
+      "localUrl": "/assets/traits/Feature_200103.png",
+      "names": [
+        "刺肤"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/b4/3zdgyx1p7jdvrnc7lihbom7tw23oy6a.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 50846
+    },
+    {
+      "sourceFile": "Feature_200104.png",
+      "localUrl": "/assets/traits/Feature_200104.png",
+      "names": [
+        "石天平"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/bb/c5z26gyu0vn26s0ks50w72aoe3c0mbp.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 66884
+    },
+    {
+      "sourceFile": "Feature_200105.png",
+      "localUrl": "/assets/traits/Feature_200105.png",
+      "names": [
+        "奔波命"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/26/p7drwub38sla9abdmfbninrcj3ttcue.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 47255
+    },
+    {
+      "sourceFile": "Feature_200106.png",
+      "localUrl": "/assets/traits/Feature_200106.png",
+      "names": [
+        "观星",
+        "坠星"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a9/cqfw8rzwk9gd2sdeojljsx02fhcw1vr.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 62188
+    },
+    {
+      "sourceFile": "Feature_200107.png",
+      "localUrl": "/assets/traits/Feature_200107.png",
+      "names": [
+        "浸润",
+        "浪潮"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/32/jduq1v3cwpxrrzma8h9furlgjm8x89y.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 56442
+    },
+    {
+      "sourceFile": "Feature_200108.png",
+      "localUrl": "/assets/traits/Feature_200108.png",
+      "names": [
+        "缩壳"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/dd/krk80tulzlqcxktmplr2kvh1gjpg2a6.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 52023
+    },
+    {
+      "sourceFile": "Feature_200109.png",
+      "localUrl": "/assets/traits/Feature_200109.png",
+      "names": [
+        "守护者"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/42/35obkgnsut0aihm8x90siqdygol7by7.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 64003
+    },
+    {
+      "sourceFile": "Feature_200110.png",
+      "localUrl": "/assets/traits/Feature_200110.png",
+      "names": [
+        "水翼推进",
+        "水翼飞升"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/88/jhn8fbglf8fidew9ligb0a3pzrj8bx9.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 50060
+    },
+    {
+      "sourceFile": "Feature_200111.png",
+      "localUrl": "/assets/traits/Feature_200111.png",
+      "names": [
+        "溶解扩散",
+        "溶解腐蚀"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/40/b7izpi62mursonwdvc1z2vu205l3ew0.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 61275
+    },
+    {
+      "sourceFile": "Feature_200112.png",
+      "localUrl": "/assets/traits/Feature_200112.png",
+      "names": [
+        "倾轧"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/2d/o5tjews6nbmeubecuu0byo39ye54aw7.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 57648
+    },
+    {
+      "sourceFile": "Feature_200113.png",
+      "localUrl": "/assets/traits/Feature_200113.png",
+      "names": [
+        "对流"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/4e/j8s546coph6fjrf5rxzk5jpl8k3iijb.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 53848
+    },
+    {
+      "sourceFile": "Feature_200114.png",
+      "localUrl": "/assets/traits/Feature_200114.png",
+      "names": [
+        "洄游"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/9b/hkhczuwlj9d5v03hl1upx5axfnyya2l.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 35866
+    },
+    {
+      "sourceFile": "Feature_200115.png",
+      "localUrl": "/assets/traits/Feature_200115.png",
+      "names": [
+        "扩散侵蚀"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e7/qcnk87634wfwan696wked8ddu2qm4y1.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 30707
+    },
+    {
+      "sourceFile": "Feature_200116.png",
+      "localUrl": "/assets/traits/Feature_200116.png",
+      "names": [
+        "捉迷藏",
+        "抓到你了"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/ae/dc0dpiovoxictt8l8pf18v3o9dv8s3k.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 56780
+    },
+    {
+      "sourceFile": "Feature_200117.png",
+      "localUrl": "/assets/traits/Feature_200117.png",
+      "names": [
+        "冰钻"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a7/gg9at9vivx93831buxa94hdhenn4wrs.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 31999
+    },
+    {
+      "sourceFile": "Feature_200118.png",
+      "localUrl": "/assets/traits/Feature_200118.png",
+      "names": [
+        "结晶水"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e1/6p7z7g65r1ry9gouayvrc06tbcpjj5x.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 33889
+    },
+    {
+      "sourceFile": "Feature_200120.png",
+      "localUrl": "/assets/traits/Feature_200120.png",
+      "names": [
+        "冻土"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/95/rmc63l28fmac2rzqlpn8jnaf17v2gjt.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 23026
+    },
+    {
+      "sourceFile": "Feature_200122.png",
+      "localUrl": "/assets/traits/Feature_200122.png",
+      "names": [
+        "加个雪球"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/68/liehidwy3sds1n5ioddiknefitjlngp.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 38918
+    },
+    {
+      "sourceFile": "Feature_200123.png",
+      "localUrl": "/assets/traits/Feature_200123.png",
+      "names": [
+        "冰封"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/05/grkkjg844zczj9bpv2ui2sw4jpkfkmv.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 49066
+    },
+    {
+      "sourceFile": "Feature_200124.png",
+      "localUrl": "/assets/traits/Feature_200124.png",
+      "names": [
+        "顺风",
+        "破空",
+        "相争"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/46/jz85d0twywft2cx8dx5yn64qb8upifx.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 56331
+    },
+    {
+      "sourceFile": "Feature_200125.png",
+      "localUrl": "/assets/traits/Feature_200125.png",
+      "names": [
+        "咔咔冲刺"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d5/856vpbf25z7529vjbw35xh7pk3n1sbg.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 37167
+    },
+    {
+      "sourceFile": "Feature_200126.png",
+      "localUrl": "/assets/traits/Feature_200126.png",
+      "names": [
+        "洁癖"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/9a/3zoe4s1s2c3e3nstikwdxbmozhy2nj7.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 46808
+    },
+    {
+      "sourceFile": "Feature_200127.png",
+      "localUrl": "/assets/traits/Feature_200127.png",
+      "names": [
+        "展翅"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3e/63qwqhd9ffua8fe014h4oeal2u6twg2.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 65477
+    },
+    {
+      "sourceFile": "Feature_200128.png",
+      "localUrl": "/assets/traits/Feature_200128.png",
+      "names": [
+        "乘风连击"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e9/lqvtrbdfhdhpb0n92ev24t9czq35wyg.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 45469
+    },
+    {
+      "sourceFile": "Feature_200129.png",
+      "localUrl": "/assets/traits/Feature_200129.png",
+      "names": [
+        "快锤"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/b9/mvq7710dcj4olqmt30z26fg7ppjsemv.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 32712
+    },
+    {
+      "sourceFile": "Feature_200130.png",
+      "localUrl": "/assets/traits/Feature_200130.png",
+      "names": [
+        "异类"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fc/1fp21rs4xxsg5kxgqddjon143irs8ao.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 47308
+    },
+    {
+      "sourceFile": "Feature_200131.png",
+      "localUrl": "/assets/traits/Feature_200131.png",
+      "names": [
+        "毒腺"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/77/c4y3gd20l0eldsdxapii2n1o2g7ravz.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 41362
+    },
+    {
+      "sourceFile": "Feature_200132.png",
+      "localUrl": "/assets/traits/Feature_200132.png",
+      "names": [
+        "虫群鼓舞",
+        "虫群突袭"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/1f/8pi8taai2ndxcvvbc407mhzb3imsgco.png",
+      "width": 500,
+      "height": 500,
+      "bytes": 69893
+    },
+    {
+      "sourceFile": "Feature_200133.png",
+      "localUrl": "/assets/traits/Feature_200133.png",
+      "names": [
+        "振奋虫心"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/76/3wna78g8jf8k2h0jl9nmwoqems355wv.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 47422
+    },
+    {
+      "sourceFile": "Feature_200135.png",
+      "localUrl": "/assets/traits/Feature_200135.png",
+      "names": [
+        "化茧"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/1c/lr75ycf3uknutzwemrzv4ybeyscm1sb.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 59335
+    },
+    {
+      "sourceFile": "Feature_200136.png",
+      "localUrl": "/assets/traits/Feature_200136.png",
+      "names": [
+        "花精灵"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a0/fomg5b7xyn3cu209apwf8y1mkey8ll9.png",
+      "width": 500,
+      "height": 500,
+      "bytes": 97480
+    },
+    {
+      "sourceFile": "Feature_200137.png",
+      "localUrl": "/assets/traits/Feature_200137.png",
+      "names": [
+        "契约的形状"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3c/sejruv5tro016nam6oqwoxw3qi2gr3u.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 45507
+    },
+    {
+      "sourceFile": "Feature_200138.png",
+      "localUrl": "/assets/traits/Feature_200138.png",
+      "names": [
+        "坚韧铠甲"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/1a/1kuca05btq03b9aieoq6u90pbf0auit.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 60396
+    },
+    {
+      "sourceFile": "Feature_200139.png",
+      "localUrl": "/assets/traits/Feature_200139.png",
+      "names": [
+        "渴求",
+        "贪得无厌"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c1/cquast3bdkqcl9ybi00afbnq2ehbu0k.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 61087
+    },
+    {
+      "sourceFile": "Feature_200140.png",
+      "localUrl": "/assets/traits/Feature_200140.png",
+      "names": [
+        "悲悯",
+        "悼亡"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/dc/k7wuqpsqk2as3uhy027eowu6xp5xwpr.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 54468
+    },
+    {
+      "sourceFile": "Feature_200141.png",
+      "localUrl": "/assets/traits/Feature_200141.png",
+      "names": [
+        "付给恶魔的赎价"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7b/jooq1nox3evwgopmlnp9lq90ne1vzv0.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 58040
+    },
+    {
+      "sourceFile": "Feature_200142.png",
+      "localUrl": "/assets/traits/Feature_200142.png",
+      "names": [
+        "瞳中倒影"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/cb/r29s6hsz537ditb84pzsftomudyf7w1.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 42570
+    },
+    {
+      "sourceFile": "Feature_200143.png",
+      "localUrl": "/assets/traits/Feature_200143.png",
+      "names": [
+        "嫁祸"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e2/kjkfje06ky6neg2otz965b8wfznfuyn.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 49319
+    },
+    {
+      "sourceFile": "Feature_200144.png",
+      "localUrl": "/assets/traits/Feature_200144.png",
+      "names": [
+        "滴眼液"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/9a/2o6k2qx3o9yz6slm1ckcqbnb5cqhadk.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 51748
+    },
+    {
+      "sourceFile": "Feature_200146.png",
+      "localUrl": "/assets/traits/Feature_200146.png",
+      "names": [
+        "助燃",
+        "爆燃"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7e/901jemdjq21rsjjzo275wjbh6h5rm3a.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 47240
+    },
+    {
+      "sourceFile": "Feature_200147.png",
+      "localUrl": "/assets/traits/Feature_200147.png",
+      "names": [
+        "散热"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f2/1jk9jyv6raij0zzzm7c8n4730sqj03k.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 55865
+    },
+    {
+      "sourceFile": "Feature_200148.png",
+      "localUrl": "/assets/traits/Feature_200148.png",
+      "names": [
+        "斗技"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fa/3vjwmebi5ldcdxplnwc1j5sageocbgw.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 42541
+    },
+    {
+      "sourceFile": "Feature_200149.png",
+      "localUrl": "/assets/traits/Feature_200149.png",
+      "names": [
+        "专注力",
+        "全神贯注"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/29/68czw6mqi6maifgoot0bqzxjgi3n7vm.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 28882
+    },
+    {
+      "sourceFile": "Feature_200150.png",
+      "localUrl": "/assets/traits/Feature_200150.png",
+      "names": [
+        "灵魂灼伤"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/0d/3kf2ghiqawnxa5wlk8f505o2l7dub4x.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 55804
+    },
+    {
+      "sourceFile": "Feature_200152.png",
+      "localUrl": "/assets/traits/Feature_200152.png",
+      "names": [
+        "仁心"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/5c/qr70dcx47wr8ycbf4il2jg34xk7gj1r.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 43099
+    },
+    {
+      "sourceFile": "Feature_200153.png",
+      "localUrl": "/assets/traits/Feature_200153.png",
+      "names": [
+        "蒸汽膨胀"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e6/c8z5kl26jtx71d4i4thjpjgkqc3yxu5.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 29712
+    },
+    {
+      "sourceFile": "Feature_200154.png",
+      "localUrl": "/assets/traits/Feature_200154.png",
+      "names": [
+        "不死鸟"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/ad/ie6efk0lkt1m7dj49pmsne26lydlr4p.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 53710
+    },
+    {
+      "sourceFile": "Feature_200155.png",
+      "localUrl": "/assets/traits/Feature_200155.png",
+      "names": [
+        "小偷小摸",
+        "大捞一笔"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/2a/b2bfbvaf8bakifdrnafud7dyjop31yn.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 31873
+    },
+    {
+      "sourceFile": "Feature_200156.png",
+      "localUrl": "/assets/traits/Feature_200156.png",
+      "names": [
+        "下黑手"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3f/q9fauev3eobg4geil885rdhv8pex3n0.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 54303
+    },
+    {
+      "sourceFile": "Feature_200157.png",
+      "localUrl": "/assets/traits/Feature_200157.png",
+      "names": [
+        "惊吓"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f9/iacwuz4yo7xox75t6flrhb9as9o3oy1.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 57071
+    },
+    {
+      "sourceFile": "Feature_200158.png",
+      "localUrl": "/assets/traits/Feature_200158.png",
+      "names": [
+        "毒蘑菇"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/6c/osjcz4xh57rbpvffnuc12geikcfetzg.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 61071
+    },
+    {
+      "sourceFile": "Feature_200160.png",
+      "localUrl": "/assets/traits/Feature_200160.png",
+      "names": [
+        "搜刮",
+        "扫荡"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/8d/itlxod4rfduc9jiye3x76lmprgqmtk0.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 38399
+    },
+    {
+      "sourceFile": "Feature_200161.png",
+      "localUrl": "/assets/traits/Feature_200161.png",
+      "names": [
+        "做噩梦"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/35/9pbhlw7rxjjc14zgt8rpaqrxmju2d9m.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 48395
+    },
+    {
+      "sourceFile": "Feature_200162.png",
+      "localUrl": "/assets/traits/Feature_200162.png",
+      "names": [
+        "噼啪！",
+        "噼啪噼啪！"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/26/6ouwwco70xtq8yg9vmoudd13zy9isoz.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 52043
+    },
+    {
+      "sourceFile": "Feature_200163.png",
+      "localUrl": "/assets/traits/Feature_200163.png",
+      "names": [
+        "快充"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/0d/b9nbhlanka4oeids88cxk9lijodhyrv.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 37417
+    },
+    {
+      "sourceFile": "Feature_200164.png",
+      "localUrl": "/assets/traits/Feature_200164.png",
+      "names": [
+        "电流刺激"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/6e/7odckztugky4mcttz2vmi96t9vin245.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 28474
+    },
+    {
+      "sourceFile": "Feature_200165.png",
+      "localUrl": "/assets/traits/Feature_200165.png",
+      "names": [
+        "防过载保护"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/2f/bk5sy9nuxihogb4s1e591ad4vsyftmf.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 38841
+    },
+    {
+      "sourceFile": "Feature_200166.png",
+      "localUrl": "/assets/traits/Feature_200166.png",
+      "names": [
+        "星地善良"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/61/048mz35c7fbhl3ui50wfgm9071qqvnu.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 33051
+    },
+    {
+      "sourceFile": "Feature_200167.png",
+      "localUrl": "/assets/traits/Feature_200167.png",
+      "names": [
+        "生物电"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/9d/a20aihp1t7424ht19pnbk6t2dqlfia7.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 48548
+    },
+    {
+      "sourceFile": "Feature_200168.png",
+      "localUrl": "/assets/traits/Feature_200168.png",
+      "names": [
+        "电子音乐"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/4d/34w8invcldjo2g9sb5cj60uiobhhn3z.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 52459
+    },
+    {
+      "sourceFile": "Feature_200169.png",
+      "localUrl": "/assets/traits/Feature_200169.png",
+      "names": [
+        "蓄电池",
+        "超级电池"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/50/jinv2o5jgxtam0b0en37z4qei6pbp14.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 69768
+    },
+    {
+      "sourceFile": "Feature_200170.png",
+      "localUrl": "/assets/traits/Feature_200170.png",
+      "names": [
+        "盲拧"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/66/j2u1j164p6o5h5cgmi3yfvofnbepbhk.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 55409
+    },
+    {
+      "sourceFile": "Feature_200171.png",
+      "localUrl": "/assets/traits/Feature_200171.png",
+      "names": [
+        "贪心算法"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c2/8bnonpz8gotvqzscyhkztk1a114je3i.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 51963
+    },
+    {
+      "sourceFile": "Feature_200172.png",
+      "localUrl": "/assets/traits/Feature_200172.png",
+      "names": [
+        "定向精炼"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a9/3k1sy2ryce99rgygm18eu41wmsie2g5.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 41198
+    },
+    {
+      "sourceFile": "Feature_200173.png",
+      "localUrl": "/assets/traits/Feature_200173.png",
+      "names": [
+        "暴食"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c2/e0wu97rb1nb6exxm2jdvjry0u0h97fc.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 57767
+    },
+    {
+      "sourceFile": "Feature_200174.png",
+      "localUrl": "/assets/traits/Feature_200174.png",
+      "names": [
+        "嫉妒",
+        "游弋"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e3/grygw8dmt0jci0wvhvm6o518oa19m5r.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 46287
+    },
+    {
+      "sourceFile": "Feature_200177.png",
+      "localUrl": "/assets/traits/Feature_200177.png",
+      "names": [
+        "慢热型"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/1c/2nu1igvpjtj0cb3uxpkio7rjdaapthm.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 41836
+    },
+    {
+      "sourceFile": "Feature_200178.png",
+      "localUrl": "/assets/traits/Feature_200178.png",
+      "names": [
+        "身经百练"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f9/r3zbcv97ebay58uk0umguq6eii50q4p.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 51336
+    },
+    {
+      "sourceFile": "Feature_200180.png",
+      "localUrl": "/assets/traits/Feature_200180.png",
+      "names": [
+        "威慑"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fe/rki4oozd9sehehs289v3x6ttnps75qr.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 45596
+    },
+    {
+      "sourceFile": "Feature_200181.png",
+      "localUrl": "/assets/traits/Feature_200181.png",
+      "names": [
+        "拨浪鼓"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/6/6c/1jjdr7sz21nzpit93wunzmaemc3oysr.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 41440
+    },
+    {
+      "sourceFile": "Feature_200182.png",
+      "localUrl": "/assets/traits/Feature_200182.png",
+      "names": [
+        "无忧无虑"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/58/n4xntxhaqpj4e9ztiixr10cc5mid12g.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 55560
+    },
+    {
+      "sourceFile": "Feature_200183.png",
+      "localUrl": "/assets/traits/Feature_200183.png",
+      "names": [
+        "自由飘"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d4/swpkzdarri1osm6nnw4t6jacw4pncm9.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 55035
+    },
+    {
+      "sourceFile": "Feature_200185.png",
+      "localUrl": "/assets/traits/Feature_200185.png",
+      "names": [
+        "毒牙"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/79/lw7rqcdye4tfsr8ozqqqag1vlh276bu.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 48110
+    },
+    {
+      "sourceFile": "Feature_200186.png",
+      "localUrl": "/assets/traits/Feature_200186.png",
+      "names": [
+        "复方汤剂"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f2/3yuic3hf9fv80azzso3ldh0holjwlxe.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 54794
+    },
+    {
+      "sourceFile": "Feature_200187.png",
+      "localUrl": "/assets/traits/Feature_200187.png",
+      "names": [
+        "蚀刻"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ee/cgzec96dqzl1e3vt6eiheglz8x44nif.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 51575
+    },
+    {
+      "sourceFile": "Feature_200188.png",
+      "localUrl": "/assets/traits/Feature_200188.png",
+      "names": [
+        "盲从"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/33/0go320xhb3nnde3wpas4j6ohp0ukt36.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 69389
+    },
+    {
+      "sourceFile": "Feature_200189.png",
+      "localUrl": "/assets/traits/Feature_200189.png",
+      "names": [
+        "吸积盘"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/da/avzr6lllj7f0fzh55ghtcojt44e2hl0.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 61092
+    },
+    {
+      "sourceFile": "Feature_200191.png",
+      "localUrl": "/assets/traits/Feature_200191.png",
+      "names": [
+        "最好的伙伴",
+        "裁决",
+        "滋养",
+        "点燃",
+        "净化"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/0b/4hljadsneiflmnz36wnegj0leq38svd.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 44154
+    },
+    {
+      "sourceFile": "Feature_200192.png",
+      "localUrl": "/assets/traits/Feature_200192.png",
+      "names": [
+        "绒粉星光"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/17/7b006got564iqfyfcndxwdp8r2vmw1s.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 46664
+    },
+    {
+      "sourceFile": "Feature_200193.png",
+      "localUrl": "/assets/traits/Feature_200193.png",
+      "names": [
+        "月光审判"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fc/d5p7ghxnj5nvee84lfzg1cumtp55sje.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 51577
+    },
+    {
+      "sourceFile": "Feature_200196.png",
+      "localUrl": "/assets/traits/Feature_200196.png",
+      "names": [
+        "天通地明"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/b7/i97t9miacrpnohw2mzospnhmfgme2xv.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 62050
+    },
+    {
+      "sourceFile": "Feature_200197.png",
+      "localUrl": "/assets/traits/Feature_200197.png",
+      "names": [
+        "机械变式"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/bb/2cm0ehr0guefoca59m4smilb5zr3bft.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 49744
+    },
+    {
+      "sourceFile": "Feature_200202.png",
+      "localUrl": "/assets/traits/Feature_200202.png",
+      "names": [
+        "吉利丁片"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e0/ibzpsrokhlmaf8nztqhwu369vymekq7.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 55610
+    },
+    {
+      "sourceFile": "Feature_200203.png",
+      "localUrl": "/assets/traits/Feature_200203.png",
+      "names": [
+        "煤渣草"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7a/tik6v72sd6o1uv6a5u4h8wo5o3zjy1z.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 55534
+    },
+    {
+      "sourceFile": "Feature_200204.png",
+      "localUrl": "/assets/traits/Feature_200204.png",
+      "names": [
+        "侵蚀"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/12/fnddkctdxtgqna1zhvz01m3nk3ukyfv.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 49436
+    },
+    {
+      "sourceFile": "Feature_200205.png",
+      "localUrl": "/assets/traits/Feature_200205.png",
+      "names": [
+        "月牙雪糕"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/44/7r7v79s0yty6lwuq8sihe6v5v2uw89j.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 56680
+    },
+    {
+      "sourceFile": "Feature_200208.png",
+      "localUrl": "/assets/traits/Feature_200208.png",
+      "names": [
+        "正位宝剑",
+        "宝剑王牌"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fe/3hjk54cds9efhvkjncgia0m6zenj3r3.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 67330
+    },
+    {
+      "sourceFile": "Feature_200209.png",
+      "localUrl": "/assets/traits/Feature_200209.png",
+      "names": [
+        "无差别过滤",
+        "强制过滤"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/41/4ts2ozvzxod6y9elai05xi61h9c1od7.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 54757
+    },
+    {
+      "sourceFile": "Feature_200210.png",
+      "localUrl": "/assets/traits/Feature_200210.png",
+      "names": [
+        "守望星"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c1/8xe11d71qrjqgx58pt2w98i3gciyizb.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 68840
+    },
+    {
+      "sourceFile": "Feature_200211.png",
+      "localUrl": "/assets/traits/Feature_200211.png",
+      "names": [
+        "飓风"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/9b/mcuwyi1qxy7d7tex1fkj7to7a6qq0wm.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 54197
+    },
+    {
+      "sourceFile": "Feature_200212.png",
+      "localUrl": "/assets/traits/Feature_200212.png",
+      "names": [
+        "御驾亲征",
+        "渗透"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3c/4pezft0c1ooam9ad79vgjp3oldjrcfv.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 58623
+    },
+    {
+      "sourceFile": "Feature_200215.png",
+      "localUrl": "/assets/traits/Feature_200215.png",
+      "names": [
+        "多人宿舍"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c8/th2oqzczit38uj241e1p7e4ob0qmrjc.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 40249
+    },
+    {
+      "sourceFile": "Feature_200216.png",
+      "localUrl": "/assets/traits/Feature_200216.png",
+      "names": [
+        "珊瑚骨"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ea/nx74nkkbm9iw3werbeyr79a8aefzc5c.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 47690
+    },
+    {
+      "sourceFile": "Feature_200217.png",
+      "localUrl": "/assets/traits/Feature_200217.png",
+      "names": [
+        "与星星同行"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c3/lnwu5sunpj6cdjbt82oetqiaje2cctd.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 62941
+    },
+    {
+      "sourceFile": "Feature_200218.png",
+      "localUrl": "/assets/traits/Feature_200218.png",
+      "names": [
+        "指挥家"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f1/ju41ithas9s49v8a5fkwbxivsveixls.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 44210
+    },
+    {
+      "sourceFile": "Feature_200219.png",
+      "localUrl": "/assets/traits/Feature_200219.png",
+      "names": [
+        "连续负荷"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/45/21z27ybtp0dbt7ci4j42vj8uovuoyon.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 55091
+    },
+    {
+      "sourceFile": "Feature_200220.png",
+      "localUrl": "/assets/traits/Feature_200220.png",
+      "names": [
+        "稀兽花宝"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/32/dwcbhtu9y8413ttwi7behg12reypff7.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 55238
+    },
+    {
+      "sourceFile": "Feature_200221.png",
+      "localUrl": "/assets/traits/Feature_200221.png",
+      "names": [
+        "衡量"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/8a/7msy9ia4esi3bxe1jc6t27cahqsfsdu.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 51333
+    },
+    {
+      "sourceFile": "Feature_200222.png",
+      "localUrl": "/assets/traits/Feature_200222.png",
+      "names": [
+        "预警",
+        "先知"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ea/8zkjtypsyi9u63irwmbgx8sj456lho4.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 49733
+    },
+    {
+      "sourceFile": "Feature_200223.png",
+      "localUrl": "/assets/traits/Feature_200223.png",
+      "names": [
+        "铃兰晚钟"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/fd/88eh7x1z57gvs5y75760bm6ttk0jkgb.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 43596
+    },
+    {
+      "sourceFile": "Feature_200224.png",
+      "localUrl": "/assets/traits/Feature_200224.png",
+      "names": [
+        "消波块"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/30/cbofejy2uzsqqt9hraz186le45ht7ty.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 41293
+    },
+    {
+      "sourceFile": "Feature_200225.png",
+      "localUrl": "/assets/traits/Feature_200225.png",
+      "names": [
+        "吟游之弦"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/72/id6hnm0lgokv1vh3bcmkf9yz6oytnn4.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 37659
+    },
+    {
+      "sourceFile": "Feature_200227.png",
+      "localUrl": "/assets/traits/Feature_200227.png",
+      "names": [
+        "泛音列"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/85/0f21dgl7j51m0wled9u1dhlhdwdawsq.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 37394
+    },
+    {
+      "sourceFile": "Feature_200228.png",
+      "localUrl": "/assets/traits/Feature_200228.png",
+      "names": [
+        "向心力"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/88/oierc2cga3tu6goiruwtf5dj9ufxmk4.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 46544
+    },
+    {
+      "sourceFile": "Feature_200230.png",
+      "localUrl": "/assets/traits/Feature_200230.png",
+      "names": [
+        "不朽"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/b7/8ietrb1834y9a9eqiex3o3jjp6o8lo5.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 49791
+    },
+    {
+      "sourceFile": "Feature_200231.png",
+      "localUrl": "/assets/traits/Feature_200231.png",
+      "names": [
+        "孤傲"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/dc/1pzt3sw5jdd1rfdorxl525fzgwztx6z.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 53897
+    },
+    {
+      "sourceFile": "Feature_200232.png",
+      "localUrl": "/assets/traits/Feature_200232.png",
+      "names": [
+        "逐魂鸟"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/89/hfdcr7702t64hj9v6l91hrjxqepnqj0.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 45118
+    },
+    {
+      "sourceFile": "Feature_200234.png",
+      "localUrl": "/assets/traits/Feature_200234.png",
+      "names": [
+        "翼轴"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/81/8fnd0vqh6thg7g2cafzcv4pbnrj0zji.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 73990
+    },
+    {
+      "sourceFile": "Feature_200235.png",
+      "localUrl": "/assets/traits/Feature_200235.png",
+      "names": [
+        "虚假宝箱"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/de/8ss8l5bhsd28rci7zmhgl88v4ados16.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 66244
+    },
+    {
+      "sourceFile": "Feature_200236.png",
+      "localUrl": "/assets/traits/Feature_200236.png",
+      "names": [
+        "腾挪"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/03/g8hq5852dgwpthodcb6mqzvozkhc86n.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 58820
+    },
+    {
+      "sourceFile": "Feature_200237.png",
+      "localUrl": "/assets/traits/Feature_200237.png",
+      "names": [
+        "保卫"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/59/ay5pj6hh6erlu2yr67zhwiyi1nhyt9p.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 58839
+    },
+    {
+      "sourceFile": "Feature_200238.png",
+      "localUrl": "/assets/traits/Feature_200238.png",
+      "names": [
+        "好象坏象"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/b4/5596xxnmprl89n3889qvm9m3dih5bdd.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 56188
+    },
+    {
+      "sourceFile": "Feature_200239.png",
+      "localUrl": "/assets/traits/Feature_200239.png",
+      "names": [
+        "扎手"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/cc/izhbuazf8oy9t5o6wym4cnbmo67s55n.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 71528
+    },
+    {
+      "sourceFile": "Feature_200240.png",
+      "localUrl": "/assets/traits/Feature_200240.png",
+      "names": [
+        "耐活王"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/23/e4pbdbeh6mb48gb8n5jwah0wan52yhc.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 63053
+    },
+    {
+      "sourceFile": "Feature_200241.png",
+      "localUrl": "/assets/traits/Feature_200241.png",
+      "names": [
+        "陨落"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/0c/bkkzrrbei6m33qrisyvgl62atcwyfwu.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 64725
+    },
+    {
+      "sourceFile": "Feature_200242.png",
+      "localUrl": "/assets/traits/Feature_200242.png",
+      "names": [
+        "灰色肖像"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/47/140bc8ubeou45tayooaxwg5z3ukwcdg.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 62153
+    },
+    {
+      "sourceFile": "Feature_200243.png",
+      "localUrl": "/assets/traits/Feature_200243.png",
+      "names": [
+        "变形活画"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d0/a24swbnbowpscj86iazp4xuof989w09.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 52169
+    },
+    {
+      "sourceFile": "Feature_200244.png",
+      "localUrl": "/assets/traits/Feature_200244.png",
+      "names": [
+        "图书守卫者"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d3/jdg7lpmukgl7iawkgi4xkiih9fu2d9j.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 56653
+    },
+    {
+      "sourceFile": "Feature_200245.png",
+      "localUrl": "/assets/traits/Feature_200245.png",
+      "names": [
+        "构装契约者"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/52/ahcgortpg4fqef2b6nyvplipvmqs5qg.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 48016
+    },
+    {
+      "sourceFile": "Feature_200246.png",
+      "localUrl": "/assets/traits/Feature_200246.png",
+      "names": [
+        "整点报时"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/58/kdapcec0cq0kz2yuj364d1pjlgcj68n.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 70771
+    },
+    {
+      "sourceFile": "Feature_200247.png",
+      "localUrl": "/assets/traits/Feature_200247.png",
+      "names": [
+        "圣火骑士"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/53/fnxmzk0kazulo8c0ygb336qv9i1o6gl.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 51292
+    },
+    {
+      "sourceFile": "Feature_200248.png",
+      "localUrl": "/assets/traits/Feature_200248.png",
+      "names": [
+        "思维之盾"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/da/mxw33ht6e8n0dfmsa911l0zryyx27oi.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 42645
+    },
+    {
+      "sourceFile": "Feature_200249.png",
+      "localUrl": "/assets/traits/Feature_200249.png",
+      "names": [
+        "野性感官"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d9/g0beo9the6yr0pnvih7jwvb6j76jbff.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 61345
+    },
+    {
+      "sourceFile": "Feature_200251.png",
+      "localUrl": "/assets/traits/Feature_200251.png",
+      "names": [
+        "血型吸引"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/35/hb8hfoeifvf93gl47zq7m07sf90cbbo.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 49721
+    },
+    {
+      "sourceFile": "Feature_200252.png",
+      "localUrl": "/assets/traits/Feature_200252.png",
+      "names": [
+        "留学生"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/78/44o3f3uxptu1j1x3ynptdaojhq8nf8j.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 76804
+    },
+    {
+      "sourceFile": "Feature_200253.png",
+      "localUrl": "/assets/traits/Feature_200253.png",
+      "names": [
+        "茶多酚"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/99/0jkkrkbocv0uywg0eb3lfvdw9a3pf9u.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 53282
+    },
+    {
+      "sourceFile": "Feature_200254.png",
+      "localUrl": "/assets/traits/Feature_200254.png",
+      "names": [
+        "美拉德反应"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/f/f7/5h54tqi697wr5j52iko9pusifje1fxt.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 55880
+    },
+    {
+      "sourceFile": "Feature_200255.png",
+      "localUrl": "/assets/traits/Feature_200255.png",
+      "names": [
+        "扫拖一体"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/2/2a/01r8ve3fn0nl9xxa2wa2ffadhr5ws2b.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 40359
+    },
+    {
+      "sourceFile": "Feature_200256.png",
+      "localUrl": "/assets/traits/Feature_200256.png",
+      "names": [
+        "特殊清洁场景"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/8/86/77cl5t95htt2a77o0dse7idhpwtkamx.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 57041
+    },
+    {
+      "sourceFile": "Feature_200257.png",
+      "localUrl": "/assets/traits/Feature_200257.png",
+      "names": [
+        "恶魔的晚宴"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e9/nenyziabeu652m3n0jxtna5qnkivy5a.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 43409
+    },
+    {
+      "sourceFile": "Feature_200262.png",
+      "localUrl": "/assets/traits/Feature_200262.png",
+      "names": [
+        "哨兵"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e2/pwmp4gvsep4f9esdztsewyq1972elqc.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 39954
+    },
+    {
+      "sourceFile": "Feature_200264.png",
+      "localUrl": "/assets/traits/Feature_200264.png",
+      "names": [
+        "长久保存制法"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d4/2u0d1dlrfxvb4msbor72p4lnt5qpbcy.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 48768
+    },
+    {
+      "sourceFile": "Feature_200267.png",
+      "localUrl": "/assets/traits/Feature_200267.png",
+      "names": [
+        "涂鸦"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/15/97e5tco4f8ueetef2d7c2rggxkkt2vj.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 59228
+    },
+    {
+      "sourceFile": "Feature_200268.png",
+      "localUrl": "/assets/traits/Feature_200268.png",
+      "names": [
+        "绝对秩序"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/d/d7/he5mxiw80ucqr17rppscikp2otccflz.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 50212
+    },
+    {
+      "sourceFile": "Feature_200269.png",
+      "localUrl": "/assets/traits/Feature_200269.png",
+      "names": [
+        "张弛有度"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/34/50p49usqyh9gmd1dlkhftubxgr5a729.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 45615
+    },
+    {
+      "sourceFile": "Feature_200272.png",
+      "localUrl": "/assets/traits/Feature_200272.png",
+      "names": [
+        "魔术帽"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7c/8jza2u8tlx3rdo4pfdlqfbtwuthgrun.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 37856
+    },
+    {
+      "sourceFile": "Feature_200273.png",
+      "localUrl": "/assets/traits/Feature_200273.png",
+      "names": [
+        "焰色反应"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/7c/ojykt1km54zfunlci9vi2kjweztkt6h.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 50705
+    },
+    {
+      "sourceFile": "Feature_200275.png",
+      "localUrl": "/assets/traits/Feature_200275.png",
+      "names": [
+        "合拍"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/eb/a5pcyxt3bf68i5yd1vmyqrm6f5g3g6c.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 49384
+    },
+    {
+      "sourceFile": "Feature_200277.png",
+      "localUrl": "/assets/traits/Feature_200277.png",
+      "names": [
+        "爆裂玉米"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/40/76jpd2g7pyymr5idh58c3m9vkv94b7w.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 44186
+    },
+    {
+      "sourceFile": "Feature_200278.png",
+      "localUrl": "/assets/traits/Feature_200278.png",
+      "names": [
+        "超负荷"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/75/etojmq3k5a5aivfyxtnxyebrbx3jimj.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 68068
+    },
+    {
+      "sourceFile": "Feature_200286.png",
+      "localUrl": "/assets/traits/Feature_200286.png",
+      "names": [
+        "狂欢开始"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/70/6md5um7dwyrh16dvsiwhiudi6vbk6xk.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 41910
+    },
+    {
+      "sourceFile": "Feature_200287.png",
+      "localUrl": "/assets/traits/Feature_200287.png",
+      "names": [
+        "换碟"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3a/pqnzxhu2f5uykqcdknern8dqcg3dlvl.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 62479
+    },
+    {
+      "sourceFile": "Feature_200289.png",
+      "localUrl": "/assets/traits/Feature_200289.png",
+      "names": [
+        "拉拉队长"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/a/a8/qlqu5ain2u2gobp1i90rvaafral66cz.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 30379
+    },
+    {
+      "sourceFile": "Feature_200290.png",
+      "localUrl": "/assets/traits/Feature_200290.png",
+      "names": [
+        "大雪球"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/46/p51geenbokeg46nxuah7joz0bzub16n.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 70665
+    },
+    {
+      "sourceFile": "Feature_200291.png",
+      "localUrl": "/assets/traits/Feature_200291.png",
+      "names": [
+        "戏耍"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/ed/s3q77m1pi7212lluek6py1ukkt0yjlb.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 27472
+    },
+    {
+      "sourceFile": "Feature_200292.png",
+      "localUrl": "/assets/traits/Feature_200292.png",
+      "names": [
+        "大火球"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/7/74/agnmd2wvu5c2b1drtstuxoxar2wupp5.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 49775
+    },
+    {
+      "sourceFile": "Feature_200293.png",
+      "localUrl": "/assets/traits/Feature_200293.png",
+      "names": [
+        "安可"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/16/nt4wykszq3l9rvakrm285u6ktsyiaot.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 39582
+    },
+    {
+      "sourceFile": "Feature_200294.png",
+      "localUrl": "/assets/traits/Feature_200294.png",
+      "names": [
+        "王子的诺言"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/36/8j3rcj6kyjix626ptxlellqsenqf11g.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 50171
+    },
+    {
+      "sourceFile": "Feature_200295.png",
+      "localUrl": "/assets/traits/Feature_200295.png",
+      "names": [
+        "守望者"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/bb/iqz64vbmyfg39ajsk91e74ax5c9n6gz.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 37808
+    },
+    {
+      "sourceFile": "Feature_200296.png",
+      "localUrl": "/assets/traits/Feature_200296.png",
+      "names": [
+        "诅咒"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/59/0mhvsa6blxhk71zbvrn7vhhwrm07g9r.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 38463
+    },
+    {
+      "sourceFile": "Feature_200297.png",
+      "localUrl": "/assets/traits/Feature_200297.png",
+      "names": [
+        "莫比乌斯"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3b/9hh1h8tkfk25i5eagytydm0gkj3ma0c.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 45524
+    },
+    {
+      "sourceFile": "Feature_200298.png",
+      "localUrl": "/assets/traits/Feature_200298.png",
+      "names": [
+        "流沙统治者"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/cf/i77ztz791edfe1tuyw1gmw42bygeb77.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 47556
+    },
+    {
+      "sourceFile": "Feature_200299.png",
+      "localUrl": "/assets/traits/Feature_200299.png",
+      "names": [
+        "盘根木"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/c4/3ujqjegmjltt1rnvam8yl587actdxfm.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 51103
+    },
+    {
+      "sourceFile": "Feature_200300.png",
+      "localUrl": "/assets/traits/Feature_200300.png",
+      "names": [
+        "上锁"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/1c/opi0gtzysk0d58ejngj842joaopnn42.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 45187
+    },
+    {
+      "sourceFile": "Feature_200301.png",
+      "localUrl": "/assets/traits/Feature_200301.png",
+      "names": [
+        "友谊之果"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/c/ca/jtxbhnhfe6izrci4ilhg0g9ggw9n8hm.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 45877
+    },
+    {
+      "sourceFile": "Feature_200302.png",
+      "localUrl": "/assets/traits/Feature_200302.png",
+      "names": [
+        "淬炼火"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/4f/9mo5e69p3p83wcaww2f8ixr98ctof4o.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 45860
+    },
+    {
+      "sourceFile": "Feature_200304.png",
+      "localUrl": "/assets/traits/Feature_200304.png",
+      "names": [
+        "迎宾"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/b/bc/az4v30bjyy89eybo67bm4wgtg6q8jie.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 44449
+    },
+    {
+      "sourceFile": "Feature_200305.png",
+      "localUrl": "/assets/traits/Feature_200305.png",
+      "names": [
+        "一意孤行"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/3/3d/eqn6q2jt6ppxmsk7hpmamo3o79dqq4r.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 58685
+    },
+    {
+      "sourceFile": "Feature_200306.png",
+      "localUrl": "/assets/traits/Feature_200306.png",
+      "names": [
+        "有求必应"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/0/04/bfewc3qll1ss4nn3c1z45w0zq14yqw8.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 48102
+    },
+    {
+      "sourceFile": "Feature_200307.png",
+      "localUrl": "/assets/traits/Feature_200307.png",
+      "names": [
+        "猫精灵的礼物"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/5f/stwqlezkguapsv14f0oqcwxqb80qijd.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 50819
+    },
+    {
+      "sourceFile": "Feature_200308.png",
+      "localUrl": "/assets/traits/Feature_200308.png",
+      "names": [
+        "安眠"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/e/e3/mj3x9cym0lw60odq53ou00u0eg6dvmx.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 55884
+    },
+    {
+      "sourceFile": "Feature_200309.png",
+      "localUrl": "/assets/traits/Feature_200309.png",
+      "names": [
+        "守护之心"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/5/5d/n6tmcgiheabvhfcgfz8isxcjtfgkem2.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 50328
+    },
+    {
+      "sourceFile": "Feature_200310.png",
+      "localUrl": "/assets/traits/Feature_200310.png",
+      "names": [
+        "和弦共振"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/1/19/jtt91xjgi2t1pnbwlgungtfjw0w6v85.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 55022
+    },
+    {
+      "sourceFile": "Feature_200311.png",
+      "localUrl": "/assets/traits/Feature_200311.png",
+      "names": [
+        "冰雪魂魄"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/9/95/7i3mfdfvlzn7rfs4aapklp1z6przvzx.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 42621
+    },
+    {
+      "sourceFile": "Feature_200312.png",
+      "localUrl": "/assets/traits/Feature_200312.png",
+      "names": [
+        "光度换算"
+      ],
+      "sourceUrl": "https://patchwiki.biligame.com/images/nrc/4/40/i369vgge8j7cvvd9jfwdky5e8iqlo6b.png",
+      "width": 256,
+      "height": 256,
+      "bytes": 58617
+    }
+  ],
+  "missing": []
+}

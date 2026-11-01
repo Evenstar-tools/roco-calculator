@@ -2,7 +2,8 @@ import React from "react";
 import { IS_PREVIEW_BUILD } from "./runtime/preview-channel.js";
 import { metrics } from "./analytics/metrics.js";
 import { createRoot } from "react-dom/client";
-import { WebEntry } from "./runtime/WebEntry.jsx";
+import { WebEntry, browserEntry } from "./runtime/WebEntry.jsx";
+import { preloadServerSnapshot } from "./runtime/preload-snapshot.js";
 import { installInputSelection } from "./input-selection.js";
 import "./styles.css";
 
@@ -21,9 +22,11 @@ if (import.meta.hot) import.meta.hot.dispose(() => {
 const removeInputSelection = installInputSelection(document);
 if (import.meta.hot) import.meta.hot.dispose(removeInputSelection);
 
+const entry = window.location.protocol === "app:" ? { serverId: "cn", locale: "zh-CN" } : browserEntry();
+preloadServerSnapshot(entry.serverId);
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <WebEntry />
+    <WebEntry initialEntry={entry} />
   </React.StrictMode>,
 );
 
