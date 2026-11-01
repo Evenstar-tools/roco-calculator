@@ -108,5 +108,10 @@ export const appMessages = Object.fromEntries([
     "主配置已变化，请重新打开承伤对比",
     "The main setup has changed. Reopen damage comparison.",
     "基本設定が変更されました。被ダメージ比較を開き直してください。"
+  ],
+  [
+    "这个功能没有打开，计算器不受影响。",
+    "This tool could not open. The calculator is not affected.",
+    "この機能を開けませんでした。計算機には影響ありません。"
   ]
 ].map(([key, en, ja]) => [key, { en, ja }]));
