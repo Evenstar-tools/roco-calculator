@@ -2,8 +2,63 @@ import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 import { createSpiritSearchIndex } from "../../src/data/search-index.js";
+import { querySpiritFamilies } from "../../src/features/skill-query/query-model.js";
+import { unpackCatalog } from "../../src/features/skill-query/catalog.js";
+import { withS5AnnouncementCatalog } from "../../src/features/skill-query/s5-announcement-catalog.js";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
+import { applyS5Bwiki } from "../../scripts/bwiki/apply-s5-bwiki.mjs";
 
 describe("withCalculatorExtras", () => {
+  test("S5 简称只追加到已有对应身份，搜索与技能检索保留正式名和原别名", () => {
+    const rows = [
+      ["spirit_preview_s5_underground-silver-dragon", "地绡银龙", "银龙"],
+      ["spirit_preview_s5_gold-vein-dragon", "龙嵴金脉", "金龙"],
+      ["spirit_preview_s5_winter-bug-summer-melon", "冬虫夏瓜", "西瓜"],
+      ["spirit_preview_s5_shadow-papercut", "影子剪纸", "剪刀"],
+    ];
+    const snapshot = { spirits: rows.map(([id, fullName]) => ({ id, fullName, aliases: ["原有别名"] })), skills: [], learnsets: [] };
+    const enriched = withCalculatorExtras(snapshot);
+    const index = createSpiritSearchIndex(enriched.spirits);
+    const season = { spirits: snapshot.spirits, skills: [], learnsets: [] };
+    for (const [id, fullName, alias] of rows) {
+      expect(index.search(alias).map((spirit) => [spirit.id, spirit.fullName])).toEqual([[id, fullName]]);
+      expect(enriched.spirits.find((spirit) => spirit.id === id).aliases).toEqual(["原有别名", alias]);
+      const families = querySpiritFamilies(season, { query: alias, metadata: enriched.spirits });
+      expect(families.map((family) => family.representative.id)).toEqual([id]);
+      expect(families[0].representative).toMatchObject({ fullName, aliases: ["原有别名", alias] });
+    }
+    expect(snapshot.spirits.every((spirit) => spirit.aliases.length === 1)).toBe(true);
+    expect(withCalculatorExtras(enriched)).toBe(enriched);
+
+    const full = withWebPreview(applyS5Bwiki(
+      withWebPreview(JSON.parse(readFileSync("data/snapshots/current.json", "utf8"))),
+      JSON.parse(readFileSync("data/reviewed/nrc-s5-20261101.json", "utf8")),
+    ));
+    const catalog = withS5AnnouncementCatalog(unpackCatalog(JSON.parse(readFileSync("public/data/skill-query/catalog.json", "utf8"))), full);
+    const current = catalog.seasons.find(({ id }) => id === "S5");
+    const melon = querySpiritFamilies(current, { query: "西瓜", metadata: full.spirits })
+      .find((family) => family.members.some(({ fullName }) => fullName === "冬虫夏瓜"));
+    expect(melon.members.map(({ fullName }) => fullName)).toEqual(["西瓜虫", "冬虫夏瓜"]);
+    expect(melon.representative.fullName).toBe("冬虫夏瓜");
+    expect(melon.pools).toHaveLength(1);
+    expect(melon.pools[0].representative.fullName).toBe("冬虫夏瓜");
+    const bug = querySpiritFamilies(current, { query: "西瓜虫", metadata: full.spirits });
+    expect(bug.map((family) => family.representative.fullName)).toEqual(["西瓜虫"]);
+    expect(bug[0].pools[0].representative.fullName).toBe("西瓜虫");
+  });
+
+  test("Global 当前数据未收录的 S5 精灵不因别名配置被创建或出现在搜索结果中", () => {
+    const snapshot = JSON.parse(readFileSync("public/data/global-runtime.json", "utf8"));
+    const enriched = withCalculatorExtras(snapshot);
+    expect(enriched.spirits.map((spirit) => spirit.id)).toEqual(snapshot.spirits.map((spirit) => spirit.id));
+    const index = createSpiritSearchIndex(enriched.spirits);
+    const originalIndex = createSpiritSearchIndex(snapshot.spirits);
+    for (const alias of ["银龙", "金龙", "西瓜", "剪刀"]) {
+      expect(index.search(alias).map((spirit) => spirit.id)).toEqual(originalIndex.search(alias).map((spirit) => spirit.id));
+      expect(index.search(alias).every((spirit) => !spirit.id.startsWith("spirit_preview_s5_"))).toBe(true);
+    }
+  });
+
   test("提塔只命中声波缇塔，不混入缇塔", () => {
     const snapshot = JSON.parse(readFileSync("public/data/runtime.json", "utf8"));
     const index = createSpiritSearchIndex(withCalculatorExtras(snapshot).spirits);

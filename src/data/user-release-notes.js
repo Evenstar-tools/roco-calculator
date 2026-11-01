@@ -237,6 +237,29 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.0",
+    date: "2026.11.02",
+    seasonId: "S5",
+    title: "S5 正式入口与技能检索更新",
+    whatsNew: S5_FEATURE_INTRO,
+    summaryHighlights: [
+      "技能检索增加种族值六维图，窄屏保持简洁。",
+      "补齐特性资料，精灵别名搜索与家族结果保持一致。",
+      "S5 抢先入口收起，原地址直接返回主站。",
+    ],
+    features: [
+      "精灵详情新增种族值六维图，以图标与数值展示六项属性；手机窄屏隐藏。",
+      "补全技能检索缺失的历史特性描述，按所选赛季和形态显示。",
+      "新增银龙、金龙、西瓜、剪刀搜索别名，选择器与技能检索均可使用。",
+    ],
+    fixes: [
+      "储备金每次聚能直接计入物攻+50%，仅保留次数输入，不再需要回合结束操作。",
+      "储备金原生、借用及旧配置使用同一计算口径，显示与面板同步。",
+      "收起S5抢先体验入口；直接访问原/pre/地址返回主站，保留原有数据与配置。",
+      "国际服同步共用功能，继续使用S3季中数据与规则。",
+    ],
+  }),
+  createRelease({
     version: "v2.2.8",
     date: "2026.11.01",
     seasonId: "S5",

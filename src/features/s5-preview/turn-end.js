@@ -34,8 +34,8 @@ function writeOwnerValues(state, side, trait, entries) {
   }).state, state);
 }
 
-// Editing a cumulative counter preserves the already applied part. Missing
-// settled values identify old saves, whose former current total stays applied.
+// Gold charges take effect directly. Silver's cumulative counter still preserves
+// its applied part; missing settled values identify old already-effective totals.
 export function updateS5PreviewTurnEndCounter(state, { side, snapshot, control, value, traitId } = {}) {
   const key = control?.contextKey?.endsWith("S5ChargeCount") ? "gold-vein-dragon"
     : control?.contextKey?.endsWith("S5EnergySpent") ? "underground-silver-dragon" : null;
@@ -44,6 +44,7 @@ export function updateS5PreviewTurnEndCounter(state, { side, snapshot, control, 
   if (!trait) return null;
   const counter = counterFor(key);
   const count = sanitizeTriggerValues({ [counter.id]: value }, [counter])[counter.id];
+  if (key === "gold-vein-dragon") return writeOwnerValues(state, side, trait, [[counter, count]]);
   const evaluation = evaluationFor(state, side, trait);
   const settled = Math.min(count, evaluation?.settledCount ?? 0);
   return writeOwnerValues(state, side, trait, [[counter, count], [getS5PreviewTurnEndInputs(key)[0], settled]]);

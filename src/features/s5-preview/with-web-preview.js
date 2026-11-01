@@ -22,6 +22,6 @@ export function withWebPreview(snapshot) {
     changed = true;
     return { ...spirit, changeInfo: { ...spirit.changeInfo, isNew: false } };
   });
-  return withPublicResourceUrls(withS5PreviewCatalog(
-    withS5OfficialVideoSkills(changed ? { ...preview, spirits } : preview), hiddenCatalog));
+  return withPublicResourceUrls(withCalculatorExtras(withS5PreviewCatalog(
+    withS5OfficialVideoSkills(changed ? { ...preview, spirits } : preview), hiddenCatalog)));
 }

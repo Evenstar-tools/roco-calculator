@@ -2520,17 +2520,18 @@ describe("calculateMatchup", () => {
   test.each([
     ["碎银", "underground-silver-dragon", 170, 10, "EnergySpent", "SettledEnergySpent", "s5EnergySpentBeforeUse", 10, 5, 170],
     ["过充电", "gold-vein-dragon", 65, 2, "ChargeCount", "SettledChargeCount", "s5OverchargeActivated", 1, 2, 95],
-  ])("S5 %s优先沿用攻击方特性已发生但未结算的计数，并隔离对手", (name, mechanicKey, basePower, cost, countSuffix, settledSuffix, skillKey, count, expectedCost, expectedPower) => {
+  ])("S5 %s优先沿用攻击方实际计数，兼容旧结算字段并隔离对手", (name, mechanicKey, basePower, cost, countSuffix, settledSuffix, skillKey, count, expectedCost, expectedPower) => {
     const skill = { id: "s5-owner-condition", name, basePower, cost, type: "普通", category: name === "碎银" ? "magical" : "physical" };
     const trait = { id: "s5-owner-condition-trait", name: "候选特性", previewIdentity: { catalogId: "s5-skill-condition-fixture", key: mechanicKey, mechanicKey } };
     const countControl = getTraitEffectInputs(trait, "attacker").find(control => control.contextKey === `attackerTraitS5${countSuffix}`);
     const settledControl = getTraitEffectInputs(trait, "attacker").find(control => control.contextKey === `attackerTraitS5${settledSuffix}`);
+    const settledKey = settledControl?.id ?? `attackerTraitS5${settledSuffix}`;
     const skillControl = getSkillEffectInputs(skill).find(control => control.contextKey === skillKey);
     const fixture = { ...snapshot, traits: [trait], skills: [...snapshot.skills, skill],
       spirits: snapshot.spirits.map(spirit => spirit.id === "spirit_sonic_dog" ? { ...spirit, traitIds: [trait.id] } : spirit) };
     const current = battleInput({ mode: "four", sides: { attacker: side("spirit_sonic_dog", skill.id,
       [{ skillId: skill.id, context: { [skillControl.id]: name === "碎银" ? 0 : false } }, null, null, null]) },
-      directions: { forward: { context: { [countControl.id]: count, [settledControl.id]: 0 } } } });
+      directions: { forward: { context: { [countControl.id]: count, [settledKey]: 0 } } } });
     const result = calculateMatchup(fixture, current).forward.selectedResult;
     expect(result).toMatchObject({ status: "exact", skillCost: expectedCost, skillPower: expectedPower });
     expect(current.directions.forward.context[countControl.id]).toBe(count);
@@ -2548,7 +2549,8 @@ describe("calculateMatchup", () => {
     expect(calculateMatchup(onlyDefenderOwns, zero).forward.selectedResult).toMatchObject({ skillCost: cost, skillPower: basePower });
 
     const inherited = { ...fixture, traits: [{ ...trait, runtimeInputValues: {
-      [canonicalTraitControlKey(countControl)]: count, [canonicalTraitControlKey(settledControl)]: 0,
+      [canonicalTraitControlKey(countControl)]: count,
+      ...(settledControl ? { [canonicalTraitControlKey(settledControl)]: 0 } : {}),
     } }] };
     zero.directions.forward.context = {};
     expect(calculateMatchup(inherited, zero).forward.selectedResult).toMatchObject({ skillCost: expectedCost, skillPower: expectedPower });

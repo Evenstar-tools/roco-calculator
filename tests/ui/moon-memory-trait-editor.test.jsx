@@ -376,7 +376,7 @@ test("does not invent controls for display-only traits", () => {
   expect(item.querySelector("input, select")).toBeNull();
 });
 
-test("borrowed S5 stat traits hide settled storage and expose a turn-end action button", () => {
+test("borrowed gold exposes only the immediate count, with no settlement action or pending copy", () => {
   const trait = { id: "s5-gold", name: "储备金", previewIdentity: { catalogId: "s5-test", mechanicKey: "gold-vein-dragon" } };
   const local = { ...snapshot, traits: [...snapshot.traits, trait] };
   render(<MoonMemoryTraitEditor {...callbacks} side={{ acquiredTraitIds: [trait.id] }}
@@ -386,6 +386,22 @@ test("borrowed S5 stat traits hide settled storage and expose a turn-end action 
   expect(screen.getByRole("spinbutton", { name: "储备金 · 聚能次数" })).toHaveValue(0);
   expect(screen.queryByRole("spinbutton", { name: /已结算/u })).not.toBeInTheDocument();
   expect(screen.queryByRole("checkbox", { name: /回合结束/u })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "回合结束", exact: true })).not.toBeInTheDocument();
+  expect(screen.queryByText(/待回合结束/u)).not.toBeInTheDocument();
+  fireEvent.change(screen.getByRole("spinbutton", { name: "储备金 · 聚能次数" }), { target: { value: "3" } });
+  expect(callbacks.onValueChange).toHaveBeenCalledWith(trait.id,
+    canonicalTraitControlKey(getS5PreviewTraitInputs(trait)[0]), 3);
+});
+
+test("borrowed silver still hides settled storage and exposes the original turn-end action", () => {
+  const trait = { id: "s5-silver", name: "银头寸", previewIdentity: { catalogId: "s5-test", mechanicKey: "underground-silver-dragon" } };
+  const local = { ...snapshot, traits: [...snapshot.traits, trait] };
+  render(<MoonMemoryTraitEditor {...callbacks} side={{ acquiredTraitIds: [trait.id] }}
+    sideKey="attacker" snapshot={local} spirit={snapshot.spirits[0]} />);
+  fireEvent.click(screen.getByRole("button", { name: "查看银头寸条件与效果" }));
+  expect(screen.getAllByRole("spinbutton")).toHaveLength(1);
+  expect(screen.getByRole("spinbutton", { name: "银头寸 · 累计消耗能量" })).toHaveValue(0);
+  expect(screen.queryByRole("spinbutton", { name: /已结算/u })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "回合结束", exact: true }));
   expect(callbacks.onValueChange).toHaveBeenCalledWith(trait.id,
     canonicalTraitControlKey(getS5PreviewTraitInputs(trait).find(control => control.action)), true);

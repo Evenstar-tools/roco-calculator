@@ -19,6 +19,10 @@ test("真实来源目录逐项进入原搜索，机制与图片都有接续入�
   expect(current).toEqual(original);
   expect(result.meta).toBe(current.meta);
   const index = createSpiritSearchIndex(result.spirits);
+  for (const [key, alias] of [["underground-silver-dragon", "银龙"], ["gold-vein-dragon", "金龙"],
+    ["winter-bug-summer-melon", "西瓜"], ["shadow-papercut", "剪刀"]]) {
+    expect(index.search(alias)[0]?.id).toBe(s5PreviewIds(key).spiritId);
+  }
   expect(catalog.entries.filter(({ kind }) => kind === "family")).toHaveLength(28);
   expect(catalog.entries.filter(({ kind }) => kind === "boss")).toHaveLength(3);
   for (const entry of catalog.entries) {

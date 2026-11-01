@@ -37,17 +37,17 @@ test("Global 工具箱不新增国服抢先入口", () => {
   expect(openChart).toHaveBeenCalledOnce();
 });
 
-test("重复点击、外部点击、Esc 关闭，键盘循环焦点包含抢先入口", () => {
+test("正式版隐藏抢先入口，重复点击、外部点击、Esc 关闭，键盘焦点只在工具间循环", () => {
   const actions=Object.fromEntries(["types","skills","deer","transmission","speed","durability"].map(id=>[id,vi.fn()]));
   render(<Toolbox actions={actions} />);
   const trigger=screen.getByRole("button",{name:"工具箱"});
   fireEvent.click(trigger);
   const buttons=within(screen.getByRole("navigation")).getAllByRole("button");
-  const preview = screen.getByRole("link", { name: "S5 抢先体验" });
-  expect(preview).toHaveAttribute("href", "/pre/");
+  expect(screen.queryByRole("link", { name: "S5 抢先体验" })).toBeNull();
+  expect(screen.queryByRole("link", { name: "返回正式版" })).toBeNull();
   expect(buttons[0]).toHaveFocus();
   fireEvent.keyDown(document,{key:"Tab",shiftKey:true});
-  expect(preview).toHaveFocus();
+  expect(buttons.at(-1)).toHaveFocus();
   fireEvent.keyDown(document,{key:"Tab"});
   expect(buttons[0]).toHaveFocus();
   fireEvent.keyDown(document,{key:"Escape"});

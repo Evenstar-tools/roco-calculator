@@ -1,12 +1,14 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { assertCatalogRelease, familyIds } from "../src/features/skill-query/catalog.js";
 import { getServerRelease } from "../src/domain/server-environment.js";
+import { hasCompleteRaceStats } from "../src/domain/stat.js";
 
 const read = async (path) => JSON.parse(await readFile(path, "utf8"));
 const source = await read("data/skill-query/s3-source.json");
 const wikiSeasons = await read("data/skill-query/bwiki-seasons.json");
 const baseline = await read("data/snapshots/seasons/s3-2026-07-15.json");
 const manifest = await read("data/skill-query/seasons.json");
+const traitSupplements = await read("data/skill-query/trait-supplements.json");
 if (!manifest.seasons.length || new Set(manifest.seasons.map(({ id }) => id)).size !== manifest.seasons.length || !manifest.seasons.some(({ id }) => id === manifest.currentSeason)) {
   throw new Error("赛季清单缺失、重复或当前赛季无效");
 }
@@ -49,6 +51,11 @@ const compact = (snapshot, season) => {
     throw new Error(`${season} 的快照不属于该赛季；换季前须将旧季 current.json 归档`);
   }
   const families = familyIds(snapshot.spirits);
+  for (const [id, supplement] of Object.entries(traitSupplements[season] ?? {})) {
+    if (!snapshot.traits.some(trait => trait.id === id && trait.name === supplement.name)) {
+      throw new Error(`${season} 的特性补充资料未关联：${supplement.name}`);
+    }
+  }
   return {
   id: season,
   skills: snapshot.skills.filter((skill) => skill.provenance?.nrc?.status !== "legacy-unconfirmed").map((skill) => {
@@ -58,8 +65,13 @@ const compact = (snapshot, season) => {
       introducedSeason: wikiSeasons.records[skill.name] ?? record?.introducedSeason ?? (baselineSkills.has(skill.id) ? null : season),
       detailUrl: skill.detailUrl };
   }),
-  spirits: snapshot.spirits.map(({ id, fullName, types, stage, traitIds }) => ({ id, fullName, types, stage, traitIds, familyId: families.get(id) })),
-  traits: snapshot.traits.map(({ id, name, description, iconUrl }) => ({ id, name, description, ...(iconUrl ? { iconUrl } : {}) })),
+  spirits: snapshot.spirits.map(({ id, fullName, types, stage, traitIds, raceStats, calculationStatus, previewIdentity }) => ({
+    id, fullName, types, stage, traitIds, familyId: families.get(id),
+    ...(calculationStatus !== "pending-race-stats" && !previewIdentity?.raceStatsPlaceholder && hasCompleteRaceStats(raceStats) ? { raceStats } : {}),
+  })),
+  traits: snapshot.traits.map(({ id, name, description, iconUrl }) => ({ id, name,
+    description: description || traitSupplements[season]?.[id]?.description || "",
+    ...(iconUrl ? { iconUrl } : {}) })),
   learnsets: mergedLearnsets(snapshot),
 }; };
 const seasons = await Promise.all(manifest.seasons.map(async ({ id, snapshot }) => compact(await read(snapshot), id)));
@@ -115,7 +127,8 @@ for (const season of packed.seasons) {
 }
 packed.sharedSkills = sharedSkills;
 packed.sharedRelations = sharedRelations;
-packed.sharedSpirits = sharedSpirits.map(({ id, fullName, types, stage, familyId, traitIds }) => [id, fullName, types, stage, familyId, traitIds]);
+packed.sharedSpirits = sharedSpirits.map(({ id, fullName, types, stage, familyId, traitIds, raceStats }) =>
+  [id, fullName, types, stage, familyId, traitIds, ...(raceStats ? [raceStats] : [])]);
 packed.sharedTraits = sharedTraits;
 await mkdir("public/data/skill-query", { recursive: true });
 await writeFile("public/data/skill-query/catalog.json", JSON.stringify(packed) + "\n", "utf8");

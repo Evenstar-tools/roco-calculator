@@ -1,9 +1,10 @@
 export const GLOBAL_RELEASE_SUMMARY = Object.freeze({
-  date: "2026.10.29",
+  date: "2026.11.02",
   eyebrow: "国际服",
   title: "国际服计算器",
   description: "采用 S3 季中数值与规则。",
   items: [
+    { id: "skillDetails", title: "种族值六维图与特性资料", description: "技能检索新增种族值六维图，补全特性名称、图标和描述；窄屏隐藏六维图，国际服继续使用独立 S3 数据。" },
     { id: "typeChart", title: "18 系克制图", description: "查看18系攻防倍率，支持键盘定位。", action: "打开" },
     { id: "speed", title: "全屏速度线", description: "全屏查看速度线，拖动纵轴定位，补齐零个体速度对比。", action: "打开" },
     { id: "conditions", title: "条件与星陨斩杀线", description: "精简版可编辑技能和特性条件；结果栏可查询并应用星陨最低层数。" },

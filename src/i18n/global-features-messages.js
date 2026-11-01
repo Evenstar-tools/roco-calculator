@@ -1,5 +1,7 @@
 // Product UI copy; entity names and descriptions come from the official client catalog.
 export const globalFeaturesMessages = Object.fromEntries([
+  ["种族值六维图与特性资料", "Species Aptitude chart and Traits", "種族資質チャートと特性情報"],
+  ["技能检索新增种族值六维图，补全特性名称、图标和描述；窄屏隐藏六维图，国际服继续使用独立 S3 数据。", "Skill search adds a six-axis Species Aptitude chart and fills in Trait names, icons and descriptions. The chart is hidden on narrow screens. Global continues to use its separate S3 data.", "スキル検索に種族資質の6軸チャートを追加し、特性名・アイコン・説明を補完しました。狭い画面ではチャートを非表示にします。国際版は引き続き独立したS3データを使用します。"],
   ["特殊配置", "Special builds", "特殊構成"],
   ["仅计注明的特性，不计天气和技能。", "Only the listed Traits are included; weather and skill effects are excluded.", "記載された特性のみを含み、天候・スキルの効果は含みません。"],
   ["特殊配置仅计注明的特性，不计天气和技能。", "Special builds include only the listed Traits; weather and skill effects are excluded.", "特殊構成には記載された特性のみを含み、天候・スキルの効果は含みません。"],

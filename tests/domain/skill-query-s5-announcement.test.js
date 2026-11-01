@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { expect, test } from "vitest";
 import { skillLearners, unpackCatalog } from "../../src/features/skill-query/catalog.js";
 import { querySeasonChangeInfo, withS5AnnouncementCatalog } from "../../src/features/skill-query/s5-announcement-catalog.js";
@@ -9,6 +9,8 @@ import { querySpiritFamilies, spiritSkills } from "../../src/features/skill-quer
 import { applyS5Bwiki } from "../../scripts/bwiki/apply-s5-bwiki.mjs";
 import { applyS5Candymo } from "../../scripts/bwiki/apply-s5-candymo.mjs";
 import { buildS5BwikiRuntime } from "../../scripts/s5-bwiki-runtime.mjs";
+import { canRecommendSpirit } from "../../src/domain/spirit-discovery.js";
+import { getTraitIconUrl } from "../../src/data/trait-icons.js";
 
 const loadCatalog = () => unpackCatalog(JSON.parse(readFileSync("public/data/skill-query/catalog.json", "utf8")));
 const snapshot = { seasonAnnouncement: { id: S5_SEASON_ANNOUNCEMENT.patch.id } };
@@ -179,6 +181,21 @@ test("真实 BWIKI runtime 途径差量还原完整 S5 学习面，不回填撤�
   expect(runtime.learnsets.some(pool => pool.acquisitionsPartial)).toBe(true);
   const season = withS5AnnouncementCatalog(loadCatalog(), runtime).seasons.find(({ id }) => id === "S5");
   expect(season.label).toBe("S5");
+  // Exercise the shipped runtime → query projection, not a hand-written trait fixture.
+  const traits = new Map(season.traits.map(trait => [trait.id, trait]));
+  for (const spirit of season.spirits.filter(canRecommendSpirit)) {
+    expect(spirit.traitIds.length, spirit.fullName).toBeGreaterThan(0);
+    for (const id of spirit.traitIds) {
+      const trait = traits.get(id);
+      expect(trait?.name?.trim(), spirit.fullName).toBeTruthy();
+      expect(trait?.description?.trim(), spirit.fullName).toBeTruthy();
+      const icon = getTraitIconUrl(trait);
+      expect(icon, spirit.fullName).toBeTruthy();
+      expect(existsSync(`public${icon}`), spirit.fullName).toBe(true);
+    }
+  }
+  const lily = season.spirits.find(spirit => spirit.fullName === "铃兰夫人");
+  expect(lily.traitIds.map(id => traits.get(id).name)).toEqual(["幸福铃音"]);
   const newSkills = season.skills.filter(skill => skill.introducedSeason === "S5");
   expect(newSkills).toHaveLength(29);
   const slash = newSkills.find(skill => skill.name === "圣龙狂斩");

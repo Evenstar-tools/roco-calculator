@@ -86,7 +86,8 @@ test("单技能攻击类特性不出现在对方防御卡，切换方向才编�
   expect(screen.queryByRole("status", { name: "防御特性当前效果" })).not.toBeInTheDocument();
   expect(screen.queryByRole("spinbutton", { name: "累计消耗能量" })).not.toBeInTheDocument();
   fireEvent.change(screen.getByRole("spinbutton", { name: "聚能次数" }), { target: { value: "2" } });
-  expect(attackSummary).toHaveTextContent("聚能 2 次 · 物攻能力等级 +10");
+  expect(attackSummary).toHaveTextContent("聚能 2 次 · 物攻 +100%");
+  expect(screen.queryByRole("button", { name: "回合结束", exact: true })).not.toBeInTheDocument();
   rerender(<Editor reverse />);
   expect(screen.queryByRole("spinbutton", { name: "聚能次数" })).not.toBeInTheDocument();
   fireEvent.change(screen.getByRole("spinbutton", { name: "累计消耗能量" }), { target: { value: "9" } });
@@ -113,7 +114,9 @@ test("四技能纯攻击增益仅在精灵自身列，两个方向不重复显�
     defenderTrait={silverAttack} defenderDefenseTrait={goldDefense} defenderTraitContext={reverse} />);
   const attackSide = within(container.querySelector(".four-skill-side--attacker"));
   const defenseSide = within(container.querySelector(".four-skill-side--defender"));
-  expect(attackSide.getByRole("status", { name: "攻击特性当前效果" })).toHaveTextContent("物攻能力等级 +10");
+  expect(attackSide.getByRole("status", { name: "攻击特性当前效果" })).toHaveTextContent("聚能 2 次 · 物攻 +100%");
+  expect(attackSide.queryByRole("button", { name: "回合结束", exact: true })).not.toBeInTheDocument();
+  expect(defenseSide.getByRole("button", { name: "回合结束", exact: true })).toBeInTheDocument();
   expect(defenseSide.getByRole("status", { name: "攻击特性当前效果" })).toHaveTextContent("魔攻 +80%");
   expect(attackSide.queryByRole("spinbutton", { name: "累计消耗能量" })).not.toBeInTheDocument();
   expect(defenseSide.queryByRole("spinbutton", { name: "聚能次数" })).not.toBeInTheDocument();
