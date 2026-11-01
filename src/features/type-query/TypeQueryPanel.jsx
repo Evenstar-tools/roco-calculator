@@ -7,6 +7,7 @@ import "./type-query.css";
 import { useRuntime } from "../../runtime/RuntimeContext.jsx";
 import { useToolLocale as useLocale } from "../../i18n/useToolLocale.js";
 import { useModalFocus } from "../../hooks/useModalFocus.js";
+import { SpiritImage } from "../../components/SpiritImage.jsx";
 
 const DEFENSE_GROUPS = [[3, "双重弱点"], [2, "弱点"], [0.5, "抗性"], [0.25, "双重抗性"]];
 const OFFENSE_GROUPS = [[2, "有效打击"], [1, "常规打击"], [0.5, "打击盲点"]];
@@ -48,7 +49,7 @@ function SpiritResults({ spirits, types, spiritFilterRevision, onOpenSpirit, onW
   return <section className="type-query__spirits" aria-label={t("对应属性精灵")}>
     <div className="type-query__spirits-heading"><div><h3>{t("对应属性精灵")}</h3><p>{t(types.map(typeName).join(" ＋ "))}{" "}{t("· 仅展示已确认最终形态")}</p></div><span>{matches.length}{" "}{t("个结果")}</span></div>
     {matches.length ? <div className="type-query__spirit-list" role="list" aria-label={t("匹配精灵，共 {v0} 个", { v0: matches.length })} tabIndex={matches.length > 1 ? 0 : undefined}>{matches.map((spirit) => <article key={spirit.id} role="listitem"><button type="button" className="type-query__spirit-card" data-spirit-id={spirit.id} aria-label={t("{name} 查看技能", { name: spirit.fullName })} disabled={!onOpenSpirit} onPointerEnter={onWarmSpirit} onFocus={onWarmSpirit} onPointerDown={onWarmSpirit} onClick={() => onOpenSpirit(spirit.id)}>
-      <img src={spirit.asset?.localUrl ?? `${import.meta.env.BASE_URL}assets/spirits/${spirit.id}.png`} alt="" loading="lazy" />
+      <SpiritImage name={spirit.fullName} src={spirit.asset?.localUrl ?? `${import.meta.env.BASE_URL}assets/spirits/${spirit.id}.png`} alt="" loading="lazy" />
       <strong>{t(spirit.fullName)}</strong><CaretRight size={14} aria-hidden="true" />
     </button></article>)}</div> : <p className="type-query__spirits-empty">{t("当前没有匹配的双属性最终形态。")}</p>}
   </section>;
