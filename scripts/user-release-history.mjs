@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { isDeepStrictEqual } from "node:util";
 
 export const USER_RELEASE_HISTORY_ASSET = "data/user-release-notes.json";
 
@@ -19,12 +20,13 @@ export function userReleaseHistoryPlugin() {
     if (code !== previousCode) {
       previousCode = code;
       pending = import(`${pathToFileURL(sourceFile()).href}?history=${++revision}`)
-        .then(({ USER_RELEASE_NOTES, FEATURED_USER_RELEASE }) => {
+        .then(exports => {
+          const { USER_RELEASE_NOTES, FEATURED_USER_RELEASE } = exports;
           if (!Array.isArray(USER_RELEASE_NOTES) || !USER_RELEASE_NOTES.length ||
               USER_RELEASE_NOTES[0].version !== FEATURED_USER_RELEASE?.version) {
             throw new Error("Invalid maintained release history");
           }
-          return { releases: USER_RELEASE_NOTES, featured: FEATURED_USER_RELEASE };
+          return { releases: USER_RELEASE_NOTES, exports };
         }).catch(error => { previousCode = undefined; throw error; });
     }
     return pending;
@@ -35,8 +37,22 @@ export function userReleaseHistoryPlugin() {
     configResolved(config) { base = config.base; production = config.command === "build"; },
     async transform(_code, id) {
       if (!production || id.replaceAll("\\", "/") !== sourceFile().replaceAll("\\", "/")) return null;
-      const { featured } = await readHistory();
-      return { code: `export const FEATURED_USER_RELEASE = Object.freeze(${JSON.stringify(featured)});\nexport const CURRENT_USER_RELEASE = FEATURED_USER_RELEASE;`, map: null };
+      const { exports } = await readHistory();
+      const entries = Object.entries(exports).filter(([name]) => name !== "USER_RELEASE_NOTES")
+        .sort(([left], [right]) => left === "FEATURED_USER_RELEASE" ? -1 : right === "FEATURED_USER_RELEASE" ? 1 : 0);
+      const aliases = new Map();
+      const code = entries.map(([name, value]) => {
+        if (aliases.has(value)) return `export const ${name} = ${aliases.get(value)};`;
+        const json = JSON.stringify(value);
+        if (json === undefined || !isDeepStrictEqual(JSON.parse(json), value)) {
+          throw new Error(`Release export must be losslessly JSON serializable: ${name}`);
+        }
+        aliases.set(value, name);
+        const expression = value !== null && typeof value === "object" && Object.isFrozen(value)
+          ? `/* @__PURE__ */ Object.freeze(${json})` : json;
+        return `export const ${name} = ${expression};`;
+      }).join("\n");
+      return { code, map: null };
     },
     async generateBundle() {
       const { releases } = await readHistory();

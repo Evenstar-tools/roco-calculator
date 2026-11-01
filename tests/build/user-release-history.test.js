@@ -5,7 +5,9 @@ import { gzipSync } from "node:zlib";
 import { minify } from "terser";
 import { expect, test, vi } from "vitest";
 import { userReleaseHistoryPlugin, USER_RELEASE_HISTORY_ASSET } from "../../scripts/user-release-history.mjs";
-import { FEATURED_USER_RELEASE, USER_RELEASE_NOTES } from "../../src/data/user-release-notes.js";
+import * as maintained from "../../src/data/user-release-notes.js";
+
+const { FEATURED_USER_RELEASE, USER_RELEASE_NOTES } = maintained;
 
 const filename = path.join(process.cwd(), "src/data/user-release-notes.js");
 const source = readFileSync(filename, "utf8");
@@ -14,6 +16,11 @@ test("production retains the latest notice and emits every historical record fro
   const plugin = userReleaseHistoryPlugin();
   plugin.configResolved({ root: path.join(process.cwd(), "pre"), base: "/pre/", command: "build" });
   const transformed = await plugin.transform(source, filename);
+  const published = await import(`data:text/javascript;base64,${Buffer.from(transformed.code).toString("base64")}`);
+  const publicNames = Object.keys(maintained).filter(name => name !== "USER_RELEASE_NOTES");
+  expect(Object.keys(published).sort()).toEqual(publicNames.sort());
+  for (const name of publicNames) expect(published[name], name).toEqual(maintained[name]);
+  expect(published.CURRENT_USER_RELEASE).toBe(published.FEATURED_USER_RELEASE);
   expect(transformed.code).toContain(FEATURED_USER_RELEASE.version);
   expect(transformed.code).not.toContain(USER_RELEASE_NOTES.at(-1).title);
   expect(await plugin.transform("export {}", filename + ".other.js")).toBeNull();
