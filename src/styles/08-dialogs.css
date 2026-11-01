@@ -1393,3 +1393,56 @@ html[data-theme="dark"] .share-dialog .config-library-check-ok {
     grid-template-columns: 1fr;
   }
 }
+
+/* 工具加载失败：只提示当前工具，不遮挡计算器。 */
+.feature-load-error {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 2000;
+  width: min(360px, calc(100vw - 32px));
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 24px 70px rgba(28, 29, 55, 0.24);
+  transform: translate(-50%, -50%);
+}
+
+.feature-load-error p {
+  margin: 0 0 14px;
+}
+
+.feature-load-error__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.feature-load-error__actions .secondary-action {
+  min-width: 90px;
+  padding: 0 12px;
+}
+
+/* 头像重试期间保留占位；多次失败后显示名字。 */
+img[data-load-retrying] {
+  display: inline-block;
+}
+
+.spirit-image-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 24px;
+  min-height: 24px;
+  overflow: hidden;
+  padding: 2px;
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
