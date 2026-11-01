@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, symlinkSync } from "node:fs";
+import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, renameSync, symlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -70,8 +70,8 @@ export function copyPreviewRelease(root, sourceDirectory) {
   return target;
 }
 
-/** Build only a pinned Git archive; never copy a dirty checkout as preview source. */
-export function buildPreviewSource({ root = ROOT, run = execute, mode = "pre" } = {}) {
+/** Prepare the exact release source for Web and CLI; never copy a dirty checkout. */
+export function preparePreviewSource({ root = ROOT, run = execute, mode = "pre", reuse = false, allowFetch = true } = {}) {
   if (!["pre", "cn"].includes(mode)) throw new Error("Unsupported pinned source build mode: " + mode);
   root = realpathSync(root);
   const { sourceRevision } = readPreviewReleasePin(root);
@@ -81,10 +81,21 @@ export function buildPreviewSource({ root = ROOT, run = execute, mode = "pre" } 
   const output = requireInside(root, path.join(root, "output"));
   mkdirSync(output, { recursive: true });
   requireInside(root, realpathSync(output));
+  const receipt = path.join(output, "cli-source-" + sourceRevision + ".json");
+  if (reuse && existsSync(receipt)) {
+    const cached = JSON.parse(readFileSync(receipt, "utf8"));
+    const source = requireInside(output, cached.source);
+    requireInside(output, realpathSync(source));
+    if (cached.sourceRevision !== sourceRevision || !existsSync(path.join(source, "scripts/s5-bwiki-runtime.mjs"))) {
+      throw new Error("Cached CLI release source is incomplete; remove its receipt and retry");
+    }
+    return { sourceRevision, source };
+  }
   const source = mkdtempSync(path.join(output, (mode === "pre" ? "preview" : "cn") + "-source-" + sourceRevision + "-"));
   const archive = requireInside(output, source + ".tar");
   const gitOptions = { cwd: root };
   if (run("git", ["cat-file", "-e", sourceRevision + "^{commit}"], { ...gitOptions, allowFailure: true }) !== 0) {
+    if (!allowFetch) throw new Error("Pinned CN source is missing locally; fetch origin " + sourceRevision + " before using CLI");
     run("git", ["fetch", "--depth=1", "--no-tags", "--no-write-fetch-head", "origin", sourceRevision], gitOptions);
     run("git", ["cat-file", "-e", sourceRevision + "^{commit}"], gitOptions);
   }
@@ -93,6 +104,19 @@ export function buildPreviewSource({ root = ROOT, run = execute, mode = "pre" } 
   const childModules = requireInside(source, path.join(source, "node_modules"));
   if (existsSync(childModules)) throw new Error("Pinned source unexpectedly includes node_modules");
   symlinkSync(modules, childModules, process.platform === "win32" ? "junction" : "dir");
+  if (reuse) {
+    // Readers must never observe an empty/partial receipt on parallel first runs.
+    const pendingReceipt = source + ".receipt.tmp";
+    writeFileSync(pendingReceipt, JSON.stringify({ sourceRevision, source }), "utf8");
+    renameSync(pendingReceipt, receipt);
+  }
+  return { sourceRevision, source };
+}
+
+/** Build only a pinned Git archive; never copy a dirty checkout as preview source. */
+export function buildPreviewSource({ root = ROOT, run = execute, mode = "pre" } = {}) {
+  const { sourceRevision, source } = preparePreviewSource({ root, run, mode });
+  const vite = path.join(realpathSync(root), "node_modules/vite/bin/vite.js");
   const childOptions = { cwd: source };
   run(process.execPath, [
     "scripts/runtime-snapshot.mjs", "data/snapshots/current.json",

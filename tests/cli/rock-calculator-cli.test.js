@@ -2,10 +2,24 @@ import { spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { describe, expect, test } from "vitest";
+import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 
 const projectRoot = process.cwd();
-const cliPath = path.join(projectRoot, "scripts", "cli", "rock-calculator.mjs");
+// Keep the frozen S4 protocol fixtures independent of the current Web release.
+// current-release-cli.test.js exercises the actual default executable and its pin.
+const protocolModule = pathToFileURL(path.join(projectRoot, "src/cli/rock-calculator-cli.js")).href;
+const protocolRunner = `
+  import { executeCli, serializeCliError } from ${JSON.stringify(protocolModule)};
+  try {
+    process.stdout.write(JSON.stringify(executeCli(process.argv.slice(1), { cwd: process.cwd(), projectRoot: process.cwd() })) + '\\n');
+  } catch (error) {
+    const serialized = serializeCliError(error);
+    process.stderr.write(JSON.stringify(serialized.payload) + '\\n');
+    process.exitCode = serialized.exitCode;
+  }
+`;
 const packageJson = JSON.parse(
   readFileSync(path.join(projectRoot, "package.json"), "utf8"),
 );
@@ -29,7 +43,7 @@ const moonMemorySkill = {
 };
 
 function runCli(args, input) {
-  const result = spawnSync(process.execPath, [cliPath, ...args], {
+  const result = spawnSync(process.execPath, ["--input-type=module", "-e", protocolRunner, "--", ...args], {
     cwd: projectRoot,
     encoding: "utf8",
     input: input === undefined ? undefined : JSON.stringify(input),
@@ -133,7 +147,7 @@ const duckPowerZoneCase = {
 const duckRainContext = { rainWeather: true, weatherRainTurns: 8 };
 const duckWaterContext = { traitActivated: true };
 
-describe("rock-calculator CLI", () => {
+describe("rock-calculator CLI protocol with frozen baseline data", () => {
 
   test.each([
     ["未触发物理", "藤绞", {}, {}, 82, 80, 201, 80],
@@ -315,8 +329,8 @@ describe("rock-calculator CLI", () => {
         rulesVersion: snapshot.meta.rulesVersion,
       },
       counts: {
-        spirits: snapshot.meta.counts.spirits,
-        skills: snapshot.meta.counts.skills,
+        spirits: snapshot.spirits.length,
+        skills: withCalculatorExtras(snapshot).skills.length,
       },
     });
   });
@@ -408,7 +422,7 @@ describe("rock-calculator CLI", () => {
       ok: true,
       command: "calculate",
       inputDigest:
-        "sha256:2ed1766bd5b45f23d8ad13698eaf0aad6d88138252e8c8e754a117e23458d9c8",
+        "sha256:c8cfaa2dda6ac4f7e13cde66533c594438cf25ad72ef7cf2d1bb2f6ecba59639",
       resolved: {
         attacker: {
           spiritId: "spirit_db5a2cb398dc0385",
@@ -797,7 +811,7 @@ describe("rock-calculator CLI", () => {
     expect(result.status).toBe(0);
     expect(result.json).toMatchObject({
       inputDigest:
-        "sha256:d31cf227f70f475ec0aebf0ec151c9e4e9e96930d174278a0447ccdb8e0f5273",
+        "sha256:9b9d4ae6d9a7ada93e0ec8c4784a44fbcd3dac179f0b38626208253df2bc989d",
       results: {
         forward: {
           selected: {

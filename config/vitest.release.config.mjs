@@ -24,6 +24,7 @@ export default defineConfig({
             "tests/docs/release-notes.test.js",
             "tests/build/{performance-budget,build-attribution,global-release,cn-production-pruning}.test.js",
             "tests/scripts/{build-preview-release,build-cn-release}.test.js",
+            "tests/cli/{current-release-cli,web-calculator}.test.js",
           ],
         },
       },

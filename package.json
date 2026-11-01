@@ -20,7 +20,7 @@
   },
   "scripts": {
     "cli": "node scripts/cli/rock-calculator.mjs",
-    "cli:test": "vitest run tests/cli/rock-calculator-cli.test.js",
+    "cli:test": "vitest run --config config/vite.config.mjs tests/cli",
     "dev": "npm run data:runtime && vite --config config/vite.config.mjs",
     "build": "npm run acceptance:verify && npm run test:core-current && npm run data:runtime && npm run data:verify-bindings && node scripts/build-cn-release.mjs && node scripts/minify-service-worker.mjs && npm run performance:verify && node scripts/build-preview-release.mjs && node scripts/build-global-release.mjs",
     "desktop": "npm run build && electron .",

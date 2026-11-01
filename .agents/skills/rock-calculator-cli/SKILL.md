@@ -9,7 +9,7 @@ description: Use the project-local deterministic CLI whenever an AI needs to cal
 
 ## 工作流
 
-1. 名称或 ID 不确定时先检索：
+1. 先用 `npm run -s cli -- meta` 确认 `seasonId`、`catalogVersion` 与 `sourceRevision`。默认入口与当前国服 Web 共用发布 pin；不要拿历史工作区的 CLI 代替当前版本。名称或 ID 不确定时再检索：
 
    ```powershell
    npm run -s cli -- search spirit "精灵名"
@@ -35,8 +35,9 @@ description: Use the project-local deterministic CLI whenever an AI needs to cal
 ## 输入与结果边界
 
 - 优先使用中文全名；CLI 会解析为稳定 ID。出现 `ENTITY_AMBIGUOUS` 时从候选中选择 ID，不能猜。
-- 默认等级 60、普通性格、六项个体 60、满生命。用户给出的条件必须显式写入输入，不要依赖对话中的隐含状态。
+- 普通精灵等级 60；特殊等级精灵沿用网页默认，按需传入每侧 `level`（例如冥古龙 99／89）。普通性格、六项个体 60、满生命。用户给出的条件必须显式写入输入，不要依赖对话中的隐含状态。
+- 天气使用顶层 `weather`，已有异常层数使用 `negativeStatuses`；选中筑梦不会自动启用霞光梦境，也不会自动推进回合叠寄生。异常结算需显式开启 `calculationOptions.includeNegativeStatusSettlement`，并区分直接伤害与 `damagePresentation` 的结算展示。
 - `calculate` 返回双向精简结果；`explain` 只展开一个方向或一个技能，避免无必要的大输出。
-- 回答时至少保留数据版本、规则版本、`inputDigest`、双方名称、技能、伤害、HP 百分比和是否致命。
+- 回答时至少保留赛季／资料版本、规则版本、`sourceRevision`、`inputDigest`、双方名称、技能、伤害、HP 百分比和是否致命。历史 `dataVersion`／`rulesVersion` 可能保留兼容标识，当前赛季以 `seasonId`／`catalogVersion` 为准。
 - 该工具复用产品的权威计算核心，能复算、解释并检查配置，不构成对核心公式的独立第三方验证。
 - 只有 CLI 返回 `INTERNAL_ERROR`、结果与同一版本 GUI 不一致，或用户明确要求诊断实现时，才检查源码。

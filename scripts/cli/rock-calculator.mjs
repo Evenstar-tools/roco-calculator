@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import {
-  executeCli,
-  serializeCliError,
-} from "../../src/cli/rock-calculator-cli.js";
+import { serializeCliError } from "../../src/cli/rock-calculator-cli.js";
+import { executeCurrentCli } from "./current-release.mjs";
 
 const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -12,7 +10,7 @@ const projectRoot = path.resolve(
 );
 
 try {
-  const result = executeCli(process.argv.slice(2), {
+  const result = await executeCurrentCli(process.argv.slice(2), {
     cwd: process.cwd(),
     projectRoot,
   });

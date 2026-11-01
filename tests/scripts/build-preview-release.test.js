@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from "vitest";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { buildPreviewRelease, copyPreviewRelease, readPreviewReleasePin, requireInside } from "../../scripts/build-preview-release.mjs";
+import { buildPreviewRelease, copyPreviewRelease, preparePreviewSource, readPreviewReleasePin, requireInside } from "../../scripts/build-preview-release.mjs";
 
 const pin = "2f968be798e4c25182aa7144e176778ebbe1655a";
 const temporaryParent = realpathSync(os.tmpdir());
@@ -45,6 +45,36 @@ afterEach(() => {
 });
 
 describe("pinned /pre release assembly", () => {
+  test("CLI reuses only the same release pin and prepares a new source when the pin changes", () => {
+    const root = fixture();
+    const calls = [];
+    const run = (command, args) => {
+      calls.push({ command, args });
+      if (command === "tar") put(args[3], "scripts/s5-bwiki-runtime.mjs", "// archived runtime");
+      return 0;
+    };
+    const first = preparePreviewSource({ root, run, reuse: true, allowFetch: false });
+    const cached = preparePreviewSource({ root, run, reuse: true, allowFetch: false });
+    expect(cached).toEqual(first);
+    expect(calls.filter(({ command }) => command === "tar")).toHaveLength(1);
+    const nextPin = "b4b2288340dc50b43d3b4dd9fce206512481e23a";
+    put(root, "config/preview-release.json", JSON.stringify({ schemaVersion: 1, sourceRevision: nextPin }));
+    const next = preparePreviewSource({ root, run, reuse: true, allowFetch: false });
+    expect(next.sourceRevision).toBe(nextPin);
+    expect(next.source).not.toBe(first.source);
+    expect(calls.filter(({ args }) => args[0] === "archive").map(({ args }) => args.at(-1))).toEqual([pin, nextPin]);
+    expect(calls.some(({ args }) => args[0] === "fetch")).toBe(false);
+  });
+
+  test("offline CLI preparation fails on a missing pin without fetching or falling back", () => {
+    const root = fixture();
+    const calls = [];
+    const run = (command, args) => { calls.push({ command, args }); return 1; };
+    expect(() => preparePreviewSource({ root, run, reuse: true, allowFetch: false })).toThrow("Pinned CN source is missing locally");
+    expect(calls.map(({ args }) => args[0])).toEqual(["cat-file"]);
+    expect(existsSync(path.join(root, "output/cli-source-" + pin + ".json"))).toBe(false);
+  });
+
   test("pin rejects branch names/null and cannot escape the output boundary", () => {
     const root = fixture();
     expect(readPreviewReleasePin(root).sourceRevision).toBe(pin);

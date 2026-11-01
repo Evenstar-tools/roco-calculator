@@ -113,11 +113,13 @@ function assertServerCommand(release, command) {
   }
 }
 
-function loadContext(projectRoot, release) {
+function loadContext(projectRoot, release, { snapshotOverride, sourceMetadata } = {}) {
   const packageJson = loadJson(path.join(projectRoot, "package.json"), "package.json");
   if (!release.snapshotPath) return { packageJson, release, snapshot: null };
   const snapshotPath = path.join(projectRoot, release.snapshotPath);
-  const snapshot = withCalculatorExtras(loadJson(snapshotPath, "数据快照"));
+  const snapshot = release.serverId === "cn" && snapshotOverride
+    ? snapshotOverride
+    : withCalculatorExtras(loadJson(snapshotPath, "数据快照"));
   assertCliEnvironment(snapshot, { serverId: release.serverId });
   const indexes = {
     spirits: new Map(snapshot.spirits.map((entry) => [entry.id, entry])),
@@ -127,7 +129,8 @@ function loadContext(projectRoot, release) {
       snapshot.learnsets.map((entry) => [entry.spiritId, entry]),
     ),
   };
-  return { indexes, packageJson, release, snapshot, snapshotPath };
+  return { indexes, packageJson, release, snapshot, snapshotPath,
+    sourceMetadata: release.serverId === "cn" ? sourceMetadata : undefined };
 }
 
 function engineMetadata(context) {
@@ -139,6 +142,9 @@ function engineMetadata(context) {
     dataVersion: meta.id ?? meta.dataVersion ?? meta.version ?? null,
     rulesVersion: meta.rulesVersion ?? meta.ruleVersion ?? null,
     snapshotVersion: meta.snapshotVersion ?? null,
+    seasonId: meta.seasonId ?? null,
+    catalogVersion: meta.catalogVersion ?? meta.s5NrcSync?.version ?? null,
+    sourceRevision: context.sourceMetadata?.sourceRevision ?? null,
   };
 }
 
@@ -554,8 +560,22 @@ function compileSide(context, sideInput, field, mode) {
       { field: `${field}.acquiredTraitIds` },
     );
   }
+  if (sideInput.level !== undefined && (!Number.isSafeInteger(sideInput.level) || sideInput.level < 1 || sideInput.level > 99)) {
+    throw new CliError("INPUT_VALIDATION_FAILED", `${field}.level 必须是1到99的整数`, { field: `${field}.level` });
+  }
+  if (sideInput.ignoreTraits !== undefined && typeof sideInput.ignoreTraits !== "boolean") {
+    throw new CliError("INPUT_VALIDATION_FAILED", `${field}.ignoreTraits 必须是布尔值`, { field: `${field}.ignoreTraits` });
+  }
+  const traitValues = sideInput.traitValues;
+  if (traitValues !== undefined && (!isPlainObject(traitValues) ||
+    Object.entries(traitValues).some(([key, value]) => !CANONICAL_TRAIT_VALUE_KEY_PATTERN.test(key) || !isSafeTraitScalar(value)))) {
+    throw new CliError("INPUT_VALIDATION_FAILED", `${field}.traitValues 必须是 canonical trait key 到安全标量的映射`, { field: `${field}.traitValues` });
+  }
   return {
     side: {
+      ...(sideInput.level === undefined ? {} : { level: sideInput.level }),
+      ...(sideInput.ignoreTraits === undefined ? {} : { ignoreTraits: sideInput.ignoreTraits }),
+      ...(traitValues === undefined ? {} : { traitValues: { ...traitValues } }),
       ...(acquiredTraitIds.length > 0 ? { acquiredTraitIds } : {}),
       ...(Object.keys(acquiredTraitValues).length > 0
         ? { acquiredTraitValues }
@@ -569,6 +589,7 @@ function compileSide(context, sideInput, field, mode) {
         sideInput.nature,
         `${field}.nature`,
       ),
+      nature: normalizeNatureId(sideInput.nature),
       skills: {
         single,
         four: mode === "four" ? four : four.slice(0, 4),
@@ -614,12 +635,23 @@ function compileInput(context, input) {
   const mode = input.mode === "four" ? "four" : "single";
   const attacker = compileSide(context, input.attacker, "attacker", mode);
   const defender = compileSide(context, input.defender, "defender", mode);
+  if (input.weather !== undefined && !["none", "rain", "thunder", "sandstorm", "blizzard", "dream"].includes(input.weather)) {
+    throw new CliError("INPUT_VALIDATION_FAILED", "weather 必须是 none、rain、thunder、sandstorm、blizzard 或 dream", { field: "weather" });
+  }
+  for (const field of ["negativeStatuses", "calculationOptions"]) {
+    if (input[field] !== undefined && !isPlainObject(input[field])) {
+      throw new CliError("INPUT_VALIDATION_FAILED", `${field} 必须是对象`, { field });
+    }
+  }
   const battle = {
     schemaVersion: INPUT_SCHEMA_VERSION,
     ...(input.serverId === undefined ? {} : { serverId: input.serverId }),
     mode,
     level: Number.isFinite(Number(input.level)) ? Number(input.level) : 60,
     marks: input.marks ?? null,
+    ...(input.weather === undefined ? {} : { weather: input.weather }),
+    ...(input.negativeStatuses === undefined ? {} : { negativeStatuses: input.negativeStatuses }),
+    ...(input.calculationOptions === undefined ? {} : { calculationOptions: input.calculationOptions }),
     sides: {
       attacker: attacker.side,
       defender: defender.side,
@@ -690,6 +722,8 @@ function compactResult(result) {
     postAttackEffects: result.postAttackEffects ?? null,
     markSettlements: result.markSettlements ?? [],
     traitSettlements: result.traitSettlements ?? [],
+    negativeStatusSettlement: result.negativeStatusSettlement ?? null,
+    damagePresentation: result.damagePresentation ?? null,
   };
 }
 
@@ -775,6 +809,9 @@ function schemaResponse() {
         serverId: "cn 或 global；省略时沿用 --server，均省略时为 cn；冲突时拒绝",
         dataVersion: "可选；必须匹配所选服务器快照",
         rulesVersion: "可选；必须匹配所选服务器规则",
+        weather: "可选全场天气：none/rain/thunder/sandstorm/blizzard/dream；选中筑梦不会自动启用",
+        negativeStatuses: "双方当前异常层数，如 {defender:{parasitism:3}}；不自动推进回合",
+        calculationOptions: "{includeNegativeStatusSettlement:true} 启用独立异常结算",
         side: {
           spirit: "精灵全名或稳定 ID",
           skill: "单技能名称、稳定 ID，或 {name,type,category}",
@@ -782,6 +819,9 @@ function schemaResponse() {
           nature: "性格中文名或 ID",
           ivs: "六维对象",
           currentHp: "当前生命",
+          level: "特殊等级精灵的当前等级1到99；普通精灵仅60，省略时使用网页默认",
+          ignoreTraits: "可选布尔值，禁用本方特性",
+          traitValues: "原生特性 canonical trait key 到安全标量的映射",
           acquiredTraitIds:
             "仅铭记于月亮持有者可用；当前快照特性 ID 数组，重复项自动去重，最多5个",
           acquiredTraitValues:
@@ -809,7 +849,7 @@ function schemaResponse() {
   };
 }
 
-export function executeCli(argv, { cwd, projectRoot }) {
+export function executeCli(argv, { cwd, projectRoot, snapshotOverride, calculateOverride, sourceMetadata }) {
   const serverOption = parseServerOption(argv);
   argv = serverOption.args;
   const command = argv[0];
@@ -822,14 +862,14 @@ export function executeCli(argv, { cwd, projectRoot }) {
     });
   }
   const release = serverRelease(serverOption.serverId ?? input?.serverId ?? "cn");
-  const context = loadContext(projectRoot, release);
+  const context = loadContext(projectRoot, release, { snapshotOverride, sourceMetadata });
   if (command === "meta") {
     return {
       ok: true,
       command,
       engine: engineMetadata(context),
       availability: { status: release.status, capabilities: release.capabilities },
-      counts: !context.snapshot ? null : context.snapshot.meta?.counts ?? {
+      counts: !context.snapshot ? null : {
         spirits: context.snapshot.spirits.length,
         skills: context.snapshot.skills.length,
         learnsets: context.snapshot.learnsets.length,
@@ -869,7 +909,7 @@ export function executeCli(argv, { cwd, projectRoot }) {
     const compiled = compileInput(context, input);
     let calculation;
     try {
-      calculation = calculateMatchup(context.snapshot, compiled.battle);
+      calculation = (release.serverId === "cn" && calculateOverride ? calculateOverride : calculateMatchup)(context.snapshot, compiled.battle);
     } catch (error) {
       throw new CliError("CALCULATION_FAILED", error.message);
     }

@@ -69,7 +69,9 @@ npm run -s data:check-updates
    4. 没有可靠依据时保持“需要输入”或“不参与计算”，不要猜测数值。
    5. 每条规则补默认、触发、边界、双向和回归测试。
 
-6. 同步三端：
+6. 同步 CLI 与三端：
+
+   国服 Web 与默认 CLI 共用 `config/preview-release.json`；更新该 pin 后同步检查 CLI，避免只更新网页。运行 `npm run -s cli -- meta` 核对赛季、资料版本和源码提交，再执行 `npm run cli:test`。新增技能、特殊等级及结算规则必须在默认 CLI 可检索、可复算；未实现的机制保持相同限制。主线旧快照不能代替当前 Web 数据，国际服与小程序按各自发布范围处理。
 
    ```bash
    npm run miniapp:sync-core
@@ -83,6 +85,7 @@ npm run -s data:check-updates
    ```bash
    npm run data:validate
    npm test
+   npm run cli:test
    npm run test:core-drift
    npm run build
    npm run e2e
