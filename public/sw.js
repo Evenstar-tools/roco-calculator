@@ -123,6 +123,13 @@ self.addEventListener("message", (event) => {
 // 构建指纹随内容变化；图标由当前发布缓存隔离，发布时更新 CACHE_NAME。
 const IMMUTABLE_ASSET_RE = /^\/(?:global-assets\/)?assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(?:js|css)$/;
 const RELEASE_ASSETS = new Set(["/app-icon-192.png", "/app-icon-512.png"]);
+const STATIC_DATA_PATHS = new Set([
+  "/data/runtime.json",
+  "/data/global-runtime.json",
+  "/data/user-release-notes.json",
+  "/global-assets/data/global-runtime.json",
+  "/global-assets/data/user-release-notes.json",
+]);
 
 async function cacheFirst(request) {
   const cache = await caches.open(CACHE_NAME);
@@ -156,7 +163,17 @@ async function refreshCache(cache, request) {
 
 async function staleWhileRevalidate(event, request, fallbackRequest = request) {
   const cache = await caches.open(CACHE_NAME);
-  const cached = await cache.match(fallbackRequest);
+  let cached = await cache.match(fallbackRequest);
+  const url = new URL(request.url);
+  const origin = request.headers.get("origin");
+  // 固定静态 JSON 的内容不随 Origin 改变；只兼容单一 Origin 变体，
+  // 保留精确 URL/地区隔离，查询参数、授权请求及其他 Vary 均不放宽。
+  if (!cached && fallbackRequest === request && url.origin === self.location.origin &&
+      !url.search && STATIC_DATA_PATHS.has(url.pathname) && !request.headers.has("authorization") &&
+      (origin === null || origin === self.location.origin)) {
+    const variant = await cache.match(request, { ignoreVary: true });
+    if (variant?.headers.get("vary")?.trim().toLowerCase() === "origin") cached = variant;
+  }
   const refresh = refreshCache(cache, request);
   if (cached) {
     event.waitUntil(refresh);

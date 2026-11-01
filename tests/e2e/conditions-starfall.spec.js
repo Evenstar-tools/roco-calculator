@@ -219,7 +219,7 @@ for (const [width, height, theme] of [[1920, 1080, "light"], [320, 740, "dark"]]
     const dialog = page.getByRole("dialog");
     await dialog.getByRole("checkbox", { name: "防御应对成功" }).check();
     await dialog.getByRole("button", { name: "使用技能", exact: true }).click();
-    await expect(dialog).toContainText("攻击+7层");
+    await expect(dialog.locator(".compact-skill-state")).toHaveText("已用 1 次 · 应对成功×1 · 魔攻+7层 · 减伤80%");
     await expect(dialog).toContainText("减伤80%");
     await expect(dialog.getByRole("button", { name: "解除状态", exact: true })).toBeEnabled();
     const layout = await dialog.evaluate((node) => {
@@ -252,18 +252,18 @@ test("compact conditions release single-skill defense without replaying permanen
   await dialog.getByRole("checkbox", { name: "防御应对成功", exact: true }).check();
   await dialog.getByRole("button", { name: "使用技能", exact: true }).click();
   await expect(summary).toContainText("已用 1 次");
-  await expect(summary).toContainText("攻击+7层");
+  await expect(summary).toHaveText("已用 1 次 · 应对成功×1 · 魔攻+7层 · 减伤80%");
   await expect(summary).toContainText("减伤80%");
   await dialog.getByRole("button", { name: "解除状态", exact: true }).click();
   await expect(dialog.getByRole("button", { name: "使用技能", exact: true })).toBeEnabled();
   await expect(summary).toContainText("已用 1 次");
-  await expect(summary).toContainText("攻击+7层");
+  await expect(summary).toHaveText("已用 1 次 · 应对成功×1 · 魔攻+7层");
   await expect(summary).not.toContainText("减伤80%");
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: /撤回上一步/ }).click();
   await page.getByRole("button", { name: "攻击方当前技能条件", exact: true }).click();
   await expect(dialog.getByRole("button", { name: "解除状态", exact: true })).toBeEnabled();
-  await expect(summary).toContainText("攻击+7层");
+  await expect(summary).toHaveText("已用 1 次 · 应对成功×1 · 魔攻+7层 · 减伤80%");
   await expect(summary).toContainText("减伤80%");
 });
 
