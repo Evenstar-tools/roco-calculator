@@ -42,6 +42,7 @@ export default defineConfig({
           include: [
             "tests/smoke/*.test.jsx",
             "tests/runtime/preview-storage.test.js",
+            "tests/runtime/load-recovery.test.jsx",
             "tests/ui/public-resource-base.test.jsx",
             "tests/analytics/*.test.{js,jsx}",
             "tests/ui/workspace-overlays.test.jsx",
