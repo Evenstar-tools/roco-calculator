@@ -7,6 +7,7 @@ import {
 } from "@phosphor-icons/react";
 import { useState } from "react";
 import { ElementIcon } from "./ElementIcon.jsx";
+import { SpiritImage } from "./SpiritImage.jsx";
 
 function formatMultiplier(value) {
   return Number.isInteger(value) ? String(value) : String(value);
@@ -36,7 +37,7 @@ function MemberDetail({ member, tone }) {
     <li className={`team-type-analysis__member is-${tone}`}>
       <span className="team-type-analysis__slot">{member.slotIndex + 1}</span>
       {member.assetUrl ? (
-        <img alt="" src={member.assetUrl} />
+        <SpiritImage name={member.name} alt="" src={member.assetUrl} />
       ) : (
         <span aria-hidden="true" className="team-type-analysis__avatar-fallback">
           {member.name.slice(0, 1)}
