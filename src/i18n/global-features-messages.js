@@ -640,7 +640,7 @@ export const globalFeaturesMessages = Object.fromEntries([
   ["按客户端统一英日术语，修正工具标题、配置说明与记录，切换语言保留配置。", "Official English and Japanese terms across tool titles, setup instructions and logs. Language switching keeps your setup.", "ツール名・設定説明・記録の英日用語をクライアントに統一。言語を切り替えても設定は保持されます。"],
   ["操作修复", "Interaction fixes", "操作の修正"],
   ["加载恢复修复", "Loading recovery fixes", "読み込み復旧の修正"],
-  ["更新检查不再一直等待，损坏的头像缓存可自动重试；失败时显示精灵名称。速度线移除麦田重复外观。", "Update checks no longer wait indefinitely. Corrupted portrait caches are retried automatically, with Spirit names shown if loading fails. Duplicate wheat-field forms are removed from speed rankings.", "更新確認が待機し続ける問題を修正。壊れた画像キャッシュは自動で再取得し、失敗時は精霊名を表示します。速度ランキングから麦畑シリーズの重複外見を除外しました。"],
+  ["更新检查不再一直等待，损坏的头像缓存可自动重试；失败时显示精灵名称。速度线与耐久排行移除麦田重复外观。", "Update checks no longer wait indefinitely. Corrupted portrait caches are retried automatically, with Spirit names shown if loading fails. Duplicate wheat-field forms are removed from speed and durability rankings.", "更新確認が待機し続ける問題を修正。壊れた画像キャッシュは自動で再取得し、失敗時は精霊名を表示します。速度・耐久ランキングから麦畑シリーズの重複外見を除外しました。"],
   ["攻击变化修复", "Attack stat fixes", "攻撃能力の修正"],
   ["手调等级仍调整双攻；技能按S3文案只调整指定攻击。贪得无厌只加物攻，旧配置层数保留。", "Manual stages still affect both Attack stats. Skills now change only the Attack stat specified by their S3 description. Insatiable Greed only boosts Physical Attack; saved stages are preserved.", "手動の段階調整は従来どおり物攻・魔攻の両方に適用。スキルはS3の説明に従い、指定された攻撃能力だけを変更します。「欲深い」は物攻のみを上げ、保存済みの段階は維持します。"],
   ["单技能防御状态可再次点击解除，改善窄屏技能名称显示。", "Click again to remove defensive effects in single-skill mode; skill names fit better on narrow screens.", "単一スキルモードで防御状態を再クリックして解除できます。狭い画面でのスキル名表示も改善しました。"],

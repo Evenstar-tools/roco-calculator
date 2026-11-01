@@ -188,7 +188,7 @@ export function EntityChangeHint({ changeInfo, className = "", children, entityN
               <span>
                 <small>{tc(hasChanges ? "更新" : "试算")}</small>
                 <strong>{tc(multiplePatches ? "改动记录" : patchLabel(changeInfo?.patch) ?? "种族值编辑")}</strong>
-                {!multiplePatches && <time>{changeInfo?.patch?.date}</time>}
+                {!multiplePatches && <time>{changeInfo?.patch?.displayDate ?? changeInfo?.patch?.date}</time>}
               </span>
               <button
                 aria-label={tc("关闭改动详情")}
@@ -221,7 +221,7 @@ export function EntityChangeHint({ changeInfo, className = "", children, entityN
             {visibleGroups.map((record, groupIndex) => <section className="entity-change-card__patch" key={record.patch?.id ?? groupIndex}
               id={multiplePatches ? `${tooltipId}-patch` : undefined} role={multiplePatches ? "tabpanel" : undefined}
               aria-labelledby={multiplePatches ? `${tooltipId}-tab-${selectedIndex}` : undefined}>
-              {multiplePatches && <div className="entity-change-card__patch-heading"><time>{record.patch?.date}</time>{renderPatchAction?.(record)}</div>}
+              {multiplePatches && <div className="entity-change-card__patch-heading"><time>{record.patch?.displayDate ?? record.patch?.date}</time>{renderPatchAction?.(record)}</div>}
               <ul>{record.items.map((item, index) => (
                 <ChangeItem item={item} key={`${item.kind}-${tc(item.label)}-${index}`} />
               ))}</ul>

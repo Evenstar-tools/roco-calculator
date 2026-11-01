@@ -344,6 +344,60 @@ test("current snapshot ranks only explicit final forms and corroborated bosses",
     formRole === "final" || formRole === "boss")).toBe(true);
 });
 
+describe("wheat cosmetics in durability rankings", () => {
+  const snapshot = JSON.parse(readFileSync("public/data/global-runtime.json", "utf8"));
+  const retainedNames = ["音速犬", "风暴战犬", "公平鸽", "流浪鼠", "鳗尾兽", "稻草守护者", "乌拉塔（极昼的样子）", "蹦床松鼠"];
+  const retained = snapshot.spirits.filter(entry => retainedNames.includes(entry.fullName));
+  const squirrel = retained.find(entry => entry.fullName === "蹦床松鼠");
+  const cosmeticIds = [
+    "spirit_4ba8f07d34a4e247", "spirit_58fba21fe70be498", "spirit_576805f2cd1bbd11",
+    "spirit_95aaf0ee94680c86", "spirit_e09a7b2376f6e518", "spirit_95d31f7040c570b2",
+    "spirit_bf63c954e18a8852", "spirit_45095a4991f540a4", "spirit_0aff77799da7257f",
+    "spirit_9383a26b3b5da4c5",
+  ];
+  // The global data has no wheat forms; inject IDs only to verify the shared rule
+  // without adding unavailable entities to its runtime snapshot.
+  const cosmetics = cosmeticIds.map(id => ({
+    ...squirrel, id, sourceCategory: "首领形态", stage: "首领", types: ["幽"],
+  }));
+  const options = {
+    traits: snapshot.traits,
+    typeChart: snapshot.typeChart,
+    spiritFilterRevision: snapshot.meta.revisions.spiritFilter,
+    includeLevelVariants: false,
+  };
+
+  test.each(Object.keys(STANDARD_DURABILITY_TEMPLATES))("%s removes cosmetic IDs before ranks and passive rows while keeping originals and distinct variants", templateId => {
+    expect(retained).toHaveLength(retainedNames.length);
+    expect(snapshot.spirits.some(entry => cosmeticIds.includes(entry.id))).toBe(false);
+    const input = [...retained, ...cosmetics];
+    const before = structuredClone(input);
+    for (const sortBy of ["physical", "magical", "combined"]) {
+      for (const includePassiveVariants of [false, true]) {
+        const settings = { ...options, templateId, sortBy, includePassiveVariants };
+        const baseline = createDurabilityRanking({ ...settings, spirits: retained });
+        const ranking = createDurabilityRanking({ ...settings, spirits: input });
+        expect(ranking.rows).toEqual(baseline.rows);
+        expect(new Set(ranking.rows.map(row => row.spirit.fullName))).toEqual(new Set(retainedNames));
+        expect(ranking.excluded.map(entry => [entry.spiritId, entry.reason])).toEqual(
+          cosmeticIds.map(id => [id, "COSMETIC_DUPLICATE"]),
+        );
+        expect(ranking.counts.eligible).toBe(baseline.counts.eligible);
+      }
+    }
+    expect(input).toEqual(before);
+  });
+
+  test("excluded cosmetic forms cannot reappear in immunity rows or a name search", () => {
+    const settings = { ...options, attackType: "普通", includePassiveVariants: true, query: "蹦床松鼠" };
+    const baseline = createDurabilityRanking({ ...settings, spirits: retained });
+    const ranking = createDurabilityRanking({ ...settings, spirits: [...retained, ...cosmetics] });
+    expect(ranking.rows).toEqual(baseline.rows);
+    expect(ranking.immuneRows).toEqual(baseline.immuneRows);
+    expect(ranking.counts.excludedByReason).toEqual({ COSMETIC_DUPLICATE: 10 });
+  });
+});
+
 describe("global passive durability configurations", () => {
   const snapshot = JSON.parse(readFileSync("public/data/global-runtime.json", "utf8"));
   const defensePercent = { "蹦床松鼠": 200, "卷胡巨獭": 180, "古卷匣魔像": 200, "上岸蛙": 140 };
