@@ -1,4 +1,5 @@
 import { FORM_ROLE_MANIFEST_VERSION } from "../../../data/form-role-manifest-v1.js";
+import { canRecommendSpirit } from "../../../domain/spirit-discovery.js";
 import { calculateDurability } from "./durability.js";
 import { getS5LevelIncomingDamagePercent } from "../../../domain/s5-preview-traits.js";
 import { getNatureMultipliers } from "../../../domain/natures.js";
@@ -243,6 +244,10 @@ export function createDurabilityRanking({
   const excluded = [];
   for (const spirit of spirits) {
     const form = resolveRankingFormRole(spirit, { spiritFilterRevision, includeLevelVariants });
+    if (!canRecommendSpirit(spirit)) {
+      excluded.push(exclusionFor(spirit, form, "HIDDEN_FROM_DISCOVERY"));
+      continue;
+    }
     if (["final", "boss"].includes(form.formRole)) {
       if (attackType && (!spirit.types?.length || spirit.types.some((type) => !knownTypes.includes(type)))) {
         excluded.push(exclusionFor(spirit, form, "UNKNOWN_DEFENSIVE_TYPE"));

@@ -58,6 +58,19 @@ test("速度目标只包含已确认最终形态和首领", () => {
   expect(targets[0].qualifier).toBe("100种族·满速");
 });
 
+test.each([
+  { catalogAvailable: false },
+  { fullName: "圣龙阿布" },
+  { previewIdentity: { catalogId: "candymo-hidden-20261101" } },
+  { previewIdentity: { raceStatsPlaceholder: true } },
+  { calculationStatus: "pending-race-stats" },
+])("已确认形态被隐藏或设为搜索专用后不再自动进入速度线：%j", flags => {
+  const candidate = { ...spirits[1], ...flags };
+  expect(createSpeedTargets({ spirits: [candidate] })).toEqual([]);
+  expect(candidate.raceStats).toEqual(spirits[1].raceStats);
+  expect(candidate.id).toBe(spirits[1].id);
+});
+
 test("竖排速度表按速度分档并收纳全部同速精灵", () => {
   const groups = groupSpeedTargets(createSpeedTargets({
     profileId: "positive-max",
@@ -116,6 +129,15 @@ test("速度排行榜按速度从高到低排列", () => {
     "spirit_db5a2cb398dc0385",
     "boss-form",
   ]);
+});
+
+test("已有速度特配被设为搜索专用后也不通过特殊配置重新出现", () => {
+  const snapshot = JSON.parse(readFileSync("data/snapshots/current.json", "utf8"));
+  const candidate = snapshot.spirits.find(entry => entry.fullName === "影狸");
+  expect(createSpeedSpecialTargets({ snapshot }).some(target => target.spiritId === candidate.id)).toBe(true);
+  candidate.previewIdentity = { raceStatsPlaceholder: true };
+  expect(createSpeedSpecialTargets({ snapshot }).some(target => target.spiritId === candidate.id)).toBe(false);
+  expect(snapshot.spirits.find(entry => entry.id === candidate.id)).toBe(candidate);
 });
 
 test("速度线特殊情况使用当前技能、特性和血脉数值", () => {

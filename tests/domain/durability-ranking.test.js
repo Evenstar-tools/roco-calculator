@@ -44,6 +44,19 @@ function bossSpirit({ dexNo, fullName, hp, id }) {
 }
 
 describe("createDurabilityRanking", () => {
+  test.each([
+    { catalogAvailable: false },
+    { fullName: "圣龙阿布" },
+    { previewIdentity: { catalogId: "candymo-hidden-20261101" } },
+    { previewIdentity: { raceStatsPlaceholder: true } },
+    { calculationStatus: "pending-race-stats" },
+  ])("已确认形态被隐藏或设为搜索专用后不再自动进入耐久榜：%j", flags => {
+    const candidate = spirit(flags);
+    const before = structuredClone(candidate);
+    expect(createDurabilityRanking({ spirits: [candidate], includePassiveVariants: true }).rows).toEqual([]);
+    expect(candidate).toEqual(before);
+  });
+
   test("calculates an eligible final form with the shared panel and durability formulas", () => {
     const ranking = createDurabilityRanking({ spirits: [spirit()] });
 
