@@ -2,6 +2,7 @@ import { useToolLocale as useLocale } from "../../i18n/useToolLocale.js";
 import { CaretDown, Check } from "@phosphor-icons/react";
 import { useEffect, useId, useRef, useState } from "react";
 import { usePickerMenuLayout } from "../../components/picker-menu-layout.js";
+import { SpiritImage } from "../../components/SpiritImage.jsx";
 
 export default function TransmissionTraitPicker({ options, value, placeholder, onChange }) {
   const { t } = useLocale();
@@ -64,7 +65,7 @@ export default function TransmissionTraitPicker({ options, value, placeholder, o
       aria-activedescendant={open && active >= 0 ? `${menuId}-${active}` : undefined}
       className="transmission-trait-trigger" ref={trigger} title={t(selected?.owner?.fullName)}
       onClick={() => open ? setOpen(false) : show()} onKeyDown={navigate}>
-      {selected?.owner?.assetUrl && <img src={selected.owner.assetUrl} alt="" width="24" height="24" />}
+      {selected?.owner?.assetUrl && <SpiritImage name={selected.owner.fullName} src={selected.owner.assetUrl} alt="" width="24" height="24" />}
       <span>{t(selected?.label ?? placeholder)}</span><CaretDown size={14} aria-hidden="true" />
     </button>
     {open && <ul id={menuId} ref={menu} className="transmission-trait-options" role="listbox" aria-label={t("传动特性选项")}>
@@ -72,7 +73,7 @@ export default function TransmissionTraitPicker({ options, value, placeholder, o
         aria-label={t(option.label)} aria-selected={option.name === value} aria-disabled={option.disabled}
         data-active={active === index} title={t(option.owner?.fullName)}
         onMouseDown={(event) => event.preventDefault()} onClick={() => choose(index)}>
-        {option.owner?.assetUrl ? <img src={option.owner.assetUrl} alt={t(option.owner.fullName)} width="28" height="28" /> : <span className="transmission-trait-portrait-placeholder" aria-hidden="true" />}
+        {option.owner?.assetUrl ? <SpiritImage name={option.owner.fullName} src={option.owner.assetUrl} alt={t(option.owner.fullName)} width="28" height="28" /> : <span className="transmission-trait-portrait-placeholder" aria-hidden="true" />}
         <span>{t(option.label)}</span>{option.name === value && <Check size={16} aria-hidden="true" />}
       </li>)}
     </ul>}
