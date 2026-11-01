@@ -72,17 +72,17 @@ function loadJson(filePath, label) {
   }
 }
 
-function serverRelease(serverId) {
+function serverRelease(serverId, getRelease = getServerRelease) {
   try {
-    return getServerRelease(serverId);
+    return getRelease(serverId);
   } catch (error) {
     throw new CliError(error.code, error.message, error.details);
   }
 }
 
-function assertCliEnvironment(snapshot, input) {
+function assertCliEnvironment(snapshot, input, assertEnvironment = assertCalculationEnvironment) {
   try {
-    return assertCalculationEnvironment(snapshot, input);
+    return assertEnvironment(snapshot, input);
   } catch (error) {
     throw new CliError(error.code, error.message, error.details);
   }
@@ -113,14 +113,15 @@ function assertServerCommand(release, command) {
   }
 }
 
-function loadContext(projectRoot, release, { snapshotOverride, sourceMetadata } = {}) {
+function loadContext(projectRoot, release, { snapshotOverride, sourceMetadata, environmentOverride, spiritDiscovery } = {}) {
   const packageJson = loadJson(path.join(projectRoot, "package.json"), "package.json");
   if (!release.snapshotPath) return { packageJson, release, snapshot: null };
   const snapshotPath = path.join(projectRoot, release.snapshotPath);
-  const snapshot = release.serverId === "cn" && snapshotOverride
+  const applies = release.serverId === (sourceMetadata?.serverId ?? "cn");
+  const snapshot = applies && snapshotOverride
     ? snapshotOverride
     : withCalculatorExtras(loadJson(snapshotPath, "数据快照"));
-  assertCliEnvironment(snapshot, { serverId: release.serverId });
+  assertCliEnvironment(snapshot, { serverId: release.serverId }, environmentOverride?.assertCalculationEnvironment);
   const indexes = {
     spirits: new Map(snapshot.spirits.map((entry) => [entry.id, entry])),
     skills: new Map(snapshot.skills.map((entry) => [entry.id, entry])),
@@ -130,7 +131,7 @@ function loadContext(projectRoot, release, { snapshotOverride, sourceMetadata } 
     ),
   };
   return { indexes, packageJson, release, snapshot, snapshotPath,
-    sourceMetadata: release.serverId === "cn" ? sourceMetadata : undefined };
+    sourceMetadata: applies ? sourceMetadata : undefined, environmentOverride, spiritDiscovery: applies ? spiritDiscovery : undefined };
 }
 
 function engineMetadata(context) {
@@ -142,8 +143,8 @@ function engineMetadata(context) {
     dataVersion: meta.id ?? meta.dataVersion ?? meta.version ?? null,
     rulesVersion: meta.rulesVersion ?? meta.ruleVersion ?? null,
     snapshotVersion: meta.snapshotVersion ?? null,
-    seasonId: meta.seasonId ?? null,
-    catalogVersion: meta.catalogVersion ?? meta.s5NrcSync?.version ?? null,
+    seasonId: meta.seasonId ?? context.release.seasonId ?? null,
+    catalogVersion: meta.catalogVersion ?? meta.s5NrcSync?.version ?? meta.dataVersion ?? null,
     sourceRevision: context.sourceMetadata?.sourceRevision ?? null,
   };
 }
@@ -188,14 +189,19 @@ function entitySearchText(entity, kind) {
     .map(compact);
 }
 
-function searchEntities(context, kind, query, { allowedIds = null, limit = 10 } = {}) {
+function searchEntities(context, kind, query, { allowedIds = null, limit = 10, discoverableOnly = false } = {}) {
   const needle = compact(query);
   const results = entityCollection(context, kind)
     .filter((entity) => !allowedIds || allowedIds.has(entity.id))
+    .filter((entity) => !discoverableOnly || kind !== "spirit" || !context.spiritDiscovery?.isSpiritDiscoveryHidden(entity))
     .map((entity) => {
       const name = compact(entityName(entity, kind));
       const id = compact(entity.id);
       const fields = entitySearchText(entity, kind);
+      // Discovery labels are searchable categories, never entity names/IDs.
+      if (discoverableOnly && kind === "spirit" && context.spiritDiscovery?.isSpiritSearchOnly(entity)) {
+        fields.push("未开放");
+      }
       const exact = id === needle || name === needle;
       const prefix = !exact && fields.some((field) => field.startsWith(needle));
       const included = exact || prefix || fields.some((field) => field.includes(needle));
@@ -502,7 +508,7 @@ function compileSide(context, sideInput, field, mode) {
     sideInput.spirit ?? sideInput.spiritId,
     `${field}.spirit`,
   );
-  if (!hasCompleteRaceStats(spirit.raceStats)) {
+  if (!hasCompleteRaceStats(spirit.raceStats) || context.spiritDiscovery?.isSpiritSearchOnly(spirit)) {
     throw new CliError(
       "SPIRIT_DATA_UNAVAILABLE",
       `${spirit.fullName}种族值待确认，暂不可计算`,
@@ -631,7 +637,7 @@ function compileInput(context, input) {
       received: input.schemaVersion,
     });
   }
-  assertCliEnvironment(context.snapshot, { ...input, serverId: context.release.serverId });
+  assertCliEnvironment(context.snapshot, { ...input, serverId: context.release.serverId }, context.environmentOverride?.assertCalculationEnvironment);
   const mode = input.mode === "four" ? "four" : "single";
   const attacker = compileSide(context, input.attacker, "attacker", mode);
   const defender = compileSide(context, input.defender, "defender", mode);
@@ -645,7 +651,7 @@ function compileInput(context, input) {
   }
   const battle = {
     schemaVersion: INPUT_SCHEMA_VERSION,
-    ...(input.serverId === undefined ? {} : { serverId: input.serverId }),
+    ...(input.serverId === undefined && context.release.serverId === "cn" ? {} : { serverId: context.release.serverId }),
     mode,
     level: Number.isFinite(Number(input.level)) ? Number(input.level) : 60,
     marks: input.marks ?? null,
@@ -771,13 +777,14 @@ function readInput(args, cwd) {
   return loadJson(inputPath === "-" ? 0 : path.resolve(cwd, inputPath), "CLI 输入");
 }
 
-function schemaResponse() {
+function schemaResponse(getRelease = getServerRelease) {
   return {
     ok: true,
     command: "schema",
     inputSchemaVersion: INPUT_SCHEMA_VERSION,
     globalOptions: ["--server <cn|global>"],
-    servers: { cn: "已核验的国服数据", global: "国际服数据尚未核验，仅支持 meta/schema" },
+    servers: { cn: "已核验的国服数据", global: getRelease("global").capabilities.calculate
+      ? "已核验的国际服数据，与国服独立版本" : "国际服数据尚未核验，仅支持 meta/schema" },
     commands: {
       meta: { args: [] },
       schema: { args: [] },
@@ -849,11 +856,11 @@ function schemaResponse() {
   };
 }
 
-export function executeCli(argv, { cwd, projectRoot, snapshotOverride, calculateOverride, sourceMetadata }) {
+/** Parse stdin exactly once before selecting the matching server's release source. */
+export function readCliInvocation(argv, { cwd }) {
   const serverOption = parseServerOption(argv);
   argv = serverOption.args;
   const command = argv[0];
-  if (serverOption.serverId !== undefined) assertServerCommand(serverRelease(serverOption.serverId), command);
   const input = command === "calculate" || command === "explain" ? readInput(argv, cwd) : null;
   if (input?.serverId !== undefined) serverRelease(input.serverId);
   if (serverOption.serverId !== undefined && input?.serverId !== undefined && serverOption.serverId !== input.serverId) {
@@ -861,8 +868,21 @@ export function executeCli(argv, { cwd, projectRoot, snapshotOverride, calculate
       argumentServerId: serverOption.serverId, inputServerId: input.serverId,
     });
   }
-  const release = serverRelease(serverOption.serverId ?? input?.serverId ?? "cn");
-  const context = loadContext(projectRoot, release, { snapshotOverride, sourceMetadata });
+  return { argv, command, input, serverId: serverOption.serverId ?? input?.serverId ?? "cn" };
+}
+
+export function executeCli(argv, { cwd, projectRoot, snapshotOverride, calculateOverride, sourceMetadata, environmentOverride, spiritDiscovery, invocation }) {
+  const getRelease = environmentOverride?.getServerRelease ?? getServerRelease;
+  if (!invocation) {
+    const serverOption = parseServerOption(argv);
+    if (serverOption.serverId !== undefined) assertServerCommand(serverRelease(serverOption.serverId, getRelease), serverOption.args[0]);
+  }
+  const request = invocation ?? readCliInvocation(argv, { cwd });
+  const { command, input } = request;
+  argv = request.argv;
+  const release = serverRelease(request.serverId, getRelease);
+  assertServerCommand(release, command);
+  const context = loadContext(projectRoot, release, { snapshotOverride, sourceMetadata, environmentOverride, spiritDiscovery });
   if (command === "meta") {
     return {
       ok: true,
@@ -877,7 +897,7 @@ export function executeCli(argv, { cwd, projectRoot, snapshotOverride, calculate
       },
     };
   }
-  if (command === "schema") return schemaResponse();
+  if (command === "schema") return schemaResponse(getRelease);
   assertServerCommand(release, command);
   if (command === "search") {
     const kind = argv[1];
@@ -900,7 +920,7 @@ export function executeCli(argv, { cwd, projectRoot, snapshotOverride, calculate
       command,
       kind,
       query,
-      results: searchEntities(context, kind, query, { allowedIds, limit }).map(
+      results: searchEntities(context, kind, query, { allowedIds, limit, discoverableOnly: true }).map(
         (entry) => formatEntity(entry, kind),
       ),
     };
@@ -909,7 +929,7 @@ export function executeCli(argv, { cwd, projectRoot, snapshotOverride, calculate
     const compiled = compileInput(context, input);
     let calculation;
     try {
-      calculation = (release.serverId === "cn" && calculateOverride ? calculateOverride : calculateMatchup)(context.snapshot, compiled.battle);
+      calculation = (release.serverId === (sourceMetadata?.serverId ?? "cn") && calculateOverride ? calculateOverride : calculateMatchup)(context.snapshot, compiled.battle);
     } catch (error) {
       throw new CliError("CALCULATION_FAILED", error.message);
     }

@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, symlinkSync } from "node:fs";
+import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, renameSync, symlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -107,8 +107,8 @@ export function copyGlobalRelease(root, sourceDirectory) {
   return target;
 }
 
-/** Build only a pinned Git archive; never copy a dirty checkout as global source. */
-export function buildGlobalRelease({ root = ROOT, run = execute } = {}) {
+/** Export the independent international pin for Web and CLI, without a build. */
+export function prepareGlobalSource({ root = ROOT, run = execute, reuse = false, allowFetch = true } = {}) {
   root = realpathSync(root);
   const { sourceRevision } = readGlobalReleasePin(root);
   const modules = path.join(root, "node_modules");
@@ -117,10 +117,22 @@ export function buildGlobalRelease({ root = ROOT, run = execute } = {}) {
   const output = requireInside(root, path.join(root, "output"));
   mkdirSync(output, { recursive: true });
   requireInside(root, realpathSync(output));
+  const receipt = path.join(output, "cli-global-source-" + sourceRevision + ".json");
+  if (reuse && existsSync(receipt)) {
+    const cached = JSON.parse(readFileSync(receipt, "utf8"));
+    const source = requireInside(output, cached.source);
+    requireInside(output, realpathSync(source));
+    if (cached.sourceRevision !== sourceRevision || !existsSync(path.join(source, "src/domain/server-environment.js")) ||
+      !existsSync(path.join(source, "src/features/balance-comparison/model.js"))) {
+      throw new Error("Cached global CLI release source is incomplete; remove its receipt and retry");
+    }
+    return { sourceRevision, source };
+  }
   const source = mkdtempSync(path.join(output, "global-source-" + sourceRevision + "-"));
   const archive = requireInside(output, source + ".tar");
   const gitOptions = { cwd: root };
   if (run("git", ["cat-file", "-e", sourceRevision + "^{commit}"], { ...gitOptions, allowFailure: true }) !== 0) {
+    if (!allowFetch) throw new Error("Pinned global source is missing locally; fetch origin " + sourceRevision + " before using CLI");
     run("git", ["fetch", "--depth=1", "--no-tags", "--no-write-fetch-head", "origin", sourceRevision], gitOptions);
     run("git", ["cat-file", "-e", sourceRevision + "^{commit}"], gitOptions);
   }
@@ -129,6 +141,18 @@ export function buildGlobalRelease({ root = ROOT, run = execute } = {}) {
   const childModules = requireInside(source, path.join(source, "node_modules"));
   if (existsSync(childModules)) throw new Error("Pinned source unexpectedly includes node_modules");
   symlinkSync(modules, childModules, process.platform === "win32" ? "junction" : "dir");
+  if (reuse) {
+    const pendingReceipt = source + ".receipt.tmp";
+    writeFileSync(pendingReceipt, JSON.stringify({ sourceRevision, source }), "utf8");
+    renameSync(pendingReceipt, receipt);
+  }
+  return { sourceRevision, source };
+}
+
+/** Build only a pinned Git archive; never copy a dirty checkout as global source. */
+export function buildGlobalRelease({ root = ROOT, run = execute } = {}) {
+  const { sourceRevision, source } = prepareGlobalSource({ root, run });
+  const vite = path.join(realpathSync(root), "node_modules/vite/bin/vite.js");
   const childOptions = { cwd: source };
   run(process.execPath, [vite, "build", "--config", "config/vite.global.config.mjs", "--mode", "global"], childOptions);
   const target = copyGlobalRelease(root, source);

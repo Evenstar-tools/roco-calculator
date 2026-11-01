@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
@@ -7,6 +7,7 @@ import { createServer } from "vite";
 import { executeCli } from "../../src/cli/rock-calculator-cli.js";
 import { loadWebCalculator } from "../../scripts/cli/web-calculator.mjs";
 import { preparePreviewSource } from "../../scripts/build-preview-release.mjs";
+import { prepareGlobalSource } from "../../scripts/build-global-release.mjs";
 
 const root = process.cwd();
 let server;
@@ -190,5 +191,89 @@ describe("CLI fixed-source Web calculation parity", () => {
     const explicit = calculate(snapshot, input);
     expect(native.forward.selectedResult.totalDamage).toBe(explicit.forward.selectedResult.totalDamage);
     expect(native.reverse.selectedResult.totalDamage).toBe(explicit.reverse.selectedResult.totalDamage);
+  });
+
+  test("discovery filters keep hidden records resolvable while search-only placeholders cannot calculate", () => {
+    const snapshot = fixture();
+    snapshot.spirits[0].catalogAvailable = false;
+    snapshot.spirits[1].calculationStatus = "pending-race-stats";
+    const options = { cwd: root, projectRoot: root, snapshotOverride: snapshot, calculateOverride: calculate,
+      spiritDiscovery: {
+        isSpiritDiscoveryHidden: spirit => spirit.catalogAvailable === false,
+        isSpiritSearchOnly: spirit => spirit.calculationStatus === "pending-race-stats",
+      } };
+    expect(executeCli(["search", "spirit", "ordinary"], options).results).toEqual([]);
+    expect(executeCli(["search", "spirit", "minggulong"], options).results).toHaveLength(1);
+    const input = { attacker: { spirit: "ordinary", skill: "普通攻击" }, defender: { spirit: "ordinary", skill: "普通攻击" } };
+    expect(executeCli(["calculate", ...cliInput(input)], options).ok).toBe(true);
+    input.attacker.spirit = "minggulong";
+    expect(() => executeCli(["calculate", ...cliInput(input)], options)).toThrow("种族值待确认");
+  });
+});
+
+describe("international CLI uses its own pinned final Web calculation", () => {
+  let globalServer;
+  let snapshot;
+  let options;
+  let defaults;
+  let balance;
+  let weather;
+  let presentation;
+
+  beforeAll(async () => {
+    const prepared = prepareGlobalSource({ root, reuse: true, allowFetch: false });
+    globalServer = await createServer({ root: prepared.source, configFile: false, appType: "custom",
+      server: { middlewareMode: true, watch: null, hmr: false, ws: false }, optimizeDeps: { noDiscovery: true, include: [] } });
+    const loadGlobal = relative => globalServer.ssrLoadModule(path.resolve(prepared.source, relative).replaceAll("\\", "/"));
+    const environmentOverride = await loadGlobal("src/domain/server-environment.js");
+    snapshot = JSON.parse(readFileSync(path.join(prepared.source, environmentOverride.getServerRelease("global").snapshotPath), "utf8"));
+    const calculateOverride = await loadWebCalculator(globalServer, prepared.source);
+    balance = await loadGlobal("src/features/balance-comparison/model.js");
+    defaults = await loadGlobal("src/state/defaults.js");
+    weather = await loadGlobal("src/state/weather.js");
+    presentation = await loadGlobal("src/domain/result-presentation.js");
+    options = { cwd: root, projectRoot: root, snapshotOverride: snapshot, calculateOverride, environmentOverride,
+      sourceMetadata: { serverId: "global", sourceRevision: prepared.sourceRevision } };
+  }, 120_000);
+
+  afterAll(async () => { await globalServer?.close(); });
+
+  test.each([false, true])("ordinary matchup, nature and optional weather/status settlement match global Web: %s", (withStatuses) => {
+    const input = { serverId: "global", attacker: { spirit: "迪莫", skill: "光球", nature: withStatuses ? "胆小" : "普通" },
+      defender: { spirit: "水蓝蓝", skill: "水炮" },
+      ...(withStatuses ? { weather: "rain", negativeStatuses: { defender: { parasitism: 3 } },
+        calculationOptions: { includeNegativeStatusSettlement: true } } : {}) };
+    let state = defaults.createInitialState(snapshot);
+    state.serverId = "global";
+    state.mode = "single";
+    for (const side of ["attacker", "defender"]) {
+      const spiritId = snapshot.spirits.find(spirit => spirit.fullName === input[side].spirit).id;
+      const skillId = snapshot.skills.find(skill => skill.name === input[side].skill).id;
+      state.sides[side] = { ...state.sides[side], spiritId, nature: side === "attacker" && withStatuses ? "timid" : "neutral",
+        displayIvs: Object.fromEntries(Object.keys(stats).map(key => [key, 60])),
+        skills: { single: skillId, four: [skillId, null, null, null] } };
+    }
+    if (withStatuses) {
+      state = weather.synchronizeWeather(state, input.weather);
+      state.negativeStatuses = { ...state.negativeStatuses, ...input.negativeStatuses };
+      state.calculationOptions = { ...state.calculationOptions, ...input.calculationOptions };
+    }
+    const calculated = executeCli(["calculate", ...cliInput(input)], options);
+    expect(calculated.engine.serverId).toBe("global");
+    for (const direction of ["forward", "reverse"]) {
+      const expected = balance.buildBalanceComparison({ snapshot, state, activeDirection: direction }).afterView.result.selectedResult;
+      expect(calculated.results[direction].selected).toMatchObject({
+        totalDamage: expected.totalDamage, hpPercent: expected.hpPercent,
+        negativeStatusSettlement: expected.negativeStatusSettlement,
+        damagePresentation: presentation.damagePresentation(expected),
+      });
+    }
+    if (withStatuses) {
+      expect(calculated.results.forward.selected.damagePresentation.statusDamage).toBeGreaterThan(0);
+      expect(calculated.results.forward.selected.damagePresentation.damage).toBeGreaterThan(calculated.results.forward.selected.totalDamage);
+    }
+    const explained = executeCli(["explain", ...cliInput(input), "--direction", "forward"], options);
+    const expected = balance.buildBalanceComparison({ snapshot, state }).afterView.result.selectedResult;
+    expect(explained.result.combatPanel).toEqual(expected.combatPanel);
   });
 });

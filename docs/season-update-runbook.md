@@ -71,7 +71,7 @@ npm run -s data:check-updates
 
 6. 同步 CLI 与三端：
 
-   国服 Web 与默认 CLI 共用 `config/preview-release.json`；更新该 pin 后同步检查 CLI，避免只更新网页。运行 `npm run -s cli -- meta` 核对赛季、资料版本和源码提交，再执行 `npm run cli:test`。新增技能、特殊等级及结算规则必须在默认 CLI 可检索、可复算；未实现的机制保持相同限制。主线旧快照不能代替当前 Web 数据，国际服与小程序按各自发布范围处理。
+   国服 Web 与默认 CLI 共用 `config/preview-release.json`；国际服 Web 与 `--server global` CLI 共用独立的 `config/global-release.json`。更新任一 pin 后执行 `npm run -s cli -- meta`、`npm run -s cli -- meta --server global` 与 `npm run cli:test`，避免只更新网页。新增技能、特殊等级及结算规则必须在对应地区 CLI 可检索、可复算；未实现的机制保持相同限制。主线旧快照不能代替当前 Web 数据，不向缺少实体的地区补写精灵。小程序按其独立发布范围处理。
 
    ```bash
    npm run miniapp:sync-core

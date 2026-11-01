@@ -37,7 +37,7 @@
 
 - 当用户要求计算、复算、验算、解释或比较《洛克王国：世界》PVP 伤害时，必须先读取并使用项目 Skill：`.agents/skills/rock-calculator-cli/SKILL.md`。
 - 普通计算只调用 `npm run -s cli -- ...`；不要把 `src/domain/` 计算源码或 `data/snapshots/current.json` 加载进模型上下文。
-- CLI 每次随国服数据与计算规则同步：默认入口复用 Web 的 `config/preview-release.json` 固定源码和最终结算入口，不读取旧主线快照冒充当前赛季。更新发布 pin 或计算规则后执行 `npm run cli:test`，核对 `meta` 的 `seasonId`、`catalogVersion` 和 `sourceRevision`；CLI 回归同时纳入发布关键测试。国际服仍按自身数据边界隔离。
+- CLI 每次随对应地区 Web 同步：国服默认入口使用 `config/preview-release.json`，`--server global` 或 JSON `serverId:"global"` 使用独立的 `config/global-release.json`；各自复用固定源码和最终结算，不读取旧主线快照冒充当前版本。更新任一发布 pin 或计算规则后执行 `npm run cli:test`，分别核对两服 `meta` 的版本和 `sourceRevision`；CLI 回归同时纳入发布关键测试。数据、规则、实体与学习面保持地区隔离，未开放资料仅供检索，不能计算。
 - CLI 结果中的数据版本、规则版本和 `inputDigest` 是本次计算的交接与复现凭据。
 
 ## UI/UX 优化轮

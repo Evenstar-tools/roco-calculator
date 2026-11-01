@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test, vi } from "vitest";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmdirSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { buildGlobalRelease, copyGlobalRelease, readGlobalReleasePin, requireInside } from "../../scripts/build-global-release.mjs";
+import { buildGlobalRelease, copyGlobalRelease, prepareGlobalSource, readGlobalReleasePin, requireInside } from "../../scripts/build-global-release.mjs";
 
 const revision = "a".repeat(40);
 const temporaryParent = realpathSync(os.tmpdir());
@@ -68,6 +68,41 @@ afterEach(() => {
 });
 
 describe("pinned Global release assembly", () => {
+  test("CLI reuses only its matching global pin without building, fetching or overlaying Web", () => {
+    const root = fixture();
+    const run = vi.fn((command, args) => {
+      if (command === "tar") {
+        put(args.at(-1), "src/domain/server-environment.js");
+        put(args.at(-1), "src/features/balance-comparison/model.js");
+      }
+      return 0;
+    });
+    const first = prepareGlobalSource({ root, run, reuse: true, allowFetch: false });
+    expect(prepareGlobalSource({ root, run, reuse: true, allowFetch: false })).toEqual(first);
+    expect(run.mock.calls).toHaveLength(3);
+    const receipt = path.join(root, "output", "cli-global-source-" + revision + ".json");
+    expect(JSON.parse(readFileSync(receipt, "utf8"))).toEqual(first);
+    expect(readdirSync(path.join(root, "output")).some(name => name.endsWith(".tmp"))).toBe(false);
+    const nextRevision = "b".repeat(40);
+    put(root, "config/global-release.json", JSON.stringify({ schemaVersion: 1, sourceRevision: nextRevision }));
+    const next = prepareGlobalSource({ root, run, reuse: true, allowFetch: false });
+    expect(next.sourceRevision).toBe(nextRevision);
+    expect(next.source).not.toBe(first.source);
+    expect(run.mock.calls).toHaveLength(6);
+    expect(run.mock.calls.some(([, args]) => args.includes("fetch") || args.includes("build"))).toBe(false);
+    expectNotAssembled(root);
+  });
+
+  test("CLI missing commit fails without fetching, publishing a receipt or falling back", () => {
+    const root = fixture();
+    const run = vi.fn(() => 1);
+    expect(() => prepareGlobalSource({ root, run, reuse: true, allowFetch: false })).toThrow("Pinned global source is missing locally");
+    expect(run.mock.calls).toHaveLength(1);
+    expect(run.mock.calls[0][1][0]).toBe("cat-file");
+    expect(existsSync(path.join(root, "output", "cli-global-source-" + revision + ".json"))).toBe(false);
+    expectNotAssembled(root);
+  });
+
   test("requires a fixed full commit and rejects a dirty checkout outside output", () => {
     const root = fixture();
     expect(readGlobalReleasePin(root).sourceRevision).toBe(revision);

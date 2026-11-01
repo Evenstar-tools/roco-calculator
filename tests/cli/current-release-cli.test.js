@@ -7,6 +7,7 @@ import { executeCurrentCli } from "../../scripts/cli/current-release.mjs";
 
 const root = process.cwd();
 const pin = JSON.parse(readFileSync(path.join(root, "config/preview-release.json"), "utf8"));
+const globalPin = JSON.parse(readFileSync(path.join(root, "config/global-release.json"), "utf8"));
 const entry = path.join(root, "scripts/cli/rock-calculator.mjs");
 
 function run(args, input) {
@@ -42,6 +43,7 @@ describe("default CLI follows the pinned CN Web release", () => {
     expect(search.results).toContainEqual(expect.objectContaining({
       id: "skill_preview_s5_dream-building", name: "筑梦", cost: 7, basePower: null,
     }));
+    expect(run(["search", "spirit", "圣龙阿布"]).results).toEqual([]);
   }, 120_000);
 
   test("calculate and explain use the Web default special level, not the old level-60 core", () => {
@@ -63,13 +65,63 @@ describe("default CLI follows the pinned CN Web release", () => {
     expect(level89.result.combatPanel.attacker.physicalAttack).toBeLessThan(explained.result.combatPanel.attacker.physicalAttack);
   }, 120_000);
 
-  test("CN runtime injection cannot introduce S5 entities into the unverified global CLI", () => {
+  test("unreleased discovery keyword returns the 27 Web placeholders without making the label calculable", () => {
+    const search = run(["search", "spirit", "未开放", "--limit", "40"]);
+    expect(search.ok).toBe(true);
+    expect(search.results).toHaveLength(27);
+    expect(search.results.every(spirit => spirit.calculationStatus === "pending-race-stats")).toBe(true);
+    expect(search.results.some(spirit => spirit.name === "圣龙阿布")).toBe(false);
+    const spirit = search.results[0];
+    expect(run(["search", "spirit", spirit.id]).results).toContainEqual(spirit);
+    expect(run(["search", "spirit", spirit.name]).results).toContainEqual(spirit);
+    const input = { attacker: { spirit: spirit.id, skill: "光球" }, defender: { spirit: "迪莫", skill: "光球" } };
+    expect(run(["calculate", "--input", "-"], input).error.code).toBe("SPIRIT_DATA_UNAVAILABLE");
+    input.attacker.spirit = "未开放";
+    const invalidName = run(["calculate", "--input", "-"], input);
+    expect(invalidName.error.code).toBe("ENTITY_NOT_FOUND");
+    expect(invalidName.error.candidates).toEqual([]);
+    expect(run(["search", "spirit", "未开放", "--limit", "40", "--server", "global"]).results).toEqual([]);
+  }, 120_000);
+
+});
+
+describe("default CLI follows the independent verified international release", () => {
+  const input = { attacker: { spirit: "迪莫", skill: "光球" }, defender: { spirit: "水蓝蓝", skill: "水炮" } };
+
+  test("missing international pin never falls back to CN or a historical snapshot", async () => {
+    await expect(executeCurrentCli(["meta", "--server", "global"], { cwd: root, projectRoot: path.join(root, "config") }))
+      .rejects.toThrow("缺少国际服发布 pin");
+  });
+
+  test("meta, search and schema use global S3; CN-only entities stay unavailable", () => {
     const meta = run(["meta", "--server", "global"]);
-    expect(meta.engine).toMatchObject({ serverId: "global", availability: "unverified", dataVersion: null });
-    expect(meta.counts).toBeNull();
-    const search = run(["search", "skill", "筑梦", "--server", "global"]);
-    expect(search.exitCode).toBe(2);
-    expect(search.ok).toBe(false);
-    expect(search.error.code).toBe("SERVER_DATA_UNVERIFIED");
+    expect(meta.engine).toMatchObject({ serverId: "global", availability: "verified", seasonId: "S3",
+      dataVersion: globalPin.dataVersion, rulesVersion: globalPin.rulesVersion, sourceRevision: globalPin.sourceRevision });
+    expect(meta.engine.catalogVersion).toBe(globalPin.dataVersion);
+    expect(meta.counts.spirits).toBeGreaterThan(0);
+    expect(meta.counts.skills).toBeGreaterThan(0);
+    expect(run(["search", "skill", "筑梦", "--server=global"]).results).toEqual([]);
+    expect(run(["search", "spirit", "圣龙阿布", "--server", "global"]).results).toEqual([]);
+    expect(run(["schema", "--server", "global"]).servers.global).toContain("已核验");
+    expect(run(["schema"]).servers.global).toContain("已核验");
+  }, 120_000);
+
+  test("flag and JSON-only server selection agree and explicit cross-server claims fail", () => {
+    const byFlag = run(["calculate", "--input", "-", "--server=global"], input);
+    const byJson = run(["calculate", "--input", "-"], { ...input, serverId: "global" });
+    expect(byJson.ok).toBe(true);
+    expect(byJson.engine.sourceRevision).toBe(globalPin.sourceRevision);
+    expect(byJson.results).toEqual(byFlag.results);
+    expect(byJson.inputDigest).toBe(byFlag.inputDigest);
+    expect(byJson.results.forward.selected.totalDamage).toBeGreaterThan(0);
+    const mismatchedServer = run(["calculate", "--input", "-", "--server", "cn"], { ...input, serverId: "global" });
+    expect(mismatchedServer.error.code).toBe("SERVER_MISMATCH");
+    const mismatchedVersion = run(["calculate", "--input", "-"], { ...input, serverId: "global", dataVersion: "s4-2026-09-10" });
+    expect(mismatchedVersion.error.code).toBe("INCOMPATIBLE_SERVER_VERSION");
+    const cnEntity = run(["calculate", "--input", "-", "--server", "global"], {
+      ...input, attacker: { spirit: "冥古龙", skill: "荒芜之噬" },
+    });
+    expect(cnEntity.ok).toBe(false);
+    expect(cnEntity.error.code).toBe("ENTITY_NOT_FOUND");
   }, 120_000);
 });
