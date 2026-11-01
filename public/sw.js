@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.2.8-load-recovery-20261101";
+const CACHE_NAME = "rock-calculator-webapp-v2.2.8-ranking-history-20261101";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 // 图片长期缓存不随发布清空；摘要由 scripts/stamp-image-cache.mjs 按图片内容写入。
 const IMAGE_CACHE_PREFIX = "rock-calculator-images-";
