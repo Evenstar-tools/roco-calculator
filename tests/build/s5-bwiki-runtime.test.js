@@ -33,12 +33,21 @@ describe("isolated BWIKI S5 runtime", () => {
     expect(runtime.meta.id).toBe("s4-2026-09-10");
     const bruce = runtime.spirits.find(spirit => spirit.fullName === "圣冠布鲁斯");
     expect(bruce.id).toBe("spirit_preview_s5_boss-ice-bruce");
-    expect(bruce.raceStats.physicalAttack).toBe(103);
-    expect(bruce.raceStats.magicalAttack).toBe(28);
+    // Live S5 roster revision 20305 and both rendered species pages agree.
+    expect(bruce.raceStats).toEqual({ hp: 73, physicalAttack: 103, magicalAttack: 28,
+      physicalDefense: 114, magicalDefense: 88, speed: 90, total: 496 });
+    const monarch = runtime.spirits.find(spirit => spirit.fullName === "琉璃君主");
+    expect(monarch.id).toBe("spirit_preview_s5_boss-glass-jellyfish");
+    expect(monarch.raceStats).toEqual({ hp: 141, physicalAttack: 40, magicalAttack: 89,
+      physicalDefense: 93, magicalDefense: 136, speed: 95, total: 594 });
+    for (const spirit of [bruce, monarch]) {
+      expect(spirit.previewIdentity.raceStatsPlaceholder).toBe(false);
+      expect(spirit.previewIdentity.raceStatsEvidence).toMatchObject({ kind: "bwiki-season", revision: 20305 });
+      expect(withWebPreview(runtime).spirits.find(entry => entry.id === spirit.id).raceStats).toEqual(spirit.raceStats);
+    }
     expect(bruce.asset.localUrl).toContain("/assets/spirits/s5-preview/");
     expect(runtime.traits.find(trait => bruce.traitIds.includes(trait.id)).previewIdentity.mechanicKey)
       .toBe("boss-ice-bruce");
-    expect(withWebPreview(runtime).spirits.find(spirit => spirit.id === bruce.id).raceStats).toEqual(bruce.raceStats);
   });
 
   it("retains rank eligibility and newly published learning methods after compaction", () => {
