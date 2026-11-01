@@ -11,8 +11,6 @@ import {
 } from "@phosphor-icons/react";
 import { createSpeedTargetCatalog, DEFAULT_RANKING_PROFILES, speedQuery, speedReference, speedBadge, speedMatchSummary } from "../features/team-ability/domain/ranking-tools.js";
 import {
-  lazy,
-  Suspense,
   useEffect,
   useMemo,
   useRef,
@@ -51,7 +49,10 @@ import {
 } from "../domain/stat.js";
 import { NatureSelect } from "./NatureSelect.jsx";
 import { StatIcon } from "./StatIcon.jsx";
-const DurabilityRankingView = lazy(() => import("./RankingsPanel.jsx").then((module) => ({ default: module.DurabilityRankingView })));
+import { SpiritImage } from "./SpiritImage.jsx";
+import { FeatureBoundary } from "../runtime/FeatureBoundary.jsx";
+import { recoverableLazy } from "../runtime/chunk-recovery.js";
+const DurabilityRankingView = recoverableLazy(() => import("./RankingsPanel.jsx").then((module) => ({ default: module.DurabilityRankingView })));
 
 const INVESTMENT_STATS = Object.freeze([
   { key: "physicalAttack", label: "物攻" },
@@ -416,7 +417,7 @@ function SpeedTargetPicker({ onTargetChange, selected, targets }) {
                 role="option"
                 type="button"
               >
-                {assetUrl(target.spirit) ? <img alt="" loading="lazy" decoding="async" src={assetUrl(target.spirit)} /> : null}
+                {assetUrl(target.spirit) ? <SpiritImage name={target.name} alt="" loading="lazy" decoding="async" src={assetUrl(target.spirit)} /> : null}
                 <span>
                   <strong>{t(target.name)}</strong>
                   <small>{speedTargetMeta(target, {}, t)}</small>
@@ -637,7 +638,7 @@ function SpeedRail({
           <span aria-hidden="true" className="ability-speed__line" />
           {railItems.map((item) => item.kind === "current" ? (
             <div className="ability-speed__marker is-current" key={item.id} ref={currentMarkerRef} role="listitem">
-              {assetUrl(currentSpirit) ? <img alt="" src={assetUrl(currentSpirit)} /> : null}
+              {assetUrl(currentSpirit) ? <SpiritImage name={currentSpirit?.fullName} alt="" src={assetUrl(currentSpirit)} /> : null}
               <b>{formatNumber(item.speed)}</b>
               <span>{isDraft ? t("试算配置") : t("当前配置")}</span>
             </div>
@@ -652,7 +653,7 @@ function SpeedRail({
               role="listitem"
               type="button"
             >
-              {assetUrl(item.target.spirit) ? <img alt="" src={assetUrl(item.target.spirit)} /> : null}
+              {assetUrl(item.target.spirit) ? <SpiritImage name={item.target.name} alt="" src={assetUrl(item.target.spirit)} /> : null}
               <b>{item.target.speed}</b>
               <span>{t(item.target.name)}</span>
               <small>
@@ -830,7 +831,7 @@ export function SpeedOverview({
                         title={`${target.matchReasons?.length ? `${t("命中{value}", { value: target.matchReasons.map(reason => t(reason)).join(" · ") })} · ` : ""}${t(target.name)} · ${t(target.qualifier)} · ${t(target.formRole === "boss" ? "首领" : "最终形态")}`}
                         type="button"
                       >
-                        {assetUrl(target.spirit) ? <img alt="" loading="lazy" decoding="async" src={assetUrl(target.spirit)} /> : null}
+                        {assetUrl(target.spirit) ? <SpiritImage name={target.name} alt="" loading="lazy" decoding="async" src={assetUrl(target.spirit)} /> : null}
                         {iconOnly ? <small className="speed-profile-badge">{t(speedBadge(target))}</small> : <span>
                           <strong>{t(target.name)}</strong>
                           <small>{speedTargetMeta(target, {}, t)}</small>
@@ -938,7 +939,7 @@ function RankingPodium({ active, currentSpiritId, metric, rows }) {
             key={entry.id}
           >
             <span>{entry.globalRank[metric]}</span>
-            {assetUrl(entry.spirit) ? <img alt="" src={assetUrl(entry.spirit)} /> : null}
+            {assetUrl(entry.spirit) ? <SpiritImage name={entry.name} alt="" src={assetUrl(entry.spirit)} /> : null}
             <strong>{t(entry.name)}</strong>
             <b>{formatNumber(entry.durability.display[metric])}</b>
           </li>
@@ -950,7 +951,7 @@ function RankingPodium({ active, currentSpiritId, metric, rows }) {
 
 function FullRanking(props) {
   const { t } = useLocale();
-  return <Suspense fallback={<div role="status">{t("正在打开耐久榜…")}</div>}><DurabilityRankingView {...props} /></Suspense>;
+  return <FeatureBoundary fallback={<div role="status">{t("正在打开耐久榜…")}</div>}><DurabilityRankingView {...props} /></FeatureBoundary>;
 }
 
 export function AbilityWorkbench({
