@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { IS_PREVIEW_BUILD, IS_S5_CN_BUILD } from "./preview-channel.js";
 import { metrics } from "../analytics/metrics.js";
 import { readThemeSetting } from "../state/display-settings.js";
-import { applyPageMetadata } from "../seo/page-metadata.js";
+import { applyPageMetadata, HOME_PAGE_METADATA } from "../seo/page-metadata.js";
 import { readGlobalLocale, resolveEntry, routeFor, writeManualPreference } from "./routes.js";
 import { browserEntry } from "./browser-entry.js";
 import { decodeShareEnvelope } from "../state/share.js";
@@ -86,7 +86,7 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
     document.documentElement.dataset.server = global ? "global" : "cn";
     if (!isDesktop && !IS_PREVIEW_BUILD) {
       document.querySelector('link[rel="manifest"]')?.setAttribute("href", global ? `/manifest-global-${entry.locale}.webmanifest` : "/manifest.webmanifest");
-      document.querySelector('meta[name="apple-mobile-web-app-title"]')?.setAttribute("content", global ? copy.title : "洛克计算器");
+      document.querySelector('meta[name="apple-mobile-web-app-title"]')?.setAttribute("content", global ? copy.title : HOME_PAGE_METADATA.title);
     }
     metrics.setServer(global ? "global" : "cn");
     if (global) applyPageMetadata({ ...copy, canonical: `https://rococalc.top${routeFor("global", entry.locale)}` });

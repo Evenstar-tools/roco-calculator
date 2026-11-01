@@ -31,7 +31,7 @@ test.each([
 });
 
 test.each([
-  ["cn/index.html", "zh-CN", "洛克计算器 · 国服", "/cn/"],
+  ["cn/index.html", "zh-CN", "洛克计算器 · S5「圣龙宝藏」", "/cn/"],
   ["en/index.html", "en", "Roco Calculator · Global", "/en/"],
   ["global/zh-CN/index.html", "zh-CN", "洛克计算器 · 国际服", "/global/zh-CN/"],
   ["jp/index.html", "ja", "Roco Calculator · グローバル版", "/jp/"],

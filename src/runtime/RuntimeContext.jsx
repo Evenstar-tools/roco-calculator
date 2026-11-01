@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react";
 import { getServerRelease } from "../domain/server-environment.js";
-import { IS_S5_CN_BUILD } from "./preview-channel.js";
+import { IS_PREVIEW_BUILD, IS_S5_CN_BUILD } from "./preview-channel.js";
 
 function runtimeRelease(serverId) {
   const release = getServerRelease(serverId);
   // Preserve the saved calculation contract; this identifies the current reviewed catalog.
-  return serverId === "cn" && IS_S5_CN_BUILD ? { ...release, seasonId: "S5", seasonLabel: "S5" } : release;
+  return serverId === "cn" && IS_S5_CN_BUILD ? { ...release, seasonId: "S5", seasonLabel: IS_PREVIEW_BUILD ? "S5" : "S5「圣龙宝藏」" } : release;
 }
 
 const RuntimeContext = createContext({ serverId: "cn", locale: "zh-CN", release: runtimeRelease("cn") });

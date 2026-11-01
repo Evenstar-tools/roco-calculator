@@ -1,7 +1,7 @@
 import { IS_PREVIEW_BUILD } from "../runtime/preview-channel.js";
 
 export const HOME_PAGE_METADATA = Object.freeze({
-  title: "洛克计算器｜洛克王国：世界 PVP 伤害计算与配队",
+  title: "洛克计算器 · S5「圣龙宝藏」",
   description: "洛克计算器 RocoCalc（Roco Calculator）是免费的洛克王国：世界 PVP 伤害计算工具，采用国服 S5 数据，支持队伍搭配、技能检索、属性查询、速度耐久排行与电鹿斩杀线。提供网页版和 Windows 版。",
   canonical: "https://rococalc.top/",
 });
