@@ -18,7 +18,7 @@ import { calculatorResultKind, useCalculationMetrics, useLineupMetrics } from ".
 import { buildRefractionHint, recordRefractionUsage } from "./domain/refraction.js";
 import { expireTransientGainSources, recordGainChanges, recordSkillAndPostAttackGains } from "./domain/gain-provenance.js";
 import { recordSkillActivation } from "./domain/skill-gain-summary.js";
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AdvancedOptions } from "./components/AdvancedOptions.jsx";
 import { AppHeader } from "./components/AppHeader.jsx";
 import { EmptyStateGuide } from "./components/EmptyStateGuide.jsx";
@@ -136,16 +136,18 @@ import { createTeamMemberFromSide } from "./state/team-presets.js";
 import { FEATURED_USER_RELEASE } from "./data/user-release-notes.js";
 import { captureDamageComparison, damageComparisonSourceKey, importDamageComparisonCandidate } from "./state/damage-comparison.js";
 import { DAMAGE_COMPARISON_IMPORT_NOTICE } from "./domain/skill-damage-ranking.js";
+import { FeatureBoundary } from "./runtime/FeatureBoundary.jsx";
+import { recoverableLazy } from "./runtime/chunk-recovery.js";
 
 const loadSkillQueryPanel = () => import("./features/skill-query/SkillQueryPanel.jsx");
-const SkillQueryPanel = lazy(loadSkillQueryPanel);
-const TransmissionPanel = lazy(() => import("./features/transmission/TransmissionPanel.jsx"));
-const TypeQueryPanel = lazy(() => import("./features/type-query/TypeQueryPanel.jsx"));
-const TypeChartPanel = lazy(() => import("./features/type-query/TypeChartPanel.jsx"));
-const RankingsPanel = lazy(() => import("./components/RankingsPanel.jsx"));
-const DamageComparisonDialog = lazy(() => import("./components/DamageComparisonDialog.jsx"));
-const StarfallThresholdDialog = lazy(() => import("./components/StarfallThresholdDialog.jsx"));
-const DeerPage = lazy(() => import("./features/deer/DeerPage.jsx"));
+const SkillQueryPanel = recoverableLazy(loadSkillQueryPanel);
+const TransmissionPanel = recoverableLazy(() => import("./features/transmission/TransmissionPanel.jsx"));
+const TypeQueryPanel = recoverableLazy(() => import("./features/type-query/TypeQueryPanel.jsx"));
+const TypeChartPanel = recoverableLazy(() => import("./features/type-query/TypeChartPanel.jsx"));
+const RankingsPanel = recoverableLazy(() => import("./components/RankingsPanel.jsx"));
+const DamageComparisonDialog = recoverableLazy(() => import("./components/DamageComparisonDialog.jsx"));
+const StarfallThresholdDialog = recoverableLazy(() => import("./components/StarfallThresholdDialog.jsx"));
+const DeerPage = recoverableLazy(() => import("./features/deer/DeerPage.jsx"));
 const preloadSkillQuery = (serverId, snapshot, locale) => {
   void loadSkillQueryPanel().catch(() => {});
   void Promise.all([
@@ -2428,9 +2430,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   };
 
   if (!active) return null;
-  if (deerOpen) return <Suspense fallback={<p role="status">{t("正在打开电鹿工具…")}</p>}>
+  if (deerOpen) return <FeatureBoundary onClose={() => setDeerOpen(false)} fallback={<p role="status">{t("正在打开电鹿工具…")}</p>}>
     <DeerPage onReturn={(event) => { event?.preventDefault(); setDeerOpen(false); }} />
-  </Suspense>;
+  </FeatureBoundary>;
 
   return (
     <>
@@ -2864,7 +2866,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       </div>
 
       </WorkspaceOverlays>
-      {starfallSource ? <Suspense fallback={<div role="status">{t("正在打开星陨斩杀线…")}</div>}><StarfallThresholdDialog
+      {starfallSource ? <FeatureBoundary onClose={() => setStarfallSource(null)} fallback={<div role="status">{t("正在打开星陨斩杀线…")}</div>}><StarfallThresholdDialog
         key={JSON.stringify(starfallSource)} snapshot={snapshot} source={starfallSource} onClose={() => setStarfallSource(null)}
         onApply={(next, { keepOpen = false, notice = "" } = {}) => {
           if (JSON.stringify(stateRef.current) !== JSON.stringify(starfallSource.state)) {
@@ -2876,8 +2878,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           setStarfallSource(keepOpen ? { ...starfallSource, state: next } : null);
           if (notice) setToast(notice);
         }}
-      /></Suspense> : null}
-      {damageComparisonEnabled && comparisonSource ? <Suspense fallback={<div role="status">{t("正在打开承伤对比…")}</div>}><DamageComparisonDialog
+      /></FeatureBoundary> : null}
+      {damageComparisonEnabled && comparisonSource ? <FeatureBoundary onClose={() => setComparisonSource(null)} fallback={<div role="status">{t("正在打开承伤对比…")}</div>}><DamageComparisonDialog
         key={damageComparisonSourceKey(comparisonSource)} preferences={comparisonPreferences} onPreferencesChange={setComparisonPreferences}
         snapshot={snapshot} source={comparisonSource} onClose={() => setComparisonSource(null)}
         onImport={(spirit, templateId, selectedSkillIndex, inheritTargetStatuses) => {
@@ -2890,19 +2892,19 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           setComparisonSource(null);
           setToast(DAMAGE_COMPARISON_IMPORT_NOTICE);
         }}
-      /></Suspense> : null}
-      {rankingsVisited ? <Suspense fallback={<div role="status">{t("正在打开排行榜…")}</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></Suspense> : null}
-      {transmissionOpen && <Suspense fallback={<div role="status">{t("正在打开传动计算器…")}</div>}><TransmissionPanel snapshot={snapshot} sides={state.sides} getSpiritConfiguration={storedData.getSpiritConfiguration} onClose={() => setTransmissionOpen(false)} /></Suspense>}
-      {typeQueryOpen && <Suspense fallback={<div role="status">{t(typeQueryOpen === "chart" ? "正在打开克制图…" : "正在打开属性查询…")}</div>}>
+      /></FeatureBoundary> : null}
+      {rankingsVisited ? <FeatureBoundary onClose={() => { setRankingKind(null); setRankingsVisited(false); }} fallback={<div role="status">{t("正在打开排行榜…")}</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></FeatureBoundary> : null}
+      {transmissionOpen && <FeatureBoundary onClose={() => setTransmissionOpen(false)} fallback={<div role="status">{t("正在打开传动计算器…")}</div>}><TransmissionPanel snapshot={snapshot} sides={state.sides} getSpiritConfiguration={storedData.getSpiritConfiguration} onClose={() => setTransmissionOpen(false)} /></FeatureBoundary>}
+      {typeQueryOpen && <FeatureBoundary onClose={() => setTypeQueryOpen(false)} fallback={<div role="status">{t(typeQueryOpen === "chart" ? "正在打开克制图…" : "正在打开属性查询…")}</div>}>
         {typeQueryOpen === "chart" ? <TypeChartPanel typeChart={snapshot.typeChart} onClose={() => setTypeQueryOpen(false)} />
           : <TypeQueryPanel typeChart={snapshot.typeChart} spirits={snapshot.spirits} spiritFilterRevision={snapshot.meta?.revisions?.spiritFilter} selectedTypes={queryTypes} onTypesChange={setQueryTypes}
               initialView={typeQueryReturnView.current} onWarmSpirit={() => preloadSkillQuery(serverId, snapshot, locale)} onOpenSpirit={openTypeSpirit}
               onClose={() => { typeQueryReturnView.current = null; setTypeQueryOpen(false); }} />}
-      </Suspense>}
+      </FeatureBoundary>}
       {openedCondition && <CompactConditionDialog model={openedCondition} anchor={conditionTarget.anchor} onClose={() => setConditionTarget(null)} />}
-      {skillQueryOpen && <Suspense fallback={<div role="status">{t("正在打开技能查询…")}</div>}><SkillQueryPanel snapshot={snapshot} skills={snapshot.skills} spirits={snapshot.spirits}
+      {skillQueryOpen && <FeatureBoundary onClose={() => setSkillQueryOpen(false)} fallback={<div role="status">{t("正在打开技能查询…")}</div>}><SkillQueryPanel snapshot={snapshot} skills={snapshot.skills} spirits={snapshot.spirits}
         initialSpiritId={skillQueryOpen.spiritId} onBackToSource={skillQueryOpen.from === "types" ? returnToTypeQuery : undefined}
-        onClose={skillQueryOpen.from === "types" ? returnToTypeQuery : () => setSkillQueryOpen(false)} /></Suspense>}
+        onClose={skillQueryOpen.from === "types" ? returnToTypeQuery : () => setSkillQueryOpen(false)} /></FeatureBoundary>}
       <FloatingUndoButton count={undoCount} onUndo={undoLastChange} />
     </>
   );
