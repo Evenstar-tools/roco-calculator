@@ -1,5 +1,20 @@
 import { spawnSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
+import path from "node:path";
 import { test, expect } from "vitest";
+
+// 固定 S4 实战样本走历史协议入口；当前 Web/CLI 的发布 pin 由 current-release-cli.test.js 验收。
+const protocolModule = pathToFileURL(path.join(process.cwd(), "src/cli/rock-calculator-cli.js")).href;
+const protocolRunner = `
+  import { executeCli, serializeCliError } from ${JSON.stringify(protocolModule)};
+  try {
+    process.stdout.write(JSON.stringify(executeCli(process.argv.slice(1), { cwd: process.cwd(), projectRoot: process.cwd() })) + '\\n');
+  } catch (error) {
+    const serialized = serializeCliError(error);
+    process.stderr.write(JSON.stringify(serialized.payload) + '\\n');
+    process.exitCode = serialized.exitCode;
+  }
+`;
 
 // 2026-10-15 用户游戏截图：六项能力直接断言，不从计算结果倒推目标面板。
 const fastSpecialIvs = { hp:60,physicalAttack:0,magicalAttack:60,speed:60,physicalDefense:0,magicalDefense:0 };
@@ -30,11 +45,12 @@ test.each(cases)("真实面板约束下无攻防覆盖复算：%s", (_label, bat
   const input = {schemaVersion:1,level:60,...battle};
   expect(input.forward.overrides?.attackerStat).toBeUndefined();
   expect(input.forward.overrides?.defenderDefense).toBeUndefined();
-  const run = spawnSync(process.execPath,["scripts/cli/rock-calculator.mjs","explain","--input","-","--direction","forward"],{
+  const run = spawnSync(process.execPath,["--input-type=module","-e",protocolRunner,"--","explain","--input","-","--direction","forward"],{
     cwd:process.cwd(),input:JSON.stringify(input),encoding:"utf8",
   });
   expect(run.status,run.stderr).toBe(0);
   const out=JSON.parse(run.stdout);
+  expect(out.engine).toMatchObject({serverId:"cn",dataVersion:"s4-2026-09-10",rulesVersion:"s4-2026-09-10",seasonId:"S4"});
   expect(out.result.totalDamage).toBe(damage);
   const formula=out.result.formulaSteps.find(({label})=>label==="等级系数与攻防比");
   expect(formula.input).toMatchObject({attackerStat:attack,defenderDefense:defense});

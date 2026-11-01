@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.2.8-global-base-20261101";
+const CACHE_NAME = "rock-calculator-webapp-v2.2.8-abu150-20261101";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 const APP_SHELL = [
   "/manifest.webmanifest",
@@ -66,7 +66,10 @@ self.addEventListener("install", (event) => {
           await Promise.allSettled([cache.add("/global-assets/data/global-runtime.json")]);
         }
         if (paths.some((path) => !isGlobalShell(path))) {
-          await Promise.allSettled([cache.add("/data/runtime.json")]);
+          await Promise.allSettled([
+            cache.add("/data/runtime.json"),
+            cache.add("/data/user-release-notes.json"),
+          ]);
         }
       })
       .then(() => self.skipWaiting()),

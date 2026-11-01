@@ -65,6 +65,44 @@ describe("default CLI follows the pinned CN Web release", () => {
     expect(level89.result.combatPanel.attacker.physicalAttack).toBeLessThan(explained.result.combatPanel.attacker.physicalAttack);
   }, 120_000);
 
+  test.each([[99, 39, 195], [150, 90, 450]])("super Abu level %s uses the current Web passive: %s stacks and %s percent", (level, stacks, percent) => {
+    const explained = run(["explain", "--input", "-", "--direction", "forward"], {
+      attacker: { spirit: "超能阿布", skill: "偷袭", level },
+      defender: { spirit: "迪莫", skill: "光球" },
+    });
+    expect(explained.ok).toBe(true);
+    expect(explained.engine.sourceRevision).toBe(pin.sourceRevision);
+    expect(explained.result.formulaSteps.find(({ label }) => label === "等级系数与攻防比").input.level).toBe(level);
+    expect(explained.result.formulaSteps).toContainEqual(expect.objectContaining({
+      input: expect.objectContaining({
+        summary: `当前等级 ${level}；被动 ${stacks} 层 · 物攻 +${percent}%`,
+        effects: expect.arrayContaining([{ kind: "physical-attack-percent", amount: percent }]),
+      }),
+    }));
+  }, 120_000);
+
+  test("owner-specific CLI level bounds reject invalid inputs instead of clamping", () => {
+    const input = { attacker: { spirit: "阿布", skill: "偷袭", level: 150 }, defender: { spirit: "迪莫", skill: "光球" } };
+    const explained = run(["explain", "--input", "-", "--direction", "forward"], input);
+    expect(explained.ok).toBe(true);
+    expect(explained.result.formulaSteps.find(({ label }) => label === "等级系数与攻防比").input.level).toBe(150);
+    for (const attacker of [
+      { spirit: "阿布", skill: "偷袭", level: 151 },
+      { spirit: "超能阿布", skill: "偷袭", level: 151 },
+      { spirit: "冥古龙", skill: "荒芜之噬", level: 100 },
+      { spirit: "迪莫", skill: "光球", level: 61 },
+      { spirit: "阿布", skill: "偷袭", level: 150, ignoreTraits: true },
+    ]) {
+      expect(run(["calculate", "--input", "-"], { ...input, attacker })).toMatchObject({
+        ok: false, error: { code: "INPUT_VALIDATION_FAILED", field: "attacker.level" },
+      });
+    }
+    const schema = run(["schema"]).compactInput.fields.side.level;
+    expect(schema).toContain("阿布家族1到150");
+    expect(schema).toContain("冥古龙1到99");
+    expect(schema).toContain("普通精灵仅60");
+  }, 120_000);
+
   test("unreleased discovery keyword returns the 27 Web placeholders without making the label calculable", () => {
     const search = run(["search", "spirit", "未开放", "--limit", "40"]);
     expect(search.ok).toBe(true);

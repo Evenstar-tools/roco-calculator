@@ -1,5 +1,11 @@
 import path from "node:path";
 
+function invalidLevel(sideKey, message) {
+  return Object.assign(new RangeError(message), {
+    code: "INPUT_VALIDATION_FAILED", details: { field: `${sideKey}.level` },
+  });
+}
+
 /** Resolve all calculation modules from the same source revision as the Web data. */
 export async function loadWebCalculator(server, sourceRoot) {
   const load = (relative) => server.ssrLoadModule(path.resolve(sourceRoot, relative).replaceAll("\\", "/"));
@@ -48,7 +54,7 @@ export async function loadWebCalculator(server, sourceRoot) {
       if (side.level === undefined) continue;
       const variable = levels.supportsS5PreviewBattleLevel(snapshot, side) && !side.ignoreTraits;
       if (!variable) {
-        if (side.level !== 60) throw new Error(`${sideKey}.level 仅支持原生特殊等级特性；普通精灵或禁用特性时只能为60`);
+        if (side.level !== 60) throw invalidLevel(sideKey, `${sideKey}.level 仅支持原生特殊等级特性；普通精灵或禁用特性时只能为60`);
         continue;
       }
       const spirit = snapshot.spirits.find(entry => entry.id === side.spiritId);
@@ -56,6 +62,9 @@ export async function loadWebCalculator(server, sourceRoot) {
         entry.previewIdentity?.key === spirit.previewIdentity?.key);
       const control = traits.getS5PreviewTraitInputs(trait)?.find(input => input.contextKey.endsWith("BattleLevel"));
       if (!control) throw new Error(`${sideKey}.level 的当前等级控制未接入`);
+      if (!Number.isSafeInteger(side.level) || side.level < control.min || side.level > control.max) {
+        throw invalidLevel(sideKey, `${sideKey}.level 必须是${control.min}到${control.max}的整数`);
+      }
       state = session.updateMirroredTraitContext(state, { direction: outgoing, key: control.id, value: side.level }).state;
     }
     if (battle.weather !== undefined) state = weather.synchronizeWeather(state, battle.weather);

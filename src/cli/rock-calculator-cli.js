@@ -566,8 +566,8 @@ function compileSide(context, sideInput, field, mode) {
       { field: `${field}.acquiredTraitIds` },
     );
   }
-  if (sideInput.level !== undefined && (!Number.isSafeInteger(sideInput.level) || sideInput.level < 1 || sideInput.level > 99)) {
-    throw new CliError("INPUT_VALIDATION_FAILED", `${field}.level 必须是1到99的整数`, { field: `${field}.level` });
+  if (sideInput.level !== undefined && (!Number.isSafeInteger(sideInput.level) || sideInput.level < 1 || sideInput.level > 150)) {
+    throw new CliError("INPUT_VALIDATION_FAILED", `${field}.level 必须是1到150的整数，并符合该精灵当前特性范围`, { field: `${field}.level` });
   }
   if (sideInput.ignoreTraits !== undefined && typeof sideInput.ignoreTraits !== "boolean") {
     throw new CliError("INPUT_VALIDATION_FAILED", `${field}.ignoreTraits 必须是布尔值`, { field: `${field}.ignoreTraits` });
@@ -826,7 +826,7 @@ function schemaResponse(getRelease = getServerRelease) {
           nature: "性格中文名或 ID",
           ivs: "六维对象",
           currentHp: "当前生命",
-          level: "特殊等级精灵的当前等级1到99；普通精灵仅60，省略时使用网页默认",
+          level: "当前等级：阿布家族1到150，冥古龙1到99；普通精灵仅60，禁用特性时仅60；省略时使用网页默认，越界报错",
           ignoreTraits: "可选布尔值，禁用本方特性",
           traitValues: "原生特性 canonical trait key 到安全标量的映射",
           acquiredTraitIds:
@@ -931,6 +931,7 @@ export function executeCli(argv, { cwd, projectRoot, snapshotOverride, calculate
     try {
       calculation = (release.serverId === (sourceMetadata?.serverId ?? "cn") && calculateOverride ? calculateOverride : calculateMatchup)(context.snapshot, compiled.battle);
     } catch (error) {
+      if (error.code === "INPUT_VALIDATION_FAILED") throw new CliError(error.code, error.message, error.details);
       throw new CliError("CALCULATION_FAILED", error.message);
     }
     const digest = inputDigest(compiled.battle);
