@@ -520,7 +520,8 @@ test("puts the current release first and removes the rule validation card", () =
   expect(screen.queryByText("规则校验")).not.toBeInTheDocument();
 });
 
-test("opens the complete release notes in a second-level dialog", () => {
+test("opens the complete release notes in a second-level dialog", async () => {
+  const historyFetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({ ok: true, json: async () => USER_RELEASE_NOTES });
   renderOverlays({
     dataSource: {
       onClose: vi.fn(),
@@ -546,6 +547,8 @@ test("opens the complete release notes in a second-level dialog", () => {
 
   fireEvent.click(screen.getByRole("button", { name: "查看完整版本记录" }));
   expect(screen.getByRole("dialog", { name: "完整版本记录" })).toBeVisible();
+  expect(await screen.findByText(oldestRelease.version)).toBeVisible();
+  historyFetch.mockRestore();
   expect(screen.getAllByText("新增功能").length).toBeGreaterThan(0);
   expect(screen.getAllByText("修复与优化").length).toBeGreaterThan(0);
   expect(screen.queryByText("前瞻内容")).not.toBeInTheDocument();

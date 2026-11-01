@@ -133,15 +133,18 @@ describe("service worker cache policy", () => {
     expect(fetchImpl).not.toHaveBeenCalledWith("/", expect.anything());
     expect(harness.cacheApi.add).not.toHaveBeenCalledWith("/data/runtime.json");
     expect(harness.cacheApi.addAll.mock.calls.flat(2)).not.toContain("/data/runtime.json");
+    expect(harness.cacheApi.add).not.toHaveBeenCalledWith("/data/user-release-notes.json");
+    expect(harness.cacheApi.addAll.mock.calls.flat(2)).not.toContain("/data/user-release-notes.json");
     expect(harness.cacheApi.add).toHaveBeenCalledWith("/assets/main-Ab12_cd9.js");
   });
 
-  test("CN first visit still prepares its runtime for offline startup", async () => {
+  test("CN first visit prepares its runtime and release history for offline startup", async () => {
     const harness = createHarness({ fetchImpl: vi.fn(async () => new Response("CN shell")) });
     let install;
     harness.listeners.install({ waitUntil(value) { install = value; } });
     await install;
     expect(harness.cacheApi.add).toHaveBeenCalledWith("/data/runtime.json");
+    expect(harness.cacheApi.add).toHaveBeenCalledWith("/data/user-release-notes.json");
   });
 
   test("activation removes only obsolete caches owned by this application", async () => {
@@ -199,7 +202,7 @@ describe("service worker cache policy", () => {
     expect(cacheName).toMatch(new RegExp(`^rock-calculator-webapp-v${packageVersion.replaceAll(".", "\\.")}(?:-[a-z0-9-]+)?$`));
   });
 
-  test("returns cached runtime immediately and refreshes it in the background", async () => {
+  test.each(["/data/runtime.json", "/data/user-release-notes.json"])("returns cached %s immediately and refreshes it in the background", async (path) => {
     let resolveNetwork;
     const cachedResponse = new Response("cached-runtime");
     const networkResponse = new Response("fresh-runtime");
@@ -210,13 +213,13 @@ describe("service worker cache policy", () => {
     );
     const harness = createHarness({
       cached: {
-        "https://calculator.test/data/runtime.json": cachedResponse,
+        [`https://calculator.test${path}`]: cachedResponse,
       },
       fetchImpl,
     });
     const event = dispatchFetch(
       harness.listeners.fetch,
-      "/data/runtime.json",
+      path,
     );
 
     await expect(event.responsePromise).resolves.toBe(cachedResponse);
@@ -225,7 +228,7 @@ describe("service worker cache policy", () => {
     await Promise.all(event.background);
     expect(harness.cacheApi.put).toHaveBeenCalledWith(
       expect.objectContaining({
-        url: "https://calculator.test/data/runtime.json",
+        url: `https://calculator.test${path}`,
       }),
       expect.anything(),
     );
@@ -247,11 +250,11 @@ describe("service worker cache policy", () => {
     );
   });
 
-  test("keeps the most recent runtime available when the network fails", async () => {
+  test.each(["/data/runtime.json", "/data/user-release-notes.json"])("keeps the most recent %s available when the network fails", async (path) => {
     const cachedResponse = new Response("cached-runtime");
     const harness = createHarness({
       cached: {
-        "https://calculator.test/data/runtime.json": cachedResponse,
+        [`https://calculator.test${path}`]: cachedResponse,
       },
       fetchImpl: vi.fn(async () => {
         throw new Error("offline");
@@ -259,7 +262,7 @@ describe("service worker cache policy", () => {
     });
     const event = dispatchFetch(
       harness.listeners.fetch,
-      "/data/runtime.json",
+      path,
     );
 
     await expect(event.responsePromise).resolves.toBe(cachedResponse);
