@@ -4,6 +4,7 @@ export const GLOBAL_RELEASE_SUMMARY = Object.freeze({
   title: "国际服计算器",
   description: "采用 S3 季中数值与规则。",
   items: [
+    { id: "attackStats", title: "攻击变化修复", description: "手调等级仍调整双攻；技能按S3文案只调整指定攻击。贪得无厌只加物攻，旧配置层数保留。" },
     { id: "interactions", title: "操作修复", description: "修正单技能防御解除、水泡盾增益与窄屏技能名，补齐增益摘要译文。" },
     { id: "presets", title: "常用精灵配置", description: "国际服常用配置有新增或更新时提醒，导入后不再提醒，手改配置保留。" },
     { id: "durability", title: "耐久排行", description: "已有精灵新增四种特性配置，保留基础档，可关闭特殊配置。" },
