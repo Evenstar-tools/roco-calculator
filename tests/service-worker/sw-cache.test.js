@@ -12,14 +12,14 @@ function requestKey(request) {
 function createHarness({ cached = {}, cachedRequestHeaders = {}, fetchImpl, clientPaths = ["/"] } = {}) {
   const listeners = {};
   const stores = new Map();
-  const match = async (request) => {
+  const match = async (request, { ignoreVary = false } = {}) => {
     const key = requestKey(request);
     const response = cached[key];
     if (!response) return undefined;
     const vary = response.headers.get("vary");
     const requestedHeaders = new Headers(typeof request === "string" ? {} : request.headers);
     const storedHeaders = new Headers(cachedRequestHeaders[key]);
-    if (vary && vary.split(",").some((header) => {
+    if (!ignoreVary && vary && vary.split(",").some((header) => {
       const name = header.trim().toLowerCase();
       return name === "*" || requestedHeaders.get(name) !== storedHeaders.get(name);
     })) return undefined;
@@ -272,6 +272,62 @@ describe("service worker cache policy", () => {
 
 
 describe("repeat requests and cache failures", () => {
+  test.each(["/data/runtime.json", "/data/global-runtime.json", "/data/user-release-notes.json",
+    "/global-assets/data/global-runtime.json", "/global-assets/data/user-release-notes.json"])(
+    "fixed static JSON %s reuses either Origin variant offline and still refreshes online", async (path) => {
+      const key = `https://calculator.test${path}`;
+      for (const [savedOrigin, requestOrigin] of [[null, "https://calculator.test"], ["https://calculator.test", null]]) {
+        const cachedResponse = new Response("cached static data", { headers: { Vary: "Origin" } });
+        const fetchImpl = vi.fn(async () => new Response("latest static data"));
+        const harness = createHarness({ cached: { [key]: cachedResponse }, fetchImpl,
+          cachedRequestHeaders: { [key]: savedOrigin ? { Origin: savedOrigin } : {} } });
+        const event = dispatchFetch(harness.listeners.fetch, path, { headers: requestOrigin ? { Origin: requestOrigin } : {} });
+        await expect(event.responsePromise).resolves.toBe(cachedResponse);
+        expect(fetchImpl).toHaveBeenCalledTimes(1);
+        await Promise.all(event.background);
+        expect(harness.cacheApi.put).toHaveBeenCalledTimes(1);
+
+        fetchImpl.mockRejectedValue(new Error("offline"));
+        const offline = createHarness({ cached: { [key]: cachedResponse }, fetchImpl,
+          cachedRequestHeaders: { [key]: savedOrigin ? { Origin: savedOrigin } : {} } });
+        const retry = dispatchFetch(offline.listeners.fetch, path, { headers: requestOrigin ? { Origin: requestOrigin } : {} });
+        await expect(retry.responsePromise).resolves.toBe(cachedResponse);
+        await expect(Promise.all(retry.background)).resolves.toBeDefined();
+      }
+    });
+
+  test.each([
+    ["/data/runtime.json", "Origin, Accept-Language", "https://calculator.test"],
+    ["/data/user-release-notes.json", "*", "https://calculator.test"],
+    ["/global-assets/data/global-runtime.json", "Origin", "https://external.test"],
+    ["/data/runtime.json?user=private", "Origin", "https://calculator.test"],
+    ["/data/user-preferences.json", "Origin", "https://calculator.test"],
+    ["/data/runtime.json", "Origin", "https://calculator.test", "Bearer private"],
+  ])("static data compatibility does not bypass %s with %s from %s", async (path, vary, origin, authorization) => {
+    const fetchImpl = vi.fn(async () => { throw new Error("offline"); });
+    const harness = createHarness({
+      cached: { [`https://calculator.test${path}`]: new Response("isolated data", { headers: { Vary: vary } }) },
+      fetchImpl,
+    });
+    const event = dispatchFetch(harness.listeners.fetch, path, { headers: { Origin: origin,
+      ...(authorization ? { Authorization: authorization } : {}) } });
+    expect(await event.responsePromise).toBeFalsy();
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
+  test.each([
+    ["/data/runtime.json", "/global-assets/data/global-runtime.json"],
+    ["/global-assets/data/global-runtime.json", "/data/runtime.json"],
+    ["/data/user-release-notes.json", "/global-assets/data/user-release-notes.json"],
+  ])("missing %s cannot borrow the static data cached at %s", async (path, otherPath) => {
+    const harness = createHarness({
+      cached: { [`https://calculator.test${otherPath}`]: new Response("other region", { headers: { Vary: "Origin" } }) },
+      fetchImpl: vi.fn(async () => { throw new Error("offline"); }),
+    });
+    const event = dispatchFetch(harness.listeners.fetch, path, { headers: { Origin: "https://calculator.test" } });
+    expect(await event.responsePromise).toBeFalsy();
+  });
+
   test.each(["/assets/main-Ab12_cd9.js", "/assets/main-12345678.css"])("offline module request reuses the Origin-only precache variant for %s", async (path) => {
     const cachedResponse = new Response("precached build", { headers: { Vary: "Origin" } });
     const fetchImpl = vi.fn(async () => { throw new Error("offline"); });
@@ -287,7 +343,7 @@ describe("repeat requests and cache failures", () => {
     ["/assets/main-Ab12_cd9.js", "*", "https://calculator.test"],
     ["/assets/main-Ab12_cd9.js", "Origin", "https://external.test"],
     ["/assets/main.js", "Origin", "https://calculator.test"],
-    ["/data/runtime.json", "Origin", "https://calculator.test"],
+    ["/data/user-preferences.json", "Origin", "https://calculator.test"],
   ])("does not bypass Vary for %s with %s from %s", async (path, vary, origin) => {
     const cachedResponse = new Response("different variant", { headers: { Vary: vary } });
     const fetchImpl = vi.fn(async () => { throw new Error("offline"); });
