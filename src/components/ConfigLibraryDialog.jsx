@@ -8,6 +8,7 @@ import { getNature, NATURES } from "../domain/natures.js";
 import { usePresetBrowseMode } from "./PresetBrowseMode.jsx";
 
 import { POPULAR_CONFIG_COUNT } from "../data/preset-metadata.js";
+import { SpiritImage } from "./SpiritImage.jsx";
 const PRIMARY_PREVIEW_ROWS = [
   ["same", "相同"],
   ["different", "不同"],
@@ -61,7 +62,7 @@ function ConfigEntryList({ entries, emptyMessage, skillById, spiritById, stableH
         return (
           <li className="config-library-entry" key={entry.spiritId}>
             {spirit?.asset?.localUrl ? (
-              <img
+              <SpiritImage name={spiritName}
                 alt={spiritName}
                 loading="lazy"
                 src={spirit.asset.localUrl}
