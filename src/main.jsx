@@ -6,6 +6,7 @@ import { WebEntry, browserEntry } from "./runtime/WebEntry.jsx";
 import { preloadServerSnapshot } from "./runtime/preload-snapshot.js";
 import { installInputSelection } from "./input-selection.js";
 import "./styles.css";
+import { reportRecoveredReload } from "./runtime/chunk-recovery.js";
 
 let lastMetricsActivity = 0;
 const noteActivity = () => {
@@ -18,6 +19,8 @@ for (const type of ["pointerdown", "keydown", "scroll"]) window.addEventListener
 if (import.meta.hot) import.meta.hot.dispose(() => {
   for (const type of ["pointerdown", "keydown", "scroll"]) window.removeEventListener(type, noteActivity);
 });
+
+window.addEventListener("load", () => reportRecoveredReload(), { once: true });
 
 const removeInputSelection = installInputSelection(document);
 if (import.meta.hot) import.meta.hot.dispose(removeInputSelection);
