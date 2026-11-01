@@ -4,7 +4,7 @@
 
 问题：工具点开后整页变成“页面无法显示”，速度线等列表的头像经常加载不出来。线上正常跑时图片请求没有失败，原因靠模拟复现推断；上线后看 `load_failure` 事件（kind：chunk / render / image）验证。
 
-改动在固定源码分支 `codex/web-resilience-cn-20261101`（`a7c9f95`，基于 `9a9ca82`）与 `codex/web-resilience-global-20261101`（`34c414b`，基于 `ca0775c`）；Service Worker 与构建盖章在 main。均未推送，发布需把两个 pin 指向上述提交。
+改动在固定源码分支 `codex/web-resilience-cn-20261101`（`a7c9f95`，基于 `9a9ca82`）与 `codex/web-resilience-global-20261101`（`34c414b`，基于 `ca0775c`）；Service Worker 与构建盖章在 main。两个 pin 已指向上述提交并随 main 发布。
 
 - 分包失败：重试一次；服务器 HTML 的入口脚本与当前不同才自动刷新，一分钟内不重复。工具级 `FeatureBoundary` 把失败限制在工具内。
 - 图片：`SpiritImage` 失败后重试三次（1s/3s/8s，带抖动），仍失败显示名字，网络恢复再试。
