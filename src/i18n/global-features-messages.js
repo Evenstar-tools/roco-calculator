@@ -1,5 +1,15 @@
 // Product UI copy; entity names and descriptions come from the official client catalog.
 export const globalFeaturesMessages = Object.fromEntries([
+  ["队伍六维与个体切换", "Team stats and Individual Aptitude", "チームの能力と個体資質の切り替え"],
+  ["队伍六维显示60级实际面板，点击数值牌切换个体0/60；性格增益图标变亮，已加点数值呈金色。", "The team chart shows actual stats at Lv. 60. Click a stat badge to switch Individual Aptitude between 0 and 60. Nature-boosted icons are highlighted, and invested stats appear in gold.", "チームのチャートにレベル60の能力実数値を表示します。数値を押すと個体資質を0／60に切り替えられます。性格で上がる能力のアイコンを強調し、個体資質を振った能力の数値を金色で表示します。"],
+  ["学习更新按家族查看", "Learning updates by family", "系統ごとの習得更新"],
+  ["赛季学习更新补齐头像；家族全员改动一致时合并，部分分支独立，支持筛选与按图鉴顺序分批查看。", "Season learning updates now include portraits. Families are grouped only when every member has the same changes; partial branches remain separate. Filter updates and browse them in batches by Dex No.", "シーズンの習得更新に画像を追加しました。系統内の全員が同じ変更を受けた場合のみまとめ、一部の分岐は個別に表示します。絞り込みや、図鑑順での段階的な表示に対応しました。"],
+  ["技能图标加载恢复", "Skill icon loading recovery", "スキルアイコンの読み込み復旧"],
+  ["技能图标失败后有限次重试，网络恢复后自动重载；18系愿力冲击使用对应属性原图。", "Skill icons retry a limited number of times after a loading failure and reload when the connection returns. Wishpower Blast uses the original icon for each of its 18 classes.", "スキルアイコンの読み込み失敗時は回数を制限して再試行し、接続が戻ると自動で再読み込みします。「願いの波動」は18属性それぞれの元のアイコンを使用します。"],
+  ["技能学习来源排序", "Skill acquisition order", "スキル習得方法の表示順"],
+  ["技能来源按自学、技能石、血脉排序；候选列表先显示普通可学与血脉技能，再显示不可学习项。", "Acquisition methods are ordered as self-learned, Skill Tablet, then Bloodline. Skill choices list normally learnable and Bloodline skills before unavailable skills.", "習得方法を自力習得、スキルストーン、血統の順に表示します。候補では通常習得できるスキルと血統スキルを先に、習得できないスキルを後に表示します。"],
+  ["首次打开与队伍加载", "Startup and team loading", "初回表示とチームの読み込み"],
+  ["减少首次打开的重复资源扫描；队伍按需加载，关闭再打开保留当前成员和页签。", "Startup avoids repeated resource scans. Teams load when needed and retain the selected member and tab when reopened.", "初回表示時の重複したリソース走査を削減しました。チームは必要なときに読み込み、閉じて開き直しても選択したメンバーとタブを保持します。"],
   ["速度线与耐久榜高亮所选配置，定位与重置保持一致。", "SPD and durability rankings highlight the selected build consistently when locating or resetting.", "速さ・耐久ランキングで選択した構成を強調表示し、位置の移動やリセット時も表示を統一しました。"],
   ["速度线只高亮所选精灵的具体配置，详情定位保留培养口径；耐久榜返回保留所选行，筛选隐藏不匹配结果，重置清除高亮。", "SPD rankings highlight only the selected Jini build, and locating from details keeps its SPD profile. Durability rankings retain the selected row after returning; filters hide unmatched results, and resetting clears the highlight.", "速さランキングでは選択したジニの構成だけを強調し、詳細から移動しても速さの条件を維持します。耐久ランキングは戻った後も選択行を保持し、絞り込みで対象外を非表示にし、リセットで強調表示を解除します。"],
   ["种族值六维图与特性资料", "Species Aptitude chart and Traits", "種族資質チャートと特性情報"],

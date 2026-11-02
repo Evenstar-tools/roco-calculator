@@ -26,18 +26,18 @@ test("六维图只显示种族值图标与数值，生命在上速度在下，�
   expect(parseFloat(within(chart).getByTitle("物攻").style.left)).toBeLessThan(50);
   expect(parseFloat(within(chart).getByTitle("魔攻").style.left)).toBeGreaterThan(50);
   expect(chart.querySelectorAll("img")).toHaveLength(6);
-  expect(chart.querySelector(".sq-stat-radar__values").getAttribute("points").split(" ")).toHaveLength(6);
-  expect(chart.querySelectorAll(".sq-stat-radar__grid polygon")).toHaveLength(3);
+  expect(chart.querySelector(".stat-radar__values").getAttribute("points").split(" ")).toHaveLength(6);
+  expect(chart.querySelectorAll(".stat-radar__grid polygon")).toHaveLength(3);
 });
 
 test("精灵形态和赛季切换后六维图读所选记录，不混入最新快照", () => {
   const current = { ...season, spirits: season.spirits.map((entry, i) => ({ ...entry, raceStats: stats(i ? 160 : 120) })) };
   const { rerender } = render(<BidirectionalQuery season={current} initialSpiritId="s1" spirits={[{ id: "s1", raceStats: stats(999) }]} />);
   expect(screen.getByTitle("生命")).toHaveTextContent("120");
-  const previous = screen.getByRole("figure").querySelector(".sq-stat-radar__values").getAttribute("points");
+  const previous = screen.getByRole("figure").querySelector(".stat-radar__values").getAttribute("points");
   fireEvent.change(screen.getByLabelText("精灵形态"), { target: { value: "s2" } });
   expect(screen.getByTitle("生命")).toHaveTextContent("160");
-  expect(screen.getByRole("figure").querySelector(".sq-stat-radar__values").getAttribute("points")).not.toBe(previous);
+  expect(screen.getByRole("figure").querySelector(".stat-radar__values").getAttribute("points")).not.toBe(previous);
   rerender(<BidirectionalQuery season={{ ...current, id: "S4", spirits: current.spirits.map(entry => ({ ...entry, raceStats: stats(180) })) }} />);
   expect(screen.getByTitle("生命")).toHaveTextContent("180");
 });

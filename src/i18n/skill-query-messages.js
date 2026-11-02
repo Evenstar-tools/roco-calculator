@@ -1,4 +1,13 @@
 export const skillQueryMessages = Object.fromEntries([
+  ["家族", "Family", "系統"],
+  ["更新类型", "Update type", "更新の種類"],
+  ["全部更新", "All updates", "すべての更新"],
+  ["新增技能", "New skills", "追加スキル"],
+  ["学习途径调整", "Acquisition changes", "習得方法の変更"],
+  ["{count} 条更新", "{count} updates", "{count}件の更新"],
+  ["赛季学习更新列表", "Season learning updates", "シーズンの習得更新一覧"],
+  ["没有符合条件的学习更新。", "No matching learning updates.", "条件に合う習得更新がありません。"],
+  ["显示更多更新 · {count} / {total}", "More updates · {count} / {total}", "さらに表示 · {count} / {total}"],
   ["暂无图片", "No image", "画像なし"],
   ["精灵特性", "Jini trait", "キャラの特性"],
   ["种族值", "Species Aptitude", "種族資質"],

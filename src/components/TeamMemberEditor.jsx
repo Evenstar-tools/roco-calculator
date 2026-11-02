@@ -21,6 +21,7 @@ import { NatureSelect } from "./NatureSelect.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
 import { SpiritPicker } from "./SpiritPicker.jsx";
 import { StatTile } from "./StatTile.jsx";
+import { StatRadar } from "./StatRadar.jsx";
 import { ElementIcon } from "./ElementIcon.jsx";
 
 const STAT_VIEW = [
@@ -93,7 +94,8 @@ export function TeamMemberEditor({
         (entry?.skills?.four ?? []).slice(0, 4).map((skill) => skillById.get(entryId(skill))?.type),
       ).filter(Boolean))]
     : null;
-  const calculationReady = enabled && hasCompleteRaceStats(spirit?.raceStats);
+  const calculationReady = enabled && hasCompleteRaceStats(spirit?.raceStats) &&
+    spirit.calculationStatus !== "pending-race-stats" && !spirit.previewIdentity?.raceStatsPlaceholder;
   const panel = calculationReady
     ? calculateAllPanelStats({
         displayIvs: member.displayIvs,
@@ -202,8 +204,23 @@ export function TeamMemberEditor({
           ) : null}
 
           {member.ivsPending && !placeholder ? <p className="team-member-editor__iv-notice"><span className="team-iv-pending">{t("个体待设置")}</span> {t("原码个体为空或暂无法识别，请按实际配置调整。")}</p> : null}
-          <div className="stat-grid team-member-editor__stats">
-            {STAT_VIEW.map(({ key, label }) => (
+          <div className={`team-member-editor__stats${placeholder ? " stat-grid" : " team-member-editor__stats--radar"}`}>
+            {panel ?
+              <StatRadar
+                className="team-member-editor__radar"
+                displayIvs={member.displayIvs}
+                ivLabel={t("成员")}
+                label={t("成员面板")}
+                minimumMaximum={600}
+                natureId={member.natureId}
+                stats={panel}
+                variant="game"
+                onIvChange={(stat, value) => onChange({
+                  ...member,
+                  displayIvs: { ...member.displayIvs, [stat]: value },
+                })}
+              />
+             : STAT_VIEW.map(({ key, label }) => (
               <StatTile
                 allowUnset={placeholder}
                 displayIv={member.displayIvs?.[key]}

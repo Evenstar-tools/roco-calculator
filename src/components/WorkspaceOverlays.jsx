@@ -2,10 +2,11 @@ import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useCalculatorLocale } from "../i18n/calculator-text.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { X } from "@phosphor-icons/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ResultRail } from "./ResultRail.jsx";
 import { damagePresentation } from "./damagePresentation.jsx";
-import { TeamDrawer } from "./TeamDrawer.jsx";
+import { recoverableLazy } from "../runtime/chunk-recovery.js";
+import { FeatureBoundary } from "../runtime/FeatureBoundary.jsx";
 import { ConfigLibraryDialog } from "./ConfigLibraryDialog.jsx";
 import { DataSourceDialog } from "./DataSourceDialog.jsx";
 import { ProductAccessDialog } from "./ProductAccessDialog.jsx";
@@ -14,6 +15,8 @@ import { DisplaySettingsDialog } from "./DisplaySettingsDialog.jsx";
 import { WhatsNewDialog } from "./WhatsNewDialog.jsx";
 import { USER_MANUAL_URL } from "../data/product-links.js";
 import { POPULAR_CONFIG_COUNT } from "../data/preset-metadata.js";
+
+const TeamDrawer = recoverableLazy(() => import("./TeamDrawer.jsx").then(module => ({ default: module.TeamDrawer })));
 
 const FOCUSABLE_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -51,6 +54,8 @@ export function WorkspaceOverlays({
   const { t } = useLocale();
   const { tc, entityName } = useCalculatorLocale();
   const runtime = useRuntime();
+  const [teamVisited, setTeamVisited] = useState(Boolean(team.open));
+  if (team.open && !teamVisited) setTeamVisited(true);
   const menuActions = menu.actions ?? {};
   const mobileActions = mobileResult.actions ?? {};
   const mobileRefs = mobileResult.refs ?? {};
@@ -331,8 +336,12 @@ export function WorkspaceOverlays({
         </div>
       ) : null}
 
-      {team.drawerProps ? (
-        <TeamDrawer {...team.drawerProps} open={team.open} />
+      {team.drawerProps && (team.open || teamVisited) ? (
+        <div hidden={!team.open}>
+          <FeatureBoundary onClose={team.drawerProps.onClose} fallback={<p role="status">{t("队伍")}…</p>}>
+            <TeamDrawer {...team.drawerProps} open={team.open} />
+          </FeatureBoundary>
+        </div>
       ) : null}
 
       <ConfigLibraryDialog {...configLibrary} />

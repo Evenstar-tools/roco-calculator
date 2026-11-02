@@ -30,10 +30,13 @@ export function withS5AnnouncementCatalog(catalog, snapshot) {
   };
 }
 
-// 汇总页只消费本轮组；普通查询直接使用完整 changeInfo。
+// 汇总页保留本季各补丁的独立记录；普通查询仍消费跨季完整台账。
 export function querySeasonChangeInfo(season, changeInfo) {
   if (season?.id !== "S5" || season.seasonAnnouncement?.id !== S5_SEASON_ANNOUNCEMENT.patch.id) return changeInfo;
-  const current = [changeInfo, ...(changeInfo?.history ?? [])]
-    .find((group) => group?.patch?.id === S5_SEASON_ANNOUNCEMENT.patch.id);
-  return current ? { ...current, history: [] } : null;
+  const groups = [changeInfo, ...(changeInfo?.history ?? [])].filter(group => {
+    const patch = group?.patch;
+    return patch?.seasonId ? patch.seasonId === season.id : /^s5(?:[-_:]|$)/iu.test(patch?.id ?? "");
+  });
+  const [current, ...history] = groups;
+  return current ? { ...current, history } : null;
 }

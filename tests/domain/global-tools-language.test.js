@@ -101,6 +101,12 @@ test("every Global skill acquisition method has a translated display without mod
   expect(localizeAcquisitionMethods(["解锁：Lv.7"], "en")).toBe("Learned at Lv. 7");
   expect(localizeAcquisitionMethods(["解锁：Lv.7"], "zh-CN")).toBe("解锁：Lv.7");
   expect(localizeAcquisitionMethods(["解锁：[技能石]气泡"], "zh-CN")).toBe("解锁：[技能石]气泡");
+  const mixed = ["解锁：普通系血脉", "解锁：Lv.7", "技能石", "解锁：普通系血脉"];
+  for (const locale of ["zh-CN", "en", "ja"]) {
+    expect(localizeAcquisitionMethods(mixed, locale).split(" / ")).toEqual(
+      ["解锁：Lv.7", "技能石", "解锁：普通系血脉"].map(method => localizeAcquisitionMethods([method], locale)));
+  }
+  expect(mixed).toEqual(["解锁：普通系血脉", "解锁：Lv.7", "技能石", "解锁：普通系血脉"]);
   expect(methods).toEqual(original);
 });
 

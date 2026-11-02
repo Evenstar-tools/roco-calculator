@@ -761,6 +761,20 @@
   margin-top: 8px;
 }
 
+.team-member-editor__stats--radar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-block: 12px;
+}
+
+.team-member-editor__stats .team-member-editor__radar {
+  width: min(360px, calc(100% - 16px));
+  height: auto;
+  aspect-ratio: 320 / 260;
+  flex: none;
+}
+
 .team-member-editor__skills {
   display: grid;
   gap: 5px;

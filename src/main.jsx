@@ -7,6 +7,7 @@ import { preloadServerSnapshot } from "./runtime/preload-snapshot.js";
 import { installInputSelection } from "./input-selection.js";
 import "./styles.css";
 import { reportRecoveredReload } from "./runtime/chunk-recovery.js";
+import { observeVisitedAssets } from "./runtime/cache-visited-assets.js";
 
 let lastMetricsActivity = 0;
 const noteActivity = () => {
@@ -36,17 +37,7 @@ createRoot(document.getElementById("root")).render(
 const isDesktopApp = window.location.protocol === "app:";
 
 if ("serviceWorker" in navigator && import.meta.env.PROD && !isDesktopApp && !IS_PREVIEW_BUILD) {
-  const cacheVisitedAssets = () => {
-    const urls = performance.getEntriesByType("resource").map(({ name }) => name)
-      .filter((name) => { const url = new URL(name); return url.origin === location.origin && (url.pathname.startsWith("/assets/") || url.pathname.startsWith("/global-assets/assets/")); });
-    navigator.serviceWorker.controller?.postMessage({ type: "CACHE_VISITED_ASSETS", urls });
-  };
-  navigator.serviceWorker.addEventListener("controllerchange", cacheVisitedAssets);
-  // 动态模块可能在接管瞬间仍在下载；补缓存这批完成较晚的已访问资源。
-  if ("PerformanceObserver" in window) {
-    const observer = new PerformanceObserver(() => cacheVisitedAssets());
-    observer.observe({ type: "resource", buffered: true });
-  }
+  const cacheVisitedAssets = observeVisitedAssets(navigator.serviceWorker);
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js").then(() => navigator.serviceWorker.ready).then(cacheVisitedAssets).catch(() => {
       // 离线缓存失败不阻断计算器主流程。

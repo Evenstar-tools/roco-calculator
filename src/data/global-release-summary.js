@@ -4,6 +4,11 @@ export const GLOBAL_RELEASE_SUMMARY = Object.freeze({
   title: "国际服计算器",
   description: "采用 S3 季中数值与规则。",
   items: [
+    { id: "teamStats", title: "队伍六维与个体切换", description: "队伍六维显示60级实际面板，点击数值牌切换个体0/60；性格增益图标变亮，已加点数值呈金色。" },
+    { id: "learningUpdates", title: "学习更新按家族查看", description: "赛季学习更新补齐头像；家族全员改动一致时合并，部分分支独立，支持筛选与按图鉴顺序分批查看。" },
+    { id: "skillIcons", title: "技能图标加载恢复", description: "技能图标失败后有限次重试，网络恢复后自动重载；18系愿力冲击使用对应属性原图。" },
+    { id: "acquisitionOrder", title: "技能学习来源排序", description: "技能来源按自学、技能石、血脉排序；候选列表先显示普通可学与血脉技能，再显示不可学习项。" },
+    { id: "firstOpen", title: "首次打开与队伍加载", description: "减少首次打开的重复资源扫描；队伍按需加载，关闭再打开保留当前成员和页签。" },
     { id: "skillDetails", title: "种族值六维图与特性资料", description: "技能检索新增种族值六维图，补全特性名称、图标和描述；窄屏隐藏六维图，国际服继续使用独立 S3 数据。" },
     { id: "loadRecovery", title: "加载恢复修复", description: "更新检查不再一直等待，损坏的头像缓存可自动重试；失败时显示精灵名称。速度线与耐久排行移除麦田重复外观。" },
     { id: "attackStats", title: "攻击变化修复", description: "手调等级仍调整双攻；技能按S3文案只调整指定攻击。贪得无厌只加物攻，旧配置层数保留。" },

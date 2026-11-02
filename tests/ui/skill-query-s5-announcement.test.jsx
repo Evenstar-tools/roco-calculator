@@ -58,7 +58,7 @@ test("学习更新显示新增与血脉撤销，跳转后的 S5 查询不再列�
   fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "深渊蛙" } });
   expect(screen.getByText("调整前：冷风")).toBeVisible();
   expect(screen.getByText("调整后：冰爪")).toBeVisible();
-  expect(screen.getByText("调整后：气沉丹田")).toBeVisible();
+  expect(screen.getByRole("button", { name: /气沉丹田.*武.*状态/ })).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "深渊蛙", exact: true }));
   fireEvent.click(screen.getByRole("button", { name: "血脉", exact: true }));
   const skills = within(container.querySelector(".sq-skill-table"));

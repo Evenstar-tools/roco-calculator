@@ -62,6 +62,10 @@ function compact(value) {
     .replace(/[\s·（）()_\-/]+/g, "");
 }
 
+function choiceRank(skill) {
+  return skill.learnable === false ? 2 : skill.bloodlineSkill ? 1 : 0;
+}
+
 function searchText(skill) {
   const cacheKey = `${skill.id}:${skill.name}`;
   if (searchTextCache.has(cacheKey)) return searchTextCache.get(cacheKey);
@@ -114,8 +118,7 @@ export function SkillPicker({
       : skills.filter(skill => skill.catalogAvailable !== false);
     return [...list].sort(
       (first, second) =>
-        Number(first.learnable === false) -
-        Number(second.learnable === false),
+        choiceRank(first) - choiceRank(second),
     );
   }, [open, query, selected?.name, skills]);
 

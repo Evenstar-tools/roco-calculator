@@ -1,0 +1,54 @@
+.stat-radar {
+  position: relative;
+  flex: 0 0 240px;
+  width: 240px;
+  height: 160px;
+  margin: 0;
+  color: var(--accent);
+}
+
+.stat-radar > svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.stat-radar__grid { fill: none; stroke: var(--border); stroke-width: 1; }
+.stat-radar__values { fill: var(--accent); fill-opacity: .24; stroke: var(--accent); stroke-width: 1.5; stroke-linejoin: round; }
+.stat-radar__label {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transform: translate(-50%, -50%);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.stat-radar__label b { font-weight: 600; }
+.stat-radar__label .stat-radar__iv-gain { color: #15803d; font-weight: 800; }
+html[data-theme="dark"] .stat-radar__label .stat-radar__iv-gain { color: #6ee7a0; }
+
+.stat-radar--game .stat-radar__grid { stroke: var(--border-strong); }
+.stat-radar--game .stat-radar__grid circle:last-of-type { stroke-width: 1.8; }
+.stat-radar--game .stat-radar__grid polyline { stroke: var(--border); }
+.stat-radar--game .stat-radar__values { fill: #bc923f; fill-opacity: .5; stroke: #9c752d; }
+.stat-radar--game .stat-radar__label {
+  min-width: 76px;
+  min-height: 40px;
+  justify-content: center;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  font-size: 15px;
+  cursor: pointer;
+}
+.stat-radar--game .stat-radar__label b { font-weight: 750; }
+.stat-radar--game .stat-radar__iv-gain { color: #97620c; }
+.stat-radar--game .stat-radar__label:hover { border-color: var(--accent); }
+.stat-radar--game .stat-radar__label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 3px; }
+.stat-radar--game .stat-radar__label input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.stat-radar__nature { position: absolute; top: -5px; right: 0; pointer-events: none; }
+.stat-radar__nature--up { color: #15803d; }
+.stat-radar__nature--down { color: #cf3434; }
+html[data-theme="dark"] .stat-radar--game .stat-radar__iv-gain { color: #ffd26b; }
+html[data-theme="dark"] .stat-radar__nature--up { color: #6ee7a0; }
+html[data-theme="dark"] .stat-radar__nature--down { color: #fb8585; }

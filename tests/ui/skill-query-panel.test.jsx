@@ -94,6 +94,8 @@ test("精灵别名查询、来源筛选与空态不伪造学习条件", () => {
   fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "猫猫" } });
   fireEvent.click(screen.getByRole("button", { name: "喵喵 查看技能" }));
   fireEvent.click(screen.getByRole("button", { name: "自学", exact: true }));
+  expect(within(screen.getByLabelText("技能学习来源")).getAllByRole("button").map(button => button.getAttribute("aria-label")))
+    .toEqual(["全部来源", "自学", "技能石", "血脉"]);
   expect(screen.queryByRole("button", { name: "查看防御详情" })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "血脉", exact: true }));
   expect(screen.getByText(/没有符合筛选条件的技能/)).toBeInTheDocument();

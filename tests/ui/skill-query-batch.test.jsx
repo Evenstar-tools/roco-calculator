@@ -5,6 +5,7 @@ import BidirectionalQuery from "../../src/features/skill-query/BidirectionalQuer
 const skills = Array.from({ length: 120 }, (_, index) => ({
   id: `skill-${index}`,
   name: `测试技能${String(index).padStart(3, "0")}`,
+  iconUrl: `/assets/skills/skill_preview_s5_test_${index}.png`,
   description: `第 ${index} 个技能效果`,
   type: "普通",
   category: "physical",
@@ -18,6 +19,13 @@ test("大型技能库首批卡片有上限，筛选数量仍是完整结果", ()
   const { container } = render(<BidirectionalQuery season={season} skills={skills} spirits={[]} />);
   expect(screen.getByRole("heading", { name: "技能库 120" })).toBeInTheDocument();
   expect(container.querySelectorAll(".sq-suggestions > button").length).toBeLessThanOrEqual(48);
+  const libraryIcons = container.querySelectorAll(".sq-suggestions img.skill-icon");
+  expect(libraryIcons[0]).toHaveAttribute("loading", "eager");
+  expect(libraryIcons[12]).toHaveAttribute("loading", "lazy");
+  fireEvent.click(screen.getByRole("button", { name: "添加测试技能012" }));
+  const selectedIcon = container.querySelector(".sq-selected img.skill-icon");
+  expect(selectedIcon).toHaveAttribute("src", skills[12].iconUrl);
+  expect(selectedIcon).toHaveAttribute("loading", "eager");
   while (screen.queryByRole("button", { name: /显示更多技能/ })) {
     fireEvent.click(screen.getByRole("button", { name: /显示更多技能/ }));
   }

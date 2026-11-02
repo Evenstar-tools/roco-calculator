@@ -9,9 +9,25 @@ export const WISH_POWER_ICON_NUMBERS = Object.freeze({
   machine: 7700018, phantom: 7700019,
 });
 
-export function getWishPowerIconUrl(skillId) {
-  if (typeof skillId !== "string" || !skillId.startsWith("calculator_wish_power_")) return null;
-  const suffix = skillId.slice("calculator_wish_power_".length);
-  const number = Object.hasOwn(WISH_POWER_ICON_NUMBERS, suffix) ? WISH_POWER_ICON_NUMBERS[suffix] : null;
+const TYPE_SUFFIXES = Object.freeze({
+  普通: "normal", 草: "grass", 火: "fire", 水: "water", 光: "light", 地: "ground",
+  冰: "ice", 龙: "dragon", 电: "electric", 毒: "poison", 虫: "bug", 武: "martial",
+  翼: "wing", 萌: "moe", 幽: "ghost", 恶: "evil", 机械: "machine", 幻: "phantom",
+});
+const WISH_POWER_NAMES = new Set(["愿力冲击", "Wishpower Blast", "願いの波動"]);
+
+// 接受旧的虚拟ID，也接受保留参考身份的国际服或标准技能对象；只改变展示素材。
+export function getWishPowerIconUrl(skill) {
+  let skillId = typeof skill === "string" ? skill : skill?.reference?.sourceId ?? skill?.sourceId ?? skill?.id;
+  if (typeof skillId === "string" && skillId.startsWith("cn-placeholder:")) skillId = skillId.slice("cn-placeholder:".length);
+  if (typeof skillId !== "string") return null;
+  const suffix = skillId.startsWith("calculator_wish_power_") ? skillId.slice("calculator_wish_power_".length) : "";
+  let number = Object.hasOwn(WISH_POWER_ICON_NUMBERS, suffix) ? WISH_POWER_ICON_NUMBERS[suffix] : null;
+  if (!number && !(/^skill_[a-f0-9]{16}$/u.test(skillId) && WISH_POWER_NAMES.has(skill?.name))) return null;
+  if (typeof skill === "object" && skill.type !== undefined) {
+    // 未知属性不回退成普通系；已知身份仍以调用方显示的真实属性选图。
+    number = typeof skill.type === "string" && Object.hasOwn(TYPE_SUFFIXES, skill.type)
+      ? WISH_POWER_ICON_NUMBERS[TYPE_SUFFIXES[skill.type]] : null;
+  }
   return number ? publicResourceUrl(`/assets/skills/wish-power/${number}.png`) : null;
 }

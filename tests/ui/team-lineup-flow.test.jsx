@@ -36,13 +36,13 @@ test("import opens the first occupied slot, focuses IVs, and keeps other pending
     fireEvent.click(screen.getByRole("checkbox"));
     fireEvent.click(screen.getByRole("button", { name: "保存并调整个体" }));
     const editor = await screen.findByRole("region", { name: "成员 2 配置" });
-    await waitFor(() => expect(within(editor).getByLabelText("物攻个体")).toHaveFocus());
+    await waitFor(() => expect(within(editor).getByLabelText("成员生命个体加点")).toHaveFocus());
     expect(within(editor).getByText("个体待设置")).toBeVisible();
     expect(screen.getByRole("option", { name: "保留的队伍" })).toBeInTheDocument();
-    fireEvent.change(within(editor).getByLabelText("HP个体"), { target: { value: "60" } });
+    fireEvent.click(within(editor).getByLabelText("成员生命个体加点"));
     expect(within(editor).queryByText("个体待设置")).not.toBeInTheDocument();
     expect(screen.getAllByText("个体待设置")).toHaveLength(4);
-    expect(within(editor).getByLabelText("HP个体")).toHaveValue(60);
+    expect(within(editor).getByLabelText("成员生命个体加点")).toBeChecked();
   } finally {
     vi.unstubAllGlobals();
   }

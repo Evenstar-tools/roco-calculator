@@ -56,6 +56,7 @@ export const teamMessages = Object.fromEntries([
   ["成员性格", "Member nature", "メンバーの性格"], ["血脉", "Bloodline", "血統"],
   ["首领化／首领形态不能携带血脉技能：{skills}。请更换这些技能，或改用非首领配置。", "Alpha forms cannot equip these Bloodline skills: {skills}. Change the skills or use a non-Alpha setup.", "リーダー化・リーダー形態では血統スキル（{skills}）を装備できません。スキルを変更するか、リーダー以外の設定を使用してください。"],
   ["原码个体为空或暂无法识别，请按实际配置调整。", "The source Individual Aptitude selections are empty or unrecognized. Adjust them to match your setup.", "元コードの個体資質が空か、認識できません。実際の設定に合わせて調整してください。"],
+  ["成员面板", "Member stats", "メンバーの実数値"],
   ["成员面板耐久", "Member durability", "メンバーの耐久"], ["面板耐久", "Panel durability", "実数値の耐久"],
   ["可用于能力分析 · 已选 {count}/3", "Ready for stat analysis · {count}/3 selected", "能力分析が可能 · {count}/3 選択済み"],
   ["历史个体需在能力分析中重选", "Reselect saved Ind. Apt. in stat analysis", "過去の個体資質設定を能力分析で選び直してください"],
