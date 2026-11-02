@@ -3,6 +3,8 @@ export function manualChunks(id) {
           // Session transitions and calculation roots are initial dependencies; compress the shared form runtime together.
           const normalized = id.replaceAll("\\", "/");
           if (normalized.includes("aegis-web-sdk")) return "analytics-sdk";
+          // App and its engine already load together; avoid compressing that static closure separately.
+          if (normalized.endsWith("/src/App.jsx")) return "calculator-core";
           if (normalized.endsWith("/src/domain/snapshot-indexes.js") ||
               normalized.endsWith("/src/state/calculator-session.js") ||
               normalized.endsWith("/src/domain/skill-result/loadout.js")) return "calculator-core";

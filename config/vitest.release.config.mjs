@@ -29,6 +29,7 @@ export default defineConfig({
             "tests/service-worker/*.test.js",
             "tests/docs/release-notes.test.js",
             "tests/build/{performance-budget,build-attribution,cn-production-pruning,s5-bwiki-runtime,trait-icons}.test.js",
+            "tests/build/release-chunk-boundaries.test.js",
           ],
         },
       },

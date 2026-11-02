@@ -2,6 +2,55 @@ import { parse } from "@babel/parser";
 
 export const CN_ICON_WEIGHTS = Object.freeze(["regular", "bold", "fill"]);
 
+// Reviewed direct JSX usages; aliases/spreads and unlisted icons keep the fallback.
+// The source coverage test fails when a new usage needs a previously omitted style.
+const CN_ICON_WEIGHTS_BY_NAME = {
+  Shuffle: ["regular"],
+  EyeSlash: ["regular"],
+  Sun: ["regular"],
+  ArrowsOut: ["regular"],
+  ArrowsIn: ["regular"],
+  Eye: ["regular"],
+  Wrench: ["regular"],
+  Toolbox: ["regular"],
+  Question: ["regular"],
+  BookOpen: ["regular"],
+  Trash: ["regular"],
+  Moon: ["regular"],
+  LockSimpleOpen: ["regular"],
+  PencilSimple: ["regular"],
+  UploadSimple: ["regular"],
+  Copy: ["regular"],
+  LockSimple: ["regular"],
+  Check: ["regular"],
+  ArrowRight: ["regular"],
+  Minus: ["regular"],
+  CaretRight: ["regular"],
+  SquaresFour: ["fill"],
+  ShieldWarning: ["fill"],
+  CheckCircle: ["fill"],
+  ArrowFatDown: ["fill"],
+  Pause: ["fill"],
+  ArrowFatUp: ["fill"],
+  ArrowsClockwise: ["bold"],
+  CheckSquareOffset: ["bold"],
+  List: ["bold"],
+  ArrowUp: ["bold"],
+  Equals: ["bold"],
+  UsersThree: ["regular", "fill"],
+  MagicWand: ["regular", "fill"],
+  Star: ["regular", "fill"],
+  ShieldCheck: ["regular", "fill"],
+  Info: ["regular", "fill"],
+  Crosshair: ["regular", "bold"],
+  X: ["regular", "bold"],
+  ArrowCounterClockwise: ["regular", "bold"],
+  ArrowsLeftRight: ["regular", "bold"],
+  DownloadSimple: ["regular", "bold"],
+  Plus: ["regular", "bold"],
+  ArrowLeft: ["regular", "bold"],
+};
+
 // The root production build serves CN; Global is assembled from its separate pin.
 // Keep source translations and development builds intact, and retain all used icons.
 export function pruneCnProductionModule(code, id, { reviewedS5 = false } = {}) {
@@ -45,15 +94,17 @@ export function withWebPreview(snapshot) {
       return result.slice(0, node.start) + `const ${node.specifiers[0].local.name} = {};` + result.slice(node.end);
     }, code);
   }
-  if (!/\/node_modules\/@phosphor-icons\/react\/dist\/defs\/[^/]+\.es\.js$/u.test(filename)) return null;
+  const icon = filename.match(/\/node_modules\/@phosphor-icons\/react\/dist\/defs\/([^/]+)\.es\.js$/u);
+  if (!icon) return null;
   const declarations = parse(code, { sourceType: "module" }).program.body
     .filter(node => node.type === "VariableDeclaration").flatMap(node => node.declarations);
   const weights = declarations.find(node => node.init?.type === "NewExpression" && node.init.callee.name === "Map")?.init.arguments[0];
   if (weights?.type !== "ArrayExpression" || weights.elements.some(node => node?.type !== "ArrayExpression" || node.elements[0]?.type !== "StringLiteral")) {
     throw new Error("Unexpected Phosphor weight map: " + id);
   }
-  const retained = weights.elements.filter(node => CN_ICON_WEIGHTS.includes(node.elements[0].value));
-  if (retained.length !== CN_ICON_WEIGHTS.length) throw new Error("Missing supported Phosphor weight: " + id);
+  const supported = Object.hasOwn(CN_ICON_WEIGHTS_BY_NAME, icon[1]) ? CN_ICON_WEIGHTS_BY_NAME[icon[1]] : CN_ICON_WEIGHTS;
+  const retained = weights.elements.filter(node => supported.includes(node.elements[0].value));
+  if (retained.length !== supported.length) throw new Error("Missing supported Phosphor weight: " + id);
   return code.slice(0, weights.start) + "[" + retained.map(node => code.slice(node.start, node.end)).join(",") + "]" + code.slice(weights.end);
 }
 
