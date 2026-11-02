@@ -132,10 +132,10 @@ export function createDefaultServices({
 
 export default function IndexPage({ services }) {
   const [resultBarHeight, setResultBarHeight] = useState(null);
-  const [seasonTheme, setSeasonTheme] = useState(() => readSeasonTheme(createStorageAdapter(Taro)));
-  const [classicCalculatorColorsEnabled, setClassicCalculatorColorsEnabled] = useState(() => readClassicCalculatorColors(createStorageAdapter(Taro)));
+  const [seasonTheme, setSeasonTheme] = useState(() => readSeasonTheme(createStorageAdapter(createRuntimeTaro())));
+  const [classicCalculatorColorsEnabled, setClassicCalculatorColorsEnabled] = useState(() => readClassicCalculatorColors(createStorageAdapter(createRuntimeTaro())));
   useEffect(() => {
-    if (seasonTheme.preference === "random") writeLastRandomSeasonTheme(seasonTheme.id, createStorageAdapter(Taro));
+    if (seasonTheme.preference === "random") writeLastRandomSeasonTheme(seasonTheme.id, createStorageAdapter(createRuntimeTaro()));
   }, [seasonTheme.id, seasonTheme.preference]);
   const initialSeasonShow = useRef(true);
   useDidShow(() => {
@@ -144,7 +144,7 @@ export default function IndexPage({ services }) {
       return;
     }
     if (seasonTheme.preference === "random") {
-      setSeasonTheme(writeSeasonTheme("random", createStorageAdapter(Taro), Math.random, seasonTheme.id));
+      setSeasonTheme(writeSeasonTheme("random", createStorageAdapter(createRuntimeTaro()), Math.random, seasonTheme.id));
     }
   });
   const autosave = useRef(null);
@@ -732,9 +732,9 @@ export default function IndexPage({ services }) {
       <SeasonBackdrop seasonId={seasonTheme.id} />
       <AppHeader
         classicCalculatorColorsEnabled={classicCalculatorColorsEnabled}
-        onClassicCalculatorColorsChange={(value) => setClassicCalculatorColorsEnabled(writeClassicCalculatorColors(value, createStorageAdapter(Taro)))}
+        onClassicCalculatorColorsChange={(value) => setClassicCalculatorColorsEnabled(writeClassicCalculatorColors(value, createStorageAdapter(createRuntimeTaro())))}
         seasonTheme={seasonTheme}
-        onSeasonThemeChange={(value) => setSeasonTheme(writeSeasonTheme(value, createStorageAdapter(Taro), Math.random, seasonTheme.id))}
+        onSeasonThemeChange={(value) => setSeasonTheme(writeSeasonTheme(value, createStorageAdapter(createRuntimeTaro()), Math.random, seasonTheme.id))}
         damageComparisonEnabled={pageState.damageComparisonEnabled === true}
         onDamageComparisonChange={changeDamageComparisonEnabled}
         commonConfigCount={pageState.configLibrary.entries.length}
