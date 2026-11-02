@@ -45,6 +45,7 @@ export function Input({
   adjustPosition,
   confirmType,
   focus,
+  onConfirm,
   onKeyboardHeightChange,
   ...props
 }) {
@@ -57,6 +58,10 @@ export function Input({
         typeof onKeyboardHeightChange === "function" ? "true" : "false"
       }
       {...props}
+      onKeyDown={event => {
+        props.onKeyDown?.(event);
+        if (event.key === "Enter") onConfirm?.({ detail: { value: event.target.value } });
+      }}
     />
   );
 }

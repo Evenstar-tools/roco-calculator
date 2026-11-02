@@ -6,6 +6,7 @@ import QuickCombatantControls from "./QuickCombatantControls.jsx";
 import SpiritPicker from "./SpiritPicker.jsx";
 import ElementIcon from "./ElementIcon.jsx";
 import EntityChangeHint from "./EntityChangeHint.jsx";
+import BattleLevelControl from "./BattleLevelControl.jsx";
 
 const SIDE_LABELS = {
   attacker: "攻击方",
@@ -18,6 +19,8 @@ export default function CombatantCard({
   favoriteIds,
   imageUrl,
   imageUrls,
+  levelControl,
+  onLevelChange,
   identityOnly = false,
   active = false,
   onActivate,
@@ -116,6 +119,10 @@ export default function CombatantCard({
           />
         ) : null}
       </View>
+      {levelControl ? (
+        <BattleLevelControl control={levelControl.control} value={levelControl.value}
+          onChange={onLevelChange} side={side} />
+      ) : null}
       <SpiritPicker
         favoriteIds={favoriteIds}
         hideTrigger={identityOnly}

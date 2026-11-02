@@ -13,6 +13,8 @@ import { createDirectionTraitViews } from "../src/view-models/traits.js";
 import { createResultActions } from "../src/view-models/result-actions.js";
 import { createShareSummary } from "../src/view-models/share-summary.js";
 import { pinnedWebCalculate } from "./release-source.js";
+import { createPersistence, MINIAPP_STATE_KEY } from "../src/state/persistence.js";
+import { getS5PreviewBattleLevelEvaluation, withS5PreviewBattleLevels } from "../src/shared/domain/battle-level.js";
 
 function configure(name, skillName) {
   const spirit = snapshot.spirits.find(entry => entry.fullName === name);
@@ -34,6 +36,115 @@ function assign(state, trait, suffix, value) {
   state.sides.attacker.traitValues[canonicalTraitControlKey(control)] = value;
   return control;
 }
+
+test.each([
+  ["冥古龙", 99, 10, 99],
+  ["阿布", 99, 2, 150],
+  ["超能阿布", 99, 1, 150],
+])("%s 首页可加减和清空重输等级，范围与原特性保持一致", (name, initial, step, maximum) => {
+  const { state } = configure(name);
+  const store = createCalculatorStore(snapshot, state);
+  render(<BattleWorkspace snapshot={snapshot} store={store} />);
+  const input = screen.getByRole("spinbutton", { name: "攻击方等级" });
+  expect(input).toHaveValue(initial);
+  fireEvent.click(screen.getByRole("button", { name: `攻击方等级降低${step}级` }));
+  expect(input).toHaveValue(initial - step);
+  fireEvent.input(input, { target: { value: "" } });
+  expect(input.value).toBe("");
+  fireEvent.input(input, { target: { value: "80" } });
+  fireEvent.blur(input);
+  expect(input).toHaveValue(80);
+  fireEvent.input(input, { target: { value: "999" } });
+  fireEvent.keyDown(input, { key: "Enter" });
+  expect(input).toHaveValue(maximum);
+  expect(screen.getByRole("button", { name: `攻击方等级提高${step}级` })).toBeDisabled();
+  fireEvent.input(input, { target: { value: "0" } });
+  fireEvent.blur(input);
+  expect(input).toHaveValue(1);
+  expect(screen.getByRole("button", { name: `攻击方等级降低${step}级` })).toBeDisabled();
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "攻击方宠物摘要" }));
+  fireEvent.input(screen.getByRole("textbox", { name: "搜索攻击方宠物" }), { target: { value: name } });
+  fireEvent.click(screen.getByRole("button", { name: `选择${name}` }));
+  expect(screen.getByRole("spinbutton", { name: "攻击方等级" })).toHaveValue(99);
+});
+
+test.each(["阿布", "超能阿布", "冥古龙"])("%s 默认99用于真实计算，已有等级60经保存、重开和分享保留", name => {
+  const { state, trait } = configure(name);
+  const fresh = createCalculatorStore(snapshot, state).getState();
+  const evaluation = getS5PreviewBattleLevelEvaluation(snapshot, buildCombatState(fresh, snapshot), "attacker");
+  expect(evaluation.currentLevel).toBe(99);
+  if (name === "超能阿布") expect(evaluation.levelGain).toBe(39);
+  expect(createCalculationView(snapshot, fresh, "forward").selectedResult.totalDamage)
+    .toBe(pinnedWebCalculate(snapshot, withS5PreviewBattleLevels(snapshot, buildCombatState(fresh, snapshot))).forward.selectedResult.totalDamage);
+  const control = assign(state, trait, "BattleLevel", 60);
+  const key = canonicalTraitControlKey(control);
+  const records = new Map();
+  const persistence = createPersistence({ storage: {
+    get: key => records.get(key), set: (key, value) => records.set(key, value), remove: key => records.delete(key),
+  } });
+  persistence.save(createCalculatorStore(snapshot, state).getState());
+  const reopened = createCalculatorStore(snapshot, persistence.load(snapshot)).getState();
+  expect(reopened.sides.attacker.traitValues[key]).toBe(60);
+  const shared = decodeSharePayloadResult(encodeSharePayload(reopened), snapshot);
+  expect(createCalculatorStore(snapshot, shared.state).getState().sides.attacker.traitValues[key]).toBe(60);
+  // Older saves kept a raw direction value instead of a canonical trait value.
+  const legacy = configure(name).state;
+  legacy.directions.forward.context[control.contextKey] = 60;
+  records.set(MINIAPP_STATE_KEY, { schemaVersion: 2, state: legacy });
+  expect(createCalculatorStore(snapshot, persistence.load(snapshot)).getState().sides.attacker.traitValues[key]).toBe(60);
+  for (const remembered of [false, true]) {
+    const oldSkill = configure(name).state;
+    const context = { attackerTraitS5CurrentLevel: 60 };
+    oldSkill.sides.attacker.skills.single = {
+      skillId: oldSkill.sides.attacker.skills.single,
+      ...(remembered ? { memoryBySkill: { previous: { context } } } : { context }),
+    };
+    records.set(MINIAPP_STATE_KEY, { schemaVersion: 2, state: oldSkill });
+    expect(createCalculatorStore(snapshot, persistence.load(snapshot)).getState().sides.attacker.traitValues[key]).toBe(60);
+  }
+});
+
+test("首页双方等级独立，逆向、抽屉、伤害与分享同步；修改可撤回", () => {
+  const { state } = configure("冥古龙");
+  state.sides.defender = configure("阿布").state.sides.attacker;
+  const store = createCalculatorStore(snapshot, state);
+  render(<BattleWorkspace snapshot={snapshot} store={store} quickUndoEnabled />);
+  const high = createCalculationView(snapshot, store.getState(), "reverse");
+  const attackInput = screen.getByRole("spinbutton", { name: "攻击方等级" });
+  fireEvent.input(attackInput, { target: { value: "79" } });
+  const low = createCalculationView(snapshot, store.getState(), "reverse");
+  expect(low.defenderMaxHp).toBeLessThan(high.defenderMaxHp);
+  expect(low.selectedResult.totalDamage).not.toBe(high.selectedResult.totalDamage);
+  fireEvent.click(screen.getByRole("button", { name: /撤回/ }));
+  expect(attackInput).toHaveValue(99);
+  fireEvent.input(attackInput, { target: { value: "79" } });
+  fireEvent.input(screen.getByRole("spinbutton", { name: "防守方等级" }), { target: { value: "150" } });
+  fireEvent.click(screen.getByRole("button", { name: "切换计算方向" }));
+  expect(screen.getByRole("spinbutton", { name: "攻击方等级" })).toHaveValue(79);
+  expect(screen.getByRole("spinbutton", { name: "防守方等级" })).toHaveValue(150);
+  fireEvent.click(screen.getByRole("button", { name: "防守方等级降低2级" }));
+  expect(screen.getByRole("spinbutton", { name: "攻击方等级" })).toHaveValue(79);
+  expect(screen.getByRole("spinbutton", { name: "防守方等级" })).toHaveValue(148);
+  fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
+  fireEvent.click(screen.getByRole("button", { name: "增减" }));
+  const dialog = within(screen.getByRole("dialog", { name: "伤害结果" }));
+  const levels = dialog.getAllByRole("spinbutton", { name: "当前等级" });
+  expect(levels.map(input => Number(input.value))).toContain(148);
+  expect(store.getState().sides.attacker.level).toBeUndefined();
+  const restored = decodeSharePayloadResult(encodeSharePayload(store.getState()), snapshot);
+  expect(restored.status).toBe("valid");
+  expect(createCalculationView(snapshot, restored.state, "reverse").selectedResult.totalDamage)
+    .toBe(createCalculationView(snapshot, store.getState(), "reverse").selectedResult.totalDamage);
+});
+
+test("普通精灵和吞噬等级特性的狼王不出现首页等级控件", () => {
+  const wolf = configure("银月狼王");
+  const ming = configure("冥古龙");
+  wolf.state.sides.attacker.acquiredTraitIds = [ming.trait.id];
+  render(<BattleWorkspace snapshot={snapshot} store={createCalculatorStore(snapshot, wolf.state)} />);
+  expect(screen.queryByRole("spinbutton", { name: /^(攻击方|防守方)等级$/ })).not.toBeInTheDocument();
+});
 
 test("真实 S5 滴廿豚骰点与网页同算，分享还原数值及效果说明", () => {
   expect(snapshot.meta.seasonId).toBe("S5");

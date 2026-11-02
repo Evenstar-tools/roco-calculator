@@ -27,8 +27,10 @@ import { applyS5PreviewDreamTurnEnd, synchronizeS5PreviewSkillUse, synchronizeS5
 import { prepareS5EnergyUse, applyS5EnergyUse } from "../shared/features/s5-preview/energy-use.js";
 import { prepareS5DiscountUse, applyS5DiscountUse } from "../shared/features/s5-preview/cost-discount-use.js";
 import { applyMiniappS5Interaction } from "../state/s5-interaction.js";
+import { withMiniappBattleLevelDefaults } from "../state/battle-level-defaults.js";
 import { buildCombatState } from "../shared/build-combat-state.js";
 import { resolveBattleSpirit } from "../shared/domain/battle-form.js";
+import { supportsS5PreviewBattleLevel } from "../shared/domain/battle-level.js";
 import { getEffectiveTraits } from "../shared/domain/effective-traits.js";
 import { getMoonMemoryTraitControls } from "../shared/domain/moon-memory-trait-options.js";
 import { linkedNegativeStatusContext } from "../shared/domain/negative-status-context.js";
@@ -275,6 +277,17 @@ export default function BattleWorkspace({
     state,
     direction,
   );
+  function homeLevelControl(side) {
+    if (!supportsS5PreviewBattleLevel(snapshot, state.sides[side])) return null;
+    const view = Object.values(traitViews).find(entry => entry?.ownerSide === side);
+    const control = view?.controls.find(input => input.contextKey?.endsWith("S5BattleLevel"));
+    if (!control) return null;
+    return { control, value: state.sides[side].traitValues?.[control.canonicalKey] ?? control.defaultValue };
+  }
+  function setHomeLevel(side, value) {
+    const { control } = homeLevelControl(side);
+    setTraitValue(side, control.canonicalKey, value, control);
+  }
   const resultActions = createResultActions({
     calculation,
     direction,
@@ -425,10 +438,16 @@ export default function BattleWorkspace({
       snapshot,
       spiritId: value,
     });
+    // selectSpirit materializes shared direction defaults. Seed only the chosen
+    // configuration here, before those generated defaults can look like a save.
+    const selected = withMiniappBattleLevelDefaults(snapshot, {
+      sides: { [side]: result.state.sides[side] },
+    });
     dispatchWithUndo({
       type: "state/replace",
       value: {
         ...result.state,
+        sides: { ...result.state.sides, [side]: selected.sides[side] },
         negativeStatuses: initialState.negativeStatuses,
       },
     });
@@ -1064,6 +1083,8 @@ export default function BattleWorkspace({
               identityOnly
               imageUrl={getSpiritImageUrl(petImages, attacker)}
               imageUrls={petImages}
+              levelControl={homeLevelControl("attacker")}
+              onLevelChange={(value) => setHomeLevel("attacker", value)}
               onActivate={() => setDirection("forward")}
               onChange={(value) => setSpirit("attacker", value)}
               onFormChange={(value) => setForm("attacker", value)}
@@ -1095,6 +1116,8 @@ export default function BattleWorkspace({
               identityOnly
               imageUrl={getSpiritImageUrl(petImages, defender)}
               imageUrls={petImages}
+              levelControl={homeLevelControl("defender")}
+              onLevelChange={(value) => setHomeLevel("defender", value)}
               onActivate={() => setDirection("reverse")}
               onChange={(value) => setSpirit("defender", value)}
               onFormChange={(value) => setForm("defender", value)}
