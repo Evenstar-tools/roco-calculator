@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, test } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
+import { buildS5BwikiRuntime } from "../../scripts/s5-bwiki-runtime.mjs";
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 import { calculateAllPanelStats, calculatePanelStat } from "../../src/domain/stat.js";
 import { getNatureMultipliers } from "../../src/domain/natures.js";
@@ -29,17 +30,17 @@ const levels = [99, 89, 79, 69];
 const levelIds = levels.map(level => `${minggulong.id}:level:${level}`);
 const flattenTargets = groups => groups.flatMap(group => group.targets);
 
-function mainViewForLevel(level, { natureId = "neutral", displayIvs = {}, category = "physical" } = {}) {
+function mainViewForLevel(level, { natureId = "neutral", displayIvs = {}, category = "physical", spirit = minggulong, catalog = preview } = {}) {
   const source = { ...preview.spirits.find(spirit => spirit.id === "spirit_db5a2cb398dc0385"), traitIds: [] };
   const skill = { id: `ranking-probe-${category}`, name: "榜单面板回归", type: "普", category, basePower: 100, cost: 1 };
   // Use the real preview spirit/trait through the main VM. A plain probe skill
   // and trait-free source isolate incoming level effects from unrelated gains.
-  const coreSnapshot = { ...preview, spirits: [source, minggulong], skills: [skill],
-    learnsets: [source, minggulong].map(spirit => ({ spiritId: spirit.id, skillIds: [skill.id] })) };
+  const coreSnapshot = { ...catalog, spirits: [source, spirit], skills: [skill],
+    learnsets: [source, spirit].map(spirit => ({ spiritId: spirit.id, skillIds: [skill.id] })) };
   const state = createInitialState(coreSnapshot);
   state.sides.defender.nature = natureId;
   state.sides.defender.displayIvs = { ...state.sides.defender.displayIvs, ...displayIvs };
-  const trait = coreSnapshot.traits.find(entry => minggulong.traitIds.includes(entry.id));
+  const trait = coreSnapshot.traits.find(entry => spirit.traitIds.includes(entry.id));
   for (const [direction, role] of [["forward", "defender"], ["reverse", "attacker"]]) {
     const control = getS5PreviewTraitInputs(trait, role).find(input => input.contextKey.endsWith("BattleLevel"));
     state.directions[direction].context[control.id] = level;
@@ -248,5 +249,57 @@ describe("S5 冥古龙等级榜单", () => {
     expect(snapshot).toEqual(before);
     expect(minggulong).not.toHaveProperty("level");
     expect(minggulong.id).toBe(before.spirits[0].id);
+  });
+});
+
+describe("S5 超能阿布等级榜单", () => {
+  let catalog, superAbu, abuSnapshot;
+  beforeAll(async () => {
+    catalog = await buildS5BwikiRuntime();
+    superAbu = catalog.spirits.find(spirit => spirit.previewIdentity?.key === "super-abu");
+    abuSnapshot = { ...catalog, spirits: [superAbu] };
+  });
+  const abuLevels = [99, 90, 80, 70];
+
+  test("五种速度口径与主计算器面板一致，四档可搜索且不合并", () => {
+    for (const profileId of Object.keys(SPEED_TARGET_PROFILES)) {
+      const profile = SPEED_TARGET_PROFILES[profileId];
+      const targets = createSpeedTargets({ spirits: abuSnapshot.spirits, profileId });
+      expect(targets.map(target => target.level)).toEqual(abuLevels);
+      for (const target of targets) {
+        const main = mainViewForLevel(target.level, { spirit: superAbu, catalog,
+          natureId: profileId.startsWith("positive-") ? "timid" : profileId === "negative-zero" ? "grounded" : "neutral",
+          displayIvs: { speed: profile.displayIv },
+        });
+        expect(target.speed).toBe(main.sides.defender.finalPanelStats.speed);
+        expect(target.id).toBe(`${superAbu.id}:level:${target.level}`);
+      }
+    }
+    const groups = createBaseSpeedGroups({ snapshot: abuSnapshot });
+    expect(groups.flatMap(group => group.members).map(member => member.level)).toEqual(abuLevels);
+    expect(flattenTargets(createSpeedRanking({ snapshot: abuSnapshot, query: "70级" }))).toHaveLength(4);
+  });
+
+  test.each(Object.keys(STANDARD_DURABILITY_TEMPLATES))("%s 耐久对齐主计算器，70级承伤+30%且不重复减伤", templateId => {
+    const ranking = createDurabilityRanking({ spirits: abuSnapshot.spirits, templateId });
+    expect(ranking.rows.map(row => row.level)).toEqual(abuLevels);
+    for (const row of ranking.rows) {
+      for (const category of ["physical", "magical"]) {
+        const main = mainViewForLevel(row.level, { ...ranking.template, category, spirit: superAbu, catalog });
+        const result = main.calculation.forward.selectedResult;
+        const final = result.formulaSteps.find(step => step.label === "减伤、连击与最终倍率");
+        expect(main.sides.defender.panelStats).toEqual(row.panelStats);
+        expect(final.input.finalDamageMultiplier).toBe(row.level < 80 ? 1.3 : 1);
+        expect(row.incomingDamageMultiplier).toBe(final.input.finalDamageMultiplier);
+        expect(row.durability.raw[category]).toBe(row.panelDurability.raw[category] / row.incomingDamageMultiplier);
+      }
+      expect(row.durability.raw.combined).toBe(row.panelDurability.raw.combined / row.incomingDamageMultiplier);
+    }
+  });
+
+  test("关闭等级展开保留60级，普通同名与国际服资料不自动生成S5等级", () => {
+    const ordinary = { ...superAbu, previewIdentity: undefined };
+    expect(createSpeedTargets({ spirits: [ordinary] }).map(row => row.level)).toEqual([60]);
+    expect(createDurabilityRanking({ spirits: abuSnapshot.spirits, includeLevelVariants: false }).rows.map(row => row.level)).toEqual([60]);
   });
 });

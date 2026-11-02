@@ -52,7 +52,8 @@ test.each(["完整S5", "普通版推荐子集"])("%s的17只已确认推荐进�
     const speed = createSpeedTargets({ spirits: candidates, profileId });
     expect(new Set(speed.map(row => row.spiritId))).toEqual(ids);
     for (const spirit of confirmed) {
-      const levels = spirit.previewIdentity.key === "minggulong" ? [69, 79, 89, 99] : [60];
+      const levels = spirit.previewIdentity.key === "minggulong" ? [69, 79, 89, 99] :
+        spirit.previewIdentity.key === "super-abu" ? [70, 80, 90, 99] : [60];
       expect(speed.filter(row => row.spiritId === spirit.id).map(row => row.level).sort((a, b) => a - b)).toEqual(levels);
       expect(durability.rows.filter(row => row.spiritId === spirit.id).map(row => row.level).sort((a, b) => a - b)).toEqual(levels);
     }
