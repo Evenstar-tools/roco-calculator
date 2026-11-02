@@ -6,6 +6,7 @@ import {
   groupSpeedTargets,
 } from "../../src/features/team-ability/domain/speed-targets.js";
 import { readFileSync } from "node:fs";
+import { createSpeedRanking } from "../../src/features/team-ability/domain/ranking-tools.js";
 
 const raceStats = {
   hp: 100,
@@ -236,8 +237,16 @@ test("boss Bruce speed line keeps full, max and trait-triggered tiers apart", ()
   };
   const speeds = ["positive-max", "neutral-max"].map(profileId =>
     createSpeedTargets({ profileId, spirits: [spirit] }).map(target => target.speed));
-  const special = createSpeedSpecialTargets({ profileId: "positive-max", snapshot: { spirits: [spirit], traits: [trait] } });
+  const snapshot = { spirits: [spirit], traits: [trait] };
   expect(speeds).toEqual([[220], [192]]);
-  expect(special).toMatchObject([{ speed: 295, specialLabel: "烈冰钻" }]);
-  expect(createSpeedSpecialTargets({ profileId: "neutral-max", snapshot: { spirits: [spirit], traits: [trait] } })).toEqual([]);
+  for (const [profileId, speed] of [["positive-max", 295], ["neutral-max", 267]]) {
+    expect(createSpeedSpecialTargets({ profileId, snapshot })).toMatchObject([
+      { profileId, speed, specialLabel: "烈冰钻" },
+    ]);
+  }
+  const specialOnly = createSpeedRanking({ snapshot, profiles: ["special"] }).flatMap(group => group.targets);
+  expect(specialOnly.map(target => target.speed)).toEqual([295, 267]);
+  expect(new Set(specialOnly.map(target => target.id)).size).toBe(2);
+  expect(createSpeedRanking({ snapshot, profiles: ["positive-max", "neutral-max"] })
+    .flatMap(group => group.targets).map(target => target.speed)).toEqual([220, 192]);
 });
