@@ -491,7 +491,11 @@
   }
 
   .result-bar .dc-result-actions .result-bar__action {
-    flex: 0 0 44px;
+    width: auto;
+    flex: 0 0 auto;
+    gap: 2px;
+    padding: 0 6px 0 10px;
+    white-space: nowrap;
   }
 
   .result-bar .dc-result-actions .dc-entry {
@@ -579,6 +583,16 @@
 }
 
 @media (max-width: 359px) {
+  /* 窄屏只留箭头，把宽度留给双方名字；读屏仍读按钮标签。 */
+  .result-bar__action-label {
+    display: none;
+  }
+
+  .result-bar .dc-result-actions .result-bar__action {
+    width: 44px;
+    padding: 0;
+  }
+
   .skill-slots--matrix .skill-result-row {
     grid-template-columns: minmax(0, 1fr) 55px;
   }
