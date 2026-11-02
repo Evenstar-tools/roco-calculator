@@ -1,4 +1,5 @@
 export const toolsMessages = Object.fromEntries([
+  ["含特殊等级面板及承伤；", "Includes level-specific stats and damage taken; ", "特殊レベルの能力値・被ダメージを反映。"],
   ["无修正·0个体", "Neutral · Ind. Apt. 0", "補正なし・資質0"],
   ["减速·0个体", "Reduced SPD · Ind. Apt. 0", "速さ下降・資質0"],
   ["对60级攻击方 · 等级特性承伤 ×{multiplier}", "Against a Lv.60 attacker · Level-trait damage taken ×{multiplier}", "Lv.60の攻撃側を想定・レベル特性による被ダメージ ×{multiplier}"],

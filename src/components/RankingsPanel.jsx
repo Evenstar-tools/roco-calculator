@@ -82,7 +82,7 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
         <label>{t("耐久模板")}<select aria-label={t("耐久榜模板")} onChange={(event) => setTemplateId(event.target.value)} value={templateId}>{Object.values(STANDARD_DURABILITY_TEMPLATES).map((template) => <option key={template.id} value={template.id}>{t(template.label)}</option>)}</select></label>
         <label>{t("形态范围")}<select aria-label={t("形态筛选")} onChange={(event) => setRoleFilter(event.target.value)} value={roleFilter}><option value="all">{t("最终形态 + 首领")}</option><option value="final">{t("仅最终形态")}</option><option value="boss">{t("仅首领")}</option></select></label>
         <label><input type="checkbox" checked={includePassiveVariants} onChange={event => setIncludePassiveVariants(event.target.checked)} />{t("特殊配置")}</label>
-        <small>{hasLevelVariants ? t("含冥古龙等级面板及承伤；") : ""}{t("仅计注明的特性，不计天气和技能。")}</small>
+        <small>{hasLevelVariants ? t("含特殊等级面板及承伤；") : ""}{t("仅计注明的特性，不计天气和技能。")}</small>
         {more ? <button type="button" className="rank-options-done" onClick={() => setMore(false)}>{t("完成筛选")}</button> : null}
       </div>
       <div aria-label={t("排行指标")} className="rank-metrics" role="group">{Object.entries(RANKING_METRIC_LABELS).map(([key, label]) => <button aria-pressed={metric === key} key={key} onClick={() => setMetric(key)} type="button">{t(label)}</button>)}</div>

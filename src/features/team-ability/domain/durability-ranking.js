@@ -177,10 +177,10 @@ function calculateRankingEntry(spirit, template, variant) {
     physicalDefense: panelStats.physicalDefense,
     magicalDefense: panelStats.magicalDefense,
   });
-  // Non-standard levels currently belong only to the verified S5 Minggulong.
+  // Level panels use the same stat rules as the battle calculator.
   // Passive configurations are separate rows; ordinary rows remain trait-free.
   const incomingDamageMultiplier = variant.level === 60 ? 1 :
-    1 + getS5LevelIncomingDamagePercent(variant.level) / 100;
+    1 + getS5LevelIncomingDamagePercent(variant.level, spirit.previewIdentity?.mechanicKey) / 100;
   const raw = Object.fromEntries(RANKING_METRICS.map(key => [key, panelDurability.raw[key] / incomingDamageMultiplier]));
   return {
     ...variant,
