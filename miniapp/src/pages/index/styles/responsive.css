@@ -234,7 +234,7 @@
 
   .skill-slots--matrix .skill-picker__meta {
     gap: 2px;
-    font-size: 9px;
+    font-size: 10px;
     line-height: 13px;
   }
 
@@ -271,7 +271,7 @@
   }
 
   .skill-slots--matrix .skill-result-row__percent--compact {
-    font-size: 9px;
+    font-size: 10px;
   }
 
   /* 说明文字与四技能卡之间加浅分隔线,不再贴卡片边缘。 */
@@ -336,7 +336,7 @@
     left: 0;
     display: grid;
     min-height: calc(var(--result-bar-height) + var(--safe-area-bottom));
-    grid-template-columns: minmax(0, 1fr) 44px;
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
       "matchup action"
       "metrics metrics"
@@ -480,6 +480,27 @@
     display: inline;
     font-size: 14px;
     font-weight: var(--weight-emphasis);
+  }
+
+  /* 操作留在右上角，不单独占一行挤压计算区。 */
+  .result-bar .dc-result-actions {
+    grid-area: action;
+    grid-column: auto;
+    align-self: start;
+    gap: 6px;
+  }
+
+  .result-bar .dc-result-actions .result-bar__action {
+    flex: 0 0 44px;
+  }
+
+  .result-bar .dc-result-actions .dc-entry {
+    width: auto;
+    flex: 0 0 auto;
+    padding: 0 10px;
+    font-size: 13px;
+    line-height: 42px;
+    white-space: nowrap;
   }
 
   .parameter-sheet,
