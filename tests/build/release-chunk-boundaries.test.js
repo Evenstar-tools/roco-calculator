@@ -13,3 +13,13 @@ test('QR and feature pages are not merged into the export bundle', () => {
   expect(chunk('/project/node_modules/zxing-wasm/reader.js')).toBe('qr-reader');
   expect(chunk('/project/src/components/AbilityWorkbench.jsx')).toBeUndefined();
 });
+
+test('calculator entry compresses with its engine without merging lazy tool entries', () => {
+  for (const p of ['/project/src/App.jsx', 'D:/project/src/App.jsx']) {
+    expect(chunk(p)).toBe('calculator-core');
+    expect(chunk(p.replaceAll('/', '\\'))).toBe('calculator-core');
+  }
+  for (const p of ['/src/components/TeamDrawer.jsx', '/src/components/RankingsPanel.jsx', '/src/features/skill-query/SkillQueryPanel.jsx', '/src/features/deer/DeerPage.jsx']) {
+    expect(chunk('/project' + p)).toBeUndefined();
+  }
+});
