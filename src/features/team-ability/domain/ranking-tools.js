@@ -1,4 +1,5 @@
 import { createSpeedTargets, createSpeedSpecialTargets, groupSpeedTargets, SPEED_TARGET_PROFILES } from "./speed-targets.js";
+import { createRankingLevelVariants } from "./ranking-levels.js";
 
 export const RANKING_METRIC_LABELS = Object.freeze({ combined: "综合耐久", physical: "物理耐久", magical: "魔法耐久" });
 export const DEFAULT_RANKING_PROFILES = Object.freeze(["positive-max", "neutral-max", "neutral-zero", "negative-zero"]);
@@ -41,9 +42,16 @@ export function speedMatchSummary(targets, value) {
 }
 
 export function createSpeedTargetCatalog({ snapshot, profiles = DEFAULT_RANKING_PROFILES }) {
+  const levelSpirits = profiles.includes("special") ? snapshot.spirits.filter(spirit =>
+    createRankingLevelVariants(spirit).some(variant => variant.level > 60)) : [];
   return Object.keys(SPEED_TARGET_PROFILES).flatMap((profileId) => [
-    ...(profiles.includes(profileId) ? createSpeedTargets({ profileId, spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter }) : []),
-    ...(profiles.includes("special") ? createSpeedSpecialTargets({ profileId, snapshot }) : []),
+    ...(profiles.includes(profileId) ? createSpeedTargets({ profileId, includeLevelVariants: false, spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter }) : []),
+    ...(profiles.includes("special") ? [
+      ...createSpeedTargets({ profileId, spirits: levelSpirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter })
+        .filter(target => target.level > 60)
+        .map(target => ({ ...target, id: `special:${profileId}:${target.id}`, specialLabel: `${target.level}级` })),
+      ...createSpeedSpecialTargets({ profileId, snapshot }),
+    ] : []),
   ]);
 }
 
@@ -76,7 +84,7 @@ export const BASE_SPEED_PROFILES = ["neutral-zero", "neutral-max", "positive-max
 export function createBaseSpeedGroups({ snapshot, query = "" }) {
   const bySpirit = new Map();
   for (const profileId of BASE_SPEED_PROFILES) {
-    for (const target of createSpeedTargets({ profileId, spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter })) {
+    for (const target of createSpeedTargets({ profileId, includeLevelVariants: false, spirits: snapshot.spirits, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter })) {
       if (!bySpirit.has(target.id)) bySpirit.set(target.id, { id: target.id, name: target.name, level: target.level, spirit: target.spirit, targets: {} });
       bySpirit.get(target.id).targets[profileId] = target;
     }

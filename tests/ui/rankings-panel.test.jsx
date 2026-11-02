@@ -121,6 +121,59 @@ test("定位退出搜索并恢复完整榜单", () => {
   expect(screen.getByText("基准位置 · 没有同速配置")).toBeInTheDocument();
 });
 
+test("速度点选及详情定位只高亮具体配置，收起保留，数字定位与重置清除", () => {
+  render(<RankingsPanel kind="speed" snapshot={snapshot} onClose={vi.fn()} />);
+  const table = screen.getByRole("table", { name: "速度档位表" });
+  const selectedCards = () => table.querySelectorAll('.ability-speed__tier-spirits button[aria-pressed="true"]');
+  const water = within(table).getAllByRole("button", { name: /在速度表选择水测试/ })[0];
+  fireEvent.click(water);
+  expect([...selectedCards()]).toEqual([water]);
+  fireEvent.click(screen.getByRole("button", { name: "收起速度详情" }));
+  expect([...selectedCards()]).toEqual([water]);
+  const grass = within(table).getAllByRole("button", { name: /在速度表选择草测试/ })[0];
+  fireEvent.click(grass);
+  expect([...selectedCards()]).toEqual([grass]);
+  fireEvent.click(screen.getByRole("button", { name: "收起速度详情" }));
+  const input = screen.getByLabelText("搜索速度榜精灵");
+  fireEvent.change(input, { target: { value: "水测试" } });
+  fireEvent.click(screen.getAllByRole("button", { name: /在速度表选择水测试/ })[0]);
+  const maxSpeed = within(screen.getByRole("region", { name: "速度配置详情" })).getByRole("button", { name: /^满速 \d+，定位实速$/ });
+  fireEvent.click(maxSpeed);
+  expect(input).toHaveValue("");
+  expect(selectedCards()).toHaveLength(1);
+  expect(selectedCards()[0]).toHaveAccessibleName(/在速度表选择水测试/);
+  expect(within(table).getAllByRole("button", { name: /在速度表选择草测试/ })).toHaveLength(1);
+  expect(within(table).getByRole("button", { name: /在速度表选择草测试/ })).toHaveAttribute("aria-pressed", "false");
+  fireEvent.change(input, { target: { value: "267" } });
+  fireEvent.click(screen.getByRole("button", { name: "定位 267" }));
+  expect(selectedCards()).toHaveLength(0);
+  fireEvent.change(input, { target: { value: "水测试" } });
+  fireEvent.click(screen.getByRole("button", { name: "定位 水测试" }));
+  expect(selectedCards()).toHaveLength(1);
+  fireEvent.click(screen.getByRole("button", { name: "重置", exact: true }));
+  expect(selectedCards()).toHaveLength(0);
+});
+
+test("耐久详情返回后高亮所选行，切指标保留，筛选和重置不冒用其他行", () => {
+  render(<RankingsPanel kind="durability" snapshot={snapshot} onClose={vi.fn()} />);
+  const table = screen.getByRole("table", { name: "标准耐久完整榜" });
+  const selectedRows = () => table.querySelectorAll('tbody tr[aria-current="true"]');
+  for (const name of ["水测试", "草测试"]) {
+    fireEvent.click(within(table).getByRole("button", { name: new RegExp(name) }));
+    fireEvent.click(screen.getByRole("button", { name: "返回榜单" }));
+    expect(selectedRows()).toHaveLength(1);
+    expect(selectedRows()[0]).toHaveTextContent(name);
+  }
+  fireEvent.click(screen.getByRole("button", { name: "物理耐久", exact: true }));
+  expect(selectedRows()[0]).toHaveTextContent("草测试");
+  fireEvent.change(screen.getByLabelText("搜索耐久榜精灵"), { target: { value: "水测试" } });
+  expect(selectedRows()).toHaveLength(0);
+  fireEvent.change(screen.getByLabelText("搜索耐久榜精灵"), { target: { value: "" } });
+  expect(selectedRows()[0]).toHaveTextContent("草测试");
+  fireEvent.click(screen.getByRole("button", { name: "重置", exact: true }));
+  expect(selectedRows()).toHaveLength(0);
+});
+
 test("仅命中种族速度时定位完整种族表，不创建空实速档", () => {
   render(<RankingsPanel kind="speed" snapshot={snapshot} onClose={vi.fn()} />);
   fireEvent.change(screen.getByLabelText("搜索速度榜精灵"), { target: { value: "100" } });
@@ -140,46 +193,51 @@ const levelSnapshot = { ...snapshot, spirits: [{
   raceStats: { hp: 118, physicalAttack: 128, magicalAttack: 42, physicalDefense: 81, magicalDefense: 63, speed: 70 },
 }] };
 
-test("冥古龙四档速度各自展示、查看详情和定位，种族视图不合并等级", () => {
+test("高等级速度只在特殊口径显示，详情定位保留开关，种族视图只保留60级", () => {
   render(<RankingsPanel kind="speed" snapshot={levelSnapshot} onClose={vi.fn()} />);
   fireEvent.change(screen.getByLabelText("搜索速度榜精灵"), { target: { value: "冥古龙" } });
+  expect(screen.queryByRole("button", { name: /在速度表选择冥古龙 · \d+级/ })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "在速度表选择冥古龙，速度170" })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("checkbox", { name: "特殊口径" }));
   for (const [level, max, positive] of [[99, 209, 241], [89, 199, 229], [79, 189, 217], [69, 179, 205]]) {
     expect(screen.getByRole("button", { name: `定位 冥古龙 · ${level}级` })).toBeInTheDocument();
-    expect(screen.getByText(`满·${level}级`)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: `在速度表选择冥古龙 · ${level}级，速度${max}` }));
+    expect(screen.getByText(`满·特·${level}级`)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: `在速度表选择冥古龙 · ${level}级，速度${max}，${level}级` }));
     const detail = screen.getByRole("region", { name: "速度配置详情" });
     expect(detail).toHaveTextContent(`冥古龙 · ${level}级`);
     expect(within(detail).getByRole("button", { name: `极速 ${positive}，定位实速` })).toBeInTheDocument();
   }
   fireEvent.click(screen.getByRole("button", { name: "极速 205，定位实速" }));
-  expect(screen.getByRole("button", { name: "在速度表选择冥古龙 · 69级，速度205" })).toBeInTheDocument();
+  expect(screen.getByRole("checkbox", { name: "特殊口径" })).toBeChecked();
+  expect(screen.getByRole("button", { name: "在速度表选择冥古龙 · 69级，速度205，69级" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("button", { name: "在速度表选择冥古龙 · 79级，速度217，79级" })).toHaveAttribute("aria-pressed", "false");
   fireEvent.click(screen.getByRole("button", { name: "按种族速查" }));
   const table = screen.getByRole("table", { name: "种族速度档位表" });
-  expect(within(table).getAllByRole("button", { name: /查看冥古龙.*标准速度详情/ })).toHaveLength(4);
-  for (const level of [99, 89, 79, 69]) {
-    fireEvent.click(within(table).getByRole("button", { name: `查看冥古龙 · ${level}级标准速度详情` }));
-    expect(screen.getAllByRole("region", { name: "速度配置详情" })).toHaveLength(1);
-    expect(screen.getByRole("region", { name: "速度配置详情" })).toHaveTextContent(`冥古龙 · ${level}级`);
-  }
+  expect(within(table).getAllByRole("button", { name: /查看冥古龙.*标准速度详情/ })).toHaveLength(1);
+  fireEvent.click(within(table).getByRole("button", { name: "查看冥古龙标准速度详情" }));
+  expect(within(screen.getByRole("region", { name: "速度配置详情" })).getAllByRole("button", { name: /定位实速/ })).toHaveLength(5);
 });
 
-test("冥古龙99/89级零个体口径默认可见，详情定位与重置保持同一筛选", () => {
+test("冥古龙高等级零个体档随特殊开关显示，切换培养与重置不会漏档", () => {
   render(<RankingsPanel kind="speed" snapshot={levelSnapshot} onClose={vi.fn()} />);
   for (const [level, neutral, negative] of [[99, 164, 153], [89, 157, 146]]) {
+    fireEvent.click(screen.getByRole("checkbox", { name: "特殊口径" }));
     expect(screen.getByRole("checkbox", { name: "无修正·0个体" })).toBeChecked();
     expect(screen.getByRole("checkbox", { name: "减速·0个体" })).toBeChecked();
-    expect(screen.getByRole("button", { name: `在速度表选择冥古龙 · ${level}级，速度${neutral}` })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: `在速度表选择冥古龙 · ${level}级，速度${negative}` }));
+    expect(screen.getByRole("button", { name: `在速度表选择冥古龙 · ${level}级，速度${neutral}，${level}级` })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: `在速度表选择冥古龙 · ${level}级，速度${negative}，${level}级` }));
     const detail = screen.getByRole("region", { name: "速度配置详情" });
     expect(within(detail).getByRole("button", { name: `减速·0个体 ${negative}，定位实速` })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(within(detail).getByRole("button", { name: `无修正·0个体 ${neutral}，定位实速` }));
     expect(screen.getByRole("checkbox", { name: "无修正·0个体" })).toBeChecked();
     expect(screen.getByRole("checkbox", { name: "减速·0个体" })).not.toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "特殊口径" })).toBeChecked();
+    expect(screen.getByRole("button", { name: `在速度表选择冥古龙 · ${level}级，速度${neutral}，${level}级` })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "重置", exact: true }));
+    expect(screen.getByRole("checkbox", { name: "特殊口径" })).not.toBeChecked();
   }
-  fireEvent.click(screen.getByRole("checkbox", { name: "减速·0个体" }));
-  expect(screen.queryByRole("button", { name: "在速度表选择冥古龙 · 99级，速度153" })).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "在速度表选择冥古龙 · 99级，速度164" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /在速度表选择冥古龙 · \d+级/ })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "在速度表选择冥古龙，速度170" })).toBeInTheDocument();
 });
 
 test("冥古龙四档耐久保留独立行及正确等级详情，切模板与搜索不串行", () => {
@@ -196,6 +254,9 @@ test("冥古龙四档耐久保留独立行及正确等级详情，切模板与�
     const values = within(physical).getAllByRole("cell").map(cell => Number(cell.textContent.replaceAll(",", "")));
     expect(values[1]).toBe(Math.round(values[0] / (level < 80 ? 1.4 : 1)));
     fireEvent.click(within(detail).getByRole("button", { name: "返回榜单" }));
+    const selectedRows = screen.getByRole("table", { name: "标准耐久完整榜" }).querySelectorAll('tbody tr[aria-current="true"]');
+    expect(selectedRows).toHaveLength(1);
+    expect(selectedRows[0]).toHaveTextContent(`冥古龙 · ${level}级`);
   }
   fireEvent.click(screen.getByRole("button", { name: "筛选" }));
   expect(screen.getByText("含特殊等级面板及承伤；仅计注明的特性，不计天气和技能。")).toBeInTheDocument();
@@ -204,4 +265,51 @@ test("冥古龙四档耐久保留独立行及正确等级详情，切模板与�
   expect(within(screen.getByRole("table", { name: "标准耐久完整榜" })).getAllByRole("row")).toHaveLength(2);
   fireEvent.click(screen.getByRole("button", { name: /冥古龙 · 69级/ }));
   expect(screen.getByRole("region", { name: "榜单配置详情" })).toHaveTextContent("HP 457");
+  fireEvent.click(screen.getByRole("button", { name: "返回榜单" }));
+  fireEvent.change(screen.getByLabelText("搜索耐久榜精灵"), { target: { value: "" } });
+  fireEvent.click(screen.getByRole("checkbox", { name: "特殊配置" }));
+  expect(screen.queryByRole("button", { name: /冥古龙 · \d+级/ })).not.toBeInTheDocument();
+  expect(within(screen.getByRole("table", { name: "标准耐久完整榜" })).getAllByRole("row")).toHaveLength(2);
+  expect(screen.getByRole("button", { name: /^冥古龙 水 · 龙/ })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("checkbox", { name: "特殊配置" }));
+  expect(within(screen.getByRole("table", { name: "标准耐久完整榜" })).getAllByRole("row")).toHaveLength(6);
+});
+
+test("超能阿布关闭耐久特殊配置后只留60级，重置恢复全部档位", () => {
+  const abuSnapshot = { ...levelSnapshot, spirits: [{ ...levelSnapshot.spirits[0],
+    id: "super-abu", fullName: "超能阿布", types: ["龙"],
+    previewIdentity: { catalogId: "s5-ranking-test", key: "super-abu", mechanicKey: "super-abu" },
+  }] };
+  render(<RankingsPanel kind="durability" snapshot={abuSnapshot} onClose={vi.fn()} />);
+  expect(screen.getAllByRole("button", { name: /超能阿布/ })).toHaveLength(5);
+  fireEvent.click(screen.getByRole("button", { name: "筛选" }));
+  fireEvent.click(screen.getByRole("checkbox", { name: "特殊配置" }));
+  expect(screen.queryByRole("button", { name: /超能阿布 · \d+级/ })).not.toBeInTheDocument();
+  expect(screen.getAllByRole("button", { name: /超能阿布/ })).toHaveLength(1);
+  fireEvent.click(screen.getByRole("button", { name: "重置", exact: true }));
+  expect(screen.getByRole("checkbox", { name: "特殊配置" })).toBeChecked();
+  expect(screen.getAllByRole("button", { name: /超能阿布/ })).toHaveLength(5);
+});
+
+test("60级阿布详情展示原生承伤倍率，关闭特殊配置也不漏算", () => {
+  const abuSnapshot = { ...snapshot, spirits: [{ ...snapshot.spirits[0],
+    fullName: "阿布", types: ["龙"],
+    previewIdentity: { catalogId: "s5-ranking-test", key: "abu", mechanicKey: "abu" },
+  }] };
+  render(<RankingsPanel kind="durability" snapshot={abuSnapshot} onClose={vi.fn()} />);
+  for (const includeSpecial of [true, false]) {
+    if (!includeSpecial) fireEvent.click(screen.getByRole("checkbox", { name: "特殊配置" }));
+    fireEvent.click(screen.getByRole("button", { name: /^阿布 龙/ }));
+    const detail = screen.getByRole("region", { name: "榜单配置详情" });
+    expect(detail).toHaveTextContent("60级统一模板");
+    expect(detail).toHaveTextContent("等级特性承伤 ×1.3");
+    expect(within(detail).getByRole("columnheader", { name: "面板耐久" })).toBeInTheDocument();
+    expect(within(detail).getByRole("columnheader", { name: "有效耐久" })).toBeInTheDocument();
+    const physical = within(detail).getByRole("row", { name: /^物理耐久/ });
+    const [panel, effective] = within(physical).getAllByRole("cell").map(cell => Number(cell.textContent.replaceAll(",", "")));
+    expect(effective).toBe(Math.round(panel / 1.3));
+    fireEvent.click(within(detail).getByRole("button", { name: "返回榜单" }));
+    const highlighted = screen.getByRole("table", { name: "标准耐久完整榜" }).querySelector('tr[aria-current="true"]');
+    expect(highlighted).toHaveTextContent(effective.toLocaleString("zh-CN"));
+  }
 });

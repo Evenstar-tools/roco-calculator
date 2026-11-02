@@ -1477,6 +1477,12 @@
 .ability-speed-overview.is-icon-only .ability-speed__tier-spirits button { display: flex; flex-direction: column; width: 66px; min-width: 66px; max-width: 66px; padding: 3px; gap: 0; border-color: var(--border); }
 .ability-speed-overview.is-icon-only .ability-speed__tier-spirits img { width: 56px; height: 56px; }
 .ability-speed-overview .speed-profile-badge { font-size: 10px; line-height: 16px; }
+.ability-speed-overview .ability-speed__tier-spirits button[aria-pressed="true"] {
+  border-color: var(--selection-border);
+  color: var(--accent-strong);
+  background: var(--selection-bg);
+  box-shadow: inset 0 0 0 1px var(--selection-border);
+}
 
 .ability-speed__tier-spirits button > span {
   display: grid;

@@ -13,7 +13,7 @@ function rankingLevels(spirit) {
 
 export function resolveRankingFormRole(spirit, options = {}) {
   // This requested preview entry is absent from the pinned S4 form manifest.
-  if (options.includeLevelVariants !== false && rankingLevels(spirit) === MINGGULONG_LEVELS) {
+  if (rankingLevels(spirit) === MINGGULONG_LEVELS) {
     return { evolutionFamilyId: "s5-minggulong", formRole: "final", formRoleStatus: "preview" };
   }
   return resolveSpiritFormRole(spirit, options);

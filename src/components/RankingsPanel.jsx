@@ -30,7 +30,7 @@ function MultiplierControls({ bins, selected, onChange }) {
 function ReadonlyDetail({ entry, attackType, templateId, onBack }) {
   const { typeName, t } = useLocale();
   const back = useRef(null);
-  const levelVariant = entry.level !== 60;
+  const levelAdjusted = entry.level !== 60 || entry.incomingDamageMultiplier !== 1;
   useEffect(() => { back.current?.focus(); }, [entry]);
   return <section className="rank-detail" aria-label={t("榜单配置详情")}>
     <button type="button" ref={back} onClick={onBack}><ArrowLeft size={16} />{t("返回榜单")}</button>
@@ -39,10 +39,10 @@ function ReadonlyDetail({ entry, attackType, templateId, onBack }) {
       <h4>{t(STANDARD_DURABILITY_TEMPLATES[templateId].label)} · {entry.level}{t("级统一模板")}</h4>
       <p>{t("生命／物防／魔防个体均为60 · 其他个体为0")}</p><p>HP {entry.panelStats.hp}{" "}{t("· 物防")}{" "}{entry.panelStats.physicalDefense}{" "}{t("· 魔防")}{" "}{entry.panelStats.magicalDefense}</p>
       {entry.passiveLabel ? <p>{t(entry.passiveDescription)} · {t("物防 {before}→{after} · 魔防 {beforeMagic}→{afterMagic}", { before: entry.basePanelStats.physicalDefense, after: entry.panelStats.physicalDefense, beforeMagic: entry.basePanelStats.magicalDefense, afterMagic: entry.panelStats.magicalDefense })}</p> : null}
-      {levelVariant ? <p>{t("对60级攻击方 · 等级特性承伤 ×{multiplier}", { multiplier: entry.incomingDamageMultiplier })}</p> : null}
-      <table><thead><tr><th>{t("指标")}</th><th>{t(entry.passiveLabel ? "特性后耐久" : levelVariant ? "面板耐久" : "基础耐久")}</th>{attackType || levelVariant ? <th>{attackType ? <>{typeName(attackType)}{t("系有效耐久")}</> : t("有效耐久")}</th> : null}</tr></thead><tbody>{Object.entries(RANKING_METRIC_LABELS).map(([key, label]) => <tr key={key}><th>{t(label)}</th><td>{number((entry.panelDurability ?? entry.baseDurability ?? entry.durability).display[key])}</td>{attackType || levelVariant ? <td>{number(entry.durability.display[key])}</td> : null}</tr>)}</tbody></table>
-      {levelVariant ? <p>{t(attackType ? "面板耐久 ÷ 等级特性承伤倍率 ÷ 属性倍率" : "面板耐久 ÷ 等级特性承伤倍率")}</p> : null}
-      {attackType ? <p className={`rank-tone--${multiplierTone(entry.multiplier)}`}>{typeName(attackType)} ×{entry.multiplier}{entry.multiplier === 0 ? <> · {t("属性免疫，独立分组，不参与数值排名")}</> : !levelVariant ? <> · {t(entry.passiveLabel ? "特性后耐久 ÷ 属性倍率" : "基础耐久 ÷ 属性倍率")}</> : null}</p> : null}
+      {levelAdjusted ? <p>{t("对60级攻击方 · 等级特性承伤 ×{multiplier}", { multiplier: entry.incomingDamageMultiplier })}</p> : null}
+      <table><thead><tr><th>{t("指标")}</th><th>{t(entry.passiveLabel ? "特性后耐久" : levelAdjusted ? "面板耐久" : "基础耐久")}</th>{attackType || levelAdjusted ? <th>{attackType ? <>{typeName(attackType)}{t("系有效耐久")}</> : t("有效耐久")}</th> : null}</tr></thead><tbody>{Object.entries(RANKING_METRIC_LABELS).map(([key, label]) => <tr key={key}><th>{t(label)}</th><td>{number((entry.panelDurability ?? entry.baseDurability ?? entry.durability).display[key])}</td>{attackType || levelAdjusted ? <td>{number(entry.durability.display[key])}</td> : null}</tr>)}</tbody></table>
+      {levelAdjusted ? <p>{t(attackType ? "面板耐久 ÷ 等级特性承伤倍率 ÷ 属性倍率" : "面板耐久 ÷ 等级特性承伤倍率")}</p> : null}
+      {attackType ? <p className={`rank-tone--${multiplierTone(entry.multiplier)}`}>{typeName(attackType)} ×{entry.multiplier}{entry.multiplier === 0 ? <> · {t("属性免疫，独立分组，不参与数值排名")}</> : !levelAdjusted ? <> · {t(entry.passiveLabel ? "特性后耐久 ÷ 属性倍率" : "基础耐久 ÷ 属性倍率")}</> : null}</p> : null}
     </>}
     <p className="rank-note">{t("只读查看，不改变双方参数或队伍配置。不含未注明的特性、天气及技能效果。")}</p>
   </section>;
@@ -56,19 +56,21 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
   const updateResistance = setResistance ?? setLocalResistance;
   const [more, setMore] = useState(false);
   const [detail, setDetail] = useState(null);
+  const [selectedEntryId, setSelectedEntryId] = useState(null);
   const [includePassiveVariants, setIncludePassiveVariants] = useState(true);
   const detailTrigger = useRef(null);
   useEffect(() => {
     backButtonRef?.current?.focus({ preventScroll: true });
     currentRowRef?.current?.scrollIntoView?.({ block: "center" });
   }, [backButtonRef, currentRowRef]);
-  const baseRanking = useMemo(() => createDurabilityRanking({ spirits: snapshot.spirits, traits: snapshot.traits, includePassiveVariants, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter, attackType, multipliers, typeChart: snapshot.typeChart, templateId, filter: roleFilter === "all" ? undefined : (row) => row.formRole === roleFilter }), [snapshot, includePassiveVariants, attackType, multipliers, templateId, roleFilter]);
+  const baseRanking = useMemo(() => createDurabilityRanking({ spirits: snapshot.spirits, traits: snapshot.traits, includePassiveVariants, includeLevelVariants: includePassiveVariants, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter, attackType, multipliers, typeChart: snapshot.typeChart, templateId, filter: roleFilter === "all" ? undefined : (row) => row.formRole === roleFilter }), [snapshot, includePassiveVariants, attackType, multipliers, templateId, roleFilter]);
   const ranking = useMemo(() => selectDurabilityRanking(baseRanking, { query, sortBy: metric }), [baseRanking, query, metric]);
   const rows = [...ranking.immuneRows, ...ranking.rows];
   const hasLevelVariants = [...baseRanking.immuneRows, ...baseRanking.rows].some(row => row.level !== 60);
-  const currentEntryId = [...baseRanking.immuneRows, ...baseRanking.rows].find(row => row.spiritId === currentSpiritId && !row.passiveLabel)?.id;
+  const currentEntryId = [...baseRanking.immuneRows, ...baseRanking.rows].find(row => row.spiritId === currentSpiritId && row.level === 60 && !row.passiveLabel)?.id;
+  const highlightedEntryId = selectedEntryId ?? currentEntryId;
   const closeDetail = () => { setDetail(null); requestAnimationFrame(() => detailTrigger.current?.focus({ preventScroll: true })); };
-  const reset = () => { setQuery(""); setRoleFilter("all"); setTemplateId("standard-hp-v1"); setIncludePassiveVariants(true); updateResistance({ attackType: "", multipliers: bins }); };
+  const reset = () => { setSelectedEntryId(null); setQuery(""); setRoleFilter("all"); setTemplateId("standard-hp-v1"); setIncludePassiveVariants(true); updateResistance({ attackType: "", multipliers: bins }); };
   return <section aria-label={t("完整耐久榜")} className="rank-view" onKeyDown={(event) => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); if (detail) closeDetail(); else if (more) setMore(false); else onBack(); } }}>
     {!standalone ? <header className="rank-context-header"><button onClick={onBack} ref={backButtonRef} type="button"><ArrowLeft size={17} />{t("返回能力分析")}</button><div><h4>{t("标准耐久榜")}</h4><small>{t("最终形态与首领 · 搜索不改变名次")}</small></div></header> : null}
     {detail ? <ReadonlyDetail entry={detail} attackType={attackType} templateId={templateId} onBack={closeDetail} /> : null}
@@ -90,8 +92,8 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
       {currentSpiritId && !rows.some((row) => row.spiritId === currentSpiritId) ? <p className="rank-note">{t("参照精灵不符合当前筛选，不计入候选。")}</p> : null}
       <div className="rank-table-scroll">
         <table aria-label={t("标准耐久完整榜")} className={`rank-table rank-table--${metric}`}><thead><tr><th>{t("排名")}</th><th>{t("精灵")}</th>{attackType ? <th className="rank-type-column">{typeName(attackType)}{t("倍率")}</th> : null}{tableMetrics.map((key) => <th key={key} className={`rank-value--${key}`} aria-sort={metric === key ? "descending" : "none"}>{attackType ? t("有效") : ""}{t(RANKING_METRIC_LABELS[key])}</th>)}</tr></thead><tbody>
-          {rows.map((entry) => <tr aria-current={entry.id === currentEntryId ? "true" : undefined} key={entry.id} ref={entry.id === currentEntryId ? currentRowRef : undefined}>
-            <td>{entry.multiplier === 0 ? t("免疫") : entry.filteredRank[metric]}</td><th scope="row"><button className="rank-spirit" onClick={(event) => { detailTrigger.current = event.currentTarget; setDetail(entry); }} type="button">{portrait(entry.spirit) ? <SpiritImage name={entry.name} alt="" loading="lazy" decoding="async" src={portrait(entry.spirit)} /> : null}<span>{t(entry.name)}<small>{t(entry.spirit.types?.map(typeName).join(" · "))} <span className="rank-form">· {entry.formRole === "boss" ? t("首领") : t("最终形态")}</span></small>{attackType ? <small className={`rank-mobile-mult rank-tone--${multiplierTone(entry.multiplier)}`}>{typeName(attackType)} ×{entry.multiplier}</small> : null}</span></button></th>
+          {rows.map((entry) => <tr aria-current={entry.id === highlightedEntryId ? "true" : undefined} key={entry.id} ref={entry.id === currentEntryId ? currentRowRef : undefined}>
+            <td>{entry.multiplier === 0 ? t("免疫") : entry.filteredRank[metric]}</td><th scope="row"><button className="rank-spirit" onClick={(event) => { detailTrigger.current = event.currentTarget; setSelectedEntryId(entry.id); setDetail(entry); }} type="button">{portrait(entry.spirit) ? <SpiritImage name={entry.name} alt="" loading="lazy" decoding="async" src={portrait(entry.spirit)} /> : null}<span>{t(entry.name)}<small>{t(entry.spirit.types?.map(typeName).join(" · "))} <span className="rank-form">· {entry.formRole === "boss" ? t("首领") : t("最终形态")}</span></small>{attackType ? <small className={`rank-mobile-mult rank-tone--${multiplierTone(entry.multiplier)}`}>{typeName(attackType)} ×{entry.multiplier}</small> : null}</span></button></th>
             {attackType ? <td className={`rank-type-column rank-tone--${multiplierTone(entry.multiplier)}`}>×{entry.multiplier}</td> : null}
             {tableMetrics.map((key) => <td key={key} className={`rank-value--${key}${metric === key ? " rank-active-value" : ""}`}>{number(entry.durability.display[key])}</td>)}
           </tr>)}
@@ -122,11 +124,14 @@ const StandaloneSpeed = memo(function StandaloneSpeed({ snapshot, onClose }) {
   const [queryMode, setQueryMode] = useState("auto");
   const [profiles, setProfiles] = useState([...DEFAULT_RANKING_PROFILES]);
   const [detail, setDetail] = useState(null);
+  const [selectedTargetId, setSelectedTargetId] = useState(null);
   const trigger = useRef(null);
   const catalog = useMemo(() => createSpeedTargetCatalog({ snapshot, profiles }), [snapshot, profiles]);
   const targets = useMemo(() => selectSpeedRanking(catalog, { query, queryMode }).flatMap((group) => group.targets.map((target) => ({...target, id: `${target.profileId}:${target.id}`}))), [catalog, query, queryMode]);
+  const locatedTarget = location?.spiritId ? catalog.find(target => target.spiritId === location.spiritId && target.profileId === location.profileId && target.level === location.level && target.speed === location.speed && (target.level > 60 || !target.specialLabel)) : null;
+  const locateTargetId = location?.targetId ?? (locatedTarget ? `${locatedTarget.profileId}:${locatedTarget.id}` : undefined);
   const back = () => {setDetail(null); requestAnimationFrame(() => trigger.current?.focus({preventScroll:true}));};
-  const locate = (profileId, speed) => { setDetail(null); setProfiles([profileId]); setQueryMode("auto"); setQuery(""); setLocation({ speed }); setView("actual"); };
+  const locate = (profileId, speed, level = 60, spiritId) => { setDetail(null); setSelectedTargetId(null); setProfiles(level > 60 ? [profileId, "special"] : [profileId]); setQueryMode("auto"); setQuery(""); setLocation({ speed, profileId, level, spiritId }); setView("actual"); };
   const showView = (next) => { if (next === "base") setBaseVisited(true); setView(next); };
   const detailPanel = detail ? <SpeedDetail entry={detail} snapshot={snapshot} reference={/^\d+$/.test(query) ? Number(query) : null} onClose={back} onLocate={locate} /> : null;
   return <section className="rank-view" aria-label={t("速度线榜单")} onKeyDown={(event) => {if (event.key === "Escape" && detail) {event.stopPropagation(); back();}}}>
@@ -134,9 +139,9 @@ const StandaloneSpeed = memo(function StandaloneSpeed({ snapshot, onClose }) {
       <div className="speed-view-switch" role="group" aria-label={t("速度榜视图")}>{[["actual", "实速排行"], ["base", "按种族速查"]].map(([id, label]) => <button type="button" key={id} aria-pressed={view === id} onClick={() => { setDetail(null); showView(id); }}>{t(label)}</button>)}</div>
       <div className="speed-view-body" hidden={view !== "base"}>{baseVisited && <BaseSpeedOverview location={baseLocation} detail={detail} detailPanel={detailPanel} snapshot={snapshot} query={baseQuery} onQueryChange={setBaseQuery} onDetail={(target) => { trigger.current = document.activeElement; setDetail(detail?.id === target.id ? null : target); }} onLocate={locate} />}</div>
       <div className="speed-view-body" hidden={view !== "actual"}>
-      <SpeedOverview onLocateBase={(base) => { setDetail(null); setQuery(""); setBaseQuery(""); setBaseLocation({ base }); showView("base"); }} location={location} locateTargetId={location?.targetId} onLocateResult={(speed, targetId) => { setDetail(null); setQuery(""); setLocation({ speed, targetId }); }} detail={detail} detailPanel={detailPanel} standalone targets={targets} query={query} queryMode={queryMode} onQueryModeChange={setQueryMode} onQueryChange={(value) => { setLocation(null); setQueryMode("auto"); setQuery(value); }} profileIds={profiles} onProfilesChange={setProfiles} onBack={onClose} onTargetChange={(id) => {trigger.current = document.activeElement; setDetail(detail?.id === id ? null : targets.find((target) => target.id === id));}} />
+      <SpeedOverview onLocateBase={(base) => { setDetail(null); setQuery(""); setBaseQuery(""); setBaseLocation({ base }); showView("base"); }} location={location} locateTargetId={locateTargetId} targetId={selectedTargetId ?? locateTargetId} onLocateResult={(speed, targetId) => { setDetail(null); setSelectedTargetId(null); setQuery(""); setLocation({ speed, targetId }); }} detail={detail} detailPanel={detailPanel} standalone targets={targets} query={query} queryMode={queryMode} onQueryModeChange={setQueryMode} onQueryChange={(value) => { setDetail(null); setSelectedTargetId(null); setLocation(null); setQueryMode("auto"); setQuery(value); }} profileIds={profiles} onProfilesChange={setProfiles} onBack={onClose} onTargetChange={(id) => {trigger.current = document.activeElement; setSelectedTargetId(id); setDetail(detail?.id === id ? null : targets.find((target) => target.id === id));}} />
       {!targets.length ? <p className="rank-empty">{t("没有符合当前口径或搜索条件的速度档位。")}</p> : null}
-      <footer className="rank-footer">{t("极 / 满 / 性 / 无 / 减：速度口径 · 特：条件触发 · 点头像看详情")}</footer>
+      <footer className="rank-footer">{t("极 / 满 / 性 / 无 / 减：速度口径 · 特：特殊配置 · 点头像看详情")}</footer>
       </div>
     </div>
   </section>;

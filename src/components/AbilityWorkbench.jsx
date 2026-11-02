@@ -705,6 +705,7 @@ export function SpeedOverview({
   const [iconOnly, setIconOnly] = useState(standalone);
   const [jump, setJump] = useState(0);
   const selected = standalone ? null : targets.find((target) => target.id === targetId) ?? targets[0];
+  const activeTargetId = standalone ? targetId : selected?.id;
   const targetGroups = useMemo(() => groupSpeedTargets(targets), [targets]);
   const search = speedQuery(query, queryMode);
   const reference = speedReference(targetGroups, standalone ? location?.speed ?? (search.kind === "actual" ? search.value : null) : null);
@@ -730,14 +731,14 @@ export function SpeedOverview({
   }, [profileIds, resolvedLocateTargetId]);
 
   useEffect(() => {
-    if (!standalone || referenceValue === undefined || location?.targetId) return;
+    if (!standalone || referenceValue === undefined || resolvedLocateTargetId) return;
     const frame = requestAnimationFrame(() => {
       const row = referenceRef.current;
       const scroll = scrollRef.current;
       if (row && scroll) scroll.scrollTop += row.getBoundingClientRect().top - scroll.getBoundingClientRect().top - (scroll.querySelector("thead")?.offsetHeight ?? 0);
     });
     return () => cancelAnimationFrame(frame);
-  }, [standalone, search.kind, search.value, profileIds, jump, iconOnly, location, referenceValue]);
+  }, [standalone, search.kind, search.value, profileIds, jump, iconOnly, location, referenceValue, resolvedLocateTargetId]);
 
   return (
     <section
@@ -810,7 +811,7 @@ export function SpeedOverview({
           <tbody>
             {displayGroups.map((group) => (
               <tr
-                className={group.speed === reference?.value || group.targets.some((target) => target.id === selected?.id) ? "is-selected" : ""}
+                className={group.speed === reference?.value || group.targets.some((target) => target.id === activeTargetId) ? "is-selected" : ""}
                 ref={group.speed === reference?.value ? referenceRef : null}
                 data-speed-nav-key={String(group.speed)}
                 key={group.speed}
@@ -824,7 +825,7 @@ export function SpeedOverview({
                     {group.targets.map((target) => (
                       <button
                         aria-label={t("在速度表选择{v0}，速度{v1}{v2}", { v0: target.name, v1: target.speed, v2: target.specialLabel ? `，${target.specialLabel}` : "" })}
-                        aria-pressed={target.id === selected?.id || target.id === location?.targetId}
+                        aria-pressed={target.id === activeTargetId}
                         key={target.id}
                         onClick={() => onTargetChange(target.id)}
                         ref={target.id === resolvedLocateTargetId ? locateTargetRef : null}

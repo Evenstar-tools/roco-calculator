@@ -1,5 +1,7 @@
 // Product UI copy; entity names and descriptions come from the official client catalog.
 export const globalFeaturesMessages = Object.fromEntries([
+  ["速度线与耐久榜高亮所选配置，定位与重置保持一致。", "SPD and durability rankings highlight the selected build consistently when locating or resetting.", "速さ・耐久ランキングで選択した構成を強調表示し、位置の移動やリセット時も表示を統一しました。"],
+  ["速度线只高亮所选精灵的具体配置，详情定位保留培养口径；耐久榜返回保留所选行，筛选隐藏不匹配结果，重置清除高亮。", "SPD rankings highlight only the selected Jini build, and locating from details keeps its SPD profile. Durability rankings retain the selected row after returning; filters hide unmatched results, and resetting clears the highlight.", "速さランキングでは選択したジニの構成だけを強調し、詳細から移動しても速さの条件を維持します。耐久ランキングは戻った後も選択行を保持し、絞り込みで対象外を非表示にし、リセットで強調表示を解除します。"],
   ["种族值六维图与特性资料", "Species Aptitude chart and Traits", "種族資質チャートと特性情報"],
   ["技能检索新增种族值六维图，补全特性名称、图标和描述；窄屏隐藏六维图，国际服继续使用独立 S3 数据。", "Skill search adds a six-axis Species Aptitude chart and fills in Trait names, icons and descriptions. The chart is hidden on narrow screens. Global continues to use its separate S3 data.", "スキル検索に種族資質の6軸チャートを追加し、特性名・アイコン・説明を補完しました。狭い画面ではチャートを非表示にします。国際版は引き続き独立したS3データを使用します。"],
   ["伤害{v0}%", "Damage {v0}%", "ダメージ{v0}%"],
@@ -470,7 +472,7 @@ export const globalFeaturesMessages = Object.fromEntries([
   ["实速排行", "Actual SPD", "実数値順"],
   ["按种族速查", "Species SPD lookup", "種族資質から検索"],
   ["没有符合当前口径或搜索条件的速度档位。", "No SPD tiers match this profile or search.", "現在の条件に合う速さの段階がありません。"],
-  ["极 / 满 / 性 / 无 / 减：速度口径 · 特：条件触发 · 点头像看详情", "Max / Apt. / Personality / Zero / Minus: SPD profiles · Special: conditional · Click portraits for details", "最速／資質／性格／0／下降：速さの条件 · 特殊：条件付き · 画像で詳細を表示"],
+  ["极 / 满 / 性 / 无 / 减：速度口径 · 特：特殊配置 · 点头像看详情", "Max / Apt. / Personality / Zero / Minus: SPD profiles · Special: special configurations · Click portraits for details", "最速／資質／性格／0／下降：速さの条件 · 特殊：特殊設定 · 画像で詳細を表示"],
   ["当前技能的属性克制倍率：{v0}{v1}", "Current skill matchup: {v0}{v1}", "現在のスキルの属性倍率：{v0}{v1}"],
   ["导出中", "Exporting", "書き出し中"],
   ["导出格式", "Export format", "書き出し形式"],
