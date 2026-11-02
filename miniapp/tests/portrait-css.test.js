@@ -312,14 +312,14 @@ describe("reference-first responsive CSS", () => {
       /\.active-ability-stage__label-group\s*\{[\s\S]*min-height:\s*44px[\s\S]*justify-content:\s*center/u,
     );
     expect(compact).toMatch(
-      /\.active-ability-stage__control\s*\{[\s\S]*grid-template-columns:\s*26px\s+minmax\(0,\s*1fr\)/u,
+      /\.active-ability-stage__control\s*\{[\s\S]*grid-template-columns:\s*30px\s+minmax\(0,\s*1fr\)/u,
     );
   });
 
   test("contracts compact ability controls below 360px without clipping", () => {
     const compact = styles["compact-demo.css"];
     expect(compact).toMatch(
-      /@media\s*\(max-width:\s*359px\)[\s\S]*\.active-ability-stage__control\s*\{[\s\S]*grid-template-columns:\s*20px\s+minmax\(0,\s*1fr\)/u,
+      /@media\s*\(max-width:\s*359px\)[\s\S]*\.active-ability-stage__control\s*\{[\s\S]*grid-template-columns:\s*30px\s+minmax\(0,\s*1fr\)/u,
     );
     expect(compact).toMatch(
       /@media\s*\(max-width:\s*359px\)[\s\S]*\.active-ability-stage__stepper\s*\{[\s\S]*grid-template-columns:\s*28px\s+minmax\(0,\s*1fr\)\s+28px/u,
