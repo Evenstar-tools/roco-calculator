@@ -16,7 +16,7 @@ describe("手机结果栏与小字", () => {
     const actions = rule(css, ".result-bar .dc-result-actions");
     expect(actions).toContain("grid-area: action");
     expect(actions).toContain("grid-column: auto");
-    expect(rule(css, ".result-bar .dc-result-actions .result-bar__action")).toContain("flex: 0 0 44px");
+    expect(rule(css, ".result-bar .dc-result-actions .result-bar__action")).toContain("flex: 0 0 auto");
   });
 
   it("手机计算区不再使用 10px 以下的文字", () => {
