@@ -4,8 +4,9 @@
   .page {
     --result-bar-height: 136px;
 
+    min-width: 0;
     padding-right: 8px;
-    padding-bottom: calc(var(--result-bar-height) + 2px + var(--safe-area-bottom));
+    padding-bottom: calc(var(--result-bar-space, calc(var(--result-bar-height) + var(--safe-area-bottom))) + 12px);
     padding-left: 8px;
   }
 
@@ -461,7 +462,7 @@
     padding: 0;
     border: 1px solid var(--border-strong);
     border-radius: 9px;
-    background: var(--surface-card);
+    background: transparent;
     color: var(--text-primary);
     transition: background-color 120ms ease, transform 120ms ease;
   }
@@ -476,7 +477,9 @@
   }
 
   .result-bar__action-label {
-    display: none;
+    display: inline;
+    font-size: 14px;
+    font-weight: var(--weight-emphasis);
   }
 
   .parameter-sheet,

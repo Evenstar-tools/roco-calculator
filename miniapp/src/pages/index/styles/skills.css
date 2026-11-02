@@ -1864,7 +1864,7 @@
   padding: 0;
   border: 1px solid var(--border-strong);
   border-radius: 9px;
-  background: var(--surface-card);
+  background: transparent;
   color: var(--text-primary);
   font-size: 14px;
   font-weight: 600;

@@ -188,6 +188,7 @@ export default function BattleWorkspace({
   onFavoriteToggle,
   onPresetAllocationChange,
   onShareChange,
+  onResultBarHeightChange,
   negativeStatusEnabled = false,
   petImages,
   quickUndoEnabled = false,
@@ -1364,10 +1365,13 @@ export default function BattleWorkspace({
             onOpen={openConditions}
             open={conditionsOpen}
             summary={conditionSummary}
+            targetKey={`${direction}:${state.sides[targetSide].spiritId}:${state.sides[targetSide].battleForm?.spiritId ?? ""}`}
           />
         </View>
 
         <ResultBar
+          onHeightChange={onResultBarHeightChange}
+          targetKey={`${direction}:${state.sides[targetSide].spiritId}:${state.sides[targetSide].battleForm?.spiritId ?? ""}`}
           onOpenComparison={damageComparisonEnabled && selectedSkill ? () => {
             setComparisonSource(captureDamageComparison(store.getState(), direction, configPresetsBySpirit));
             setActiveLayer("damage-comparison");

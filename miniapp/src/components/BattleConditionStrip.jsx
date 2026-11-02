@@ -1,4 +1,5 @@
-import { Button, Input, Text, View } from "@tarojs/components";
+import { Button, Text, View } from "@tarojs/components";
+import CurrentHpInput from "./CurrentHpInput.jsx";
 
 export default function BattleConditionStrip({
   currentHp,
@@ -7,19 +8,10 @@ export default function BattleConditionStrip({
   onOpen,
   open,
   summary,
+  targetKey,
 }) {
   const labels = summary?.labels ?? [];
   const count = Number(summary?.count) || 0;
-
-  function updateCurrentHp(event) {
-    const raw = event?.detail?.value ?? event?.target?.value ?? "";
-    if (String(raw).trim() === "") return;
-    const numeric = Number(raw);
-    if (!Number.isFinite(numeric)) return;
-    onCurrentHpChange?.(
-      Math.min(maxHp ?? numeric, Math.max(0, Math.floor(numeric))),
-    );
-  }
 
   return (
     <View className="conditions-ribbon">
@@ -48,15 +40,13 @@ export default function BattleConditionStrip({
       </Button>
       <View className="conditions-ribbon__health">
         <Text className="conditions-ribbon__health-label">目标 HP</Text>
-        <Input
-          aria-label="目标当前生命"
+        <CurrentHpInput
+          label="目标当前生命"
           className="conditions-ribbon__health-input"
-          inputMode="numeric"
-          max={maxHp ?? undefined}
-          min="0"
-          onInput={updateCurrentHp}
-          type="number"
-          value={Number.isFinite(currentHp) ? currentHp : ""}
+          maxHp={maxHp}
+          onChange={onCurrentHpChange}
+          resetKey={targetKey}
+          value={currentHp}
         />
         <Text className="conditions-ribbon__health-max">
           {Number.isFinite(maxHp) ? `/ ${maxHp}` : "/ --"}

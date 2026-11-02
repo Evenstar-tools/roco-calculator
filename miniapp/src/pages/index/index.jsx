@@ -131,6 +131,7 @@ export function createDefaultServices({
 }
 
 export default function IndexPage({ services }) {
+  const [resultBarHeight, setResultBarHeight] = useState(null);
   const [seasonTheme, setSeasonTheme] = useState(() => readSeasonTheme(createStorageAdapter(Taro)));
   const [classicCalculatorColorsEnabled, setClassicCalculatorColorsEnabled] = useState(() => readClassicCalculatorColors(createStorageAdapter(Taro)));
   useEffect(() => {
@@ -726,7 +727,8 @@ export default function IndexPage({ services }) {
   }
 
   return (
-    <View className={`page page--season-${seasonTheme.id}${classicCalculatorColorsEnabled ? " page--classic-calculator-colors" : ""}${compactDemo ? " page--compact-demo" : ""}`}>
+    <View className={`page page--season-${seasonTheme.id}${classicCalculatorColorsEnabled ? " page--classic-calculator-colors" : ""}${compactDemo ? " page--compact-demo" : ""}`}
+      style={resultBarHeight ? { "--result-bar-space": `${resultBarHeight}px` } : undefined}>
       <SeasonBackdrop seasonId={seasonTheme.id} />
       <AppHeader
         classicCalculatorColorsEnabled={classicCalculatorColorsEnabled}
@@ -771,6 +773,7 @@ export default function IndexPage({ services }) {
         />
       ) : null}
       <BattleWorkspace
+        onResultBarHeightChange={setResultBarHeight}
         damageComparisonEnabled={pageState.damageComparisonEnabled === true}
         compactDemo={compactDemo}
         configPresetsBySpirit={configPresetsBySpirit(

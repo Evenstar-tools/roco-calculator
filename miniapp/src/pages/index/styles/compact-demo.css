@@ -5,7 +5,7 @@
     --result-bar-height: 136px;
 
     padding-right: 6px;
-    padding-bottom: calc(var(--result-bar-height) + 2px + var(--safe-area-bottom));
+    padding-bottom: calc(var(--result-bar-space, calc(var(--result-bar-height) + var(--safe-area-bottom))) + 12px);
     padding-left: 6px;
   }
 

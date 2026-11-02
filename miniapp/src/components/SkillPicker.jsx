@@ -92,6 +92,7 @@ export default function SkillPicker({
   const [category, setCategory] = useState("all");
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [query, setQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
   const selectedId = entryId(value);
   const selected = choices.find((skill) => skill.id === selectedId);
   const fallbackName = fallbackSkill?.skillName ?? fallbackSkill?.name;
@@ -147,6 +148,7 @@ export default function SkillPicker({
   function toggle() {
     const nextOpen = !open;
     if (nextOpen) resetFilters();
+    setSearchFocused(false);
     setKeyboardHeight(0);
     setOpen(nextOpen);
     if (nextOpen) onOpen?.();
@@ -154,6 +156,7 @@ export default function SkillPicker({
 
   function close() {
     resetFilters();
+    setSearchFocused(false);
     setKeyboardHeight(0);
     setOpen(false);
   }
@@ -283,6 +286,9 @@ export default function SkillPicker({
                   aria-label={`搜索${label}`}
                   className="skill-picker__search"
                   confirmType="search"
+                  focus={searchFocused}
+                  onBlur={() => setSearchFocused(false)}
+                  onFocus={() => setSearchFocused(true)}
                   onInput={(event) => setQuery(readInputValue(event))}
                   onKeyboardHeightChange={(event) => {
                     const height = Number(event?.detail?.height);
@@ -292,6 +298,19 @@ export default function SkillPicker({
                   type="text"
                   value={query}
                 />
+                {query ? (
+                  <Button
+                    aria-label={`清空${label}搜索`}
+                    className="picker-search-clear"
+                    hoverClass="button-hover"
+                    onClick={() => {
+                      setQuery("");
+                      setSearchFocused(true);
+                    }}
+                  >
+                    清空
+                  </Button>
+                ) : null}
               </View>
             </View>
             <ScrollView

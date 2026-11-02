@@ -130,6 +130,22 @@ function createStorageTaro(overrides = {}) {
 }
 
 describe("IndexPage", () => {
+  test("底栏实际高度变化同步到页面占位，不回写底栏自身最小高度", async () => {
+    let resultHeight = 216;
+    const originalBounds = HTMLElement.prototype.getBoundingClientRect;
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function () {
+      return this.classList.contains("result-bar") ? { height: resultHeight } : originalBounds.call(this);
+    });
+    const view = render(<IndexPage services={createUserSettingServices()} />);
+    await screen.findByLabelText("攻击方配置");
+    const page = view.container.querySelector(".page");
+    await waitFor(() => expect(page.style.getPropertyValue("--result-bar-space")).toBe("216px"));
+    expect(page.style.getPropertyValue("--result-bar-height")).toBe("");
+    resultHeight = 260;
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+    await waitFor(() => expect(page.style.getPropertyValue("--result-bar-space")).toBe("260px"));
+  });
+
   test("经典配色默认关闭且独立记忆，切换赛季不改变背景、页头和计算配置", async () => {
     const services = createUserSettingServices();
     const first = render(<IndexPage services={services} />);

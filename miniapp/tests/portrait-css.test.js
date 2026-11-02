@@ -81,7 +81,7 @@ describe("reference-first responsive CSS", () => {
     expect(skills).toMatch(/\.result-bar__target-input\s*\{[^}]*display:\s*flex;[^}]*align-items:\s*center;/u);
     expect(skills).toMatch(/\.result-bar__target-input\s*>\s*\.weui-input\s*\{[^}]*text-align:\s*center;/u);
     expect(skills).toMatch(/\.result-bar__action\s*\{[^}]*width:\s*100%;[^}]*margin:\s*0;/u);
-    expect(styles["responsive.css"]).toMatch(/\.result-bar__action-label\s*\{[^}]*display:\s*none;/u);
+    expect(styles["responsive.css"]).toMatch(/\.result-bar__action-label\s*\{[^}]*display:\s*inline;/u);
   });
 
   test("loads shared tokens before the ordered style modules", () => {
@@ -586,7 +586,7 @@ describe("reference-first responsive CSS", () => {
   test("constrains the fixed spirit search and results to equal safe margins", () => {
     const overlays = styles["overlays.css"];
     const fixedInput = overlays.match(
-      /\.combatant-card--identity-only \.spirit-picker--open \.spirit-picker__input\s*\{([\s\S]*?)\}/u,
+      /\.combatant-card--identity-only \.spirit-picker--open \.spirit-picker__search-field\s*\{([\s\S]*?)\}/u,
     )?.[1] ?? "";
     const fixedResults = overlays.match(
       /\.combatant-card--identity-only \.spirit-picker__results\s*\{([\s\S]*?)\}/u,

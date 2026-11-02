@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, Image, Input, Text, View } from "@tarojs/components";
 import {
   createSpiritSearchIndex,
@@ -31,6 +31,7 @@ export default function SpiritPicker({
   side,
 }) {
   const [query, setQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
   const [internalOpen, setInternalOpen] = useState(false);
   const open = typeof controlledOpen === "boolean"
     ? controlledOpen
@@ -47,6 +48,10 @@ export default function SpiritPicker({
     ? searchSpiritsWithFavorites(index, query, favoriteIds)
     : [];
 
+  useEffect(() => {
+    if (!open) setSearchFocused(false);
+  }, [open]);
+
   function setOpen(nextValue) {
     const nextOpen = typeof nextValue === "function"
       ? nextValue(open)
@@ -61,11 +66,13 @@ export default function SpiritPicker({
     if (choosingForm) onFormChange(spiritId);
     else onChange(spiritId);
     setQuery("");
+    setSearchFocused(false);
     setOpen(false);
   }
 
   function closePicker() {
     setQuery("");
+    setSearchFocused(false);
     setOpen(false);
   }
 
@@ -94,17 +101,35 @@ export default function SpiritPicker({
           {selected ? "更换" : "选择"}
         </Button>
       ) : null}
-      <Input
-        aria-label={`搜索${sideLabel}宠物`}
-        className="spirit-picker__input"
-        placeholder={`搜索${sideLabel}宠物`}
-        type="text"
-        value={query}
-        onInput={(event) => {
-          setOpen(true);
-          setQuery(readInputValue(event));
-        }}
-      />
+      <View className="spirit-picker__search-field">
+        <Input
+          aria-label={`搜索${sideLabel}宠物`}
+          className="spirit-picker__input"
+          focus={searchFocused}
+          onBlur={() => setSearchFocused(false)}
+          onFocus={() => setSearchFocused(true)}
+          placeholder={`搜索${sideLabel}宠物`}
+          type="text"
+          value={query}
+          onInput={(event) => {
+            setOpen(true);
+            setQuery(readInputValue(event));
+          }}
+        />
+        {query ? (
+          <Button
+            aria-label={`清空${sideLabel}宠物搜索`}
+            className="picker-search-clear"
+            hoverClass="button-hover"
+            onClick={() => {
+              setQuery("");
+              setSearchFocused(true);
+            }}
+          >
+            清空
+          </Button>
+        ) : null}
+      </View>
       {open && !query.trim() && !choosingForm ? (
         <View className="spirit-picker__hint">
           <Text className="spirit-picker__hint-title">

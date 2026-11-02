@@ -1,18 +1,22 @@
-import { forwardRef } from "react";
-import { Button, Image, Input, Text, View } from "@tarojs/components";
+import { forwardRef, useEffect } from "react";
+import Taro from "@tarojs/taro";
+import { Button, Image, Text, View } from "@tarojs/components";
 import caretRightIcon from "../assets/icons/caret-right.png";
 import { RESULT_TRIGGER_ID } from "../platform/result-interaction.js";
 import { damagePresentation, resultTone } from "../view-models/result-presentation.js";
 import DamageSegments from "./DamageSegments.jsx";
+import CurrentHpInput from "./CurrentHpInput.jsx";
 
 const ResultBar = forwardRef(function ResultBar(
   {
     mode = "single",
     onCurrentHpChange,
+    onHeightChange,
     open,
     onOpen,
     onOpenComparison,
     selectedSkillIndex = 0,
+    targetKey,
     view,
   },
   ref,
@@ -40,15 +44,30 @@ const ResultBar = forwardRef(function ResultBar(
     ? `${Math.min(skillCount - 1, Math.max(0, selectedSkillIndex)) + 1}/${skillCount}`
     : null;
 
-  function updateTargetHp(event) {
-    const raw = event?.detail?.value ?? event?.target?.value ?? "";
-    if (String(raw).trim() === "") return;
-    const numeric = Number(raw);
-    if (!Number.isFinite(numeric)) return;
-    onCurrentHpChange?.(
-      Math.min(targetMaxHp ?? numeric, Math.max(0, Math.floor(numeric))),
-    );
-  }
+  useEffect(() => {
+    if (!onHeightChange) return;
+    let active = true;
+    const report = rect => {
+      if (active && rect?.height > 0) onHeightChange(Math.ceil(rect.height));
+    };
+    const element = typeof document !== "undefined" ? document.querySelector(".result-bar") : null;
+    const measure = () => {
+      if (element) report(element.getBoundingClientRect());
+      else Taro.createSelectorQuery?.().select(".result-bar").boundingClientRect(report).exec();
+    };
+    const observer = element && typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    observer?.observe(element);
+    let timer;
+    if (!element && typeof Taro.nextTick === "function") Taro.nextTick(measure);
+    else timer = setTimeout(measure, 0);
+    Taro.onWindowResize?.(measure);
+    return () => {
+      active = false;
+      clearTimeout(timer);
+      observer?.disconnect();
+      Taro.offWindowResize?.(measure);
+    };
+  }, [onHeightChange, view, mode, onOpenComparison]);
 
   return (
     <View aria-label="当前伤害结果" className="result-bar">
@@ -102,14 +121,12 @@ const ResultBar = forwardRef(function ResultBar(
         </View>
         <View className="result-bar__target-hp">
           <Text>目标 HP</Text>
-          <Input
-            aria-label="结果栏目标当前生命"
+          <CurrentHpInput
+            label="结果栏目标当前生命"
             className="result-bar__target-input"
-            inputMode="numeric"
-            max={targetMaxHp ?? undefined}
-            min="0"
-            onInput={updateTargetHp}
-            type="number"
+            maxHp={targetMaxHp}
+            onChange={onCurrentHpChange}
+            resetKey={targetKey}
             value={targetHp}
           />
           <Text className="result-bar__target-max">
@@ -167,7 +184,7 @@ const ResultBar = forwardRef(function ResultBar(
         ref={ref}
         tabIndex={0}
       >
-        <Text className="result-bar__action-label">查看伤害详情</Text>
+        <Text className="result-bar__action-label">伤害详情</Text>
         <Image
           alt=""
           aria-hidden="true"
