@@ -53,7 +53,6 @@ export default function ResultActionPanel({
     <View aria-label="结果调整工作台" className="result-actions">
       <View className="result-actions__heading">
         <Text className="result-sheet__section-title">结果调整</Text>
-        <Text className="result-actions__hint">修改后原位更新结果</Text>
       </View>
       <View aria-label="调整分类" className="result-actions__categories">
         {CATEGORIES.map((item) => (
