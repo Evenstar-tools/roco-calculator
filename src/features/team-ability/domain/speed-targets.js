@@ -108,6 +108,7 @@ function compareSpeedTargets(left, right) {
 
 export function createSpeedTargets({
   profileId = "positive-max",
+  includeLevelVariants = true,
   spiritFilterRevision,
   spirits = [],
 } = {}) {
@@ -118,7 +119,7 @@ export function createSpeedTargets({
       if (isWheatCosmeticSpirit(spirit) || !canRecommendSpirit(spirit) || !hasCompleteRaceStats(spirit?.raceStats)) return [];
       const form = resolveRankingFormRole(spirit, { spiritFilterRevision });
       if (form.formRole !== "final" && form.formRole !== "boss") return [];
-      return createRankingLevelVariants(spirit).map(variant => ({
+      return createRankingLevelVariants(spirit, { includeLevelVariants }).map(variant => ({
         ...variant,
         formRole: form.formRole,
         profileId: profile.id,

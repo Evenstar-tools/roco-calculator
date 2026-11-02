@@ -14,7 +14,7 @@ function rankingLevels(spirit) {
 export function resolveRankingFormRole(spirit, options = {}) {
   const form = resolveSpiritFormRole(spirit, options);
   // Level variants must not bypass the shared recorded-data eligibility check.
-  if (options.includeLevelVariants !== false && rankingLevels(spirit) === MINGGULONG_LEVELS &&
+  if (rankingLevels(spirit) === MINGGULONG_LEVELS &&
       ["final", "boss"].includes(form.formRole)) {
     return { evolutionFamilyId: "s5-minggulong", formRole: "final", formRoleStatus: "preview" };
   }

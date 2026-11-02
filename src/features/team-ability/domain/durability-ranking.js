@@ -178,10 +178,13 @@ function calculateRankingEntry(spirit, template, variant) {
     physicalDefense: panelStats.physicalDefense,
     magicalDefense: panelStats.magicalDefense,
   });
-  // Level panels use the same stat rules as the battle calculator.
-  // Passive configurations are separate rows; ordinary rows remain trait-free.
-  const incomingDamageMultiplier = variant.level === 60 ? 1 :
-    1 + getS5LevelIncomingDamagePercent(variant.level, spirit.previewIdentity?.mechanicKey) / 100;
+  // Intrinsic level-based incoming damage applies at 60 too. Other passive
+  // configurations remain separate rows; unrelated spirits stay trait-free.
+  const identity = spirit.previewIdentity;
+  const hasLevelTrait = /^s5(?:[-_:]|$)/iu.test(identity?.catalogId ?? "") &&
+    identity.key === identity.mechanicKey && ["abu", "super-abu", "minggulong"].includes(identity.key);
+  const incomingDamageMultiplier = hasLevelTrait ?
+    1 + getS5LevelIncomingDamagePercent(variant.level, identity.mechanicKey) / 100 : 1;
   const raw = Object.fromEntries(RANKING_METRICS.map(key => [key, panelDurability.raw[key] / incomingDamageMultiplier]));
   return {
     ...variant,
@@ -274,7 +277,8 @@ export function createDurabilityRanking({
     }
   }
   const entries = eligible.flatMap((spirit) => [
-    ...createRankingLevelVariants(spirit, { includeLevelVariants }),
+    ...createRankingLevelVariants(spirit, { includeLevelVariants: false }),
+    ...(includeLevelVariants ? createRankingLevelVariants(spirit).filter(variant => variant.level > 60) : []),
     ...(includePassiveVariants ? createPassiveVariants(spirit, traits) : []),
   ].map(variant => {
     const entry = calculateRankingEntry(spirit, template, variant);

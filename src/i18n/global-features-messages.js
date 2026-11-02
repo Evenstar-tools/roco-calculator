@@ -473,7 +473,7 @@ export const globalFeaturesMessages = Object.fromEntries([
   ["实速排行", "Actual SPD", "実数値順"],
   ["按种族速查", "Base SPD lookup", "種族値から検索"],
   ["没有符合当前口径或搜索条件的速度档位。", "No SPD tiers match this profile or search.", "現在の条件に合う速さの段階がありません。"],
-  ["极 / 满 / 性 / 无 / 减：速度口径 · 特：条件触发 · 点头像看详情", "Max / IV / Nature / Zero / Minus: SPD profiles · Special: conditional · Click portraits for details", "最速／個体値／性格／0／下降：速さの条件 · 特殊：条件付き · 画像で詳細を表示"],
+  ["极 / 满 / 性 / 无 / 减：速度口径 · 特：特殊配置 · 点头像看详情", "Max / IV / Nature / Zero / Minus: SPD profiles · Special: special configurations · Click portraits for details", "最速／個体値／性格／0／下降：速さの条件 · 特殊：特殊設定 · 画像で詳細を表示"],
   ["当前技能的属性克制倍率：{v0}{v1}", "Current skill matchup: {v0}{v1}", "現在のスキルの属性倍率：{v0}{v1}"],
   ["导出中", "Exporting", "書き出し中"],
   ["导出格式", "Export format", "書き出し形式"],

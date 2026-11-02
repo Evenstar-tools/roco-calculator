@@ -16,10 +16,10 @@ export default function SpeedDetail({ entry, snapshot, reference, onClose, onLoc
     {entry.specialLabel ? <small>{t("当前")}{" "}{entry.speed} · {t(entry.specialLabel)}</small> : null}
     <div className="speed-detail-options">{profiles.map(profileId => {
       const label = SPEED_TARGET_PROFILES[profileId].label;
-      const target = createSpeedTargets({ profileId, spirits: [entry.spirit], spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter }).find(target => target.level === (entry.level ?? 60));
+      const target = createSpeedTargets({ profileId, includeLevelVariants: (entry.level ?? 60) > 60, spirits: [entry.spirit], spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter }).find(target => target.level === (entry.level ?? 60));
       if (!target) return null;
       const delta = reference === null ? null : target.speed - reference;
-      return <button key={profileId} type="button" aria-pressed={!entry.specialLabel && entry.profileId === profileId} aria-label={t("{v0} {v1}，定位实速", { v0: label, v1: target.speed })} onClick={() => onLocate(profileId, target.speed)}>{t(label)}<b>{target.speed}</b>{delta !== null ? <small>{t("比")}{" "}{reference} {delta === 0 ? t("同速") : `${delta > 0 ? "快" : "慢"} ${Math.abs(delta)}`}</small> : null}</button>;
+      return <button key={profileId} type="button" aria-pressed={(!entry.specialLabel || entry.level > 60) && entry.profileId === profileId} aria-label={t("{v0} {v1}，定位实速", { v0: label, v1: target.speed })} onClick={() => onLocate(profileId, target.speed, entry.level ?? 60, entry.spirit.id)}>{t(label)}<b>{target.speed}</b>{delta !== null ? <small>{t("比")}{" "}{reference} {delta === 0 ? t("同速") : `${delta > 0 ? "快" : "慢"} ${Math.abs(delta)}`}</small> : null}</button>;
     })}</div>
     <small>{t("标准速度 · 点击定位")}</small>
   </section>;

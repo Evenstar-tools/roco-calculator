@@ -55,14 +55,18 @@ test.each(["完整S5", "普通版推荐子集"])("%s的17只已确认推荐进�
       const levels = spirit.previewIdentity.key === "minggulong" ? [69, 79, 89, 99] :
         spirit.previewIdentity.key === "super-abu" ? [70, 80, 90, 99] : [60];
       expect(speed.filter(row => row.spiritId === spirit.id).map(row => row.level).sort((a, b) => a - b)).toEqual(levels);
-      expect(durability.rows.filter(row => row.spiritId === spirit.id).map(row => row.level).sort((a, b) => a - b)).toEqual(levels);
+      const durabilityLevels = levels.includes(60) ? levels : [60, ...levels];
+      expect(durability.rows.filter(row => row.spiritId === spirit.id).map(row => row.level).sort((a, b) => a - b)).toEqual(durabilityLevels);
     }
   }
-  for (const row of durability.rows.filter(row => row.spirit.previewIdentity.key === "minggulong")) {
-    const incoming = 1 + getS5LevelIncomingDamagePercent(row.level) / 100;
+  for (const row of durability.rows) {
+    const identity = row.spirit.previewIdentity;
+    const incoming = ["minggulong", "abu", "super-abu"].includes(identity.key)
+      ? 1 + getS5LevelIncomingDamagePercent(row.level, identity.mechanicKey) / 100 : 1;
     expect(row.incomingDamageMultiplier).toBe(incoming);
-    expect(row.durability.raw.physical).toBe(row.panelDurability.raw.physical / incoming);
-    expect(row.durability.raw.magical).toBe(row.panelDurability.raw.magical / incoming);
+    for (const metric of ["physical", "magical", "combined"]) {
+      expect(row.durability.raw[metric]).toBe(row.panelDurability.raw[metric] / incoming);
+    }
   }
 });
 

@@ -92,26 +92,40 @@ describe("S5 冥古龙等级榜单", () => {
   });
 
   test("速度榜按实际速度排序，文字搜等级与数字搜实速都能定位配置", () => {
-    const all = createSpeedRanking({ snapshot });
-    expect(flattenTargets(all)).toHaveLength(16);
-    expect(all.map(group => group.speed)).toEqual([241, 229, 217, 209, 205, 199, 189, 179, 164, 157, 153, 150, 146, 143, 140, 134]);
+    const standard = flattenTargets(createSpeedRanking({ snapshot }));
+    expect(standard).toHaveLength(4);
+    expect(standard.every(target => target.level === 60 && !target.specialLabel)).toBe(true);
+    expect(flattenTargets(createSpeedRanking({ snapshot, query: "89级" }))).toEqual([]);
 
-    const byLevel = flattenTargets(createSpeedRanking({ snapshot, query: "89级" }));
-    expect(byLevel.map(target => target.speed)).toEqual([229, 199, 157, 146]);
+    const all = createSpeedRanking({ snapshot, profiles: ["special"] });
+    const special = flattenTargets(all);
+    expect(special).toHaveLength(20);
+    expect(special.every(target => target.level > 60 && target.specialLabel === `${target.level}级`)).toBe(true);
+    expect(new Set(special.map(target => target.id)).size).toBe(20);
+    expect(all.map(group => group.speed)).toEqual([241, 229, 217, 209, 205, 199, 189, 187, 179, 178, 170, 164, 162, 157, 153, 150, 146, 143, 140, 134]);
+    const mixed = flattenTargets(createSpeedRanking({ snapshot,
+      profiles: ["positive-max", "neutral-max", "neutral-zero", "negative-zero", "special"] }));
+    expect(mixed).toHaveLength(24);
+    expect(mixed.filter(target => target.level === 60)).toHaveLength(4);
+    expect(mixed.filter(target => target.level > 60)).toHaveLength(20);
+    expect(new Set(mixed.map(target => `${target.profileId}:${target.id}`)).size).toBe(24);
+
+    const byLevel = flattenTargets(createSpeedRanking({ snapshot, profiles: ["special"], query: "89级" }));
+    expect(byLevel.map(target => target.speed)).toEqual([229, 199, 178, 157, 146]);
     expect(byLevel.every(target => target.level === 89)).toBe(true);
-    const bySpeed = flattenTargets(createSpeedRanking({ snapshot, query: "２０５", queryMode: "auto" }));
+    const bySpeed = flattenTargets(createSpeedRanking({ snapshot, profiles: ["special"], query: "２０５", queryMode: "auto" }));
     expect(bySpeed).toHaveLength(1);
     expect(bySpeed[0]).toMatchObject({ level: 69, profileId: "positive-max", speed: 205 });
   });
 
-  test("种族总览不按精灵 ID 合并四档，每档保留各培养口径", () => {
+  test("种族总览只保留60级标准档，高等级仅由特殊口径收纳", () => {
     const groups = createBaseSpeedGroups({ snapshot });
     const members = groups.flatMap(group => group.members);
-    expect(groups).toHaveLength(4);
-    expect(members.map(member => member.id)).toEqual(levelIds);
+    expect(groups).toHaveLength(1);
+    expect(members).toMatchObject([{ id: minggulong.id, name: "冥古龙", level: 60 }]);
     for (const group of groups) {
       const [member] = group.members;
-      expect(member.name).toBe(`冥古龙 · ${member.level}级`);
+      expect(member.name).toBe("冥古龙");
       expect(member.spirit).toBe(minggulong);
       expect(Object.keys(member.targets)).toEqual(BASE_SPEED_PROFILES);
       expect(group.values).toEqual(BASE_SPEED_PROFILES.map(profileId => member.targets[profileId].speed));
@@ -121,16 +135,20 @@ describe("S5 冥古龙等级榜单", () => {
       }
     }
     const matched = selectBaseSpeedGroups(groups, "89级").flatMap(group => group.members);
-    expect(matched.map(member => member.level)).toEqual([89]);
-    expect(selectBaseSpeedGroups(groups, "199").flatMap(group => group.members).map(member => member.level)).toEqual([89]);
+    expect(matched).toEqual([]);
+    expect(selectBaseSpeedGroups(groups, "199")).toEqual([]);
   });
 
   test.each(Object.keys(STANDARD_DURABILITY_TEMPLATES))("%s 耐久保留等级面板，低于80级只除一次承伤倍率", templateId => {
     const ranking = createDurabilityRanking({ spirits: snapshot.spirits, templateId });
     const template = STANDARD_DURABILITY_TEMPLATES[templateId];
-    expect(ranking.rows.map(row => row.level)).toEqual(levels);
-    expect(ranking.rows.map(row => row.id)).toEqual(levelIds);
-    expect(new Set(ranking.rows.map(row => row.id)).size).toBe(4);
+    const levelRows = ranking.rows.filter(row => row.level > 60);
+    expect(levelRows.map(row => row.level)).toEqual(levels);
+    expect(levelRows.map(row => row.id)).toEqual(levelIds);
+    expect(new Set(ranking.rows.map(row => row.id)).size).toBe(5);
+    expect(ranking.rows.find(row => row.level === 60)).toMatchObject({
+      id: minggulong.id, name: "冥古龙", incomingDamageMultiplier: 1.4,
+    });
     expect(ranking.template.level).toBe(60);
     for (const row of ranking.rows) {
       const expected = calculateAllPanelStats({
@@ -138,7 +156,7 @@ describe("S5 冥古龙等级榜单", () => {
         natureMultipliers: getNatureMultipliers(template.natureId), level: row.level,
       });
       expect(row.spiritId).toBe(minggulong.id);
-      expect(row.name).toBe(`冥古龙 · ${row.level}级`);
+      expect(row.name).toBe(row.level === 60 ? "冥古龙" : `冥古龙 · ${row.level}级`);
       expect(row.panelStats).toEqual(expected);
       const physical = expected.hp * expected.physicalDefense;
       const magical = expected.hp * expected.magicalDefense;
@@ -155,7 +173,7 @@ describe("S5 冥古龙等级榜单", () => {
     }
   });
 
-  test.each(["physical", "magical"])("四档耐久与60级攻击者主核心%s承伤一致，不新增防守等级系数", category => {
+  test.each(["physical", "magical"])("含60级的全部耐久档与主核心%s承伤一致，不新增防守等级系数", category => {
     const ranking = createDurabilityRanking({ spirits: snapshot.spirits });
     const template = ranking.template;
     for (const row of ranking.rows) {
@@ -182,7 +200,8 @@ describe("S5 冥古龙等级榜单", () => {
     const typeChart = { types: ["火", "幽", "龙"], matrix: [[1, 1, 2]] };
     const options = { spirits: snapshot.spirits, typeChart, attackType: "火" };
     const ranking = createDurabilityRanking({ ...options, multipliers: [2] });
-    expect(ranking.rows.map(row => row.level)).toEqual(levels);
+    expect(ranking.rows.filter(row => row.level > 60).map(row => row.level)).toEqual(levels);
+    expect(ranking.rows).toHaveLength(5);
     for (const row of ranking.rows) {
       expect(row.multiplier).toBe(2);
       expect(row.incomingDamageMultiplier).toBe(row.level < 80 ? 1.4 : 1);
@@ -194,7 +213,7 @@ describe("S5 冥古龙等级榜单", () => {
     }
     expect(createDurabilityRanking({ ...options, multipliers: [0.5] }).rows).toEqual([]);
     for (const sortBy of ["physical", "magical", "combined"]) {
-      expect(selectDurabilityRanking(ranking, { sortBy }).rows.map(row => row.level)).toEqual(levels);
+      expect(selectDurabilityRanking(ranking, { sortBy }).rows.filter(row => row.level > 60).map(row => row.level)).toEqual(levels);
       const filtered = selectDurabilityRanking(ranking, { query: "79级", sortBy });
       expect(filtered.rows).toHaveLength(1);
       expect(filtered.rows[0]).toMatchObject({
@@ -213,28 +232,33 @@ describe("S5 冥古龙等级榜单", () => {
     const spirits = [minggulong, ordinary];
     const speed = createSpeedTargets({ spirits, profileId: "neutral-max" });
     const durability = createDurabilityRanking({ spirits });
+    expect(speed).toHaveLength(5);
+    expect(durability.rows).toHaveLength(6);
     for (const rows of [speed, durability.rows]) {
-      expect(rows).toHaveLength(5);
       expect(rows.filter(row => row.spiritId === ordinary.id)).toEqual([
         expect.objectContaining({ id: ordinary.id, name: "冥古龙", level: 60 }),
       ]);
     }
     const defaultTargets = flattenTargets(createSpeedRanking({ snapshot: { ...snapshot, spirits } }));
     const standardProfiles = ["negative-zero", "neutral-max", "neutral-zero", "positive-max"];
-    expect(defaultTargets).toHaveLength(20);
+    expect(defaultTargets).toHaveLength(8);
     expect(defaultTargets.filter(target => target.spiritId === ordinary.id).map(target => target.profileId).sort()).toEqual(standardProfiles);
-    for (const level of levels) {
-      expect(defaultTargets.filter(target => target.spiritId === minggulong.id && target.level === level)
-        .map(target => target.profileId).sort()).toEqual(standardProfiles);
-    }
+    expect(defaultTargets.filter(target => target.spiritId === minggulong.id && target.level === 60)
+      .map(target => target.profileId).sort()).toEqual(standardProfiles);
+    expect(defaultTargets.every(target => target.level === 60)).toBe(true);
+    const special = flattenTargets(createSpeedRanking({ snapshot: { ...snapshot, spirits }, profiles: ["special"] }));
+    expect(special).toHaveLength(20);
+    expect(special.every(target => target.spiritId === minggulong.id && target.level > 60)).toBe(true);
     const unexpanded = createDurabilityRanking({ spirits, includeLevelVariants: false });
     // Recorded S5 stats remain eligible when level expansion is disabled.
     expect(unexpanded.rows).toHaveLength(2);
     expect(unexpanded.rows.map(row => row.id).sort()).toEqual([ordinary.id, minggulong.id].sort());
     for (const row of unexpanded.rows) {
       expect(row.level).toBe(60);
-      expect(row.incomingDamageMultiplier).toBe(1);
-      expect(row.durability).toEqual(row.panelDurability);
+      expect(row.incomingDamageMultiplier).toBe(row.spiritId === minggulong.id ? 1.4 : 1);
+      for (const metric of ["physical", "magical", "combined"]) {
+        expect(row.durability.raw[metric]).toBe(row.panelDurability.raw[metric] / row.incomingDamageMultiplier);
+      }
     }
     expect(unexpanded.excluded).toEqual([]);
   });
@@ -253,9 +277,10 @@ describe("S5 冥古龙等级榜单", () => {
 });
 
 describe("S5 超能阿布等级榜单", () => {
-  let catalog, superAbu, abuSnapshot;
+  let catalog, abu, superAbu, abuSnapshot;
   beforeAll(async () => {
     catalog = await buildS5BwikiRuntime();
+    abu = catalog.spirits.find(spirit => spirit.previewIdentity?.key === "abu");
     superAbu = catalog.spirits.find(spirit => spirit.previewIdentity?.key === "super-abu");
     abuSnapshot = { ...catalog, spirits: [superAbu] };
   });
@@ -276,13 +301,22 @@ describe("S5 超能阿布等级榜单", () => {
       }
     }
     const groups = createBaseSpeedGroups({ snapshot: abuSnapshot });
-    expect(groups.flatMap(group => group.members).map(member => member.level)).toEqual(abuLevels);
-    expect(flattenTargets(createSpeedRanking({ snapshot: abuSnapshot, query: "70级" }))).toHaveLength(4);
+    expect(groups.flatMap(group => group.members).map(member => member.level)).toEqual([60]);
+    expect(flattenTargets(createSpeedRanking({ snapshot: abuSnapshot, query: "70级" }))).toEqual([]);
+    const special = flattenTargets(createSpeedRanking({ snapshot: abuSnapshot, profiles: ["special"] }));
+    expect(special).toHaveLength(20);
+    expect(new Set(special.map(target => target.id)).size).toBe(20);
+    expect(special.every(target => target.level > 60 && target.specialLabel === `${target.level}级`)).toBe(true);
+    expect(flattenTargets(createSpeedRanking({ snapshot: abuSnapshot, profiles: ["special"], query: "70级" }))).toHaveLength(5);
   });
 
-  test.each(Object.keys(STANDARD_DURABILITY_TEMPLATES))("%s 耐久对齐主计算器，70级承伤+30%且不重复减伤", templateId => {
+  test.each(Object.keys(STANDARD_DURABILITY_TEMPLATES))("%s 耐久对齐主计算器，60与70级承伤+30%且不重复减伤", templateId => {
     const ranking = createDurabilityRanking({ spirits: abuSnapshot.spirits, templateId });
-    expect(ranking.rows.map(row => row.level)).toEqual(abuLevels);
+    const levelRows = ranking.rows.filter(row => row.level > 60);
+    expect(levelRows.map(row => row.level)).toEqual(abuLevels);
+    expect(ranking.rows).toHaveLength(5);
+    const standard = ranking.rows.find(row => row.level === 60);
+    expect(standard).toMatchObject({ id: superAbu.id, name: "超能阿布", incomingDamageMultiplier: 1.3 });
     for (const row of ranking.rows) {
       for (const category of ["physical", "magical"]) {
         const main = mainViewForLevel(row.level, { ...ranking.template, category, spirit: superAbu, catalog });
@@ -297,9 +331,47 @@ describe("S5 超能阿布等级榜单", () => {
     }
   });
 
+  test.each(Object.keys(STANDARD_DURABILITY_TEMPLATES))("%s 普通阿布60级计入三成承伤，低于超能70级以上并与同级超能并列", templateId => {
+    const ranking = createDurabilityRanking({ spirits: [abu, superAbu], templateId });
+    const ordinary = ranking.rows.find(row => row.spiritId === abu.id);
+    const sameLevel = ranking.rows.find(row => row.spiritId === superAbu.id && row.level === 60);
+    expect(ordinary).toMatchObject({ name: "阿布", level: 60, incomingDamageMultiplier: 1.3 });
+    for (const metric of ["physical", "magical", "combined"]) {
+      expect(ordinary.durability.raw[metric]).toBe(ordinary.panelDurability.raw[metric] / 1.3);
+      expect(ordinary.durability.display[metric]).toBe(Math.round(ordinary.panelDurability.raw[metric] / 1.3));
+      expect(sameLevel.durability.raw[metric]).toBe(ordinary.durability.raw[metric]);
+      expect(sameLevel.globalRank[metric]).toBe(ordinary.globalRank[metric]);
+      const rows = selectDurabilityRanking(ranking, { sortBy: metric }).rows;
+      for (const row of rows.filter(row => row.level > 60)) {
+        expect(row.durability.raw[metric]).toBeGreaterThan(ordinary.durability.raw[metric]);
+        expect(rows.indexOf(row)).toBeLessThan(rows.indexOf(ordinary));
+      }
+    }
+    for (const category of ["physical", "magical"]) {
+      const main = mainViewForLevel(60, { ...ranking.template, category, spirit: abu, catalog });
+      const final = main.calculation.forward.selectedResult.formulaSteps.find(step => step.label === "减伤、连击与最终倍率");
+      expect(main.sides.defender.panelStats).toEqual(ordinary.panelStats);
+      expect(final.input.finalDamageMultiplier).toBe(ordinary.incomingDamageMultiplier);
+    }
+  });
+
   test("关闭等级展开保留60级，普通同名与国际服资料不自动生成S5等级", () => {
     const ordinary = { ...superAbu, previewIdentity: undefined };
     expect(createSpeedTargets({ spirits: [ordinary] }).map(row => row.level)).toEqual([60]);
-    expect(createDurabilityRanking({ spirits: abuSnapshot.spirits, includeLevelVariants: false }).rows.map(row => row.level)).toEqual([60]);
+    expect(createDurabilityRanking({ spirits: abuSnapshot.spirits, includeLevelVariants: false }).rows).toEqual([
+      expect.objectContaining({ level: 60, incomingDamageMultiplier: 1.3 }),
+    ]);
+    const identity = superAbu.previewIdentity;
+    for (const previewIdentity of [undefined,
+      { ...identity, catalogId: "s3-global" },
+      { ...identity, key: "ordinary", mechanicKey: "super-abu" },
+      { ...identity, mechanicKey: "ordinary" },
+      { ...identity, mechanicKey: "abu" },
+    ]) {
+      const rows = createDurabilityRanking({ spirits: [{ ...superAbu, previewIdentity }] }).rows;
+      expect(rows).toHaveLength(1);
+      expect(rows[0]).toMatchObject({ level: 60, incomingDamageMultiplier: 1 });
+      expect(rows[0].durability).toEqual(rows[0].panelDurability);
+    }
   });
 });

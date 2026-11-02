@@ -77,7 +77,7 @@ test("opening durability does not mount unused speed views", () => {
   expect(speed.createSpeedTargets).not.toHaveBeenCalled();
   expect(rankingTools.createBaseSpeedGroups).not.toHaveBeenCalled();
   rerender(<RankingsPanel kind="speed" snapshot={snapshot} onClose={close} />);
-  expect(speed.createSpeedTargets).toHaveBeenCalledTimes(2);
+  expect(speed.createSpeedTargets).toHaveBeenCalledTimes(rankingTools.DEFAULT_RANKING_PROFILES.length);
   expect(rankingTools.createBaseSpeedGroups).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", { name: "按种族速查" }));
   expect(rankingTools.createBaseSpeedGroups).toHaveBeenCalledTimes(1);
