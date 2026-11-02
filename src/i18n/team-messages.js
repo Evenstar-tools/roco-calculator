@@ -56,6 +56,7 @@ export const teamMessages = Object.fromEntries([
   ["成员性格", "Member nature", "メンバーの性格"], ["血脉", "Bloodline", "血脈"],
   ["首领化／首领形态不能携带血脉技能：{skills}。请更换这些技能，或改用非首领配置。", "Boss forms cannot equip these bloodline skills: {skills}. Change the skills or use a non-boss setup.", "ボス化・ボス形態では血脈スキル（{skills}）を装備できません。スキルを変更するか、ボス以外の設定を使用してください。"],
   ["原码个体为空或暂无法识别，请按实际配置调整。", "The source IVs are empty or unrecognized. Adjust them to your actual setup.", "元コードの個体値が空か、認識できません。実際の設定に合わせて調整してください。"],
+  ["成员面板", "Member stats", "メンバーの実数値"],
   ["成员面板耐久", "Member durability", "メンバーの耐久"], ["面板耐久", "Panel durability", "実数値の耐久"],
   ["可用于能力分析 · 已选 {count}/3", "Ready for stat analysis · {count}/3 selected", "能力分析が可能 · {count}/3 選択済み"],
   ["历史个体需在能力分析中重选", "Reselect legacy IVs in stat analysis", "過去の個体値設定を能力分析で選び直してください"],

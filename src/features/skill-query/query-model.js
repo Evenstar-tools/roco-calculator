@@ -13,7 +13,17 @@ export function matchesSource(text, source) {
 
 export function acquisitionSummary(methods) {
   if (!methods.length) return "途径待补充";
-  return [...new Set(methods.map((text) => /等级待确认/.test(text) ? "等级待确认" : text.replace(/^解锁[：:]\s*/, "")))].join(" / ");
+  return [...new Set(sortAcquisitionMethods(methods).map((text) => /等级待确认/.test(text) ? "等级待确认" : text.replace(/^解锁[：:]\s*/, "")))].join(" / ");
+}
+
+function acquisitionRank(method) {
+  if (matchesSource(method, "default")) return 0;
+  if (method.includes("技能石")) return 1;
+  return method.includes("血脉") ? 3 : 2;
+}
+
+export function sortAcquisitionMethods(methods = []) {
+  return [...new Set(methods)].sort((a, b) => acquisitionRank(a) - acquisitionRank(b));
 }
 
 export function spiritSkills(season, spiritId) {
@@ -24,11 +34,9 @@ export function spiritSkills(season, spiritId) {
     for (const method of entry.acquisitions?.[id] ?? []) methods.get(id).add(method);
   }
   return season.skills.filter(({ id }) => methods.has(id)).map((skill) => ({
-    ...skill, methods: [...methods.get(skill.id)],
+    ...skill, methods: sortAcquisitionMethods([...methods.get(skill.id)]),
   })).sort((a, b) => {
-    const rank = (item) => item.methods.some((text) => matchesSource(text, "default")) ? 0
-      : item.methods.some((text) => text.includes("血脉")) ? 1
-        : item.methods.some((text) => text.includes("技能石")) ? 2 : 3;
+    const rank = (item) => acquisitionRank(item.methods[0] ?? "");
     const level = (item) => Math.min(...item.methods.map((text) => Number(text.match(/Lv\.\s*(\d+)/i)?.[1] ?? Infinity)));
     return rank(a) - rank(b) || (level(a) - level(b) || 0);
   });

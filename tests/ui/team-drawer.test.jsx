@@ -418,9 +418,7 @@ test("creates and edits one of six team members", async () => {
   await user.click(screen.getByRole("combobox", { name: "成员性格" }));
   await user.click(screen.getByRole("treeitem", { name: "物攻增益 +20%" }));
   await user.click(screen.getByRole("treeitem", { name: "固执（+物攻 -魔攻）" }));
-  const attackIv = screen.getByRole("spinbutton", { name: "物攻个体" });
-  await user.clear(attackIv);
-  await user.type(attackIv, "60");
+  await user.click(screen.getByRole("checkbox", { name: "成员物攻个体加点" }));
 
   await waitFor(() => {
     expect(screen.getByText("+20% ↑")).toBeVisible();
@@ -488,9 +486,7 @@ test("copies a personal configuration when selecting a member and never inherits
   expect(within(editor).getByRole("combobox", { name: "成员性格" })).toHaveValue(
     "adamant",
   );
-  expect(within(editor).getByRole("spinbutton", { name: "物攻个体" })).toHaveValue(
-    60,
-  );
+  expect(within(editor).getByRole("checkbox", { name: "成员物攻个体加点" })).toBeChecked();
   expect(within(editor).getByRole("combobox", { name: "成员技能1" })).toHaveValue(
     "风力冲击",
   );
@@ -501,9 +497,7 @@ test("copies a personal configuration when selecting a member and never inherits
   expect(within(editor).getByRole("combobox", { name: "成员性格" })).toHaveValue(
     "neutral",
   );
-  expect(within(editor).getByRole("spinbutton", { name: "物攻个体" })).toHaveValue(
-    0,
-  );
+  expect(within(editor).getByRole("checkbox", { name: "成员物攻个体加点" })).not.toBeChecked();
   expect(within(editor).getByRole("combobox", { name: "成员技能1" })).toHaveValue(
     "水之波纹",
   );

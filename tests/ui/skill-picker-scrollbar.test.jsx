@@ -56,3 +56,24 @@ test('a mouse-selected option after scrollbar focus commits exactly once', () =>
   expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   expect(input).toHaveFocus();
 });
+
+test('search keeps ordinary learnable skills before bloodline-only and unlearnable skills', () => {
+  const onSelect = vi.fn();
+  const entries = [
+    { id: 'other', name: '测试不可学', learnable: false, bloodlineSkill: true },
+    { id: 'blood-one', name: '测试血脉甲', learnable: true, bloodlineSkill: true },
+    { id: 'ordinary', name: '测试自学', learnable: true },
+    { id: 'blood-two', name: '测试血脉乙', learnable: true, bloodlineSkill: true },
+    { id: 'unspecified', name: '测试普通候选' },
+    { id: 'stone', name: '测试技能石', learnable: true },
+  ];
+  render(<SkillPicker ariaLabel="排序验收" skills={entries} onSelect={onSelect} />);
+  const input = screen.getByRole('combobox', { name: '排序验收' });
+  fireEvent.change(input, { target: { value: '测试' } });
+  expect(screen.getAllByRole('option').map(option => option.querySelector('strong').textContent))
+    .toEqual(['测试自学', '测试普通候选', '测试技能石', '测试血脉甲', '测试血脉乙', '测试不可学']);
+  fireEvent.keyDown(input, { key: 'Home' });
+  for (let index = 0; index < 3; index += 1) fireEvent.keyDown(input, { key: 'ArrowDown' });
+  fireEvent.keyDown(input, { key: 'Enter' });
+  expect(onSelect).toHaveBeenCalledExactlyOnceWith('blood-one');
+});

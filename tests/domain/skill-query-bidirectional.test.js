@@ -80,11 +80,22 @@ test("精灵查询复用别名、拼音、图鉴号，优先定位命中的具�
 });
 test("完整学习面不受技能查询条件影响，多来源去重，未知不冒充默认", () => {
   const rows = spiritSkills(season, "c");
-  expect(rows.map((skill) => skill.id)).toEqual(["x", "y", "z"]);
+  expect(rows.map((skill) => skill.id)).toEqual(["x", "z", "y"]);
   expect(rows[0].methods).toEqual(["默认学习", "技能石"]);
   expect(matchesSource("等级待确认", "default")).toBe(false);
   expect(matchesSource("解锁：Lv.1", "default")).toBe(true);
   expect(spiritSkills(season, "missing")).toEqual([]);
+});
+
+test("learning sources sort self-learning and stones first, bloodline-only last", () => {
+  const ids = ["blood", "stone", "late", "early", "unknown", "mixed"];
+  const data = { skills: ids.map(id => ({ id })), learnsets: [{ spiritId: "test", skillIds: ids, acquisitions: {
+    blood: ["火系血脉"], stone: ["技能石"], late: ["解锁：Lv.20"], early: ["解锁：Lv.1"], unknown: ["途径待补充"],
+    mixed: ["火系血脉", "解锁：Lv.30", "技能石"],
+  } }] };
+  const rows = spiritSkills(data, "test");
+  expect(rows.map(skill => skill.id)).toEqual(["early", "late", "mixed", "stone", "unknown", "blood"]);
+  expect(rows.find(skill => skill.id === "mixed").methods).toEqual(["解锁：Lv.30", "技能石", "火系血脉"]);
 });
 
 test("家族反查默认最终普通形态，不选首领，不使用无法同时学习的终阶", () => {

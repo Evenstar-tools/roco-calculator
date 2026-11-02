@@ -1,14 +1,14 @@
 import { localizeToolText } from "../../i18n/useToolLocale.js";
 import { localizeType } from "../../i18n/type-labels.js";
 import { getGlobalEntityTextByName } from "../../runtime/global-entity-localization.js";
-import { acquisitionSummary } from "./query-model.js";
+import { acquisitionSummary, sortAcquisitionMethods } from "./query-model.js";
 
 // Keep canonical acquisition strings for filtering; format only at the display boundary.
 export function localizeAcquisitionMethods(methods = [], locale = "zh-CN", { summary = false } = {}) {
-  if (locale === "zh-CN") return summary ? acquisitionSummary(methods) : methods.join(" / ");
+  if (locale === "zh-CN") return summary ? acquisitionSummary(methods) : sortAcquisitionMethods(methods).join(" / ");
   const t = (text, values) => localizeToolText(text, locale, values);
   if (!methods.length) return t("途径待补充");
-  return [...new Set(methods.map((source) => {
+  return [...new Set(sortAcquisitionMethods(methods).map((source) => {
     const text = source.replace(/^解锁[：:]\s*/u, "");
     let match;
     if ((match = /^Lv\.\s*(\d+)$/iu.exec(text))) return t("等级习得：Lv.{level}", { level: match[1] });

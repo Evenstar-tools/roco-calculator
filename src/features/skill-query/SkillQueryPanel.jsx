@@ -7,6 +7,7 @@ import { categoryNames, seasonChanges } from "./catalog.js";
 import { getCachedCatalog, loadSkillCatalog } from "./load-catalog.js";
 import "./skill-query.css";
 import BidirectionalQuery from "./BidirectionalQuery.jsx";
+import LearningUpdates from "./LearningUpdates.jsx";
 import { useRuntime } from "../../runtime/RuntimeContext.jsx";
 import { useToolLocale as useLocale } from "../../i18n/useToolLocale.js";
 import { useModalFocus } from "../../hooks/useModalFocus.js";
@@ -53,6 +54,7 @@ function VerifiedSkillQueryPanel({ onClose, skills = [], spirits = [], snapshot,
   const [category, setCategory] = useState("");
   const [entry, setEntry] = useState(null);
   const [hideEffects, setHideEffects] = useState(false);
+  const [learningFilters, setLearningFilters] = useState({});
   const root = useRef(null);
   const close = useRef(onClose);
   useEffect(() => { close.current = onClose; }, [onClose]);
@@ -84,7 +86,6 @@ function VerifiedSkillQueryPanel({ onClose, skills = [], spirits = [], snapshot,
   const previous = data?.seasons[data.seasons.indexOf(season) - 1];
   const changes = useMemo(() => previous && season ? seasonChanges(previous, season) : null, [previous, season]);
   const skillMap = useMemo(() => new Map(skills.map((skill) => [skill.id, skill])), [skills]);
-  const spiritMap = useMemo(() => new Map(spirits.map((spirit) => [spirit.id, spirit])), [spirits]);
   const filtered = useMemo(() => (season?.skills ?? []).filter((skill) =>
     (!type || skill.type === type) && (!category || skill.category === category) &&
     skillMatchesQuery(skill, query) &&
@@ -92,32 +93,8 @@ function VerifiedSkillQueryPanel({ onClose, skills = [], spirits = [], snapshot,
     (view !== "changes" || hasEntityChanges(querySeasonChangeInfo(season, skill.changeInfo)))), [season, type, category, query, view]);
   const changeView = (value) => { setView(value); setEntry(null); };
   const openQuery = (target) => { setEntry({ ...target, seasonId: season.id, fromView: view }); setView("all"); };
-  const gains = useMemo(() => {
-    if (!season) return [];
-    const updates = new Map((changes?.gains ?? []).map((gain) => [gain.spiritId, gain]));
-    // 仅比较 skillIds 会漏掉血脉撤销、替换及仍可从其它途径学习的条目。
-    for (const spirit of season.spirits) {
-      if (querySeasonChangeInfo(season, spirit.changeInfo)?.items?.some(({ kind }) => kind === "learnset") && !updates.has(spirit.id)) {
-        updates.set(spirit.id, { spiritId: spirit.id, skillIds: [] });
-      }
-    }
-    return [...updates.values()].map((gain) => {
-      const spirit = season.spirits.find(({ id }) => id === gain.spiritId);
-      const changeInfo = querySeasonChangeInfo(season, spirit?.changeInfo);
-      const items = changeInfo?.items?.filter(({ kind }) => kind === "learnset") ?? [];
-      return { ...gain, spirit,
-        skills: gain.skillIds.map((id) => season.skills.find((item) => item.id === id)).filter(Boolean),
-        changeInfo: items.length ? { ...changeInfo, items } : null,
-      };
-    });
-  }, [season, changes]);
-  const searchText = query.trim().toLowerCase();
   const announcementWithoutNewSkills = season?.id === "S5" && snapshot?.meta?.s5NrcSync?.complete !== true &&
     !season.skills.some(skill => skill.introducedSeason === "S5");
-  const visibleGains = gains.filter((gain) => gain.spirit?.fullName.toLowerCase().includes(searchText) ||
-    spiritMap.get(gain.spiritId)?.aliases?.some((alias) => alias.toLowerCase().includes(searchText)) ||
-    gain.skills.some((item) => item.name.toLowerCase().includes(searchText)) ||
-    gain.changeInfo?.items.some((item) => `${item.label} ${item.before ?? ""} ${item.after ?? ""}`.toLowerCase().includes(searchText)));
   const filters = data && <div className="skill-query__filters"><input aria-label={t("搜索技能或精灵")} placeholder={view === "gains" ? t("搜索精灵或调整技能") : t("搜索技能名称或效果")} value={query} onChange={(event) => setQuery(event.target.value)} />
     {view !== "gains" && <><select aria-label={t("技能属性")} value={type} onChange={(event) => setType(event.target.value)}><option value="">{t("全部属性")}</option>{[...new Set(season.skills.map((entry) => entry.type))].map((item) => <option key={item} value={item}>{typeName(item)}</option>)}</select><select aria-label={t("技能种类")} value={category} onChange={(event) => setCategory(event.target.value)}><option value="">{t("全部种类")}</option>{Object.entries(categoryNames).map(([id, label]) => <option key={id} value={id}>{t(label)}</option>)}</select></>}
   </div>;
@@ -125,16 +102,14 @@ function VerifiedSkillQueryPanel({ onClose, skills = [], spirits = [], snapshot,
     <header className="skill-query__header"><h2>{t("技能检索")}</h2>{data && <select aria-label={t("查询赛季")} value={season.id} onChange={(event) => { setSeasonId(event.target.value); setEntry(null); }}>{data.seasons.map(({ id }) => <option key={id} value={id}>{id}{id === "S5" && canonicalData !== catalog && snapshot?.meta?.s5NrcSync?.complete !== true ? t("（公告）") : ""}</option>)}</select>}<button onClick={onClose} aria-label={t("关闭技能查询")}>{t("关闭 ×")}</button></header>
     <div className="skill-query__tabs" role="tablist" aria-label={t("技能查询视图")}>{[["all", "查询"], ["new", "赛季新技能"], ["gains", "赛季学习更新"], ...(canonicalData !== catalog ? [["changes", "赛季技能调整"]] : [])].map(([id, label]) => <button key={id} role="tab" aria-selected={view === id} onClick={() => changeView(id)}>{t(label)}</button>)}</div>
     {error ? <div role="alert" className="skill-query__empty">{t(error)}<button onClick={() => { setError(""); setAttempt((value) => value + 1); }}>{t("重试")}</button></div> : !data ? <p role="status" className="skill-query__empty">{t("正在加载技能资料…")}</p> : <>
-      {view === "gains" && filters}
-      {view === "gains" && <p className="skill-query__context">{previous ? `${previous.id} → ${season.id} · ${season.announcementNote ?? "老精灵新学与新技能学习面"}` : t("当前赛季没有可比较的前一赛季资料")}</p>}
       {view === "all" && entry && <p className="skill-query__context">{season.id}{" "}{t("资料")}{" "}<button onClick={() => { setView(entry.fromView); setSeasonId(season.id); }}>{t("返回赛季查询")}</button></p>}
-      {view === "all" ? <BidirectionalQuery key={`${season.id}-${entry?.spiritId ?? initialSpiritId ?? ""}-${entry?.skillId ?? ""}`} season={season} skills={skills} spirits={spirits} initialSpiritId={entry ? entry.spiritId : (season.spirits.some(spirit => spirit.id === initialSpiritId) ? initialSpiritId : undefined)} onBackToSource={onBackToSource} initialSkillId={entry?.skillId} gains={changes?.gains} hideEffects={hideEffects} onHideEffectsChange={setHideEffects} /> : view === "gains" ? <div className="skill-query__gains">{visibleGains.length ? visibleGains.map((entry) => <article key={entry.spiritId}><h3><button onClick={() => openQuery({ spiritId: entry.spiritId })}>{t(entry.spirit.fullName)}</button><EntityChangeHint changeInfo={entry.changeInfo} /></h3><div>{entry.skills.map((item) => <button key={item.id} onClick={() => openQuery({ skillId: item.id })}><SkillIcon skill={{ ...item, iconUrl: skillMap.get(item.id)?.iconUrl }} size={32} /><span>{t(item.name)} <small>{typeName(item.type)} · {t(categoryNames[item.category])}</small></span></button>)}</div>{entry.changeInfo?.items.map((item, index) => <p className="skill-query__learning-change" key={index}><strong>{t(item.label)}</strong>{item.before && <span>{t("调整前：")}{item.before}</span>}{item.after && <span>{t("调整后：")}{item.after}</span>}{item.note && <small>{t(item.note)}</small>}</p>)}</article>) : <p className="skill-query__empty">{previous ? t("当前资料中没有符合条件的新增记录。") : t("请切换到有前一赛季资料的赛季。")}</p>}</div> : view === "changes" ? <>
+      {view === "all" ? <BidirectionalQuery key={`${season.id}-${entry?.spiritId ?? initialSpiritId ?? ""}-${entry?.skillId ?? ""}`} season={season} skills={skills} spirits={spirits} initialSpiritId={entry ? entry.spiritId : (season.spirits.some(spirit => spirit.id === initialSpiritId) ? initialSpiritId : undefined)} onBackToSource={onBackToSource} initialSkillId={entry?.skillId} gains={changes?.gains} hideEffects={hideEffects} onHideEffectsChange={setHideEffects} /> : view === "gains" ? <LearningUpdates key={season.id} season={season} previous={previous} changes={changes} spirits={spirits} skills={skills} onOpen={openQuery} filters={learningFilters} onFiltersChange={setLearningFilters} /> : view === "changes" ? <>
         {filters}
-        <div className="skill-query__gains skill-query__adjustments">{filtered.length ? filtered.map((skill) => <article key={skill.id}><h3><button onClick={() => openQuery({ skillId: skill.id })}><SkillIcon skill={{ ...skill, iconUrl: skillMap.get(skill.id)?.iconUrl }} size={32} />{t(skill.name)}</button><EntityChangeHint changeInfo={querySeasonChangeInfo(season, skill.changeInfo)} /></h3><p>{typeName(skill.type)} · {t(categoryNames[skill.category])}{" "}{t("· 威力")}{" "}{skill.basePower ?? "—"}{" "}{t("· 能耗")}{" "}{skill.cost ?? "—"}</p><p>{t(skill.description)}</p></article>) : <p className="skill-query__empty">{t("当前赛季没有符合条件的技能调整。")}</p>}</div>
+        <div className="skill-query__gains skill-query__adjustments">{filtered.length ? filtered.map((skill, index) => <article key={skill.id}><h3><button onClick={() => openQuery({ skillId: skill.id })}><SkillIcon skill={{ ...skill, iconUrl: skillMap.get(skill.id)?.iconUrl }} size={32} loading={index < 12 ? "eager" : "lazy"} />{t(skill.name)}</button><EntityChangeHint changeInfo={querySeasonChangeInfo(season, skill.changeInfo)} /></h3><p>{typeName(skill.type)} · {t(categoryNames[skill.category])}{" "}{t("· 威力")}{" "}{skill.basePower ?? "—"}{" "}{t("· 能耗")}{" "}{skill.cost ?? "—"}</p><p>{t(skill.description)}</p></article>) : <p className="skill-query__empty">{t("当前赛季没有符合条件的技能调整。")}</p>}</div>
       </> : <div className="skill-query__body">
         <div className="skill-query__browser skill-query__browser--cards">
           {filters}
-          <div className="skill-query__list" aria-label={t("技能列表")}><p>{filtered.length}{" "}{t("个技能")}</p><button className="skill-query__visibility" aria-label={hideEffects ? t("显示效果说明") : t("隐藏效果说明")} title={hideEffects ? t("显示效果说明") : t("隐藏效果说明")} aria-pressed={hideEffects} onClick={() => setHideEffects(value => !value)}>{hideEffects ? <Eye size={20} /> : <EyeSlash size={20} />}</button><div className="skill-query__cards">{filtered.length ? filtered.map((entry) => <button key={entry.id} onClick={() => openQuery({ skillId: entry.id })}><span className="sq-card-heading"><SkillIcon skill={{ ...entry, iconUrl: skillMap.get(entry.id)?.iconUrl }} size={48} /><span><strong>{t(entry.name)}</strong><small><ElementIcon type={entry.type} size={16} />{typeName(entry.type)} · {t(categoryNames[entry.category] ?? entry.category)}</small></span></span><span className="sq-card-values"><span>{t("威力")}{" "}<b>{entry.basePower ?? "—"}</b></span><span>{t("能耗")}{" "}<b>{entry.cost ?? "—"}</b></span></span>{!hideEffects && <span className="sq-card-description">{t(entry.description || t("技能效果待补充"))}</span>}<small className="skill-query__card-link">{t("查看可学家族 →")}</small></button>) : <p className="skill-query__empty">{announcementWithoutNewSkills && view === "new" ? t("本次公告未公布 S5 新增技能。") : t("没有找到符合条件的技能。")}</p>}</div></div>
+          <div className="skill-query__list" aria-label={t("技能列表")}><p>{filtered.length}{" "}{t("个技能")}</p><button className="skill-query__visibility" aria-label={hideEffects ? t("显示效果说明") : t("隐藏效果说明")} title={hideEffects ? t("显示效果说明") : t("隐藏效果说明")} aria-pressed={hideEffects} onClick={() => setHideEffects(value => !value)}>{hideEffects ? <Eye size={20} /> : <EyeSlash size={20} />}</button><div className="skill-query__cards">{filtered.length ? filtered.map((entry, index) => <button key={entry.id} onClick={() => openQuery({ skillId: entry.id })}><span className="sq-card-heading"><SkillIcon skill={{ ...entry, iconUrl: skillMap.get(entry.id)?.iconUrl }} size={48} loading={index < 12 ? "eager" : "lazy"} /><span><strong>{t(entry.name)}</strong><small><ElementIcon type={entry.type} size={16} />{typeName(entry.type)} · {t(categoryNames[entry.category] ?? entry.category)}</small></span></span><span className="sq-card-values"><span>{t("威力")}{" "}<b>{entry.basePower ?? "—"}</b></span><span>{t("能耗")}{" "}<b>{entry.cost ?? "—"}</b></span></span>{!hideEffects && <span className="sq-card-description">{t(entry.description || t("技能效果待补充"))}</span>}<small className="skill-query__card-link">{t("查看可学家族 →")}</small></button>) : <p className="skill-query__empty">{announcementWithoutNewSkills && view === "new" ? t("本次公告未公布 S5 新增技能。") : t("没有找到符合条件的技能。")}</p>}</div></div>
         </div>
       </div>}
     </>}
