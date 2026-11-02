@@ -1,10 +1,10 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.3.0-20261102-rankings";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.0-20261102-skills-team";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 // 图片长期缓存不随发布清空；摘要由 scripts/stamp-image-cache.mjs 按图片内容写入。
 const IMAGE_CACHE_PREFIX = "rock-calculator-images-";
 const IMAGE_VERSION = "__IMAGE_DIGEST__";
 const IMAGE_CACHE = `${IMAGE_CACHE_PREFIX}${IMAGE_VERSION}`;
-const STABLE_IMAGE_RE = /^\/(?:global-assets\/)?assets\/(?:spirits\/spirit_|skills\/skill_)[a-f0-9]{16}\.(?:png|webp)$/;
+const STABLE_IMAGE_RE = /^\/(?:global-assets\/)?assets\/(?:spirits\/spirit_[a-f0-9]{16}\.(?:png|webp)|skills\/(?:skill_(?:[a-f0-9]{16}|preview_s5_[a-z0-9][a-z0-9_-]*)\.(?:png|webp)|wish-power\/77000(?:0[1-57-9]|1[0-9])\.png))$/;
 const APP_SHELL = [
   "/manifest.webmanifest",
   "/manifest-global-en.webmanifest",

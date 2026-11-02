@@ -5,8 +5,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PLACEHOLDER = "__IMAGE_DIGEST__";
-const IMAGE_DIRECTORIES = ["assets/spirits", "assets/skills", "global-assets/assets/spirits", "global-assets/assets/skills"];
-const STABLE_IMAGE = /^(?:spirit|skill)_[a-f0-9]{16}\.(?:png|webp)$/;
+const IMAGE_DIRECTORIES = [
+  "assets/spirits", "assets/skills", "assets/skills/wish-power",
+  "global-assets/assets/spirits", "global-assets/assets/skills", "global-assets/assets/skills/wish-power",
+];
+const STABLE_IMAGE = /^(?:global-assets\/)?assets\/(?:spirits\/spirit_[a-f0-9]{16}\.(?:png|webp)|skills\/(?:skill_(?:[a-f0-9]{16}|preview_s5_[a-z0-9][a-z0-9_-]*)\.(?:png|webp)|wish-power\/77000(?:0[1-57-9]|1[0-9])\.png))$/;
 
 /** 图片文件名按 id 固定，内容可能变化；只有图片变了，长期图片缓存才换代。 */
 export function stampImageCache(client = path.join(ROOT, "dist/client")) {
@@ -15,7 +18,7 @@ export function stampImageCache(client = path.join(ROOT, "dist/client")) {
   for (const directory of IMAGE_DIRECTORIES) {
     const absolute = path.join(client, directory);
     if (!existsSync(absolute)) continue;
-    for (const name of readdirSync(absolute).filter((entry) => STABLE_IMAGE.test(entry)).sort()) {
+    for (const name of readdirSync(absolute).filter((entry) => STABLE_IMAGE.test(`${directory}/${entry}`)).sort()) {
       hash.update(`${directory}/${name}\0`).update(readFileSync(path.join(absolute, name)));
       count += 1;
     }

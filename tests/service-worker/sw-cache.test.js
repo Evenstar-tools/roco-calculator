@@ -430,7 +430,14 @@ describe("repeat requests and cache failures", () => {
     expect(harness.caches.open).toHaveBeenCalledWith("rock-calculator-images-__IMAGE_DIGEST__");
   });
 
-  test.each(["/assets/skills/skill_0123456789abcdef.png", "/global-assets/assets/spirits/spirit_0123456789abcdef.png"])("stores %s in the long-lived image cache", async (url) => {
+  test.each([
+    "/assets/skills/skill_0123456789abcdef.png",
+    "/global-assets/assets/spirits/spirit_0123456789abcdef.png",
+    "/assets/skills/skill_preview_s5_dream-building.png",
+    "/global-assets/assets/skills/skill_preview_s5_dream-building.png",
+    "/assets/skills/wish-power/7700003.png",
+    "/global-assets/assets/skills/wish-power/7700018.png",
+  ])("stores %s in the long-lived image cache", async (url) => {
     const fetchImpl = vi.fn(async () => new Response("image", { headers: { "Content-Type": "image/png" } }));
     const harness = createHarness({ fetchImpl });
     const event = dispatchFetch(harness.listeners.fetch, url);
@@ -463,8 +470,13 @@ describe("repeat requests and cache failures", () => {
     expect(fetchImpl).toHaveBeenCalledTimes(2);
   });
 
-  test.each(["text/html", "image/png"])("explicit image retry replaces a cached broken %s response using one canonical key", async (contentType) => {
-    const path = "/global-assets/assets/spirits/spirit_0123456789abcdef.png";
+  test.each([
+    "/global-assets/assets/spirits/spirit_0123456789abcdef.png",
+    "/assets/skills/skill_preview_s5_dream-building.png",
+    "/global-assets/assets/skills/skill_preview_s5_dream-building.png",
+    "/assets/skills/wish-power/7700003.png",
+    "/global-assets/assets/skills/wish-power/7700018.png",
+  ].flatMap(path => ["text/html", "image/png"].map(contentType => [path, contentType])))("explicit retry of %s replaces cached broken %s using one canonical key", async (path, contentType) => {
     const key = `https://calculator.test${path}`;
     const cached = { [key]: new Response("broken", { headers: { "Content-Type": contentType } }) };
     const healthy = new Response("valid image", { headers: { "Content-Type": "image/png" } });
@@ -520,14 +532,20 @@ describe("repeat requests and cache failures", () => {
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 
-  test("still refreshes mutable portraits rather than freezing their contents", async () => {
+  test.each([
+    "/assets/spirits/example.png",
+    "/assets/skills/example.png",
+    "/assets/skills/skill_preview_s4_example.png",
+    "/assets/skills/wish-power/7700006.png",
+  ])("still refreshes %s rather than adding arbitrary images to the stable cache", async (path) => {
     const response = new Response("portrait");
     const fetchImpl = vi.fn(async () => new Response("updated portrait"));
-    const harness = createHarness({ cached: { "https://calculator.test/assets/spirits/example.png": response }, fetchImpl });
-    const event = dispatchFetch(harness.listeners.fetch, "/assets/spirits/example.png");
+    const harness = createHarness({ cached: { [`https://calculator.test${path}`]: response }, fetchImpl });
+    const event = dispatchFetch(harness.listeners.fetch, path);
     await expect(event.responsePromise).resolves.toBe(response);
     await Promise.all(event.background);
     expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(harness.caches.open).not.toHaveBeenCalledWith("rock-calculator-images-__IMAGE_DIGEST__");
   });
 
   test("cache quota exhaustion does not discard successful network content", async () => {
