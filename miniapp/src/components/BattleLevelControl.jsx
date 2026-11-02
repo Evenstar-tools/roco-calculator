@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button, Input, Text, View } from "@tarojs/components";
+import { MINIAPP_BATTLE_LEVEL_MAX } from "../state/battle-level-defaults.js";
 
 export default function BattleLevelControl({ control, onChange, side, value }) {
   const [draft, setDraft] = useState(String(value));
   useEffect(() => setDraft(String(value)), [value, control.id]);
   const label = `${side === "attacker" ? "攻击方" : "防守方"}等级`;
-  const { min = 1, max = 150, step = 1 } = control;
+  const { min = 1, step = 1 } = control;
+  const max = Math.min(control.max ?? MINIAPP_BATTLE_LEVEL_MAX, MINIAPP_BATTLE_LEVEL_MAX);
   const clamp = number => Math.min(max, Math.max(min, Math.trunc(number)));
   function commit() {
     const next = draft.trim() === "" || !Number.isFinite(Number(draft))

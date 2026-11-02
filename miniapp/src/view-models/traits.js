@@ -6,6 +6,7 @@ import { isEnemyStarfallTraitControl, projectTraitRuntimeContext } from "../shar
 import { carriedSkillTotalCost } from "../shared/domain/skill-result/loadout.js";
 import { getSnapshotIndexes } from "../shared/domain/snapshot-indexes.js";
 import { starfallStacksFromMarkSlot } from "../shared/domain/marks.js";
+import { MINIAPP_BATTLE_LEVEL_MAX } from "../state/battle-level-defaults.js";
 
 export function createTraitView(
   snapshot,
@@ -26,6 +27,7 @@ export function createTraitView(
     ...trait,
     controls: trait.inputs.map((input) => ({
       ...input,
+      ...(input.contextKey?.endsWith("S5BattleLevel") ? { max: MINIAPP_BATTLE_LEVEL_MAX } : {}),
       canonicalKey: canonicalTraitControlKey(input),
     })),
     ownerSide,

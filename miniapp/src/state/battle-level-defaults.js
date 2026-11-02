@@ -3,6 +3,8 @@ import { getSpirit, getTraitView } from "../shared/domain/calculator-view-model.
 import { correctS5PreviewLevelInputs } from "../shared/features/s5-preview/level-input-migration.js";
 import { canonicalTraitControlKey, extractTraitValues } from "../shared/state/trait-values.js";
 
+export const MINIAPP_BATTLE_LEVEL_MAX = 99;
+
 // Product defaults belong to the miniapp state, not the shared trait control:
 // changing that control's default would also change its persisted identifier.
 export function withMiniappBattleLevelDefaults(snapshot, state) {
@@ -18,9 +20,10 @@ export function withMiniappBattleLevelDefaults(snapshot, state) {
       getTraitView(snapshot, spirit, role)?.inputs.find(input => input.contextKey.endsWith("S5BattleLevel")));
     if (!controls[0]) continue;
     const key = canonicalTraitControlKey(controls[0]);
-    if (Object.hasOwn(side.traitValues ?? {}, key)) continue;
+    const current = side.traitValues?.[key];
+    if (Number.isInteger(current) && current >= 1 && current <= MINIAPP_BATTLE_LEVEL_MAX) continue;
     const saved = extractTraitValues(correctS5PreviewLevelInputs(side), snapshot);
-    let level = saved[key];
+    let level = current ?? saved[key];
     if (level === undefined) {
       const entries = [side.skills?.single, ...(side.skills?.four ?? [])]
         .filter(entry => entry && typeof entry === "object");
@@ -46,8 +49,12 @@ export function withMiniappBattleLevelDefaults(snapshot, state) {
         .find(candidate => Object.hasOwn(context, candidate));
       if (contextKey !== undefined) level = context[contextKey];
     }
+    const numeric = Number(level ?? MINIAPP_BATTLE_LEVEL_MAX);
+    const bounded = Number.isFinite(numeric)
+      ? Math.min(MINIAPP_BATTLE_LEVEL_MAX, Math.max(1, Math.trunc(numeric)))
+      : MINIAPP_BATTLE_LEVEL_MAX;
     next = { ...next, sides: { ...next.sides, [sideKey]: {
-      ...side, traitValues: { ...side.traitValues, [key]: level ?? 99 },
+      ...side, traitValues: { ...side.traitValues, [key]: bounded },
     } } };
   }
   return next;

@@ -39,9 +39,9 @@ function assign(state, trait, suffix, value) {
 
 test.each([
   ["冥古龙", 99, 10, 99],
-  ["阿布", 99, 2, 150],
-  ["超能阿布", 99, 1, 150],
-])("%s 首页可加减和清空重输等级，范围与原特性保持一致", (name, initial, step, maximum) => {
+  ["阿布", 99, 2, 99],
+  ["超能阿布", 99, 1, 99],
+])("%s 首页可加减和清空重输等级，最高99级", (name, initial, step, maximum) => {
   const { state } = configure(name);
   const store = createCalculatorStore(snapshot, state);
   render(<BattleWorkspace snapshot={snapshot} store={store} />);
@@ -120,22 +120,53 @@ test("首页双方等级独立，逆向、抽屉、伤害与分享同步；修�
   expect(attackInput).toHaveValue(99);
   fireEvent.input(attackInput, { target: { value: "79" } });
   fireEvent.input(screen.getByRole("spinbutton", { name: "防守方等级" }), { target: { value: "150" } });
+  fireEvent.blur(screen.getByRole("spinbutton", { name: "防守方等级" }));
   fireEvent.click(screen.getByRole("button", { name: "切换计算方向" }));
   expect(screen.getByRole("spinbutton", { name: "攻击方等级" })).toHaveValue(79);
-  expect(screen.getByRole("spinbutton", { name: "防守方等级" })).toHaveValue(150);
+  expect(screen.getByRole("spinbutton", { name: "防守方等级" })).toHaveValue(99);
   fireEvent.click(screen.getByRole("button", { name: "防守方等级降低2级" }));
   expect(screen.getByRole("spinbutton", { name: "攻击方等级" })).toHaveValue(79);
-  expect(screen.getByRole("spinbutton", { name: "防守方等级" })).toHaveValue(148);
+  expect(screen.getByRole("spinbutton", { name: "防守方等级" })).toHaveValue(97);
   fireEvent.click(screen.getByRole("button", { name: "展开伤害结果" }));
   fireEvent.click(screen.getByRole("button", { name: "增减" }));
   const dialog = within(screen.getByRole("dialog", { name: "伤害结果" }));
   const levels = dialog.getAllByRole("spinbutton", { name: "当前等级" });
-  expect(levels.map(input => Number(input.value))).toContain(148);
+  expect(levels.map(input => Number(input.value))).toContain(97);
+  const defenderLevel = levels.find(input => Number(input.value) === 97);
+  expect(defenderLevel).toHaveAttribute("max", "99");
+  fireEvent.input(defenderLevel, { target: { value: "150" } });
+  fireEvent.blur(defenderLevel);
+  expect(defenderLevel).toHaveValue(99);
+  expect(screen.getByRole("spinbutton", { name: "防守方等级" })).toHaveValue(99);
   expect(store.getState().sides.attacker.level).toBeUndefined();
   const restored = decodeSharePayloadResult(encodeSharePayload(store.getState()), snapshot);
   expect(restored.status).toBe("valid");
   expect(createCalculationView(snapshot, restored.state, "reverse").selectedResult.totalDamage)
     .toBe(createCalculationView(snapshot, store.getState(), "reverse").selectedResult.totalDamage);
+});
+
+test.each(["阿布", "超能阿布"])("%s 旧存档150、分享150及后续动作都限制到99，保留原控件标识", name => {
+  const { state, trait } = configure(name);
+  const control = assign(state, trait, "BattleLevel", 150);
+  const key = canonicalTraitControlKey(control);
+  const store = createCalculatorStore(snapshot, state);
+  expect(store.getState().sides.attacker.traitValues[key]).toBe(99);
+  const view = createDirectionTraitViews(snapshot, store.getState(), "forward").attacker;
+  expect(view.controls.find(input => input.id === control.id)).toMatchObject({ canonicalKey: key, max: 99 });
+  const decoded = decodeSharePayloadResult(encodeSharePayload(state), snapshot);
+  expect(decoded.status).toBe("valid");
+  expect(decoded.state.sides.attacker.traitValues[key]).toBe(99);
+  const records = new Map([[MINIAPP_STATE_KEY, { schemaVersion: 2, state }]]);
+  const persistence = createPersistence({ storage: {
+    get: key => records.get(key), set: (key, value) => records.set(key, value), remove: key => records.delete(key),
+  } });
+  expect(persistence.load(snapshot).sides.attacker.traitValues[key]).toBe(99);
+  store.dispatch({ type: "side/set-trait-value", side: "attacker", key, value: 101 });
+  expect(store.getState().sides.attacker.traitValues[key]).toBe(99);
+  const expected = configure(name);
+  assign(expected.state, expected.trait, "BattleLevel", 99);
+  expect(createCalculationView(snapshot, store.getState(), "forward").selectedResult.totalDamage)
+    .toBe(createCalculationView(snapshot, expected.state, "forward").selectedResult.totalDamage);
 });
 
 test("普通精灵和吞噬等级特性的狼王不出现首页等级控件", () => {
