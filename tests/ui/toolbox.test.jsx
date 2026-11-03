@@ -28,6 +28,15 @@ test("六项工具按分组打开，先收起并还原焦点再执行入口", ()
   }
 });
 
+test("only warms the tool under pointer or keyboard focus", () => {
+  const onWarm = vi.fn();
+  render(<Toolbox actions={{ types: vi.fn(), skills: vi.fn() }} onWarm={onWarm} />);
+  fireEvent.click(screen.getByRole("button", { name: "工具箱" }));
+  expect(onWarm).not.toHaveBeenCalledWith("skills");
+  fireEvent.pointerEnter(screen.getByRole("button", { name: "技能检索" }));
+  expect(onWarm).toHaveBeenCalledWith("skills");
+});
+
 test("Global 工具箱不新增国服抢先入口", () => {
   const openChart = vi.fn();
   render(<RuntimeProvider serverId="global"><Toolbox actions={{ types: vi.fn(), typeChart: openChart }} /></RuntimeProvider>);

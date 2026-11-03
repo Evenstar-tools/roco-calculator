@@ -166,6 +166,25 @@ describe("FeatureBoundary", () => {
     expect(screen.getByRole("button", { name: "重新加载" })).toBeTruthy();
   });
 
+  test("shares a pending tool load and renders current props when ready, including after reopen", async () => {
+    let resolve;
+    const load = vi.fn(() => new Promise(done => { resolve = done; }));
+    const Tool = recoverableLazy(load);
+    const content = label => <FeatureBoundary fallback={<p>加载中</p>}><Tool label={label} /><Tool label="second" /></FeatureBoundary>;
+    const view = render(content("first"));
+    expect(screen.getAllByText("加载中")).toHaveLength(2);
+    view.rerender(content("updated"));
+    expect(load).toHaveBeenCalledTimes(1);
+    await act(async () => resolve({ default: ({ label }) => <p>{label}</p> }));
+    expect(screen.getByText("updated")).toBeTruthy();
+    expect(screen.getByText("second")).toBeTruthy();
+    expect(screen.queryByText("加载中")).toBeNull();
+    view.unmount();
+    render(content("reopened"));
+    expect(screen.getByText("reopened")).toBeTruthy();
+    expect(load).toHaveBeenCalledTimes(1);
+  });
+
   test("a failed lazy tool loads again after reset", async () => {
     const load = vi.fn().mockRejectedValue(new Error("gone"));
     const Tool = recoverableLazy(load);
@@ -233,6 +252,26 @@ describe("SpiritImage", () => {
     expect(image(container).getAttribute("src")).toBe(`${src}?image-retry=1`);
   });
 
+  test("switching A to B to A cancels old retries and starts a fresh portrait budget", () => {
+    const src = "/assets/spirits/spirit_0123456789abcdef.png";
+    const { container, rerender } = render(<SpiritImage src={src} name="迪莫" alt="" />);
+    fireEvent.error(image(container));
+    expect(vi.getTimerCount()).toBe(1);
+    rerender(<SpiritImage src="/b.png" name="水灵" alt="" />);
+    expect(vi.getTimerCount()).toBe(0);
+    rerender(<SpiritImage src={src} name="迪莫" alt="" />);
+    const returned = image(container);
+    act(() => { vi.advanceTimersByTime(12_000); });
+    expect(image(container)).toBe(returned);
+    expect(image(container)).toHaveAttribute("src", src);
+    for (let i = 0; i < 3; i += 1) {
+      failAndWait(container);
+      expect(image(container)).not.toBeNull();
+    }
+    fireEvent.error(image(container));
+    expect(image(container)).toBeNull();
+  });
+
   test("a new source starts over", () => {
     const { container, rerender } = render(<SpiritImage src="/a.png" name="迪莫" alt="" />);
     for (let i = 0; i < 3; i += 1) failAndWait(container);
@@ -249,12 +288,65 @@ describe("SpiritImage", () => {
     expect(screen.getByText(name).title).toBe(name);
   });
 
+  test.each([["en", "Blazehound"], ["ja", "フレイス"]])("opt-in loading names are localized in %s, hidden from accessibility and removed on load", (locale, name) => {
+    const onLoad = vi.fn();
+    const { container } = render(<LocaleProvider locale={locale}><SpiritImage src="/a.png" name="音速犬" alt="" showLoadingName className="speed-portrait-placeholder" onLoad={onLoad} /></LocaleProvider>);
+    const label = screen.getByText(name);
+    expect(label).toHaveClass("spirit-image-fallback");
+    expect(label.closest(".spirit-image-frame")).toHaveAttribute("aria-hidden", "true");
+    const originalImage = image(container);
+    fireEvent.load(originalImage);
+    expect(screen.queryByText(name)).toBeNull();
+    expect(image(container)).toBe(originalImage);
+    expect(onLoad).toHaveBeenCalledOnce();
+  });
+
+  test("opt-in loading names survive retries and source changes, then recover online", () => {
+    const props = { alt: "", showLoadingName: true, style: { width: 64, height: 64 } };
+    const { container, rerender } = render(<SpiritImage {...props} src="/a.png" name="迪莫" />);
+    fireEvent.load(image(container));
+    expect(screen.queryByText("迪莫")).toBeNull();
+    fireEvent.error(image(container));
+    expect(screen.getByText("迪莫")).toHaveClass("spirit-image-fallback");
+    act(() => { vi.advanceTimersByTime(2000); });
+    fireEvent.load(image(container));
+    expect(screen.queryByText("迪莫")).toBeNull();
+    rerender(<SpiritImage {...props} src="/b.png" name="水灵" />);
+    expect(screen.getByText("水灵")).toBeInTheDocument();
+    expect(screen.queryByText("迪莫")).toBeNull();
+    for (let i = 0; i < 3; i += 1) failAndWait(container);
+    fireEvent.error(image(container));
+    expect(image(container)).toBeNull();
+    expect(screen.getByText("水灵")).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByText("水灵")).toHaveStyle({ width: "64px", height: "64px" });
+    act(() => { window.dispatchEvent(new Event("online")); });
+    expect(image(container)).toHaveAttribute("src", "/b.png");
+    expect(screen.getByText("水灵")).toBeInTheDocument();
+    fireEvent.load(image(container));
+    expect(screen.queryByText("水灵")).toBeNull();
+    rerender(<SpiritImage {...props} src="/a.png" name="迪莫" />);
+    expect(screen.getByText("迪莫")).toBeInTheDocument();
+  });
+
+  test("opt-in names do not flash over an already complete cached portrait", () => {
+    const complete = vi.spyOn(HTMLImageElement.prototype, "complete", "get").mockReturnValue(true);
+    const naturalWidth = vi.spyOn(HTMLImageElement.prototype, "naturalWidth", "get").mockReturnValue(64);
+    try {
+      const { container } = render(<SpiritImage src="/cached.png" name="迪莫" alt="" showLoadingName />);
+      expect(image(container)).toHaveAttribute("src", "/cached.png");
+      expect(screen.queryByText("迪莫")).toBeNull();
+    } finally { complete.mockRestore(); naturalWidth.mockRestore(); }
+  });
+
   test("passes image attributes through", () => {
     const { container } = render(<SpiritImage src="/a.png" name="迪莫" alt="迪莫" loading="lazy" width="44" className="portrait" />);
     expect(image(container).getAttribute("loading")).toBe("lazy");
+    expect(image(container).getAttribute("decoding")).toBe("async");
     expect(image(container).getAttribute("width")).toBe("44");
     expect(image(container).className).toBe("portrait");
     expect(image(container).hasAttribute("data-load-retrying")).toBe(false);
+    expect(container.querySelector(".spirit-image-frame")).toBeNull();
+    expect(screen.queryByText("迪莫")).toBeNull();
   });
 });
 

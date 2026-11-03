@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, test } from "vitest";
+import { freezeSnapshot } from "../../src/runtime/load-snapshot.js";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
 import { calculateMatchup } from "../../src/domain/calculate.js";
 import { calculateNegativeStatusSettlement } from "../../src/domain/negative-status.js";
@@ -462,4 +463,33 @@ describe("电鹿斩杀线", () => {
     expect(evaluate(setup, "arc").followup).toBeNull();
     expect(evaluate({ ...setup, showFollowup: true }, "first").followup).toBeNull();
   });
+});
+
+
+test("reopening a frozen runtime reuses exact deer results without retaining mutable outputs or stale parameters", () => {
+  const staticSnapshot = freezeSnapshot(structuredClone(snapshot));
+  const setup = { ...createDeerSetup(staticSnapshot), showFollowup: false };
+  const first = calculateDeerSummaryRows(staticSnapshot, setup, { reuse: true });
+  const expected = structuredClone(first);
+  first[0].current.damage = -1;
+  expect(calculateDeerSummaryRows(staticSnapshot, setup, { reuse: true })).toEqual(expected);
+  const changed = { ...setup, reduction: 50, weather: "rain", freeze: 2 };
+  const adjusted = calculateDeerSummaryRows(staticSnapshot, changed, { reuse: true });
+  expect(adjusted).toEqual(calculateDeerSummaryRows(staticSnapshot, changed));
+  expect(adjusted[0].current.damage).not.toBe(expected[0].current.damage);
+  expect(calculateDeerSummaryRows(staticSnapshot, setup, { reuse: true })).toEqual(expected);
+  setup.state.directions.forward.overrides.defenseLevelStage = 5;
+  expect(calculateDeerSummaryRows(staticSnapshot, setup, { reuse: true }))
+    .toEqual(calculateDeerSummaryRows(staticSnapshot, setup));
+}, 30_000);
+
+
+test("Global summary preparation preserves the existing panel basis for non-default owner levels", () => {
+  const setup = { ...createDeerSetup(snapshot), showFollowup: false };
+  setup.state.sides.attacker.level = 75;
+  setup.state.sides.defender.level = 69;
+  const rows = calculateDeerSummaryRows(snapshot, setup);
+  for (const row of rows) {
+    expect(row.current).toEqual(evaluateDeerAttack(snapshot, setup, row, setup.stacks));
+  }
 });

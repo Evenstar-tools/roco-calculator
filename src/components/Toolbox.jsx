@@ -11,7 +11,7 @@ const groups = [
   ["排行", [["speed", "速度线排行", Speedometer], ["durability", "耐久排行", Shield]]],
 ];
 
-export function Toolbox({ actions, onOpen, activeTool }) {
+export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
   const showReturnEntry = serverId === "cn" && IS_PREVIEW_BUILD;
@@ -60,6 +60,7 @@ export function Toolbox({ actions, onOpen, activeTool }) {
           {entries.map(([id, title, Icon]) => <button key={id} type="button" aria-current={activeTool === id ? "true" : undefined} disabled={!actions?.[id]}
             className={activeTool === id ? "app-menu__primary" : undefined}
             style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44, gridColumn: id === "typeChart" ? "1 / -1" : undefined }}
+            onPointerEnter={() => onWarm?.(id)} onFocus={() => onWarm?.(id)} onPointerDown={() => onWarm?.(id)}
             onClick={() => { setOpen(false); trigger.current?.focus(); actions[id](); }}><Icon size={18} aria-hidden="true" />{t(title)}</button>)}
         </div>
       </section>)}

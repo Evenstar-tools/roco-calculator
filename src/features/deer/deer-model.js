@@ -143,30 +143,48 @@ export function applyDeerPreset(side, preset) {
   };
 }
 
+// Panels, levels and the defender's trait values stay fixed while scanning layers.
+function prepareDeerScan(snapshot, setup) {
+  const state = setup.state;
+  const attacker = snapshot.spirits.find(entry => entry.id === state.sides.attacker.spiritId);
+  return {
+    state,
+    stackControl: getTraitView(snapshot, attacker, "attacker")?.inputs
+      .find(input => input.contextKey === "attackerTraitStacks"),
+    panels: Object.fromEntries(["attacker", "defender"].map(key =>
+      [key, panelFor(snapshot, state.sides[key])])),
+    defenderContexts: Object.fromEntries(["attacker", "defender"].map(role =>
+      [role, materializeTraitContext(state.sides.defender.traitValues, snapshot,
+        state.sides.defender.spiritId, role)])),
+  };
+}
+
 // 只编排共享内核的输入和两次出招，伤害公式与取整仍由 calculateMatchup 决定。
-export function buildDeerInput(snapshot, setup, variant, stacks) {
-  const state = structuredClone(setup.state);
+export function buildDeerInput(snapshot, setup, variant, stacks, prepared = null) {
+  const state = structuredClone(prepared?.state ?? setup.state);
   if (snapshot.meta?.serverId === "global") state.serverId = "global";
   state.mode = "single";
   const skill = skillForVariant(snapshot, setup, variant);
   if (!skill) throw new Error(`缺少技能数据：${variant.type ?? ""}${variant.name}`);
   const attackerSpirit = snapshot.spirits.find((entry) => entry.id === state.sides.attacker.spiritId);
-  const attackerControls = getTraitView(snapshot, attackerSpirit, "attacker")?.inputs ?? [];
-  const stackControl = attackerControls.find((input) => input.contextKey === "attackerTraitStacks");
+  const stackControl = prepared?.stackControl ?? getTraitView(snapshot, attackerSpirit, "attacker")?.inputs
+    .find((input) => input.contextKey === "attackerTraitStacks");
   if (!stackControl) throw new Error("攻击方不是支持入场层数的电鹿");
   state.sides.attacker.traitValues[canonicalTraitControlKey(stackControl)] = stacks;
   state.sides.attacker.skills.single = { skillId: skill.id, context: { ...variant.context } };
   for (const key of ["attacker", "defender"]) {
     const side = state.sides[key];
     side.natureMultipliers = getNatureMultipliers(side.nature);
-    side.panelStats = panelFor(snapshot, side);
+    side.panelStats = prepared?.panels[key] ?? panelFor(snapshot, side);
   }
   for (const [direction, source, target] of [["forward", "attacker", "defender"], ["reverse", "defender", "attacker"]]) {
     const targetPercent = target === "attacker" ? setup.attackerHp : setup.defenderHp;
     state.directions[direction].currentHp = Math.max(1, Math.round(state.sides[target].panelStats.hp * targetPercent / 100));
     state.directions[direction].context = {
-      ...materializeTraitContext(state.sides[source].traitValues, snapshot, state.sides[source].spiritId, "attacker"),
-      ...materializeTraitContext(state.sides[target].traitValues, snapshot, state.sides[target].spiritId, "defender"),
+      ...(source === "defender" && prepared ? prepared.defenderContexts.attacker :
+        materializeTraitContext(state.sides[source].traitValues, snapshot, state.sides[source].spiritId, "attacker")),
+      ...(target === "defender" && prepared ? prepared.defenderContexts.defender :
+        materializeTraitContext(state.sides[target].traitValues, snapshot, state.sides[target].spiritId, "defender")),
       ...state.directions[direction].context,
       currentHpPercent: targetPercent,
       weather: setup.weather,
@@ -182,8 +200,8 @@ export function buildDeerInput(snapshot, setup, variant, stacks) {
   return updateGlobalWeather(state, setup.weather).state;
 }
 
-export function evaluateDeerAttack(snapshot, setup, variant, stacks) {
-  const input = buildDeerInput(snapshot, setup, variant, stacks);
+export function evaluateDeerAttack(snapshot, setup, variant, stacks, prepared = null) {
+  const input = buildDeerInput(snapshot, setup, variant, stacks, prepared);
   const calculation = calculateMatchup(snapshot, input);
   const first = calculation.forward.results[0];
   const defender = snapshot.spirits.find((entry) => entry.id === input.sides.defender.spiritId);
@@ -284,13 +302,21 @@ export function calculateDeerRows(snapshot, setup) {
   return deerVariantsFor(snapshot, setup).map((variant) => calculateDeerRowAtLimit(snapshot, setup, variant, scanLimit));
 }
 
-export function calculateDeerSummaryRows(snapshot, setup) {
+const summaryCache = new WeakMap();
+
+export function calculateDeerSummaryRows(snapshot, setup, { reuse = false } = {}) {
+  // Only the deeply frozen runtime loader's snapshots may survive a page visit.
+  const cacheable = reuse && Object.isFrozen(snapshot);
+  const key = cacheable ? JSON.stringify(setup) : null;
+  const cached = cacheable ? summaryCache.get(snapshot) : null;
+  if (cached?.has(key)) return structuredClone(cached.get(key));
+  const prepared = prepareDeerScan(snapshot, setup);
   const scanLimit = deerScanLimit(snapshot, setup);
   const hasUncertainDefense = getDeerDefenseLimitations(snapshot, setup.state.sides.defender).length > 0;
-  return deerVariantsFor(snapshot, setup).map((variant) => {
+  const rows = deerVariantsFor(snapshot, setup).map((variant) => {
     const evaluatedByStack = [];
     const evaluateAt = (stacks) => {
-      if (!evaluatedByStack[stacks]) evaluatedByStack[stacks] = evaluateDeerAttack(snapshot, setup, variant, stacks);
+      if (!evaluatedByStack[stacks]) evaluatedByStack[stacks] = evaluateDeerAttack(snapshot, setup, variant, stacks, prepared);
       return evaluatedByStack[stacks];
     };
     const current = evaluateAt(setup.stacks);
@@ -305,4 +331,11 @@ export function calculateDeerSummaryRows(snapshot, setup) {
       comboMinimum: variant.id === "first" ? null : thresholds.comboMinimum,
     };
   });
+  if (cacheable) {
+    const entries = cached ?? new Map();
+    entries.set(key, structuredClone(rows));
+    if (entries.size > 2) entries.delete(entries.keys().next().value);
+    summaryCache.set(snapshot, entries);
+  }
+  return rows;
 }

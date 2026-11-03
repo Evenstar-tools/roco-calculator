@@ -1424,6 +1424,11 @@ html[data-theme="dark"] .share-dialog .config-library-check-ok {
   padding: 0 12px;
 }
 
+.spirit-image-frame { position: relative; display: inline-block; flex: none; vertical-align: middle; }
+.spirit-image-frame > img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.spirit-image-frame > .spirit-image-fallback { position: absolute; inset: 0; width: 100%; height: 100%; }
+.spirit-image-frame > .spirit-image-fallback + img { visibility: hidden; }
+
 /* 头像重试期间保留占位；多次失败后显示名字。 */
 img[data-load-retrying] {
   display: inline-block;

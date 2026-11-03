@@ -46,6 +46,7 @@
 .rank-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 20px; background: var(--surface-soft); border-block: 1px solid var(--border); color: var(--accent); font-size: 12px; }
 .rank-summary button { border: 0; background: transparent; padding: 4px; color: var(--text-muted); }
 .rank-table-scroll { flex: 1; min-height: 0; overflow: auto; padding: 0 20px; }
+.rank-load-more { display: flex; justify-content: center; padding: 12px 0; }
 .rank-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
 .rank-table th,.rank-table td { text-align: right; padding: 12px 9px; border-bottom: 1px solid var(--border); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .rank-table thead th { position: sticky; top: 0; z-index: 2; background: var(--surface); color: var(--text-muted); font-size: 12px; font-weight: 500; box-shadow: 0 1px var(--border); }
@@ -103,7 +104,8 @@ html[data-theme="dark"] .rank-tone--resist { color: #70d6b5; }html[data-theme="d
 .base-speed .base-speed-value { border:0; background:transparent; box-shadow:none; padding:8px 0; min-width:0; color:var(--text); }
 .base-speed-portraits button { flex-direction:column; gap:0; }
 .base-speed-portraits small { white-space:nowrap; }
-.ability-speed-overview.is-icon-only .ability-speed__tier-spirits img { width:64px; height:64px; object-fit:contain; }
+.ability-speed-overview.is-icon-only .ability-speed__tier-spirits img,
+.ability-speed-overview.is-icon-only .ability-speed__tier-spirits .speed-portrait-placeholder { width:64px; height:64px; object-fit:contain; }
 .ability-speed-overview.is-icon-only .ability-speed__tier-spirits button { width:74px; min-width:74px; max-width:74px; }
 @media(max-width:650px) {
  .base-speed .base-speed-column:not(.is-mobile-selected) { display:none; }

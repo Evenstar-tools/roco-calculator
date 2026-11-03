@@ -1,5 +1,9 @@
 // Product UI copy; entity names and descriptions come from the official client catalog.
 export const globalFeaturesMessages = Object.fromEntries([
+  ["减少工具首次打开与再次打开的等待。", "Reduced waiting when opening tools for the first time and reopening them.", "ツールを初めて開くときや開き直すときの待ち時間を短縮しました。"],
+  ["改善电鹿斩杀线重复打开和调整配置时的流畅度。", "Improved responsiveness when reopening the KO threshold tool or adjusting its setup.", "撃破ラインを開き直したり、設定を調整したりするときの動作を滑らかにしました。"],
+  ["速度排行头像接近可见区域时加载，等待期间显示精灵名字，图片完成后恢复头像。", "SPD ranking portraits load near the visible area. Jini names remain visible while loading and are replaced by portraits when ready.", "速さランキングの画像は表示領域に近づくと読み込みます。読み込み中はジニの名前を表示し、完了すると画像に切り替わります。"],
+  ["耐久榜分批显示，滚动或点击显示更多继续浏览；名称搜索仍覆盖完整榜单并保留原名次。", "Durability rankings appear in batches. Scroll or choose Show more to continue. Name search still covers the full ranking and keeps the original ranks.", "耐久ランキングを段階的に表示します。スクロールまたは追加表示で続きを確認できます。名前検索は引き続きランキング全体を対象とし、元の順位を維持します。"],
   ["队伍配置布局", "Team layout", "チーム設定のレイアウト"],
   ["队伍配置合并精灵身份与选择入口，桌面并排查看六维、耐久和配招；保留原顶部工具栏。", "Jini details and selection now share one header. On desktop, stats, durability and the moveset appear side by side. The top toolbar stays unchanged.", "ジニの情報と選択欄を一つにまとめました。デスクトップでは6つの能力値・耐久・技構成を横並びで確認できます。上部のツールバーはそのままです。"],
   ["配招说明开关", "Skill description toggle", "スキル説明の表示切り替え"],
