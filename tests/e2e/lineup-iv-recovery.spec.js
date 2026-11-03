@@ -63,21 +63,26 @@ for(const width of [1440,390]){
   const unchanged=await page.evaluate(k=>localStorage.getItem(k),key);
   expect(unchanged).not.toBeNull();
   for(const fromAnalysis of [false,true]){
-    if(fromAnalysis)await drawer.getByRole('button',{name:'能力分析',exact:true}).click();
-    await drawer.getByRole('button',{name:'更换精灵',exact:true}).click();
     const input=drawer.getByRole('combobox',{name:'成员精灵',exact:true});
+    if(fromAnalysis){
+      await drawer.getByRole('button',{name:'能力分析',exact:true}).click();
+      await drawer.getByRole('button',{name:'更换精灵',exact:true}).click();
+    }else{
+      await input.click();
+    }
     await expect(input).toBeFocused();await expect(input).toHaveValue('');
     await expect(input).toHaveAttribute('aria-expanded','true');
-    await expect(drawer.getByRole('heading',{name:'1号位 · 冰钻布鲁斯'})).toBeVisible();
+    await expect(drawer.locator('.team-member-editor .spirit-card').getByRole('img',{name:'冰钻布鲁斯',exact:true})).toBeVisible();
     expect(await page.evaluate(k=>localStorage.getItem(k),key)).toBe(unchanged);
     await page.screenshot({path:`${out}/replace-blank-${width}-${fromAnalysis}.png`});
     await input.press('Escape');await expect(drawer).toBeVisible();await expect(input).toHaveValue('冰钻布鲁斯');
   }
-  await drawer.getByRole('button',{name:'更换精灵',exact:true}).click();
   const input=drawer.getByRole('combobox',{name:'成员精灵',exact:true});
+  await input.click();
   await expect(input).toHaveValue('');await input.fill('水灵');
   await drawer.getByRole('option',{name:/^水灵/}).first().click();
-  await expect(drawer.getByRole('heading',{name:'1号位 · 水灵'})).toBeVisible();
+  await expect(input).toHaveValue('水灵');
+  await expect(drawer.locator('.team-member-editor .spirit-card').getByRole('img',{name:'水灵',exact:true})).toBeVisible();
   const saved=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
   expect(saved.teams[0].members.slice(1).map(m=>m.displayIvs)).toEqual(expected.members.slice(1).map(m=>m.displayIvs));
  });
