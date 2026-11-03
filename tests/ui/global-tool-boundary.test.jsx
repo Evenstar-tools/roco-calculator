@@ -14,7 +14,9 @@ import { getCachedCatalog, loadSkillCatalog } from "../../src/features/skill-que
 import { loadServerSnapshot } from "../../src/runtime/load-snapshot.js";
 
 vi.mock("../../src/features/skill-query/load-catalog.js", () => ({ getCachedCatalog: vi.fn(), loadSkillCatalog: vi.fn() }));
-vi.mock("../../src/runtime/load-snapshot.js", () => ({ loadServerSnapshot: vi.fn() }));
+vi.mock("../../src/runtime/load-snapshot.js", async (original) => ({
+  ...await original(), loadServerSnapshot: vi.fn(),
+}));
 
 const snapshot = JSON.parse(readFileSync("public/data/global-runtime.json", "utf8"));
 const catalog = unpackCatalog(JSON.parse(readFileSync("public/data/global/skill-query/catalog.json", "utf8")));

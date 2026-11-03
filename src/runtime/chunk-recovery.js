@@ -1,4 +1,4 @@
-import { createElement, lazy } from "react";
+import { createContext, createElement, useContext, useEffect, useSyncExternalStore } from "react";
 import { metrics } from "../analytics/metrics.js";
 
 const RELOAD_GUARD_KEY = "rock-calculator.chunk-reload.v1";
@@ -106,18 +106,35 @@ export async function loadWithRecovery(load, { delay = RETRY_DELAY_MS, reloadFor
   }
 }
 
-/** React.lazy 会记住失败结果；关闭后重置，再次打开才会重新加载。 */
+// Explicit loading state lets a ready tool render immediately instead of waiting for
+// React Suspense's fallback retry throttle. The enclosing boundary owns the copy.
+export const FeatureLoadingContext = createContext(null);
+
 export function recoverableLazy(load) {
-  let current;
-  const reset = () => {
-    current = lazy(() => loadWithRecovery(load).catch((error) => {
+  const listeners = new Set();
+  let state = { status: "idle" };
+  const notify = () => listeners.forEach(listener => listener());
+  const subscribe = listener => { listeners.add(listener); return () => listeners.delete(listener); };
+  const getSnapshot = () => state;
+  const reset = () => { state = { status: "idle" }; notify(); };
+  const start = () => {
+    if (state.status !== "idle") return;
+    state = { status: "pending" };
+    loadWithRecovery(load).then(module => {
+      state = { status: "ready", component: module.default };
+      notify();
+    }, error => {
+      state = { status: "error", error };
       failedLoaders.add(reset);
-      throw error;
-    }));
+      notify();
+    });
   };
-  reset();
   return function RecoverableLazy(props) {
-    return createElement(current, props);
+    const current = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+    const fallback = useContext(FeatureLoadingContext);
+    useEffect(start, []);
+    if (current.status === "error") throw current.error;
+    return current.status === "ready" ? createElement(current.component, props) : fallback;
   };
 }
 

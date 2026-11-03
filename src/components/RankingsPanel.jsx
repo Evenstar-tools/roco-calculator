@@ -16,6 +16,7 @@ const portrait = (spirit) => spirit?.asset?.localUrl ?? spirit?.imageUrl;
 const number = (value) => value == null ? "—" : value.toLocaleString("zh-CN");
 const toggle = (values, value) => values.includes(value) ? values.filter((entry) => entry !== value) : [...values, value];
 const tableMetrics = ["physical", "magical", "combined"];
+const RANKING_BATCH_SIZE = 36;
 
 function MultiplierControls({ bins, selected, onChange }) {
   const { t } = useLocale();
@@ -59,16 +60,40 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
   const [selectedEntryId, setSelectedEntryId] = useState(null);
   const [includePassiveVariants, setIncludePassiveVariants] = useState(true);
   const detailTrigger = useRef(null);
+  const scrollRef = useRef(null);
+  const loadMoreRef = useRef(null);
+  const [batch, setBatch] = useState({ ranking: null, count: RANKING_BATCH_SIZE });
   useEffect(() => {
     backButtonRef?.current?.focus({ preventScroll: true });
     currentRowRef?.current?.scrollIntoView?.({ block: "center" });
   }, [backButtonRef, currentRowRef]);
   const baseRanking = useMemo(() => createDurabilityRanking({ spirits: snapshot.spirits, traits: snapshot.traits, includePassiveVariants, includeLevelVariants: includePassiveVariants, spiritFilterRevision: snapshot.meta?.revisions?.spiritFilter, attackType, multipliers, typeChart: snapshot.typeChart, templateId, filter: roleFilter === "all" ? undefined : (row) => row.formRole === roleFilter }), [snapshot, includePassiveVariants, attackType, multipliers, templateId, roleFilter]);
   const ranking = useMemo(() => selectDurabilityRanking(baseRanking, { query, sortBy: metric }), [baseRanking, query, metric]);
-  const rows = [...ranking.immuneRows, ...ranking.rows];
+  const rows = useMemo(() => [...ranking.immuneRows, ...ranking.rows], [ranking]);
   const hasLevelVariants = [...baseRanking.immuneRows, ...baseRanking.rows].some(row => row.level !== 60);
   const currentEntryId = [...baseRanking.immuneRows, ...baseRanking.rows].find(row => row.spiritId === currentSpiritId && row.level === 60 && !row.passiveLabel)?.id;
   const highlightedEntryId = selectedEntryId ?? currentEntryId;
+  // As with the skill library, append rows when approached instead of mounting
+  // every portrait and table cell before the first ranking can be shown.
+  const initialCount = Math.max(RANKING_BATCH_SIZE, rows.findIndex(row => row.id === highlightedEntryId) + 1);
+  const visibleCount = Math.min(rows.length, batch.ranking === ranking ? Math.max(initialCount, batch.count) : initialCount);
+  const hasMore = visibleCount < rows.length;
+  const showMore = useCallback(() => setBatch(previous => ({
+    ranking,
+    count: Math.min(rows.length, Math.max(initialCount, previous.ranking === ranking ? previous.count : 0) + RANKING_BATCH_SIZE),
+  })), [ranking, initialCount, rows.length]);
+  useEffect(() => {
+    const scroll = scrollRef.current;
+    const sentinel = loadMoreRef.current;
+    if (!hasMore || !scroll || !sentinel || typeof IntersectionObserver !== "function") return;
+    const observer = new IntersectionObserver(entries => {
+      if (!scroll.closest("[hidden]") && entries.some(entry => entry.isIntersecting)) showMore();
+    }, { root: scroll, rootMargin: "320px 0px" });
+    observer.observe(sentinel);
+    // Keep this subscription across batches. Re-observing an already-visible
+    // sentinel would append the entire ranking in consecutive short frames.
+    return () => observer.disconnect();
+  }, [hasMore, showMore]);
   const closeDetail = () => { setDetail(null); requestAnimationFrame(() => detailTrigger.current?.focus({ preventScroll: true })); };
   const reset = () => { setSelectedEntryId(null); setQuery(""); setRoleFilter("all"); setTemplateId("standard-hp-v1"); setIncludePassiveVariants(true); updateResistance({ attackType: "", multipliers: bins }); };
   return <section aria-label={t("完整耐久榜")} className="rank-view" onKeyDown={(event) => { if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); if (detail) closeDetail(); else if (more) setMore(false); else onBack(); } }}>
@@ -90,14 +115,18 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
       <div aria-label={t("排行指标")} className="rank-metrics" role="group">{Object.entries(RANKING_METRIC_LABELS).map(([key, label]) => <button aria-pressed={metric === key} key={key} onClick={() => setMetric(key)} type="button">{t(label)}</button>)}</div>
       <div className="rank-summary"><span role="status">{t(multiplierSummary(attackType, multipliers, bins))} · {ranking.counts.visible}{rows.some(row => row.level !== 60 || row.passiveLabel) ? t("档") : t("只")}</span><button onClick={reset} type="button">{t("重置")}</button></div>
       {currentSpiritId && !rows.some((row) => row.spiritId === currentSpiritId) ? <p className="rank-note">{t("参照精灵不符合当前筛选，不计入候选。")}</p> : null}
-      <div className="rank-table-scroll">
-        <table aria-label={t("标准耐久完整榜")} className={`rank-table rank-table--${metric}`}><thead><tr><th>{t("排名")}</th><th>{t("精灵")}</th>{attackType ? <th className="rank-type-column">{typeName(attackType)}{t("倍率")}</th> : null}{tableMetrics.map((key) => <th key={key} className={`rank-value--${key}`} aria-sort={metric === key ? "descending" : "none"}>{attackType ? t("有效") : ""}{t(RANKING_METRIC_LABELS[key])}</th>)}</tr></thead><tbody>
-          {rows.map((entry) => <tr aria-current={entry.id === highlightedEntryId ? "true" : undefined} key={entry.id} ref={entry.id === currentEntryId ? currentRowRef : undefined}>
+      <div className="rank-table-scroll" ref={scrollRef}>
+        <table aria-rowcount={rows.length + 1} aria-label={t("标准耐久完整榜")} className={`rank-table rank-table--${metric}`}><thead><tr><th>{t("排名")}</th><th>{t("精灵")}</th>{attackType ? <th className="rank-type-column">{typeName(attackType)}{t("倍率")}</th> : null}{tableMetrics.map((key) => <th key={key} className={`rank-value--${key}`} aria-sort={metric === key ? "descending" : "none"}>{attackType ? t("有效") : ""}{t(RANKING_METRIC_LABELS[key])}</th>)}</tr></thead><tbody>
+          {rows.slice(0, visibleCount).map((entry, index) => <tr aria-rowindex={index + 2} aria-current={entry.id === highlightedEntryId ? "true" : undefined} key={entry.id} ref={entry.id === currentEntryId ? currentRowRef : undefined}>
             <td>{entry.multiplier === 0 ? t("免疫") : entry.filteredRank[metric]}</td><th scope="row"><button className="rank-spirit" onClick={(event) => { detailTrigger.current = event.currentTarget; setSelectedEntryId(entry.id); setDetail(entry); }} type="button">{portrait(entry.spirit) ? <SpiritImage name={entry.name} alt="" loading="lazy" decoding="async" src={portrait(entry.spirit)} /> : null}<span>{t(entry.name)}<small>{t(entry.spirit.types?.map(typeName).join(" · "))} <span className="rank-form">· {entry.formRole === "boss" ? t("首领") : t("最终形态")}</span></small>{attackType ? <small className={`rank-mobile-mult rank-tone--${multiplierTone(entry.multiplier)}`}>{typeName(attackType)} ×{entry.multiplier}</small> : null}</span></button></th>
             {attackType ? <td className={`rank-type-column rank-tone--${multiplierTone(entry.multiplier)}`}>×{entry.multiplier}</td> : null}
             {tableMetrics.map((key) => <td key={key} className={`rank-value--${key}${metric === key ? " rank-active-value" : ""}`}>{number(entry.durability.display[key])}</td>)}
           </tr>)}
         </tbody></table>
+        {hasMore ? <div className="rank-load-more" ref={loadMoreRef}><button type="button" onClick={() => {
+          showMore();
+          requestAnimationFrame(() => scrollRef.current?.querySelectorAll("tbody tr")[visibleCount]?.querySelector("button")?.focus());
+        }}>{t("显示更多")} · {visibleCount} / {rows.length}</button></div> : null}
         {!rows.length ? <div className="rank-empty"><h4>{attackType && !multipliers.length ? t("尚未勾选倍率") : t("没有符合当前条件的结果")}</h4><p>{t("可以调整倍率、名称或形态范围。")}</p><button type="button" onClick={reset}>{t("重置筛选")}</button></div> : null}
       </div>
       <footer className="rank-footer">{t("搜索不改名次 · 点击精灵查看模板详情")}{" "}<span>{t("已排除")}{" "}{ranking.counts.excluded}{" "}{t("条无效或非目标形态数据")}</span></footer>

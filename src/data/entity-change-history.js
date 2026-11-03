@@ -41,9 +41,24 @@ export function deduplicateS5ChangeInfo(info) {
   return info;
 }
 
+function normalizeHpChangeInfo(info) {
+  if (!info) return info;
+  const items = info.items && [...new Map(info.items.map(item => {
+    const canonical = item?.kind === "stat" && item.field === "hp" && item.label === "精力"
+      ? { ...item, label: "生命" } : item;
+    return [JSON.stringify(canonical), canonical];
+  })).values()];
+  const history = info.history?.map(normalizeHpChangeInfo);
+  const unchanged = (!items || items.length === info.items.length && items.every((item, index) => item === info.items[index]))
+    && (!history || history.every((record, index) => record === info.history[index]));
+  return unchanged ? info : { ...info, ...(items && { items }), ...(history && { history }) };
+}
+
 // Keep every patch's own before/after and date. Latest fields remain at the top
 // for existing callers; the original records stay reachable through history.
 export function mergeEntityChangeInfo(previous, incoming) {
+  previous = normalizeHpChangeInfo(previous);
+  incoming = normalizeHpChangeInfo(incoming);
   if (!previous) return incoming;
   if (!incoming) return previous;
   const records = new Map();

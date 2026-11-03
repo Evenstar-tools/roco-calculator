@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import { getSnapshotIndexes } from "../../src/domain/snapshot-indexes.js";
 
 function snapshot(id = "fixture") {
@@ -26,4 +26,42 @@ test("builds a fresh index for a replacement snapshot", () => {
 
   expect(second).not.toBe(first);
   expect(second.skills["skill-second"].id).toBe("skill-second");
+});
+
+
+test("repeated immutable runtime lookup skips full entity scans but still invalidates replaced arrays", () => {
+  const source = snapshot("original");
+  const scans = Object.values(source).filter(Array.isArray).map(items => {
+    const every = vi.fn(Array.prototype.every);
+    Object.defineProperty(items, "every", { value: every });
+    Object.freeze(items);
+    return every;
+  });
+  const first = getSnapshotIndexes(source);
+  expect(getSnapshotIndexes(source)).toBe(first);
+  for (const scan of scans) expect(scan).not.toHaveBeenCalled();
+  source.skills = Object.freeze([{ id: "replacement" }]);
+  expect(getSnapshotIndexes(source).skills.replacement.id).toBe("replacement");
+  expect(getSnapshotIndexes(source)).not.toBe(first);
+});
+
+test("mutable runtime arrays still rebuild their indexes after an in-place entry replacement", () => {
+  const source = snapshot("before");
+  const first = getSnapshotIndexes(source);
+  source.skills[0] = { id: "after" };
+  const next = getSnapshotIndexes(source);
+  expect(next).not.toBe(first);
+  expect(next.skills.after).toEqual({ id: "after" });
+});
+
+
+test("freezing an array after editing it cannot reuse an index built before the edit", () => {
+  const source = snapshot("before-freeze");
+  const first = getSnapshotIndexes(source);
+  source.skills[0] = { id: "after-freeze" };
+  Object.freeze(source.skills);
+  const next = getSnapshotIndexes(source);
+  expect(next).not.toBe(first);
+  expect(next.skills["after-freeze"]).toEqual({ id: "after-freeze" });
+  expect(getSnapshotIndexes(source)).toBe(next);
 });

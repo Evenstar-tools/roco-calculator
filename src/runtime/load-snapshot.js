@@ -2,6 +2,16 @@ import { assertCalculationEnvironment, getServerRelease } from "../domain/server
 import { createGlobalPlaceholderCatalog } from "./global-placeholder-catalog.js";
 import { publicResourceUrl, withPublicResourceUrls } from "./public-resource-url.js";
 
+const loadedSnapshots = new WeakMap();
+
+// Runtime catalogs are static. Sharing a validated snapshot must never expose
+// writable entity records to another page or server's calculator session.
+export function freezeSnapshot(value) {
+  if (!value || typeof value !== "object" || Object.isFrozen(value)) return value;
+  for (const child of Object.values(value)) freezeSnapshot(child);
+  return Object.freeze(value);
+}
+
 function throwIfAborted(signal) {
   if (signal?.aborted) throw signal.reason ?? new DOMException("数据加载已取消", "AbortError");
 }
@@ -15,13 +25,23 @@ export async function loadServerSnapshot(serverId = "cn", { signal, fetcher = gl
     throw error;
   }
   throwIfAborted(signal);
-  const response = await fetcher(publicResourceUrl(release.dataURL), { signal });
+  const url = publicResourceUrl(release.dataURL);
+  const key = JSON.stringify([serverId, release.dataVersion, release.rulesVersion, url]);
+  const cached = loadedSnapshots.get(fetcher);
+  if (cached?.has(key)) return cached.get(key);
+  // Each caller retains its own cancellation. Only completed requests are reused.
+  const response = await fetcher(url, { signal });
   throwIfAborted(signal);
   if (!response.ok) throw new Error(`数据加载失败：${response.status}`);
   const snapshot = await response.json();
   throwIfAborted(signal);
   assertCalculationEnvironment(snapshot, { serverId });
-  return withPublicResourceUrls(snapshot);
+  const loaded = freezeSnapshot(withPublicResourceUrls(snapshot));
+  const snapshots = loadedSnapshots.get(fetcher) ?? new Map();
+  snapshots.set(key, loaded);
+  if (snapshots.size > 2) snapshots.delete(snapshots.keys().next().value);
+  loadedSnapshots.set(fetcher, snapshots);
+  return loaded;
 }
 
 // Explicitly authorized CN reference loading; the verified Global loader remains unavailable.

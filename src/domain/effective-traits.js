@@ -5,6 +5,17 @@ import {
   MOON_MEMORY_TRAIT_LIMIT,
 } from "./moon-memory.js";
 
+const traitIndexCache = new WeakMap();
+
+function traitIndex(traits) {
+  const cached = traitIndexCache.get(traits);
+  if (cached) return cached;
+  const index = Object.fromEntries(traits.map(trait => [trait.id, trait]));
+  // Mutable records may change their IDs even when the surrounding array is frozen.
+  if (Object.isFrozen(traits) && traits.every(Object.isFrozen)) traitIndexCache.set(traits, index);
+  return index;
+}
+
 function traitKey(trait) {
   return s5FamilyTraitIdentity(trait) ?? String(trait?.id ?? trait?.name ?? "").trim();
 }
@@ -20,9 +31,7 @@ function appendUnique(target, seen, trait) {
 export function getEffectiveTraits(snapshot, side = {}) {
   if (side.ignoreTraits === true) return [];
   const spirit = side.spirit ?? null;
-  const traitsById = Object.fromEntries(
-    (snapshot?.traits ?? []).map((trait) => [trait.id, trait]),
-  );
+  const traitsById = traitIndex(snapshot?.traits ?? []);
   const result = [];
   const nativeTraits = [];
   const seen = new Set();

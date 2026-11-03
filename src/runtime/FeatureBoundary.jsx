@@ -1,6 +1,6 @@
 import { Component, Suspense } from "react";
 import { useLocale } from "../i18n/LocaleContext.jsx";
-import { isChunkFailure, reportLoadFailure, resetFailedLoads } from "./chunk-recovery.js";
+import { FeatureLoadingContext, isChunkFailure, reportLoadFailure, resetFailedLoads } from "./chunk-recovery.js";
 
 class FeatureErrorBoundary extends Component {
   state = { failed: false };
@@ -32,8 +32,12 @@ class FeatureErrorBoundary extends Component {
   }
 }
 
+export function FeatureLoadingBoundary({ fallback, children }) {
+  return <FeatureLoadingContext.Provider value={fallback}><Suspense fallback={fallback}>{children}</Suspense></FeatureLoadingContext.Provider>;
+}
+
 /** 工具级边界：工具加载或渲染失败时只影响工具自己，不替换整个计算器。 */
 export function FeatureBoundary({ fallback, onClose, children }) {
   const { t } = useLocale();
-  return <FeatureErrorBoundary t={t} onClose={onClose}><Suspense fallback={fallback}>{children}</Suspense></FeatureErrorBoundary>;
+  return <FeatureErrorBoundary t={t} onClose={onClose}><FeatureLoadingBoundary fallback={fallback}>{children}</FeatureLoadingBoundary></FeatureErrorBoundary>;
 }

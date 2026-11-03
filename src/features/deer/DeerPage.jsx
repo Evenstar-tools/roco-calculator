@@ -1,4 +1,4 @@
-import { loadServerSnapshot } from "../../runtime/load-snapshot.js";
+import { freezeSnapshot, loadServerSnapshot } from "../../runtime/load-snapshot.js";
 import { publicResourceUrl } from "../../runtime/public-resource-url.js";
 import { Fragment, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { deerResultKind, useCalculationMetrics } from "../../analytics/use-completion-metrics.js";
@@ -196,7 +196,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     deferredWishPowerResponse,
   ]);
   const scanRows = useMemo(() => deferredState.sides.defender.spiritId
-    ? calculateDeerSummaryRows(snapshot, scanSetup)
+    ? calculateDeerSummaryRows(snapshot, scanSetup, { reuse: true })
     : [], [snapshot, scanSetup, deferredState]);
   const rows = useMemo(() => scanRows.map((row) => ({
     ...row,
@@ -339,6 +339,9 @@ export default function DeerPage(props) {
   return <><DeerHeader onReturn={props.onReturn} /><main className="deer-page"><p role="status">{t("国际服数值与规则待核验，暂不可计算斩杀线。")}</p></main></>;
 }
 
+const deerSnapshots = new WeakMap();
+const builtinPresets = new WeakMap();
+
 function VerifiedDeerPage({ initialState = null, onReturn }) {
   const { serverId } = useRuntime();
   const { t } = useLocale();
@@ -351,12 +354,19 @@ function VerifiedDeerPage({ initialState = null, onReturn }) {
     async function load() {
       try {
         const raw = await loadServerSnapshot(serverId, { signal: controller.signal });
-        const snapshot = serverId === "cn" ? withCalculatorExtras(raw) : raw;
-        let presets = {};
-        try {
-          const response = serverId === "cn" ? await fetch(publicResourceUrl("/data/presets/pvp-popular-configs.json"), { signal: controller.signal }) : null;
-          if (response?.ok) presets = Object.fromEntries((await response.json()).entries.map((preset) => [preset.spiritId, preset]));
-        } catch { /* 无网络时仍可使用四种模板。 */ }
+        if (!deerSnapshots.has(raw)) deerSnapshots.set(raw,
+          freezeSnapshot(serverId === "cn" ? withCalculatorExtras(raw) : raw));
+        const snapshot = deerSnapshots.get(raw);
+        const presetCache = builtinPresets.get(globalThis.fetch) ?? new WeakMap();
+        builtinPresets.set(globalThis.fetch, presetCache);
+        let presets = presetCache.get(raw) ?? {};
+        if (serverId === "cn" && !presetCache.has(raw)) try {
+          const response = await fetch(publicResourceUrl("/data/presets/pvp-popular-configs.json"), { signal: controller.signal });
+          if (response.ok) {
+            presets = Object.fromEntries((await response.json()).entries.map((preset) => [preset.spiritId, preset]));
+            if (!controller.signal.aborted) presetCache.set(raw, freezeSnapshot(presets));
+          }
+        } catch { /* 无网络时仍可使用四种模板，下一次进入可重试。 */ }
         try { presets = { ...presets, ...spiritConfigsRepository({ serverId }).load(snapshot).configs }; } catch { /* 不可用的本地存储不阻断计算。 */ }
         if (!controller.signal.aborted) setData({ snapshot, presets });
       } catch { if (!controller.signal.aborted) setError(true); }

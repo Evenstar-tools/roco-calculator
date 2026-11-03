@@ -6,7 +6,7 @@ import { translateUi } from "../../src/i18n/messages.js";
 vi.mock("../../src/CalculatorRouter.jsx", async () => {
   throw new TypeError("加载模块失败：Failed to fetch dynamically imported module: private/chunk.js");
 });
-vi.mock("../../src/analytics/metrics.js", () => ({ metrics: { setServer: vi.fn(), start: vi.fn() } }));
+vi.mock("../../src/analytics/metrics.js", () => ({ metrics: { setServer: vi.fn(), start: vi.fn(), track: vi.fn() } }));
 
 beforeEach(() => {
   localStorage.clear();

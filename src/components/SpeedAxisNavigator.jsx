@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import "../styles/speed-axis.css";
 
-const isVisible = (scroll) => scroll && scroll.clientHeight > 0 && !scroll.closest("[hidden]");
+const isVisible = (scroll) => scroll && !scroll.closest("[hidden]") && scroll.clientHeight > 0;
 const clamp = (value, maximum) => Math.max(0, Math.min(maximum, value));
 const rowsIn = (scroll) => [...scroll.querySelectorAll("tbody tr[data-speed-nav-key]")];
 
@@ -39,7 +39,8 @@ export default function SpeedAxisNavigator({ scrollRef, items, label }) {
     // a later scroll actually leaves this programmatically reached position.
     programScroll.current = { key: item.key, top };
     scroll.scrollTop = top;
-    programScroll.current.top = scroll.scrollTop;
+    // The target is already clamped. Reading scrollTop after the marker/scroll
+    // writes would force layout again before the browser can paint.
   }, [items, scrollRef, select]);
 
   useEffect(() => {
@@ -55,7 +56,7 @@ export default function SpeedAxisNavigator({ scrollRef, items, label }) {
       const previous = geometry.current?.scroll === scroll ? geometry.current : null;
       const content = visible ? table?.getBoundingClientRect() : null;
       const next = {
-        scroll, table, width: scroll.clientWidth, height: scroll.clientHeight,
+        scroll, table, width: visible ? scroll.clientWidth : previous?.width ?? 0, height: visible ? scroll.clientHeight : 0,
         contentWidth: content?.width ?? previous?.contentWidth,
         contentHeight: content?.height ?? previous?.contentHeight,
         wasVisible: visible || Boolean(previous?.wasVisible),
@@ -86,7 +87,16 @@ export default function SpeedAxisNavigator({ scrollRef, items, label }) {
       programScroll.current = null;
       const edge = scroll.getBoundingClientRect().top + scroll.clientTop +
         (scroll.querySelector("thead")?.getBoundingClientRect().height ?? 0);
-      const row = rows.find((candidate) => candidate.getBoundingClientRect().bottom > edge + 1) ?? rows.at(-1);
+      // Rows are in document order, so locating the visible tier needs only
+      // logarithmic geometry reads even near the bottom of a long ranking.
+      let low = 0;
+      let high = rows.length;
+      while (low < high) {
+        const middle = (low + high) >>> 1;
+        if (rows[middle].getBoundingClientRect().bottom > edge + 1) high = middle;
+        else low = middle + 1;
+      }
+      const row = rows[low] ?? rows.at(-1);
       if (row) select(row.dataset.speedNavKey, row);
     };
     const onScroll = () => {

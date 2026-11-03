@@ -493,7 +493,7 @@ export function SpiritPicker({
                   role="option"
                 >
                   {spirit.assetUrl ? (
-                    <SpiritImage name={spirit.fullName} alt="" height="36" src={spirit.assetUrl} width="36" />
+                    <SpiritImage name={spirit.fullName} alt="" height="36" loading="lazy" src={spirit.assetUrl} width="36" />
                   ) : null}
                   <span>
                     <span className="spirit-picker__option-title">
