@@ -825,7 +825,8 @@ export function SpeedOverview({
                   <span className="ability-speed-overview__tier-value">{group.speed}{reference ? <small>{group.speed === reference.value ? t("基准") : `${group.speed > reference.value ? "+" : ""}${group.speed - reference.value}`}</small> : null}</span>
                 </th>
                 <td>
-                  <div className="ability-speed__tier-spirits">
+                  <div className={`ability-speed__tier-spirits${standalone && iconOnly && group.targets.length ? " is-contained" : ""}`}
+                    style={standalone && iconOnly && group.targets.length ? { "--speed-target-count": group.targets.length } : undefined}>
                     {!group.targets.length ? <span className="rank-note">{t("基准位置 · 没有同速配置")}</span> : null}
                     {group.targets.map((target) => {
                       const source = assetUrl(target.spirit);

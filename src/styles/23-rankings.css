@@ -134,3 +134,23 @@ html[data-theme="dark"] .rank-tone--resist { color: #70d6b5; }html[data-theme="d
 .speed-match-summary strong { font-weight:600; }
 
 .speed-locate-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px; }
+
+/* Keep every tier in the table for search and the speed axis, while laying out
+   only nearby cards. Icon cards are 74x88 with a 6px gap. Explicit block-size
+   also prevents a remembered offscreen size from surviving a viewport change. */
+@supports (contain-intrinsic-block-size: calc(round(up, 1 / max(1, round(down, (100cqi - 76px) / 80px, 1)), 1) * 94px - 6px)) {
+  .rank-speed-standalone.is-icon-only .ability-speed__table-wrap { container-type: inline-size; }
+  .rank-speed-standalone.is-icon-only .ability-speed__tier-spirits.is-contained {
+    --speed-tier-columns: max(1, round(down, (100cqi - 76px) / 80px, 1));
+    --speed-tier-height: calc(round(up, var(--speed-target-count) / var(--speed-tier-columns), 1) * 94px - 6px);
+    block-size: var(--speed-tier-height);
+    contain-intrinsic-block-size: var(--speed-tier-height);
+    content-visibility: auto;
+    overflow-clip-margin: 4px;
+  }
+  @media (max-width: 600px) {
+    .rank-speed-standalone.is-icon-only .ability-speed__tier-spirits.is-contained {
+      --speed-tier-columns: max(1, round(down, (100cqi - 48px) / 80px, 1));
+    }
+  }
+}
