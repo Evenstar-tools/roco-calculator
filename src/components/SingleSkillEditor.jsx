@@ -12,7 +12,7 @@ import { getChoiceTraitInput, supportsChoiceTrait } from "../domain/choice-skill
 import { HealthInput } from "./HealthInput.jsx";
 import { PowerDraftInput } from "./PowerDraftInput.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
-import { S5PreviewTraitSummary } from "./S5PreviewTraitSummary.jsx";
+import { hasBattleLevelInput, S5PreviewTraitSummary } from "./S5PreviewTraitSummary.jsx";
 import { getS5PreviewTraitPresentation } from "../features/s5-preview/trait-presentation.js";
 
 const CATEGORY_LABELS = {
@@ -807,7 +807,7 @@ export function SingleSkillEditor({
                   )}
                   onChange={onTraitContextChange}
                 />
-                <S5PreviewTraitSummary trait={attackerTrait} role="attacker" context={traitContext} />
+                <S5PreviewTraitSummary trait={attackerTrait} role="attacker" context={traitContext} levelInputShown={hasBattleLevelInput(attackerTraitInputs)} />
               </div>
             </article>
           ) : null}
@@ -827,7 +827,7 @@ export function SingleSkillEditor({
                   )}
                   onChange={onTraitContextChange}
                 />
-                <S5PreviewTraitSummary trait={defenderTrait} role="defender" context={traitContext} />
+                <S5PreviewTraitSummary trait={defenderTrait} role="defender" context={traitContext} levelInputShown={hasBattleLevelInput(defenderTraitInputs)} />
               </div>
             </article>
           ) : null}
