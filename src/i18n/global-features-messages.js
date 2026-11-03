@@ -1,5 +1,6 @@
 // Product UI copy; entity names and descriptions come from the official client catalog.
 export const globalFeaturesMessages = Object.fromEntries([
+  ["选择下注·暗后自动将自身生命设为49%并重算，保留已有低血；切回明不回血，也不自动执行攻击。", "Selecting the low-HP branch of Bet sets the user's HP to 49% and recalculates damage, keeping any lower HP. Switching back does not heal or execute an attack.", "「下注」の低HP分岐を選ぶと自身のHPを49%にしてダメージを再計算します。すでに低いHPは維持し、分岐を戻しても回復や攻撃の実行はしません。"],
   ["减少工具首次打开与再次打开的等待。", "Reduced waiting when opening tools for the first time and reopening them.", "ツールを初めて開くときや開き直すときの待ち時間を短縮しました。"],
   ["改善电鹿斩杀线重复打开和调整配置时的流畅度。", "Improved responsiveness when reopening the KO threshold tool or adjusting its setup.", "撃破ラインを開き直したり、設定を調整したりするときの動作を滑らかにしました。"],
   ["速度排行头像接近可见区域时加载，等待期间显示精灵名字，图片完成后恢复头像。", "SPD ranking portraits load near the visible area. Jini names remain visible while loading and are replaced by portraits when ready.", "速さランキングの画像は表示領域に近づくと読み込みます。読み込み中はジニの名前を表示し、完了すると画像に切り替わります。"],
