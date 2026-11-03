@@ -1,5 +1,8 @@
 import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
+import { useState } from "react";
+import { Eye, EyeSlash } from "@phosphor-icons/react";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
+import { localizeGlobalSkill } from "../runtime/global-entity-localization.js";
 import {
   calculateAllPanelStats,
   hasCompleteRaceStats,
@@ -23,6 +26,14 @@ import { SpiritPicker } from "./SpiritPicker.jsx";
 import { StatTile } from "./StatTile.jsx";
 import { StatRadar } from "./StatRadar.jsx";
 import { ElementIcon } from "./ElementIcon.jsx";
+
+const SKILL_CATEGORIES = {
+  physical: "物理",
+  magical: "魔法",
+  dual: "双攻",
+  defense: "防御",
+  status: "变化",
+};
 
 const STAT_VIEW = [
   { key: "physicalAttack", label: "物攻" },
@@ -57,16 +68,21 @@ function spiritView(spirit) {
 
 export function TeamMemberEditor({
   getSpiritConfiguration = () => null,
+  hideSkillDescriptions: sharedHideSkillDescriptions,
   index,
   member,
   members = [],
   onChange,
-  onOpenAbilityAnalysis,
+  onHideSkillDescriptionsChange,
+  renderHeader,
   snapshot,
   spiritChoices,
 }) {
   const { t, locale, typeName } = useLocale();
   const { serverId, release } = useRuntime();
+  const [localHideSkillDescriptions, setLocalHideSkillDescriptions] = useState(false);
+  const hideSkillDescriptions = sharedHideSkillDescriptions ?? localHideSkillDescriptions;
+  const setHideSkillDescriptions = onHideSkillDescriptionsChange ?? setLocalHideSkillDescriptions;
   const global = serverId === "global" || snapshot.meta?.serverId === "global";
   const placeholder = global && Boolean(snapshot.meta?.placeholderSource);
   const enabled = release.capabilities.calculate && (!global || Boolean(snapshot.meta?.id));
@@ -136,22 +152,25 @@ export function TeamMemberEditor({
     });
   }
 
+  const picker = (
+    <SpiritPicker
+      clearOnOpen
+      compactIdentity
+      identityLabel={t("{index}号位", { index: index + 1 })}
+      favorite={false}
+      label={t("成员")}
+      onFavoriteToggle={() => {}}
+      onSelect={selectSpirit}
+      selected={selectedSpirit ?? spiritView(spirit)}
+      showFavorite={false}
+      side="team"
+      spirits={pickerSpirits}
+    />
+  );
+
   return (
     <section aria-label={t("成员 {index} 配置", { index: index + 1 })} className="team-member-editor">
-      <SpiritPicker
-        clearOnOpen
-        favorite={false}
-        label={t("成员")}
-        onFavoriteToggle={() => {}}
-        onSelect={selectSpirit}
-        selected={selectedSpirit ?? spiritView(spirit)}
-        showFavorite={false}
-        side="team"
-        spirits={pickerSpirits}
-      />
-
-
-
+      {renderHeader ? renderHeader(picker) : picker}
       {teamSkillTypes ? (
         <section aria-label={t("旧玩具队伍技能系别")} className="team-member-editor__types">
           <strong>{t("旧玩具 · 队伍技能系别")}</strong>
@@ -164,17 +183,93 @@ export function TeamMemberEditor({
       ) : null}
 
       {member && spirit && (calculationReady || placeholder) ? (
-        <>
-          <div className="team-member-editor__nature">
-            <NatureSelect
-              allowUnset={placeholder}
-              ariaLabel={t("成员性格")}
-              onChange={(natureId) => onChange({ ...member, natureId })}
-              placeholder={placeholder}
-              value={member.natureId}
-            />
-            <NatureEffect natureId={member.natureId} placeholder={placeholder} />
-            {enabled && <label className="team-member-editor__bloodline">
+        <div className="team-member-editor__columns">
+          <section className="team-member-editor__panel">
+            <header className="team-member-editor__section-heading">
+              <strong>{t("能力值")}</strong>
+              {investmentValidation && (<span className={investmentValidation.valid ? "is-ready" : "is-warning"}>
+                {investmentValidation.valid
+                  ? t("可用于能力分析 · 已选 {count}/3", { count: investmentValidation.activeCount })
+                  : t("历史个体需在能力分析中重选")}
+              </span>)}
+            </header>
+            <div className="team-member-editor__nature">
+              <NatureSelect
+                allowUnset={placeholder}
+                ariaLabel={t("成员性格")}
+                onChange={(natureId) => onChange({ ...member, natureId })}
+                placeholder={placeholder}
+                value={member.natureId}
+              />
+              <NatureEffect natureId={member.natureId} placeholder={placeholder} />
+            </div>
+
+            {member.ivsPending && !placeholder ? <p className="team-member-editor__iv-notice"><span className="team-iv-pending">{t("个体待设置")}</span> {t("原码个体为空或暂无法识别，请按实际配置调整。")}</p> : null}
+            <div className={`team-member-editor__stats${placeholder ? " stat-grid" : " team-member-editor__stats--radar"}`}>
+              {panel ?
+                <StatRadar
+                  className="team-member-editor__radar"
+                  displayIvs={member.displayIvs}
+                  ivLabel={t("成员")}
+                  label={t("成员面板")}
+                  minimumMaximum={600}
+                  natureId={member.natureId}
+                  stats={panel}
+                  variant="game"
+                  onIvChange={(stat, value) => onChange({
+                    ...member,
+                    displayIvs: { ...member.displayIvs, [stat]: value },
+                  })}
+                />
+               : STAT_VIEW.map(({ key, label }) => (
+                <StatTile
+                  allowUnset={placeholder}
+                  displayIv={member.displayIvs?.[key]}
+                  key={key}
+                  label={t(label)}
+                  natureId={member.natureId}
+                  onIvChange={(value) =>
+                    onChange({
+                      ...member,
+                      displayIvs: { ...member.displayIvs, [key]: value },
+                    })
+                  }
+                  panel={panel?.[key]}
+                  placeholder={placeholder}
+                  race={spirit.raceStats?.[key]}
+                  stat={key}
+                />
+              ))}
+            </div>
+
+            {panel ? <p className="team-member-editor__iv-help">{t("点击数值切换个体 0 / 60")}</p> : null}
+            {durability && <section aria-label={t("成员面板耐久")} className="team-member-editor__durability">
+              <header>
+                <strong>{t("面板耐久")}</strong>
+              </header>
+              <div>
+                <span><small>{t("物理耐久")}</small><b>{durability.physical.toLocaleString(locale)}</b></span>
+                <span><small>{t("魔法耐久")}</small><b>{durability.magical.toLocaleString(locale)}</b></span>
+                <span><small>{t("综合耐久")}</small><b>{durability.combined.toLocaleString(locale)}</b></span>
+              </div>
+            </section>}
+          </section>
+          <section className="team-member-editor__loadout">
+            <header className="team-member-editor__section-heading">
+              <div className="team-member-editor__loadout-title">
+                <strong>{t("配招")}</strong>
+                <button
+                  type="button"
+                  className="team-member-editor__description-toggle"
+                  aria-label={t(hideSkillDescriptions ? "显示效果说明" : "隐藏效果说明")}
+                  title={t(hideSkillDescriptions ? "显示效果说明" : "隐藏效果说明")}
+                  aria-pressed={hideSkillDescriptions}
+                  onClick={() => setHideSkillDescriptions(!hideSkillDescriptions)}
+                >
+                  {hideSkillDescriptions ? <Eye aria-hidden="true" size={19} /> : <EyeSlash aria-hidden="true" size={19} />}
+                </button>
+              </div>
+              {enabled && <label className="team-member-editor__bloodline">
               <span>{t("血脉")}</span>
               <select
                 aria-label={t("血脉")}
@@ -195,102 +290,48 @@ export function TeamMemberEditor({
                 ))}
               </select>
             </label>}
-          </div>
-
-          {bloodlineConflicts.length > 0 ? (
-            <p className="team-member-editor__bloodline-warning" id={`team-bloodline-conflict-${index}`} role="alert">
-              {t("首领化／首领形态不能携带血脉技能：{skills}。请更换这些技能，或改用非首领配置。", { skills: bloodlineConflicts.map(skill => skill.name).join("、") })}
-            </p>
-          ) : null}
-
-          {member.ivsPending && !placeholder ? <p className="team-member-editor__iv-notice"><span className="team-iv-pending">{t("个体待设置")}</span> {t("原码个体为空或暂无法识别，请按实际配置调整。")}</p> : null}
-          <div className={`team-member-editor__stats${placeholder ? " stat-grid" : " team-member-editor__stats--radar"}`}>
-            {panel ?
-              <StatRadar
-                className="team-member-editor__radar"
-                displayIvs={member.displayIvs}
-                ivLabel={t("成员")}
-                label={t("成员面板")}
-                minimumMaximum={600}
-                natureId={member.natureId}
-                stats={panel}
-                variant="game"
-                onIvChange={(stat, value) => onChange({
-                  ...member,
-                  displayIvs: { ...member.displayIvs, [stat]: value },
-                })}
-              />
-             : STAT_VIEW.map(({ key, label }) => (
-              <StatTile
-                allowUnset={placeholder}
-                displayIv={member.displayIvs?.[key]}
-                key={key}
-                label={t(label)}
-                natureId={member.natureId}
-                onIvChange={(value) =>
-                  onChange({
-                    ...member,
-                    displayIvs: { ...member.displayIvs, [key]: value },
-                  })
-                }
-                panel={panel?.[key]}
-                placeholder={placeholder}
-                race={spirit.raceStats?.[key]}
-                stat={key}
-              />
-            ))}
-          </div>
-
-          {durability && <section aria-label={t("成员面板耐久")} className="team-member-editor__durability">
-            <header>
-              <strong>{t("面板耐久")}</strong>
-              <span className={investmentValidation.valid ? "is-ready" : "is-warning"}>
-                {investmentValidation.valid
-                  ? t("可用于能力分析 · 已选 {count}/3", { count: investmentValidation.activeCount })
-                  : t("历史个体需在能力分析中重选")}
-              </span>
             </header>
-            <div>
-              <span><small>{t("物理耐久")}</small><b>{durability.physical.toLocaleString(locale)}</b></span>
-              <span><small>{t("魔法耐久")}</small><b>{durability.magical.toLocaleString(locale)}</b></span>
-              <span><small>{t("综合耐久")}</small><b>{durability.combined.toLocaleString(locale)}</b></span>
-            </div>
-          </section>}
+            {bloodlineConflicts.length > 0 ? (
+              <p className="team-member-editor__bloodline-warning" id={`team-bloodline-conflict-${index}`} role="alert">
+                {t("首领化／首领形态不能携带血脉技能：{skills}。请更换这些技能，或改用非首领配置。", { skills: bloodlineConflicts.map(skill => skill.name).join("、") })}
+              </p>
+            ) : null}
 
-          <div className="team-member-editor__skills">
-            {Array.from(
-              { length: Math.max(4, member.skills?.four?.length ?? 0) },
-              (_, skillIndex) => (
-                <label key={skillIndex} className={`${bloodlineSkillIds.has(entryId(member.skills?.four?.[skillIndex])) ? "has-bloodline" : ""}${conflictIds.has(entryId(member.skills?.four?.[skillIndex])) ? " has-bloodline-conflict" : ""}`}>
-                  <span>{skillIndex + 1}</span>
-                  <SkillPicker
-                    ariaLabel={t("成员技能{index}", { index: skillIndex + 1 })}
-                    onSelect={(skillId) => updateSkill(skillIndex, skillId)}
-                    placeholder={placeholder}
-                    selected={skillById.get(
-                      entryId(member.skills?.four?.[skillIndex]),
-                    )}
-                    skills={legalSkills}
-                  />
-                  {bloodlineSkillIds.has(entryId(member.skills?.four?.[skillIndex])) ? <small className="team-member-editor__skill-source">
-                    {conflictIds.has(entryId(member.skills?.four?.[skillIndex])) ? t("血脉技能 · 冲突") : t("血脉技能")}
-                  </small> : null}
-                </label>
-              ),
-            )}
-          </div>
-          {enabled && <button
-            className="team-member-editor__analysis-cta"
-            onClick={onOpenAbilityAnalysis}
-            type="button"
-          >
-            {t("进入能力分析")}
-          </button>}
-        </>
+            <div className="team-member-editor__skills">
+              {Array.from({ length: Math.max(4, member.skills?.four?.length ?? 0) }, (_, skillIndex) => {
+                const skill = skillById.get(entryId(member.skills?.four?.[skillIndex]));
+                const description = global && skill ? localizeGlobalSkill(skill, locale).description : skill?.description;
+                const bloodline = bloodlineSkillIds.has(skill?.id);
+                const conflict = conflictIds.has(skill?.id);
+                return (
+                  <div key={skillIndex} className={`team-member-editor__skill${bloodline ? " has-bloodline" : ""}${conflict ? " has-bloodline-conflict" : ""}`}>
+                    <span className="team-member-editor__skill-number">{skillIndex + 1}</span>
+                    <div className="team-member-editor__skill-body">
+                      <SkillPicker
+                        ariaLabel={t("成员技能{index}", { index: skillIndex + 1 })}
+                        onSelect={(skillId) => updateSkill(skillIndex, skillId)}
+                        placeholder={placeholder}
+                        selected={skill}
+                        skills={legalSkills}
+                      />
+                      {skill ? <>
+                        <div className="team-member-editor__skill-meta">
+                          <span>{typeName(skill.type)} · {t(SKILL_CATEGORIES[skill.category] ?? skill.category)}</span>
+                          <span>{t("能耗")} {skill.cost ?? "—"}</span>
+                          <span>{t("威力")} {skill.basePower ?? "—"}</span>
+                          {bloodline ? <small className="team-member-editor__skill-source">{t(conflict ? "血脉技能 · 冲突" : "血脉技能")}</small> : null}
+                        </div>
+                        {!hideSkillDescriptions && description ? <p className="team-member-editor__skill-description">{t(description)}</p> : null}
+                      </> : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        </div>
       ) : member && spirit ? (
-        <p className="team-member-editor__empty">
-          {t("种族值待确认")}
-        </p>
+        <p className="team-member-editor__empty">{t("种族值待确认")}</p>
       ) : (
         <p className="team-member-editor__empty">{t("选择精灵后配置性格、个体和技能")}</p>
       )}

@@ -25,9 +25,9 @@ const makeMember = () => ({
   lineupSource: { source: "saved-preset", slot: 2 },
 });
 
-function EditorHarness({ member = makeMember(), onChange = () => {} }) {
+function EditorHarness({ member = makeMember(), onChange = () => {}, renderHeader }) {
   const [current, setCurrent] = useState(member);
-  return <TeamMemberEditor index={0} member={current} snapshot={snapshot} onChange={next => {
+  return <TeamMemberEditor index={0} member={current} renderHeader={renderHeader} snapshot={snapshot} onChange={next => {
     onChange(next);
     setCurrent(next);
   }} />;
@@ -86,7 +86,10 @@ test("整块数值牌、勾选框和Space每次只切换一次0/60，保存时�
   state = store.updateMember(state, state.activeTeamId, 0, original);
   state = store.updateMember(state, state.activeTeamId, 1, other);
   const onChange = vi.fn(next => { state = store.updateMember(state, state.activeTeamId, 0, next); });
-  const view = render(<EditorHarness member={original} onChange={onChange} />);
+  const renderHeader = picker => <header aria-label="成员身份">{picker}</header>;
+  const view = render(<EditorHarness member={original} onChange={onChange} renderHeader={renderHeader} />);
+  expect(within(screen.getByLabelText("成员身份")).getByRole("combobox", { name: "成员精灵" }))
+    .toBe(screen.getByRole("combobox", { name: "成员精灵" }));
   expectPanel(original);
   expect(onChange).not.toHaveBeenCalled();
   const read = () => teamPresetsRepository({ storage }).load(snapshot).teams[0].members;
@@ -118,7 +121,7 @@ test("整块数值牌、勾选框和Space每次只切换一次0/60，保存时�
     expect(read().slice(0, 2)).toEqual([expected, other]);
   }
   view.unmount();
-  render(<EditorHarness member={read()[0]} />);
+  render(<EditorHarness member={read()[0]} renderHeader={renderHeader} />);
   expectPanel(expected);
   expect(screen.getByRole("checkbox", { name: "成员速度个体加点" })).toBeChecked();
   expect(screen.getByRole("checkbox", { name: "成员生命个体加点" })).not.toBeChecked();

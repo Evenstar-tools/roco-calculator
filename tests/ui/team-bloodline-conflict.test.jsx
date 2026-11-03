@@ -8,7 +8,7 @@ const raceStats = { hp: 100, physicalAttack: 100, magicalAttack: 100, physicalDe
 const snapshot = {
   spirits: [{ id: "pet", fullName: "测试精灵", stage: "三阶", types: ["普通"], raceStats }, { id: "boss", fullName: "测试首领", stage: "首领", types: ["普通"], raceStats }],
   skills: [{ id: "blood", name: "血脉招式", type: "普通", category: "defense", cost: 1 },
-    { id: "native", name: "自学招式", type: "火", category: "physical", basePower: 80, cost: 2 }],
+    { id: "native", name: "自学招式", type: "火", category: "physical", basePower: 80, cost: 2, description: "对敌方精灵造成物理伤害。" }],
   learnsets: ["pet", "boss"].map(spiritId => ({ spiritId, skillIds: ["blood", "native"], acquisitions: {
     blood: ["普通系血脉 Lv.15"], native: ["火系血脉 Lv.15", "默认学习 Lv.1"],
   } })),
@@ -37,6 +37,13 @@ test("切换首领立即提示且不自动删除配招，恢复普通或移除�
   expect(screen.getByText("血脉技能 · 冲突")).toBeInTheDocument();
   expect(screen.getByRole("combobox", { name: "血脉", exact: true })).toHaveAttribute("aria-invalid", "true");
   expect(screen.getByRole("combobox", { name: "成员技能1" })).toHaveValue("血脉招式");
+  fireEvent.click(screen.getByRole("button", { name: "隐藏效果说明" }));
+  expect(screen.queryByText("对敌方精灵造成物理伤害。")).not.toBeInTheDocument();
+  expect(screen.getByRole("alert")).toHaveTextContent("首领化／首领形态不能携带血脉技能：血脉招式");
+  expect(screen.getByText("血脉技能 · 冲突")).toBeVisible();
+  expect(screen.getByText("能耗 2")).toBeVisible();
+  expect(screen.getByText("威力 80")).toBeVisible();
+  expect(onChange).toHaveBeenCalledTimes(1);
   rerender(<TeamMemberEditor {...props} member={member} />);
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   rerender(<TeamMemberEditor {...props} member={{ ...boss, skills: { four: ["native", null, null, null] } }} />);

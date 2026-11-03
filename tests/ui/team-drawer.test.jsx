@@ -31,6 +31,7 @@ const snapshot = {
       cost: 1,
       id: "fire-b",
       name: "火焰喷发",
+      description: "对敌方精灵造成魔法伤害。",
       type: "火",
     },
     {
@@ -110,6 +111,7 @@ function DrawerHarness({
   onApplyAnalysisSide = vi.fn(),
   onCaptureSide = vi.fn(),
   onDeleteTeamOverride,
+  onMemberChange = () => {},
   spiritChoices,
   snapshotOverride = snapshot,
 }) {
@@ -150,11 +152,12 @@ function DrawerHarness({
         onDuplicateTeam={(id) =>
           setTeamsState((state) => store.duplicate(state, id))
         }
-        onMemberChange={(teamId, index, member) =>
+        onMemberChange={(teamId, index, member) => {
+          onMemberChange(teamId, index, member);
           setTeamsState((state) =>
             store.updateMember(state, teamId, index, member),
-          )
-        }
+          );
+        }}
         onRenameTeam={(id, name) =>
           setTeamsState((state) => store.rename(state, id, name))
         }
@@ -169,7 +172,7 @@ function DrawerHarness({
   );
 }
 
-test("更换精灵定位并展开选择框，也能从能力分析返回", async () => {
+test("统一身份头可展开精灵选择框，也能从能力分析返回更换", async () => {
   const scrollIntoView = HTMLElement.prototype.scrollIntoView;
   HTMLElement.prototype.scrollIntoView = vi.fn();
   try {
@@ -177,11 +180,14 @@ test("更换精灵定位并展开选择框，也能从能力分析返回", async
     fireEvent.click(screen.getByRole("button", { name: "新建六人队伍" }));
     for (const fromAnalysis of [false, true]) {
       if (fromAnalysis) fireEvent.click(screen.getByRole("button", { name: "能力分析", exact: true }));
-      fireEvent.click(screen.getByRole("button", { name: "更换精灵" }));
+      fireEvent.click(screen.getByRole("button", { name: fromAnalysis ? "更换精灵" : "展开成员精灵列表" }));
       await waitFor(() => expect(screen.getByRole("combobox", { name: "成员精灵" })).toHaveFocus());
       expect(screen.getByRole("combobox", { name: "成员精灵" })).toHaveAttribute("aria-expanded", "true");
       fireEvent.click(screen.getByRole("option", { name: /音速犬/ }));
-      expect(screen.getByRole("heading", { name: "1号位 · 音速犬" })).toBeVisible();
+      expect(screen.getByRole("combobox", { name: "成员精灵" })).toHaveValue("音速犬");
+      expect(screen.getByRole("button", { name: "编辑音速犬" })).toHaveAttribute("aria-pressed", "true");
+      expect(screen.getAllByRole("combobox", { name: "成员精灵" })).toHaveLength(1);
+      expect(screen.queryByRole("button", { name: "进入能力分析", exact: true })).not.toBeInTheDocument();
     }
   } finally {
     if (scrollIntoView) HTMLElement.prototype.scrollIntoView = scrollIntoView;
@@ -246,7 +252,7 @@ test("opens a temporary calculator-side analysis without creating a team slot", 
   );
 });
 
-test("成员配置与能力分析保持完整成员栏和每行攻防操作", async () => {
+test("成员配置与能力分析保持完整成员栏、攻防操作和切页焦点", async () => {
   const user = userEvent.setup();
   const onApply = vi.fn();
   render(<DrawerHarness onApply={onApply} />);
@@ -258,7 +264,9 @@ test("成员配置与能力分析保持完整成员栏和每行攻防操作", as
   const roster = screen.getByRole("list", { name: "队伍成员" });
   const configuredRoster = roster.innerHTML;
 
-  await user.click(screen.getByRole("button", { name: "能力分析", exact: true }));
+  screen.getByRole("button", { name: "能力分析", exact: true }).focus();
+  await user.keyboard("{Enter}");
+  await waitFor(() => expect(screen.getByRole("button", { name: "能力分析", exact: true })).toHaveFocus());
   expect(screen.getByRole("dialog", { name: "队伍" }))
     .not.toHaveAttribute("data-compact-roster", "true");
   expect(roster).not.toHaveClass("team-roster--compact");
@@ -274,6 +282,7 @@ test("成员配置与能力分析保持完整成员栏和每行攻防操作", as
   expect(onApply).toHaveBeenNthCalledWith(1, "attacker", expect.objectContaining({ spiritId: "sonic-dog" }));
   expect(onApply).toHaveBeenNthCalledWith(2, "defender", expect.objectContaining({ spiritId: "sonic-dog" }));
   await user.click(screen.getByRole("button", { name: "成员配置", exact: true }));
+  await waitFor(() => expect(screen.getByRole("button", { name: "成员配置", exact: true })).toHaveFocus());
   expect(roster.innerHTML).toBe(configuredRoster);
 });
 
@@ -388,13 +397,21 @@ test("uses the calculator spirit choices in the team member picker", async () =>
   ).not.toBeInTheDocument();
 });
 
-test("creates and edits one of six team members", async () => {
+test("成员重排保留顶部操作，个体与配招修改在切换成员后仍保留", async () => {
   const user = userEvent.setup();
-  render(<DrawerHarness />);
+  const onMemberChange = vi.fn();
+  render(<DrawerHarness onMemberChange={onMemberChange} />);
 
   expect(screen.getByRole("dialog", { name: "队伍" })).toBeVisible();
   expect(screen.getByRole("button", { name: "关闭队伍" })).toHaveFocus();
   await user.click(screen.getByRole("button", { name: "新建队伍" }));
+
+  const toolbar = within(screen.getByRole("dialog", { name: "队伍" }).querySelector(".team-drawer__toolbar"));
+  expect(toolbar.getByRole("combobox", { name: "选择队伍" })).toBeVisible();
+  for (const name of ["新建队伍", "复制队伍", "删除队伍", "导入阵容", "导出阵容"]) {
+    expect(toolbar.getByRole("button", { name })).toBeVisible();
+  }
+  expect(screen.getByRole("textbox", { name: "队伍名称" })).toBeVisible();
 
   const roster = screen.getByRole("list", { name: "队伍成员" });
   expect(within(roster).getAllByRole("listitem")).toHaveLength(6);
@@ -429,6 +446,43 @@ test("creates and edits one of six team members", async () => {
       4,
     );
   });
+
+  const physicalAttackIv = screen.getByRole("checkbox", { name: "成员物攻个体加点" }).checked;
+  fireEvent.change(screen.getByRole("combobox", { name: "成员技能1" }), {
+    target: { value: "火焰喷发" },
+  });
+  await user.click(screen.getByRole("option", { name: /火焰喷发/ }));
+  expect(screen.getByRole("combobox", { name: "成员技能1" })).toHaveValue("火焰喷发");
+  expect(screen.getAllByText("对敌方精灵造成魔法伤害。").length).toBeGreaterThan(0);
+  const changeCount = onMemberChange.mock.calls.length;
+  await user.click(screen.getByRole("button", { name: "隐藏效果说明" }));
+  expect(screen.getByRole("button", { name: "显示效果说明" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.queryByText("对敌方精灵造成魔法伤害。")).not.toBeInTheDocument();
+  const firstSkill = within(screen.getByRole("combobox", { name: "成员技能1" }).closest(".team-member-editor__skill"));
+  expect(firstSkill.getByText("火 · 魔法")).toBeVisible();
+  expect(firstSkill.getByText("能耗 1")).toBeVisible();
+  expect(firstSkill.getByText("威力 60")).toBeVisible();
+  await user.click(within(roster).getByRole("button", { name: "编辑空位 2" }));
+  await user.click(within(roster).getByRole("button", { name: "编辑音速犬" }));
+  expect(screen.getByRole("combobox", { name: "成员性格" })).toHaveValue("adamant");
+  expect(screen.getByRole("checkbox", { name: "成员物攻个体加点" }).checked).toBe(physicalAttackIv);
+  expect(screen.getByRole("combobox", { name: "成员技能1" })).toHaveValue("火焰喷发");
+  for (const navigation of ["analysis", "reopen"]) {
+    if (navigation === "analysis") {
+      await user.click(screen.getByRole("button", { name: "能力分析", exact: true }));
+      await user.click(screen.getByRole("button", { name: "成员配置", exact: true }));
+    } else {
+      await user.click(screen.getByRole("button", { name: "关闭队伍" }));
+      await user.click(screen.getByRole("button", { name: "打开队伍" }));
+    }
+    expect(screen.getByRole("button", { name: "显示效果说明" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.queryByText("对敌方精灵造成魔法伤害。")).not.toBeInTheDocument();
+  }
+  await user.click(screen.getByRole("button", { name: "显示效果说明" }));
+  expect(screen.getByRole("button", { name: "隐藏效果说明" })).toHaveAttribute("aria-pressed", "false");
+  expect(screen.getAllByText("对敌方精灵造成魔法伤害。").length).toBeGreaterThan(0);
+  expect(screen.getByRole("combobox", { name: "成员技能1" })).toHaveValue("火焰喷发");
+  expect(onMemberChange).toHaveBeenCalledTimes(changeCount);
 });
 
 test("configures one of 18 elemental bloodlines or the boss bloodline", async () => {
@@ -947,22 +1001,22 @@ test("更换精灵清空搜索词但不清除已存成员，取消和连续更�
     await user.click(screen.getByRole("treeitem", { name: "固执（+物攻 -魔攻）" }));
     for (const fromAnalysis of [false, true]) {
       if (fromAnalysis) await user.click(screen.getByRole("button", { name: "能力分析", exact: true }));
-      await user.click(screen.getByRole("button", { name: "更换精灵" }));
+      await user.click(screen.getByRole("button", { name: fromAnalysis ? "更换精灵" : "展开成员精灵列表" }));
       await waitFor(() => expect(input()).toHaveFocus());
       expect(input()).toHaveValue("");
       expect(input()).toHaveAttribute("aria-expanded", "true");
-      expect(screen.getByRole("heading", { name: "1号位 · 音速犬" })).toBeVisible();
+      expect(screen.getByRole("button", { name: "编辑音速犬" })).toHaveAttribute("aria-pressed", "true");
       expect(screen.getByLabelText("成员性格")).toHaveValue("adamant");
       expect(screen.getByRole("option", { name: /水灵/ })).toBeVisible();
       await user.keyboard("{Escape}");
       expect(input()).toHaveValue("音速犬");
       expect(screen.getByRole("dialog", { name: "队伍", exact: true })).toBeVisible();
     }
-    await user.click(screen.getByRole("button", { name: "更换精灵" }));
+    await user.click(screen.getByRole("button", { name: "展开成员精灵列表" }));
     await waitFor(() => expect(input()).toHaveValue(""));
     await user.click(screen.getByRole("option", { name: /水灵/ }));
     expect(input()).toHaveValue("水灵");
-    expect(screen.getByRole("heading", { name: "1号位 · 水灵" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "编辑水灵" })).toHaveAttribute("aria-pressed", "true");
   } finally {
     if (original) HTMLElement.prototype.scrollIntoView = original;
     else delete HTMLElement.prototype.scrollIntoView;
