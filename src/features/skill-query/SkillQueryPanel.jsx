@@ -2,7 +2,7 @@ import { prepareSkillQueryCatalog } from "./prepare-catalog.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SkillIcon } from "../../components/SkillIcon.jsx";
 import { ElementIcon } from "../../components/ElementIcon.jsx";
-import { Eye, EyeSlash } from "@phosphor-icons/react";
+import { Eye, EyeSlash, X } from "@phosphor-icons/react";
 import { categoryNames, seasonChanges } from "./catalog.js";
 import { getCachedCatalog, loadSkillCatalog } from "./load-catalog.js";
 import "./skill-query.css";
@@ -28,7 +28,7 @@ export default function SkillQueryPanel(props) {
   useModalFocus(!release.capabilities.search, root, props.onClose);
   if (release.capabilities.search) return <VerifiedSkillQueryPanel {...props} />;
   return <div className="skill-query-backdrop"><section aria-label={t("技能查询")} aria-modal="true" role="dialog" tabIndex={-1} ref={root} className="skill-query">
-    <header className="skill-query__header"><h2>{t("技能检索")}</h2><button onClick={props.onClose} aria-label={t("关闭技能查询")}>{t("关闭")} ×</button></header>
+    <header className="skill-query__header"><h2>{t("技能检索")}</h2><button type="button" className="skill-query__close" onClick={props.onClose} aria-label={t("关闭技能查询")} title={t("关闭")}><X size={20} aria-hidden="true" /></button></header>
     {referenceCatalog ? <>
       <div className="skill-query__tabs" role="tablist" aria-label={t("技能查询视图")}><button role="tab" aria-selected="true">{t("查询")}</button></div>
 
@@ -99,7 +99,7 @@ function VerifiedSkillQueryPanel({ onClose, skills = [], spirits = [], snapshot,
     {view !== "gains" && <><select aria-label={t("技能属性")} value={type} onChange={(event) => setType(event.target.value)}><option value="">{t("全部属性")}</option>{[...new Set(season.skills.map((entry) => entry.type))].map((item) => <option key={item} value={item}>{typeName(item)}</option>)}</select><select aria-label={t("技能种类")} value={category} onChange={(event) => setCategory(event.target.value)}><option value="">{t("全部种类")}</option>{Object.entries(categoryNames).map(([id, label]) => <option key={id} value={id}>{t(label)}</option>)}</select></>}
   </div>;
   return <div className="skill-query-backdrop"><section aria-label={t("技能查询")} aria-modal="true" role="dialog" tabIndex={-1} ref={root} className="skill-query">
-    <header className="skill-query__header"><h2>{t("技能检索")}</h2>{data && <select aria-label={t("查询赛季")} value={season.id} onChange={(event) => { setSeasonId(event.target.value); setEntry(null); }}>{data.seasons.map(({ id }) => <option key={id} value={id}>{id}{id === "S5" && canonicalData !== catalog && snapshot?.meta?.s5NrcSync?.complete !== true ? t("（公告）") : ""}</option>)}</select>}<button onClick={onClose} aria-label={t("关闭技能查询")}>{t("关闭 ×")}</button></header>
+    <header className="skill-query__header"><h2>{t("技能检索")}</h2>{data && <select aria-label={t("查询赛季")} value={season.id} onChange={(event) => { setSeasonId(event.target.value); setEntry(null); }}>{data.seasons.map(({ id }) => <option key={id} value={id}>{id}{id === "S5" && canonicalData !== catalog && snapshot?.meta?.s5NrcSync?.complete !== true ? t("（公告）") : ""}</option>)}</select>}<button type="button" className="skill-query__close" onClick={onClose} aria-label={t("关闭技能查询")} title={t("关闭")}><X size={20} aria-hidden="true" /></button></header>
     <div className="skill-query__tabs" role="tablist" aria-label={t("技能查询视图")}>{[["all", "查询"], ["new", "赛季新技能"], ["gains", "赛季学习更新"], ...(canonicalData !== catalog ? [["changes", "赛季技能调整"]] : [])].map(([id, label]) => <button key={id} role="tab" aria-selected={view === id} onClick={() => changeView(id)}>{t(label)}</button>)}</div>
     {error ? <div role="alert" className="skill-query__empty">{t(error)}<button onClick={() => { setError(""); setAttempt((value) => value + 1); }}>{t("重试")}</button></div> : !data ? <p role="status" className="skill-query__empty">{t("正在加载技能资料…")}</p> : <>
       {view === "all" && entry && <p className="skill-query__context">{season.id}{" "}{t("资料")}{" "}<button onClick={() => { setView(entry.fromView); setSeasonId(season.id); }}>{t("返回赛季查询")}</button></p>}
