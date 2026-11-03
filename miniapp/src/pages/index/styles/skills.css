@@ -1894,3 +1894,13 @@
 .skill-usage__notice { display: block; color: var(--text-secondary); font-size: 11px; }
 
 .condition-editor__number-stepper--usage { grid-template-columns: 44px minmax(0, 1fr) 44px 48px; }
+
+/* 标题与“恢复默认”同行：标签不折行，按钮按文字宽度（H5 按钮默认占满一行）。 */
+.condition-editor__field-heading .condition-editor__label {
+  white-space: nowrap;
+}
+
+.condition-editor__field-heading .condition-editor__power-reset {
+  width: auto;
+  flex: 0 0 auto;
+}
