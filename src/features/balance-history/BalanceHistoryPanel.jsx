@@ -5,16 +5,27 @@ import { SpiritImage } from "../../components/SpiritImage.jsx";
 import { SkillIcon } from "../../components/SkillIcon.jsx";
 import { useModalFocus } from "../../hooks/useModalFocus.js";
 import { classifyHistoryItem, getBalanceHistoryIndex, summarizeBatchChanges } from "./history-index.js";
+import { diffText } from "./text-diff.js";
 import "./balance-history.css";
 
 const PAGE_SIZE = 24;
+const NAMED_LIMIT = 2;
 const GROUPS = [["stats", "种族值"], ["skills", "技能调整"], ["learnset", "学习面调整"], ["traits", "特性调整"], ["other", "其他调整"]];
-const nameOf = entity => entity?.representative
-  ? `${nameOf(entity.representative)}${entity.members.length > 1 ? "家族" : ""}`
-  : entity?.fullName ?? entity?.name ?? "";
+// A family is shown by its plain form: "雪绒鸟家族", not "雪绒鸟（春天的样子）家族".
+const faceOf = entity => entity?.representative
+  ? entity.members.length > 1 ? entity.members.find(member => !member.variantName) ?? entity.representative : entity.representative
+  : entity;
+const nameOf = entity => {
+  if (!entity?.representative) return entity?.fullName ?? entity?.name ?? "";
+  if (entity.members.length < 2) return nameOf(entity.representative);
+  const face = faceOf(entity);
+  return `${face.variantName && face.baseName ? face.baseName : nameOf(face)}家族`;
+};
 const identityOf = entity => entity?.members?.length > 1
   ? `${entity.members.length} 位成员 · `
-  : (entity?.representative ?? entity)?.dexNo != null ? `#${(entity.representative ?? entity).dexNo} · ` : "";
+  : faceOf(entity)?.dexNo != null ? `#${faceOf(entity).dexNo} · ` : "";
+// Labels such as "S4 月涌狂想 9月10日数据" already carry the season.
+const showSeasonTag = patch => patch?.seasonId && !String(patch.label ?? "").startsWith(patch.seasonId);
 const dateOf = patch => patch?.displayDate ?? patch?.date ?? "日期未提供";
 const hasType = (record, type) => record.items.some(item => type === "all" || classifyHistoryItem(item) === type);
 
@@ -25,7 +36,7 @@ function SourceLink({ patch }) {
 }
 
 function Portrait({ entity, skill = false, size = 38 }) {
-  entity = entity?.representative ?? entity;
+  entity = faceOf(entity);
   return skill ? <SkillIcon skill={entity} size={size} loading="lazy" />
     : entity?.asset?.localUrl ? <SpiritImage src={entity.asset.localUrl} name={nameOf(entity)} alt="" width={size} height={size} loading="lazy" /> : null;
 }
@@ -41,6 +52,28 @@ function TypeFilters({ value, onChange }) {
   return <div className="bh-filters" role="group" aria-label="调整类型">
     {[["all", "全部"], ...GROUPS].map(([key, label]) => <button type="button" key={key} aria-pressed={value === key} onClick={() => onChange(key)}>{label}</button>)}
   </div>;
+}
+
+function DiffText({ parts, mark }) {
+  return parts.map((part, index) => part.changed ? <mark key={index} className={`bh-diff ${mark}`}>{part.text}</mark> : part.text);
+}
+
+function BeforeAfter({ item }) {
+  const hasBoth = item.before != null && item.after != null;
+  const diff = hasBoth ? diffText(String(item.before), String(item.after)) : null;
+  return <div className="bh-before-after">
+    {item.before != null && <p><small>调整前</small>{diff ? <DiffText parts={diff.before} mark="is-removed" /> : String(item.before)}</p>}
+    {item.after != null && <p><small>{hasBoth ? "调整后" : "内容"}</small>{diff ? <DiffText parts={diff.after} mark="is-added" /> : String(item.after)}</p>}
+  </div>;
+}
+
+// Who an overview row is about: named inline when few, listed on expand otherwise.
+function Owners({ entities }) {
+  return <span className="bh-owners">{entities.map(entity => <span className="bh-owner" key={entity.id}><Portrait entity={entity} size={22} />{nameOf(entity)}</span>)}</span>;
+}
+
+function OwnerList({ entities }) {
+  return <p className="bh-owner-list"><small>涉及 {entities.length} 只精灵</small>{entities.map(nameOf).join("、")}</p>;
 }
 
 function ChangeGroups({ items, type, owner, skill = false, nested = false }) {
@@ -59,10 +92,8 @@ function ChangeGroups({ items, type, owner, skill = false, nested = false }) {
             {item.note && <p className="bh-note">{item.note}</p>}
           </div>;
         }
-        return <div className="bh-detail" key={index}><strong>{label}</strong><div className="bh-before-after">
-          {item.before != null && <p><small>调整前</small>{String(item.before)}</p>}
-          {item.after != null && <p><small>{item.before != null ? "调整后" : "内容"}</small>{String(item.after)}</p>}
-        </div>{item.note && <p className="bh-note">{item.note}</p>}</div>;
+        return <div className="bh-detail" key={index}><strong>{label}</strong><BeforeAfter item={item} />
+          {item.note && <p className="bh-note">{item.note}</p>}</div>;
       })}</div>
     </section>;
   });
@@ -89,20 +120,25 @@ function BatchOverview({ changes, type, limit, skill, onMore }) {
     if (!entries.length) return null;
     return <section className="bh-overview-group" key={key} aria-label={title}><h4>{title}</h4>
       {entries.map(({ id, item, entities }) => {
-        const count = `${entities.length} ${skill ? "项技能" : "只精灵"}`;
+        // Skill labels already name the skill; spirits are named when few, listed when many.
+        const named = !skill && entities.length <= NAMED_LIMIT;
+        const listed = !skill && !named;
+        const count = skill ? entities.length > 1 ? `${entities.length} 项技能` : "" : listed ? `${entities.length} 只精灵` : "";
         const label = item.label ?? "效果调整";
         if (typeof item.before === "number" && typeof item.after === "number") {
           const delta = item.after - item.before;
-          return <div className="bh-overview-metric" key={id}><strong>{label}</strong><span>{item.before} → {item.after}</span>
-            <em className={delta < 0 ? "is-down" : delta > 0 ? "is-up" : ""}>{delta > 0 ? "+" : ""}{delta || "—"}</em><small>{count}</small>
-            {item.note && <p className="bh-note">{item.note}</p>}</div>;
+          const cells = <><strong>{named && <Owners entities={entities} />}<span>{label}</span></strong><span>{item.before} → {item.after}</span>
+            <em className={delta < 0 ? "is-down" : delta > 0 ? "is-up" : ""}>{delta > 0 ? "+" : ""}{delta || "—"}</em>
+            <small>{count}{listed && <CaretDown size={15} />}</small></>;
+          if (!listed) return <div className="bh-overview-metric" key={id}>{cells}{item.note && <p className="bh-note">{item.note}</p>}</div>;
+          return <details className="bh-overview-detail" key={id}><summary className="bh-overview-metric">{cells}</summary>
+            <div className="bh-overview-expanded">{item.note && <p className="bh-note">{item.note}</p>}<OwnerList entities={entities} /></div>
+          </details>;
         }
         const shortContent = item.kind === "learnset" && item.after != null && String(item.after).length <= 36;
-        return <details className="bh-overview-detail" key={id}><summary><strong>{label}{shortContent ? `：${item.after}` : ""}</strong><small>{count}</small><CaretDown size={15} /></summary>
-          <div className="bh-overview-expanded"><div className="bh-before-after">
-            {item.before != null && <p><small>调整前</small>{String(item.before)}</p>}
-            {item.after != null && <p><small>{item.before != null ? "调整后" : "内容"}</small>{String(item.after)}</p>}
-          </div>{item.note && <p className="bh-note">{item.note}</p>}</div>
+        return <details className="bh-overview-detail" key={id}><summary><strong>{named && <Owners entities={entities} />}<span>{label}{shortContent ? `：${item.after}` : ""}</span></strong>{count && <small>{count}</small>}<CaretDown size={15} /></summary>
+          <div className="bh-overview-expanded"><BeforeAfter item={item} />
+            {item.note && <p className="bh-note">{item.note}</p>}{listed && <OwnerList entities={entities} />}</div>
         </details>;
       })}
     </section>;
@@ -242,17 +278,17 @@ function BalanceHistoryContent({ snapshot, open, onClose }) {
           <aside className="bh-side" ref={sideRef}><h3 className="bh-side-title">检索精灵</h3>
             <Search label="名称、别名或图鉴号" value={spiritView.query} onChange={query => updateSpirit({ query, entityId: null, limit: PAGE_SIZE }, true)} />
             <div className="bh-search-results" aria-label="精灵检索结果">{matches.slice(0, spiritView.limit).map(entity => <button type="button" className="bh-entity" key={entity.id} aria-pressed={entity.id === selected?.id} onClick={() => updateSpirit({ entityId: entity.id })}>
-              <Portrait entity={entity} /><span><strong>{nameOf(entity)}</strong><small>{identityOf(entity)}{index.familyRecords.get(entity.id)?.length ?? 0} 次调整记录</small>
+              <Portrait entity={entity} /><span><strong>{nameOf(entity)}</strong><small>{identityOf(entity)}{index.familyRecords.get(entity.id)?.length ?? 0} 次调整</small>
                 {matchedMembers && entity.members.length > 1 && <small className="bh-match">匹配：{entity.members.filter(member => matchedMembers.has(member.id)).map(nameOf).join("、")}</small>}
               </span>
             </button>)}{matches.length > spiritView.limit && <button type="button" className="bh-more" onClick={() => { savePosition(); setSpiritView(previous => ({ ...previous, limit: previous.limit + PAGE_SIZE })); }}>显示更多精灵</button>}</div>
             {!matches.length && <p className="bh-note">没有匹配的精灵，请试试名称、别名或图鉴号。</p>}
           </aside>
-          <section className="bh-content">{selected && <div className="bh-summary"><div className="bh-summary-head"><Portrait entity={selected} size={44} /><div><h3>{nameOf(selected)} <small>{selected.members.length > 1 ? `${selected.members.length} 位成员` : selected.representative.dexNo != null ? `#${selected.representative.dexNo}` : ""}</small></h3><p>已收录 {index.familyRecords.get(selected.id)?.length ?? 0} 次调整 · 按资料日期倒序</p></div></div>
+          <section className="bh-content">{selected && <div className="bh-summary"><div className="bh-summary-head"><Portrait entity={selected} size={44} /><div><h3>{nameOf(selected)} <small>{selected.members.length > 1 ? `${selected.members.length} 位成员` : faceOf(selected).dexNo != null ? `#${faceOf(selected).dexNo}` : ""}</small></h3><p>已收录 {index.familyRecords.get(selected.id)?.length ?? 0} 次调整 · 按资料日期倒序</p></div></div>
             {selected.members.length > 1 && <p className="bh-family-members">{selected.members.map(nameOf).join("、")}</p>}
             <TypeFilters value={spiritView.type} onChange={type => updateSpirit({ type })} /></div>}
             <div className="bh-scroll" ref={scrollRef}>{!selected ? <Empty>没有匹配的精灵</Empty> : !index.familyRecords.get(selected.id)?.length ? <Empty>尚未收录{nameOf(selected)}的平衡调整记录</Empty> : !spiritRecords.length ? <Empty onReset={() => updateSpirit({ season: "all", type: "all" })}>当前筛选下没有调整记录</Empty> : spiritRecords.map((record, recordIndex) => <article className="bh-record" key={record.patch.id ?? `unlinked-${recordIndex}`}>
-              <header className="bh-record-head"><div className="bh-record-date"><PatchDate patch={record.patch} /></div><span className="bh-season-tag">{record.patch.seasonId}</span><h4>{record.patch.label}</h4>
+              <header className="bh-record-head"><div className="bh-record-date"><PatchDate patch={record.patch} /></div>{showSeasonTag(record.patch) && <span className="bh-season-tag">{record.patch.seasonId}</span>}<h4>{record.patch.label}</h4>
                 <div className="bh-record-actions"><SourceLink patch={record.patch} />{record.patch.id && <button type="button" onClick={() => jumpToBatch(record)}>查看本次全部调整 <CaretRight size={14} /></button>}</div></header>
               <RecordChanges record={record} type={spiritView.type} owner={selected} />
             </article>)}</div>
