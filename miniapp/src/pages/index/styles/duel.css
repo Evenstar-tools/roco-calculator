@@ -54,7 +54,8 @@
 
 .battle-workspace__duel {
   display: grid;
-  align-items: stretch;
+  /* 只有一方有等级档时，另一张卡不拉伸出空白。 */
+  align-items: start;
   gap: 8px;
   padding: 10px;
   border: 1px solid var(--border-neutral);
@@ -169,8 +170,11 @@
 
 .direction-switch {
   display: grid;
-  align-content: center;
+  align-self: stretch;
+  align-content: start;
   justify-items: center;
+  /* 交换按钮对齐卡片头部，不随等级控件下移。 */
+  padding-top: calc((var(--duel-summary-height, 92px) - var(--touch-target)) / 2);
 }
 
 .direction-switch__copy {
