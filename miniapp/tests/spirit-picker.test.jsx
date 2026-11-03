@@ -8,6 +8,7 @@ import { createCalculatorStore } from "../src/state/calculator-store.js";
 import {
   createSpiritSearchIndex,
   searchSpirits,
+  searchSpiritsWithFavorites,
 } from "../src/view-models/spirit-search.js";
 
 const spirits = [
@@ -575,5 +576,29 @@ describe("spirit search index", () => {
 
     expect(searchSpirits(index, "")).toHaveLength(30);
     expect(searchSpirits(index, "测试", 5)).toHaveLength(5);
+  });
+});
+
+describe("精灵搜索排序", () => {
+  const snapshot = {
+    spirits: [
+      { id: "small", fullName: "小冥龙", pinyin: "xiaominglong", evolutionChainNames: ["小冥龙", "冥古龙"] },
+      { id: "abu", fullName: "阿布", pinyin: "abu", evolutionChainNames: ["阿布", "超能阿布"] },
+      { id: "super-abu", fullName: "超能阿布", pinyin: "chaonengabu", evolutionChainNames: ["阿布", "超能阿布"] },
+      { id: "ming", fullName: "冥古龙", pinyin: "minggulong", evolutionChainNames: ["小冥龙", "冥古龙"] },
+    ],
+  };
+
+  test("完整名字排第一，同族只靠进化链命中的排后面", () => {
+    const index = createSpiritSearchIndex(snapshot);
+    expect(searchSpirits(index, "冥古龙").map((item) => item.id)).toEqual(["ming", "small"]);
+    expect(searchSpirits(index, "超能阿布").map((item) => item.id)).toEqual(["super-abu", "abu"]);
+    expect(searchSpirits(index, "阿布").map((item) => item.id)).toEqual(["abu", "super-abu"]);
+  });
+
+  test("完整名字排在收藏前，其余收藏仍优先", () => {
+    const index = createSpiritSearchIndex(snapshot);
+    expect(searchSpiritsWithFavorites(index, "冥古龙", ["small"]).map((item) => item.id)).toEqual(["ming", "small"]);
+    expect(searchSpiritsWithFavorites(index, "阿", ["super-abu"]).map((item) => item.id)).toEqual(["super-abu", "abu"]);
   });
 });
