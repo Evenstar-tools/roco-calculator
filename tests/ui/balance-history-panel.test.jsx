@@ -37,7 +37,7 @@ test("家族只列一行，共同、部分成员和单独调整保留明确适�
   const user = userEvent.setup();
   render(<BalanceHistoryPanel snapshot={familyFixture()} open onClose={vi.fn()} />);
   expect(document.querySelectorAll(".bh-entity")).toHaveLength(2);
-  expect(screen.getByRole("button", { name: /喵喵家族.*3 位成员.*1 次调整记录/ })).toBeVisible();
+  expect(screen.getByRole("button", { name: /喵喵家族.*3 位成员.*1 次调整$/ })).toBeVisible();
   expect(screen.getByRole("button", { name: /独立精灵/ })).toBeVisible();
   const all = screen.getByRole("region", { name: "喵喵、魔力猫、叶冕魔力猫的调整" });
   expect(within(all).getByText("家族共同调整")).toBeVisible();
@@ -98,14 +98,51 @@ test("更新默认只列去重后的具体内容，数值直显，长文本折�
   expect(within(overview).getAllByText("四维降解·威力")).toHaveLength(1);
   expect(within(overview).getByText("100 → 110")).toBeVisible();
   expect(within(overview).getByText("122 → 132")).toBeVisible();
-  const text = within(overview).getByText(long.after);
-  const details = text.closest("details");
+  const details = within(overview).getByText("薄纱环·技能效果").closest("details");
   expect(details).not.toBeNull();
+  const text = details.querySelectorAll(".bh-before-after p")[1];
+  expect(text).toHaveTextContent(`调整后${long.after}`, { normalizeWhitespace: false });
   expect(details).not.toHaveAttribute("open");
   expect(text).not.toBeVisible();
   await user.click(details.querySelector("summary"));
   expect(details).toHaveAttribute("open");
   expect(text).toBeVisible();
+});
+
+test("概览行写明涉及哪只精灵：少量直接列名，多只展开可见名单", async () => {
+  const user = userEvent.setup();
+  render(<BalanceHistoryPanel snapshot={familyFixture()} open onClose={vi.fn()} />);
+  await user.click(screen.getByRole("tab", { name: "按更新浏览" }));
+  const overview = document.querySelector(".bh-overview");
+  const hpRow = within(overview).getByText("122 → 132").closest(".bh-overview-metric");
+  expect(hpRow).toHaveTextContent("魔力猫生命");
+  expect(hpRow).not.toHaveTextContent("只精灵");
+  expect(within(overview).getByText("四维降解·威力").closest(".bh-overview-metric")).toHaveTextContent("喵喵魔力猫四维降解·威力");
+  const shared = within(overview).getByText("家族特性").closest("details");
+  expect(shared.querySelector("summary")).toHaveTextContent("4 只精灵");
+  const list = shared.querySelector(".bh-owner-list");
+  expect(list).not.toBeVisible();
+  await user.click(shared.querySelector("summary"));
+  expect(list).toBeVisible();
+  expect(list).toHaveTextContent("涉及 4 只精灵喵喵、魔力猫、叶冕魔力猫、独立精灵");
+});
+
+test("改前改后只标出差异，家族用基础形态命名，标题已含赛季时不重复标签", async () => {
+  const user = userEvent.setup();
+  const snapshot = familyFixture();
+  snapshot.spirits[0] = { ...snapshot.spirits[0], fullName: "喵喵（春天的样子）", baseName: "喵喵", variantName: "春天的样子" };
+  snapshot.spirits.splice(1, 0, { id: "plain", fullName: "喵喵", baseName: "喵喵", dexNo: "002", evolutionChainIds: ["bud"] });
+  snapshot.spirits[1].changeInfo = { patch: s4, items: [{ kind: "trait", label: "特性·鼓气", before: "获得攻防+20%。", after: "获得双攻和双防+20%。" }] };
+  render(<BalanceHistoryPanel snapshot={snapshot} open onClose={vi.fn()} />);
+  expect(screen.getByRole("heading", { name: /^喵喵家族/ })).toBeVisible();
+  expect(screen.queryByText(/喵喵（春天的样子）家族/)).not.toBeInTheDocument();
+  expect(document.querySelector(".bh-season-tag")).toBeNull();
+  const detail = screen.getByText("特性·鼓气").closest(".bh-detail");
+  expect([...detail.querySelectorAll("mark.is-removed")].map(mark => mark.textContent)).toEqual(["攻"]);
+  expect([...detail.querySelectorAll("mark.is-added")].map(mark => mark.textContent)).toEqual(["双攻和双"]);
+  expect(detail.querySelectorAll(".bh-before-after p")[0]).toHaveTextContent("调整前获得攻防+20%。");
+  await user.click(screen.getByRole("tab", { name: "按更新浏览" }));
+  expect(screen.getByRole("heading", { name: "S4 月涌狂想" })).toBeVisible();
 });
 
 test("更新搜索仅返回实际成员，类型筛选不借用兄弟改动，清空恢复概览", async () => {
