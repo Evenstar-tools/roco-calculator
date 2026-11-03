@@ -23,11 +23,11 @@ export default function SkillResultRows({
           <Button
             aria-label={`查看${row.skillName ?? `技能 ${index + 1}`}结果`}
             aria-pressed={selectedIndex === index}
-            className={
-              selectedIndex === index
-                ? "result-row result-row--selected"
-                : "result-row"
-            }
+            className={[
+              "result-row",
+              selectedIndex === index ? "result-row--selected" : "",
+              !exact && row.status !== "exact" ? "result-row--message" : "",
+            ].filter(Boolean).join(" ")}
             hoverClass="button-hover"
             key={`${row.skillId ?? "empty"}-${index}`}
             onClick={() => onSelect(index)}
