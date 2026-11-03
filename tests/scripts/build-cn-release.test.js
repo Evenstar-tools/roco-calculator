@@ -166,12 +166,12 @@ describe("pinned CN root release assembly", () => {
     expect(readFileSync(path.join(root, "dist/client/data/runtime.json"), "utf8")).toBe("old root");
   });
 
-  test("release gates precede CN build, minification and budget; /pre and global assemble last", () => {
+  test("release gates precede CN build, minification and budget; final asset checks follow /pre and global assembly", () => {
     const scripts = JSON.parse(readFileSync(path.resolve("package.json"), "utf8")).scripts;
     expect(scripts.build.split(" && ")).toEqual([
       "npm run acceptance:verify", "npm run data:runtime", "npm run data:verify-bindings -- --web-only",
       "node scripts/build-cn-release.mjs", "node scripts/minify-service-worker.mjs", "npm run performance:verify",
-      "node scripts/build-preview-release.mjs", "node scripts/build-global-release.mjs", "node scripts/stamp-image-cache.mjs",
+      "node scripts/build-preview-release.mjs", "node scripts/build-global-release.mjs", "node scripts/stamp-image-cache.mjs", "npm run web:verify-artifact",
     ]);
   });
 });
