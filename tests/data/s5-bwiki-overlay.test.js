@@ -324,7 +324,11 @@ describe("complete S5 BWIKI build overlay", () => {
         }
         const current = groups.find(row => row.patch?.id === previous.patch.id);
         expect(current?.patch.date).toBe(previous.patch.date);
-        for (const item of previous.items ?? []) expect(current.items).toContainEqual(item);
+        for (const item of previous.items ?? []) {
+          const canonical = item.kind === "stat" && item.field === "hp" && item.label === "精力"
+            ? { ...item, label: "生命" } : item;
+          expect(current.items).toContainEqual(canonical);
+        }
       }
     }
     for (const rawId of Object.keys(evidence.modules.SeasonFeatures)) {
@@ -332,6 +336,14 @@ describe("complete S5 BWIKI build overlay", () => {
       expect(spirit.changeInfo.isNew).toBe(true);
       expect(spirit.changeInfo.items.every(item => item.kind === "new")).toBe(true);
     }
+  });
+  test("花衣蝶 S4 历史的生命 122→132 只保留一次，日期与其他字段不变", () => {
+    const spirit = findSpirit(result, "花衣蝶");
+    const history = changeGroups(spirit.changeInfo).find(group => group.patch?.id === "s4-2026-09-10");
+    expect(history.patch.date).toBe("2026.09.10");
+    expect(history.items.filter(item => item.kind === "stat" && item.field === "hp")).toEqual([
+      { kind: "stat", field: "hp", label: "生命", before: 122, after: 132 },
+    ]);
   });
   test("unmapped old historical names remain explicit pending; ecological fields do not create calculator features", () => {
     const audit = result.meta.s5NrcSync.historyAudit;
