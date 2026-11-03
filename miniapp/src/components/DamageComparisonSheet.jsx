@@ -8,7 +8,7 @@ function DamageRange({ value, onChange }) {
   const commit = (lower, upper) => onChange(lower === 0 && upper === 125 ? "all" : [lower, upper === 125 ? null : upper]);
   return <View className="dc-range-mini">
     <View className="dc-summary"><Text>承伤范围 {max === 125 ? min === 0 ? "全部" : `≥${min}%` : `${min}%–${max}%`}</Text><Button className="dc-button" onClick={() => commit(0, 125)}>全部</Button></View>
-    <View className="dc-filters">{[0, 25, 50, 75, 100].map((start) => <Button key={start} className={`dc-button${start >= min && start < max ? " is-selected" : ""}`} onClick={() => commit(start, start + 25)}>{start === 100 ? "≥100%" : `${start}–${start + 25}%`}</Button>)}</View>
+    <View className={`dc-filters${min === 0 && max === 125 ? " dc-filters--all" : ""}`}>{[0, 25, 50, 75, 100].map((start) => <Button key={start} className={`dc-button${start >= min && start < max ? " is-selected" : ""}`} onClick={() => commit(start, start + 25)}>{start === 100 ? "≥100%" : `${start}–${start + 25}%`}</Button>)}</View>
     <View className="dc-range-mini-controls">
       <Text>下限 {min}%</Text><Slider aria-label="承伤范围下限" min={0} max={125} step={25} value={min} activeColor="#5546dc" onChange={(event) => commit(Math.min(Number(event.detail.value), max - 25), max)} />
       <Text>上限 {max === 125 ? "无上限" : `${max}%（不含）`}</Text><Slider aria-label="承伤范围上限" min={0} max={125} step={25} value={max} activeColor="#5546dc" onChange={(event) => commit(min, Math.max(Number(event.detail.value), min + 25))} />

@@ -57,7 +57,7 @@ function controlValueLabel(control, value) {
   if (control.type === "boolean") {
     return value === true ? control.label : `${control.label}关闭`;
   }
-  const option = control.options?.find((candidate) =>
+  const option = (control.selectOptions ?? control.options)?.find((candidate) =>
     Object.is(candidate.value, value)
   );
   return `${control.label} ${option?.label ?? value}`;
@@ -67,7 +67,8 @@ function traitConditionLabels(actions) {
   return actionList(actions)
     .filter((action) => action.kind === "trait")
     .flatMap((action) => {
-      const controls = action.controls ?? (action.control ? [action.control] : []);
+      const controls = (action.controls ?? (action.control ? [action.control] : []))
+        .filter(control => !control.hidden && !control.action);
       const active = controls.some((control) =>
         !Object.is(controlValue(action, control), control.defaultValue)
       );

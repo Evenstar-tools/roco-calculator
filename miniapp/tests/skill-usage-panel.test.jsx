@@ -64,3 +64,18 @@ test("次数控件复用原输入并支持重置，不增加第二个输入", ()
   fireEvent.click(screen.getByRole("button", { name: "此前使用次数重置" }));
   expect(onChange).toHaveBeenLastCalledWith(0);
 });
+
+test("S5 骰点选择同时展示对应效果，回合结束是动作且隐藏结算计数", () => {
+  const onChange = vi.fn();
+  const { rerender } = render(<ConditionField input={{ type: "number", label: "骰点", defaultValue: 1,
+    selectOptions: [{ value: 1, label: "1点｜双方回复生命10%" }, { value: 2, label: "2点｜双方物攻+30%" }] }} value={1} onChange={onChange} />);
+  fireEvent.change(screen.getByRole("combobox", { name: "骰点" }), { target: { value: "1" } });
+  expect(onChange).toHaveBeenLastCalledWith(2);
+  expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();
+  rerender(<ConditionField input={{ type: "boolean", label: "回合结束", action: "s5-stat-turn-end" }} value={true} onChange={onChange} />);
+  fireEvent.click(screen.getByRole("button", { name: "回合结束" }));
+  expect(onChange).toHaveBeenLastCalledWith(true);
+  expect(screen.queryByText("已开启")).not.toBeInTheDocument();
+  rerender(<ConditionField input={{ type: "number", label: "已结算数量", hidden: true }} value={2} onChange={onChange} />);
+  expect(screen.queryByText("已结算数量")).not.toBeInTheDocument();
+});

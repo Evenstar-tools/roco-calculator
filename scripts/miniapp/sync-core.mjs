@@ -11,17 +11,18 @@ import {
   normalizeManifest,
   SHARED_SOURCE_MANIFEST,
 } from "./shared-source-manifest.mjs";
+import { prepareMiniappSource } from "./release-source.mjs";
 
 export function syncSharedCore({
   manifest = SHARED_SOURCE_MANIFEST,
   sourceRoot = process.cwd(),
   targetRoot = path.join(sourceRoot, "miniapp/src/shared"),
 } = {}) {
-  const resolvedSourceRoot = path.resolve(sourceRoot);
+  const resolvedSourceRoot = prepareMiniappSource({ root: path.resolve(sourceRoot) }).source;
   const resolvedTargetRoot = path.resolve(targetRoot);
   const { shared } = normalizeManifest(manifest);
 
-  for (const directory of ["domain", "state"]) {
+  for (const directory of ["domain", "state", "features", "data"]) {
     rmSync(path.join(resolvedTargetRoot, directory), {
       force: true,
       recursive: true,

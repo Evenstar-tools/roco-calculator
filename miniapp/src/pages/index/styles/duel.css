@@ -1,8 +1,61 @@
 /*postcss-pxtransform disable*/
 
+.battle-level-control {
+  min-width: 0;
+  padding: 0 8px 8px;
+}
+
+.battle-level-control__label {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.battle-level-control__stepper {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  border: 1px solid var(--border-neutral);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface-card);
+}
+
+.battle-level-control__button,
+.battle-level-control__input {
+  display: flex;
+  height: 38px;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-sizing: border-box;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: var(--weight-emphasis);
+  line-height: 38px;
+  text-align: center;
+}
+
+.battle-level-control__button {
+  flex: 0 0 34px;
+  width: 34px;
+  background: var(--surface-muted);
+}
+
+.battle-level-control__button::after { border: 0; }
+.battle-level-control__button[disabled] { color: var(--text-muted); opacity: 0.5; }
+.battle-level-control__input { flex: 1 1 0%; width: 0; background: var(--surface-card); }
+
 .battle-workspace__duel {
   display: grid;
-  align-items: stretch;
+  /* 只有一方有等级档时，另一张卡不拉伸出空白。 */
+  align-items: start;
   gap: 8px;
   padding: 10px;
   border: 1px solid var(--border-neutral);
@@ -117,8 +170,11 @@
 
 .direction-switch {
   display: grid;
-  align-content: center;
+  align-self: stretch;
+  align-content: start;
   justify-items: center;
+  /* 交换按钮对齐卡片头部，不随等级控件下移。 */
+  padding-top: calc((var(--duel-summary-height, 92px) - var(--touch-target)) / 2);
 }
 
 .direction-switch__copy {

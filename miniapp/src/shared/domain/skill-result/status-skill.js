@@ -77,6 +77,8 @@ export function statusOrDefenseSkillResult({
       ) ?? 0;
     const statusAttackStageFor = (category) =>
       attackLevelStage +
+      (finiteNumber(slotOverrides[`${category}AttackLevelStageAdd`],
+        directionOverrides[`${category}AttackLevelStageAdd`]) ?? 0) +
       markAttackLevelBonus +
       panelTraits[category].attackLevelBonus +
       attackerBloodline.attackLevelBonusByCategory[category] +

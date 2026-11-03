@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
-import snapshot from "../../public/data/runtime.json";
+import snapshot from "../src/data/bundled-runtime.js";
 import SpiritPicker from "../src/components/SpiritPicker.jsx";
 import BattleWorkspace from "../src/components/BattleWorkspace.jsx";
 import { createCalculatorStore } from "../src/state/calculator-store.js";

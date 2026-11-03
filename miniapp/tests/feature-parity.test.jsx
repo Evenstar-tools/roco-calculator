@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import BattleWorkspace from "../src/components/BattleWorkspace.jsx";
 import BattleAdvancedEditor from "../src/components/BattleAdvancedEditor.jsx";
+import ActiveAbilityStageBar from "../src/components/ActiveAbilityStageBar.jsx";
 import SkillSlots from "../src/components/SkillSlots.jsx";
 import { createCalculatorStore } from "../src/state/calculator-store.js";
 import {
@@ -393,9 +394,12 @@ describe("mini-program desktop feature parity", () => {
     fireEvent.click(screen.getByRole("button", { name: "技能参数" }));
 
     expect(store.getState().directions.forward.overrides).toMatchObject({
-      attackLevelStage: 9,
+      attackLevelStage: 0,
+      physicalAttackLevelStageAdd: 9,
+      magicalAttackLevelStageAdd: 0,
       attackerSpeedFlat: 60,
     });
+    expect(screen.getByLabelText("分类能力等级合计")).toHaveTextContent("攻击合计：物攻 +90% · 魔攻 0%");
     expect(screen.getByRole("dialog", { name: "伤害结果" }))
       .toBeInTheDocument();
 
@@ -551,6 +555,23 @@ describe("mini-program desktop feature parity", () => {
       attackLevelStage: 1,
       defenseLevelStage: -1,
     });
+  });
+
+  test("shows category stage totals only for independent modifiers and respects selected-slot values", () => {
+    const onChange = vi.fn();
+    const state = { overrides: { attackLevelStage: 3, physicalAttackLevelStageAdd: 9, magicalAttackLevelStageAdd: -2,
+      defenseLevelStage: 2, magicalDefenseLevelStageAdd: -6 } };
+    const { rerender } = render(<ActiveAbilityStageBar direction="reverse" state={state} onChange={onChange} />);
+    expect(screen.getByLabelText("分类能力等级合计")).toHaveTextContent("攻击合计：物攻 +120% · 魔攻 +10%");
+    expect(screen.getByLabelText("分类能力等级合计")).toHaveTextContent("防御合计：物防 +20% · 魔防 -40%");
+    expect(screen.getAllByRole("button")).toHaveLength(4);
+    fireEvent.click(screen.getByRole("button", { name: "当前攻击等级提高一级" }));
+    expect(onChange).toHaveBeenCalledWith("attack", 4);
+    rerender(<ActiveAbilityStageBar direction="reverse" state={state} onChange={onChange}
+      skillOverrides={{ attackLevelStage: 1, physicalAttackLevelStageAdd: 0, magicalAttackLevelStageAdd: 12 }} />);
+    expect(screen.getByLabelText("分类能力等级合计")).toHaveTextContent("攻击合计：物攻 +10% · 魔攻 +130%");
+    rerender(<ActiveAbilityStageBar direction="forward" state={{ overrides: {} }} onChange={onChange} />);
+    expect(screen.queryByLabelText("分类能力等级合计")).not.toBeInTheDocument();
   });
 
   test("caps active calculation ability stages at positive and negative 99", () => {

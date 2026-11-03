@@ -130,6 +130,22 @@ function createStorageTaro(overrides = {}) {
 }
 
 describe("IndexPage", () => {
+  test("底栏实际高度变化同步到页面占位，不回写底栏自身最小高度", async () => {
+    let resultHeight = 216;
+    const originalBounds = HTMLElement.prototype.getBoundingClientRect;
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function () {
+      return this.classList.contains("result-bar") ? { height: resultHeight } : originalBounds.call(this);
+    });
+    const view = render(<IndexPage services={createUserSettingServices()} />);
+    await screen.findByLabelText("攻击方配置");
+    const page = view.container.querySelector(".page");
+    await waitFor(() => expect(page.style.getPropertyValue("--result-bar-space")).toBe("216px"));
+    expect(page.style.getPropertyValue("--result-bar-height")).toBe("");
+    resultHeight = 260;
+    fireEvent.click(screen.getByRole("button", { name: "四技能模式" }));
+    await waitFor(() => expect(page.style.getPropertyValue("--result-bar-space")).toBe("260px"));
+  });
+
   test("经典配色默认关闭且独立记忆，切换赛季不改变背景、页头和计算配置", async () => {
     const services = createUserSettingServices();
     const first = render(<IndexPage services={services} />);
@@ -145,7 +161,7 @@ describe("IndexPage", () => {
     fireEvent.change(screen.getByRole("combobox", { name: "赛季主题" }), { target: { value: "2" } });
     expect(first.container.querySelector(".page")).toHaveClass("page--season-s3", "page--classic-calculator-colors");
     expect(first.container.querySelector(".season-sky")).toHaveClass("season-sky--s3");
-    expect(first.container.querySelector(".app-header__title")).toHaveTextContent("S4「季中」");
+    expect(first.container.querySelector(".app-header__title")).toHaveTextContent("S5");
     fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
     expect(screen.getByRole("button", { name: "四技能模式" })).toHaveAttribute("aria-pressed", "true");
     first.unmount();
@@ -184,12 +200,12 @@ describe("IndexPage", () => {
     expect(Taro.getStorageSync(SEASON_THEME_STORAGE_KEY)).toBe("s1");
     expect(first.container.querySelector(".page")).toHaveClass("page--season-s1");
     expect(screen.getByRole("button", { name: "每次进入随机主题" })).toHaveAttribute("aria-pressed", "false");
-    random.mockReturnValue(0.25);
+    random.mockReturnValue(0.1);
     fireEvent.click(screen.getByRole("button", { name: "每次进入随机主题" }));
     expect(first.container.querySelector(".page")).toHaveClass("page--season-s2");
     fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
     expect(screen.getByRole("button", { name: "四技能模式" })).toHaveAttribute("aria-pressed", "true");
-    expect(first.container.querySelector(".app-header__title")).toHaveTextContent("S4「季中」");
+    expect(first.container.querySelector(".app-header__title")).toHaveTextContent("S5");
     first.unmount();
     random.mockReturnValue(0);
     const second = render(<IndexPage services={services} />);
@@ -311,7 +327,7 @@ describe("IndexPage", () => {
     expect(screen.queryByText(/数据 S3季中/u)).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
     expect(
-      screen.getByText("数据快照：S4「季中」 · 41360"),
+      screen.getByText("数据快照：S3季中 · 41360"),
     ).toBeInTheDocument();
   });
 
@@ -751,7 +767,7 @@ describe("IndexPage", () => {
     );
     expect(screen.getByLabelText("防守方配置")).toHaveTextContent("水灵");
     fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
-    expect(screen.getByText("数据快照：S4「季中」 · 41360")).toBeInTheDocument();
+    expect(screen.getByText("数据快照：S3季中 · 41360")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "重置本页" }).tagName,
     ).toBe("BUTTON");

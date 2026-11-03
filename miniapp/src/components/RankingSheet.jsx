@@ -89,7 +89,7 @@ export default function RankingSheet({ kind, onClose, snapshot, petImages = {} }
         {attackType ? <View className="ranking-inline"><Button onClick={() => setMultipliers(bins.filter((value) => value < 1))}>选抵抗</Button><Button onClick={() => setMultipliers(bins.filter((value) => value > 1))}>选弱点</Button></View> : null}
       </>}
       <Text className="ranking-note">{speed ? "同一精灵的不同速度配置分别保留；特殊条件不是常驻速度。" : "统一 60 级模板，属性有效耐久不含特性、天气与技能效果。"}</Text>
-      <Button onClick={() => setMore(false)}>完成筛选 · {total}{speed ? "档" : "只"}</Button>
+      <Button className="ranking-done" onClick={() => setMore(false)}>完成筛选 · {total}{speed ? "档" : "只"}</Button>
     </View></ScrollView> : <>
       <View className="ranking-toolbar"><Input aria-label="搜索榜单精灵" placeholder={speed ? "精灵名称或速度值，如 267" : "名称、图鉴号或别名"} value={query} onInput={(event) => { setQuery(event.detail?.value ?? event.target.value); setLimit(60); }} />
         {!speed ? <Choice label="承受属性" options={[["", "不限属性"], ...(snapshot.typeChart?.types ?? ELEMENT_TYPES).map((type) => [type, type])]} value={attackType} onChange={setAttackType} /> : null}<Button onClick={() => setMore(true)}>筛选</Button></View>

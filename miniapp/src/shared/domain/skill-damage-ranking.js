@@ -1,4 +1,5 @@
 import { calculateMatchup } from "./calculate.js";
+import { withS5PreviewCalculationGuard } from "../features/s5-preview/calculation-guard.js";
 import { getNature, getNatureMultipliers, STAT_LABELS } from "./natures.js";
 import { normalizeMarksState, starfallStacksFromMarkSlot } from "./marks.js";
 import { calculateFreezeThreshold, normalizeNegativeStatusSide } from "./negative-status.js";
@@ -113,6 +114,7 @@ export function damageComparisonIssue(snapshot, state, direction = "forward", se
   const levelIssue = getS5PreviewBattleLevelEvaluation(snapshot, state, sourceSide)?.blockingReason;
   if (levelIssue) return levelIssue;
   const { skill, entry } = selected;
+  if (skill.s5StatusEffectPending) return skill.s5StatusEffectPending;
   const details = typeof entry === "object" ? entry : {};
   const overrides = state.mode === "single" ? state.directions[direction].overrides ?? {} : {};
   const power = resolvePowerOverride({
@@ -154,6 +156,7 @@ export function buildDamageComparisonInput({ snapshot, state, spirit, direction 
   const panelStats = calculateAllPanelStats({ raceStats: spirit.raceStats, displayIvs: template.displayIvs, natureMultipliers: getNatureMultipliers(template.natureId) });
   return {
     ...state,
+    ...(snapshot.meta?.serverId === "global" ? { serverId: "global" } : {}),
     level: 60,
     calculationOptions: { ...state.calculationOptions, includeNegativeStatusSettlement: false },
     marks: { ...initial.marks, [sourceSide]: state.marks?.[sourceSide] ?? initial.marks[sourceSide],
@@ -241,7 +244,13 @@ export async function createSkillDamageRanking({ snapshot, state, direction = "f
         const calculationInput = { ...input, sides: { ...input.sides,
           [sourceSide]: source, [targetSide]: { ...input.sides[targetSide], level: 60 },
         } };
-        const result = calculateMatchup(snapshot, calculationInput)[direction].selectedResult;
+        const calculation = withS5PreviewCalculationGuard({
+          sides: Object.fromEntries(Object.entries(calculationInput.sides).map(([key, side]) => [key, {
+            spirit: getSnapshotIndexes(snapshot).spirits[side.spiritId],
+          }])),
+          calculation: calculateMatchup(snapshot, calculationInput),
+        }, snapshot, calculationInput).calculation;
+        const result = calculation[direction].selectedResult;
         if (result?.status !== "exact" || !Number.isFinite(result.totalDamage)) reason = result?.reason || "无直接伤害或缺少计算条件";
         else if (["status", "defense"].includes(selection.selected.skill.category) && result.totalDamage === 0) reason = "该技能无直接伤害";
         else {

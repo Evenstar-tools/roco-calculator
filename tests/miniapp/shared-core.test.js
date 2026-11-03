@@ -11,6 +11,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, test } from "vitest";
+import { releaseSource, pinnedWebCalculate } from "../../miniapp/tests/release-source.js";
 
 const temporaryDirectories = [];
 const repositoryRoot = path.resolve(
@@ -218,6 +219,35 @@ afterEach(() => {
 });
 
 describe("miniapp shared calculator core", () => {
+  test("each scope checks its own miniapp pin and rejects mirror or release-ref drift", async () => {
+    const { getCoreDrift, runCoreDriftCheck } = await import("../../scripts/miniapp/check-core-drift.mjs");
+    const fixture = createRepositoryFixture();
+    const revision = execFileSync("git", ["rev-parse", "HEAD"], { cwd: fixture.root }).toString().trim();
+    mkdirSync(path.join(fixture.root, "config"));
+    const pinPath = path.join(fixture.root, "config/miniapp-release.json");
+    writeFileSync(pinPath, JSON.stringify({ schemaVersion: 1, sourceRevision: revision }));
+    const versionPath = path.join(fixture.root, "miniapp/src/version.js");
+    writeFileSync(versionPath, `export const WEB_CORE_VERSION = "1.0.0";\nexport const WEB_CORE_REVISION = "${revision}";\n`);
+    // The old Web working tree is no longer authoritative for a pinned miniapp.
+    writeFileSync(fixture.sourcePath, "export const value = 99;\n");
+    expect(getCoreDrift({ repositoryRoot: fixture.root })).toEqual([]);
+    execFileSync("git", ["add", "."], { cwd: fixture.root });
+    expect(getCoreDrift({ repositoryRoot: fixture.root })).toEqual([]);
+    expect(runCoreDriftCheck({ repositoryRoot: fixture.root })).toEqual({ releaseRef: revision });
+    writeFileSync(fixture.mirrorPath, "export const value = 99;\n");
+    expect(getCoreDrift({ repositoryRoot: fixture.root })).toEqual([
+      expect.objectContaining({ scope: "working-tree", type: "content-mismatch" }),
+    ]);
+    writeFileSync(fixture.mirrorPath, "export const value = 1;\n");
+    execFileSync("git", ["commit", "--quiet", "-m", "independent miniapp pin"], { cwd: fixture.root });
+    const nextRevision = execFileSync("git", ["rev-parse", "HEAD"], { cwd: fixture.root }).toString().trim();
+    writeFileSync(versionPath, `export const WEB_CORE_VERSION = "1.0.0";\nexport const WEB_CORE_REVISION = "${nextRevision}";\n`);
+    expect(() => runCoreDriftCheck({ repositoryRoot: fixture.root })).toThrow("must match config/miniapp-release.json");
+    writeFileSync(pinPath, JSON.stringify({ schemaVersion: 1, sourceRevision: "main" }));
+    expect(getCoreDrift({ repositoryRoot: fixture.root })).toEqual([
+      expect.objectContaining({ scope: "working-tree", type: "invalid-release-pin" }),
+    ]);
+  }, 60_000);
   test("same-version rebuild pins an exact core revision and rejects later drift", async () => {
     const { runCoreDriftCheck } = await import("../../scripts/miniapp/check-core-drift.mjs");
     const fixture = createRepositoryFixture();
@@ -286,7 +316,7 @@ describe("miniapp shared calculator core", () => {
     const { getManifestCoverage } = await import(
       "../../scripts/miniapp/shared-source-manifest.mjs"
     );
-    const coverage = getManifestCoverage({ repositoryRoot });
+    const coverage = getManifestCoverage({ repositoryRoot: releaseSource.source });
 
     expect(coverage.duplicates).toEqual([]);
     expect(coverage.unclassified).toEqual([]);
@@ -588,7 +618,7 @@ describe("miniapp shared calculator core", () => {
   test("Web and miniapp entry points return the same golden calculation fields", async () => {
     const [{ calculateMatchup: webCalculate }, { calculateMatchup: miniCalculate }] =
       await Promise.all([
-        import("../../src/domain/calculate.js"),
+        Promise.resolve({ calculateMatchup: pinnedWebCalculate }),
         import("../../miniapp/src/shared/domain/calculate.js"),
       ]);
 
@@ -623,7 +653,7 @@ describe("miniapp shared calculator core", () => {
       { buildResultFormulaAudit },
     ] =
       await Promise.all([
-        import("../../src/domain/calculate.js"),
+        Promise.resolve({ calculateMatchup: pinnedWebCalculate }),
         import("../../miniapp/src/shared/domain/calculate.js"),
         import("../../miniapp/src/view-models/formula-audit.js"),
       ]);
@@ -686,7 +716,7 @@ describe("miniapp shared calculator core", () => {
   test("Web and miniapp preserve the same needs-input result", async () => {
     const [{ calculateMatchup: webCalculate }, { calculateMatchup: miniCalculate }] =
       await Promise.all([
-        import("../../src/domain/calculate.js"),
+        Promise.resolve({ calculateMatchup: pinnedWebCalculate }),
         import("../../miniapp/src/shared/domain/calculate.js"),
       ]);
     const unresolvedSkill = {

@@ -1,3 +1,4 @@
+import { usesS3MidseasonRules } from "./season-rules.js";
 const booleanInput = (key, label, extra = {}) => ({
   defaultValue: false,
   ...extra,
@@ -259,6 +260,43 @@ const thresholdHitCount = (
 });
 
 const REVIEWED_EFFECTS = Object.freeze({
+  恋恋不舍: booleanAdd("s5LovesickDebuffThresholdReached", "已使敌方获得至少3次减益", 30),
+  维管束重构: {
+    inputs: [booleanInput("s5VascularHealingThresholdReached", "累计回复生命已达40%")],
+    ruleId: "conditional_energy_recovery",
+    ruleParams: { contextKey: "s5VascularHealingThresholdReached", energyRecovery: 3 },
+  },
+  深红龙击: {
+    inputs: [numberInput("s5ChargeEntryCount", "累计进入蓄力次数", 0, undefined, 0)],
+    ruleId: "count_cost_reduction",
+    ruleParams: { contextKey: "s5ChargeEntryCount", label: "蓄力永久减耗", perCount: 2, defaultValue: 0 },
+  },
+  碎银: {
+    inputs: [numberInput("s5EnergySpentBeforeUse", "此前累计消耗能量", 0, undefined, 0)],
+    ruleId: "count_cost_reduction",
+    ruleParams: { contextKey: "s5EnergySpentBeforeUse", label: "累计耗能永久减耗", threshold: 10, reduction: 5, defaultValue: 0 },
+  },
+  过充电: booleanAdd("s5OverchargeActivated", "已聚能至少1次", 30),
+  离岸流: {
+    inputs: [numberInput("s5WaterSkillUseCount", "此前水系技能次数", 0, undefined, 0)],
+    ruleId: "count_cost_reduction",
+    ruleParams: { contextKey: "s5WaterSkillUseCount", label: "水系技能永久减耗", threshold: 2, reduction: 3, defaultValue: 0 },
+  },
+  投毒: {
+    inputs: [numberInput("s5PoisonPowerGrowthCount", "前置满足后已生效威力成长次数", 0, undefined, 0)],
+    ruleId: "stack_scaled",
+    ruleParams: { contextKey: "s5PoisonPowerGrowthCount", label: "已确认投毒威力成长", perStack: 25, defaultValue: 0 },
+  },
+  灵扰: {
+    inputs: [numberInput("s5EnergyTheftHitGrowthCount", "偷能前置满足后已生效连击成长次数", 0, undefined, 0)],
+    ruleId: "hit_count_scaled",
+    ruleParams: { contextKey: "s5EnergyTheftHitGrowthCount", label: "已确认灵扰连击成长", baseHitCount: 3, perStack: 1, defaultValue: 0 },
+  },
+  龙之爪牙: {
+    inputs: [],
+    ruleId: "hit_count_scaled",
+    ruleParams: { baseHitCount: 5, perStack: 0, defaultValue: 0 },
+  },
   六自由度: {
     ruleId: "adjacent_power_difference",
   },
@@ -939,6 +977,10 @@ const SEASON_ANNOUNCEMENT_REVISION_11_RULE_NAMES = new Set([
   "超导",
 ]);
 
+const S5_OFFICIAL_VIDEO_RULE_NAMES = new Set([
+  "深红龙击", "碎银", "过充电", "离岸流", "投毒", "灵扰", "龙之爪牙", "恋恋不舍", "维管束重构",
+]);
+
 function inputsForExplicitRule(ruleId, params = {}) {
   switch (ruleId) {
     case "mana_burst":
@@ -980,8 +1022,34 @@ function inputsForExplicitRule(ruleId, params = {}) {
   }
 }
 
+function s3MidseasonSkillEffect(skill) {
+  const original = REVIEWED_EFFECTS[skill.name];
+  if (!usesS3MidseasonRules(skill) || !original) return null;
+  const params = original.ruleParams ?? {};
+  const overrides = {
+    草虫冲击: { ruleParams: { ...params, add: 50 } },
+    孢子爆散: { ruleParams: { ...params, baseHitCount: 1 } },
+    流星火雨: { ruleParams: { ...params, perStack: 75 } },
+    雪原狩猎: { ruleId: "boolean_power_percent_add", ruleParams: { ...params, add: 0.5 } },
+    超导: { ruleParams: { ...params, reduction: 1 } },
+    血契: { ruleParams: { ...params, changePerInterval: 10 } },
+  };
+  if (skill.name === "雷暴") return {
+    ...original,
+    inputs: original.inputs.map((input) => input.key === "burstSourceSuperconduct"
+      ? { ...input, burstDescription: "本技能能耗 -1。" } : input),
+    ruleParams: { ...params, inheritedCostReductions: params.inheritedCostReductions.map((source) =>
+      source.contextKey === "burstSourceSuperconduct" ? { ...source, reduction: 1 } : source) },
+    source: "adopted-s3-midseason-2026-08-13",
+  };
+  return overrides[skill.name] ? { ...original, ...overrides[skill.name], source: "adopted-s3-midseason-2026-08-13" } : null;
+}
+
 export function getSkillEffectRule(skill) {
   if (!skill) return null;
+  if (usesS3MidseasonRules(skill) && S5_OFFICIAL_VIDEO_RULE_NAMES.has(skill.name)) return null;
+  const baselineEffect = s3MidseasonSkillEffect(skill);
+  if (baselineEffect) return baselineEffect;
   if (skill.ruleId) {
     return {
       inputs:
@@ -1001,7 +1069,9 @@ export function getSkillEffectRule(skill) {
     ...reviewed,
     inputs: reviewed.inputs ?? [],
     ruleParams: reviewed.ruleParams ?? {},
-    source: SEASON_ANNOUNCEMENT_REVISION_11_RULE_NAMES.has(skill.name)
+    source: S5_OFFICIAL_VIDEO_RULE_NAMES.has(skill.name)
+      ? "official-video:BV1SNxq6REfb:2026-10-31"
+      : SEASON_ANNOUNCEMENT_REVISION_11_RULE_NAMES.has(skill.name)
       ? "feishu-doc:season-announcement-revision-11"
       : "reviewed-rule:rock-calculator-and-bwiki-2026-07-24",
   };

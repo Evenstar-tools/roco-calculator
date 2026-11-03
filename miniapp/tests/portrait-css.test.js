@@ -44,7 +44,7 @@ describe("reference-first responsive CSS", () => {
     expect(appHeaderSource).toContain('mode="selector"');
     expect(appHeaderSource).toContain('aria-label="每次进入随机主题"');
     expect(existsSync(resolve(process.cwd(), "src/assets/icons/shuffle.png"))).toBe(true);
-    for (const id of ["s1", "s2", "s3"]) {
+    for (const id of ["s1", "s2", "s3", "s5"]) {
       expect(styles["season.css"]).toContain(`.page--season-${id}`);
       expect(styles["season.css"]).toContain(`.season-sky--${id}`);
     }
@@ -53,7 +53,7 @@ describe("reference-first responsive CSS", () => {
   test("classic calculation colors do not clear the selected scene or header palette", () => {
     const season = styles["season.css"];
     expect(appHeaderSource).toContain('aria-label="计算界面保持经典配色"');
-    for (const id of ["s1", "s2", "s3"]) {
+    for (const id of ["s1", "s2", "s3", "s5"]) {
       expect(season).toContain(`.page--season-${id}:not(.page--classic-calculator-colors)`);
     }
     expect(season).toContain("color: var(--season-title, #ecd78c)");
@@ -81,7 +81,7 @@ describe("reference-first responsive CSS", () => {
     expect(skills).toMatch(/\.result-bar__target-input\s*\{[^}]*display:\s*flex;[^}]*align-items:\s*center;/u);
     expect(skills).toMatch(/\.result-bar__target-input\s*>\s*\.weui-input\s*\{[^}]*text-align:\s*center;/u);
     expect(skills).toMatch(/\.result-bar__action\s*\{[^}]*width:\s*100%;[^}]*margin:\s*0;/u);
-    expect(styles["responsive.css"]).toMatch(/\.result-bar__action-label\s*\{[^}]*display:\s*none;/u);
+    expect(styles["responsive.css"]).toMatch(/\.result-bar__action-label\s*\{[^}]*display:\s*inline;/u);
   });
 
   test("loads shared tokens before the ordered style modules", () => {
@@ -312,14 +312,14 @@ describe("reference-first responsive CSS", () => {
       /\.active-ability-stage__label-group\s*\{[\s\S]*min-height:\s*44px[\s\S]*justify-content:\s*center/u,
     );
     expect(compact).toMatch(
-      /\.active-ability-stage__control\s*\{[\s\S]*grid-template-columns:\s*26px\s+minmax\(0,\s*1fr\)/u,
+      /\.active-ability-stage__control\s*\{[\s\S]*grid-template-columns:\s*30px\s+minmax\(0,\s*1fr\)/u,
     );
   });
 
   test("contracts compact ability controls below 360px without clipping", () => {
     const compact = styles["compact-demo.css"];
     expect(compact).toMatch(
-      /@media\s*\(max-width:\s*359px\)[\s\S]*\.active-ability-stage__control\s*\{[\s\S]*grid-template-columns:\s*20px\s+minmax\(0,\s*1fr\)/u,
+      /@media\s*\(max-width:\s*359px\)[\s\S]*\.active-ability-stage__control\s*\{[\s\S]*grid-template-columns:\s*30px\s+minmax\(0,\s*1fr\)/u,
     );
     expect(compact).toMatch(
       /@media\s*\(max-width:\s*359px\)[\s\S]*\.active-ability-stage__stepper\s*\{[\s\S]*grid-template-columns:\s*28px\s+minmax\(0,\s*1fr\)\s+28px/u,
@@ -391,6 +391,10 @@ describe("reference-first responsive CSS", () => {
   test("aligns share confirmation actions as two equal centered controls", () => {
     const share = styles["share.css"];
 
+    expect(share).toMatch(/\.share-preview\s*\{[^}]*display:\s*flex;[^}]*height:\s*min\(86vh, 760px\);[^}]*flex-direction:\s*column;[^}]*overflow:\s*hidden;/u);
+    expect(share).toMatch(/\.share-preview__scroll\s*\{[^}]*height:\s*0;[^}]*min-height:\s*0;[^}]*flex:\s*1 1 auto;/u);
+    expect(share).toMatch(/\.share-preview__header\s*\{[^}]*flex:\s*0 0 auto;/u);
+    expect(share).toMatch(/\.share-preview__actions\s*\{[^}]*flex:\s*0 0 auto;/u);
     expect(share).toMatch(
       /\.share-preview__actions\s*\{[\s\S]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/u,
     );
@@ -582,7 +586,7 @@ describe("reference-first responsive CSS", () => {
   test("constrains the fixed spirit search and results to equal safe margins", () => {
     const overlays = styles["overlays.css"];
     const fixedInput = overlays.match(
-      /\.combatant-card--identity-only \.spirit-picker--open \.spirit-picker__input\s*\{([\s\S]*?)\}/u,
+      /\.combatant-card--identity-only \.spirit-picker--open \.spirit-picker__search-field\s*\{([\s\S]*?)\}/u,
     )?.[1] ?? "";
     const fixedResults = overlays.match(
       /\.combatant-card--identity-only \.spirit-picker__results\s*\{([\s\S]*?)\}/u,

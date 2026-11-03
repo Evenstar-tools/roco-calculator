@@ -4,6 +4,8 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { avatarFileTitle } from "./portrait-bindings.mjs";
 import { readImageDimensions } from "./sync-assets.mjs";
+import { loadMiniappReleaseData } from "../miniapp/release-source.mjs";
+import { getMiniappRuntimeBindingErrors } from "../miniapp/verify-runtime-bindings.mjs";
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname, "../..");
 const SPIRIT_IMAGE_DIR = path.join(PROJECT_ROOT, "public/assets/spirits");
@@ -55,11 +57,12 @@ export async function verifySpiritBindings() {
     ),
     "utf8",
   ).catch(() => "");
-  const errors = [];
+  const miniappRelease = await loadMiniappReleaseData({ root: PROJECT_ROOT });
+  const errors = getMiniappRuntimeBindingErrors({ ...miniappRelease,
+    payload: bundled, sourceRoot: miniappRelease.source });
   const spiritById = new Map(snapshot.spirits.map((spirit) => [spirit.id, spirit]));
   const manifestById = new Map(manifest.assets.map((asset) => [asset.id, asset]));
   const runtimeById = new Map(runtime.spirits.map((spirit) => [spirit.id, spirit]));
-  const bundledById = new Map(bundled.spirits.map((spirit) => [spirit.id, spirit]));
   const s4PreviewNames = s4Candidate.families.flatMap((family) =>
     family.forms.map(({ name }) => name),
   );
@@ -129,7 +132,6 @@ export async function verifySpiritBindings() {
     ["snapshot", snapshot.spirits],
     ["manifest", manifest.assets],
     ["runtime", runtime.spirits],
-    ["bundled", bundled.spirits],
   ]) {
     if (collection.length !== snapshot.spirits.length) {
       errors.push(`${label} 数量 ${collection.length} != ${snapshot.spirits.length}`);
@@ -157,7 +159,6 @@ export async function verifySpiritBindings() {
       if (!expectedFile || asset.nrcFile !== expectedFile) errors.push(`${spirit.fullName} 新站头像文件绑定错配`);
     }
     const runtimeSpirit = runtimeById.get(spirit.id);
-    const bundledSpirit = bundledById.get(spirit.id);
     if (asset?.name !== spirit.fullName) {
       errors.push(`${spirit.fullName} 清单名称错配：${asset?.name ?? "缺失"}`);
     }
@@ -169,12 +170,6 @@ export async function verifySpiritBindings() {
     }
     if (runtimeSpirit?.fullName !== spirit.fullName || !sameStats(runtimeSpirit?.raceStats, spirit.raceStats)) {
       errors.push(`${spirit.fullName} 网页运行时名称或种族值错配`);
-    }
-    if (bundledSpirit?.fullName !== spirit.fullName || !sameStats(bundledSpirit?.raceStats, spirit.raceStats)) {
-      errors.push(`${spirit.fullName} 小程序运行时名称或种族值错配`);
-    }
-    if (bundledSpirit?.imageUrl !== asset?.sourceUrl) {
-      errors.push(`${spirit.fullName} 小程序头像 URL 错配`);
     }
   }
 
@@ -261,6 +256,7 @@ export async function verifySpiritBindings() {
     namedPortraits,
     fallbackPortraits: snapshot.spirits.length - namedPortraits,
     localFiles: manifest.assets.length,
+    miniappSpirits: bundled.spirits.length,
   };
 }
 

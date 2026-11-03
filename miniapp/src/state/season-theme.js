@@ -7,10 +7,11 @@ export const SEASON_THEMES = Object.freeze([
   { id: "s2", label: "S2 狂欢怪谈" },
   { id: "s3", label: "S3 铅字幻梦" },
   { id: "s4", label: "S4 月涌狂想" },
+  { id: "s5", label: "S5 圣龙宝藏" },
 ]);
 
 function normalizePreference(value) {
-  return value === "random" || SEASON_THEMES.some(({ id }) => id === value) ? value : "s4";
+  return value === "random" || SEASON_THEMES.some(({ id }) => id === value) ? value : "s5";
 }
 
 function resolveSelection(value, random, excludeId) {

@@ -1,11 +1,12 @@
 import { createInitialState } from "../shared/state/defaults.js";
 import { calculatorReducer } from "../shared/state/reducer.js";
+import { withMiniappBattleLevelDefaults } from "./battle-level-defaults.js";
 
 export function createCalculatorStore(snapshot, persistedState) {
   const initialState = createInitialState(snapshot);
-  let state = persistedState
+  let state = withMiniappBattleLevelDefaults(snapshot, persistedState
     ? calculatorReducer(initialState, { type: "state/replace", value: persistedState })
-    : initialState;
+    : initialState);
   const listeners = new Set();
 
   function notify() {
@@ -20,7 +21,7 @@ export function createCalculatorStore(snapshot, persistedState) {
     },
 
     dispatch(action) {
-      state = calculatorReducer(state, action);
+      state = withMiniappBattleLevelDefaults(snapshot, calculatorReducer(state, action));
       notify();
       return action;
     },
@@ -31,7 +32,7 @@ export function createCalculatorStore(snapshot, persistedState) {
     },
 
     reset() {
-      state = createInitialState(snapshot);
+      state = withMiniappBattleLevelDefaults(snapshot, createInitialState(snapshot));
       notify();
     },
   };

@@ -25,7 +25,7 @@
 
 | 平台 | 启动命令 | 地址 |
 | --- | --- | --- |
-| 小程序 H5 预览 | `npm --prefix miniapp run dev:h5` | `http://localhost:10087` |
+| 小程序 H5 预览 | `npm --prefix miniapp run dev:h5` | `http://localhost:10086`（若开发模式异常，可 `npm --prefix miniapp run build:h5 -- --mode development` 后静态服务 `miniapp/dist`；H5 与 weapp 共用 `dist`，切回原生前需重建 weapp） |
 | Web | `npm run dev` | `http://localhost:5173` |
 
 先查 `terminals` 里是否已有 dev server 在跑,不要重复起。

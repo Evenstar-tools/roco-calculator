@@ -23,7 +23,7 @@ describe("skill and trait presentation UI", () => {
     fireEvent.click(screen.getByLabelText("恢复默认连击数"));
     expect(onDirectionChange).toHaveBeenLastCalledWith({ hitCount: 3, overrides: { hitCount: null } });
   });
-  test.each([["有求必应", "己方双攻 +9层 · 己方速度 +60"], ["一意孤行", "己方双攻 +18层"]])("纯状态技能预览带入 %s 并在取消特性后恢复", (traitName, expected) => {
+  test.each([["有求必应", "己方速度 +60 · 己方物攻 +9层"], ["一意孤行", "己方物攻 +18层"]])("纯状态技能预览带入 %s 并在取消特性后恢复", (traitName, expected) => {
     const skill = { id: "steam", name: "蒸汽进行曲", category: "status", basePower: 0, description: "选择：自己获得速度+60或物攻+90%。" };
     const editor = (triggered) => {
       const context = { applyAttackBoost: true, choiceTraitTriggered: triggered };
@@ -32,7 +32,7 @@ describe("skill and trait presentation UI", () => {
     const { rerender } = render(editor(true));
     expect(screen.getByText(expected)).toBeInTheDocument();
     rerender(editor(false));
-    expect(screen.getByText("己方双攻 +9层")).toBeInTheDocument();
+    expect(screen.getByText("己方物攻 +9层")).toBeInTheDocument();
   });
   test("shows one note for the selected four-skill row", () => {
     render(
@@ -169,8 +169,8 @@ describe("skill and trait presentation UI", () => {
     expect(screen.getByLabelText("状态触发次数")).toHaveValue(2);
     expect(screen.getByText(active ? "累计效果" : "触发后预览")).toBeInTheDocument();
     expect(screen.getByLabelText("每次连击数")).toHaveValue(3);
-    expect(screen.getByText("己方双攻 +36层")).toBeInTheDocument();
-    expect(screen.getByText("每次触发（3 连击）：己方双攻 +18层"))
+    expect(screen.getByText("己方魔攻 +36层")).toBeInTheDocument();
+    expect(screen.getByText("每次触发（3 连击）：己方魔攻 +18层"))
       .toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", {

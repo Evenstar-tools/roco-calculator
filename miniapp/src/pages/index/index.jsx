@@ -131,10 +131,11 @@ export function createDefaultServices({
 }
 
 export default function IndexPage({ services }) {
-  const [seasonTheme, setSeasonTheme] = useState(() => readSeasonTheme(createStorageAdapter(Taro)));
-  const [classicCalculatorColorsEnabled, setClassicCalculatorColorsEnabled] = useState(() => readClassicCalculatorColors(createStorageAdapter(Taro)));
+  const [resultBarHeight, setResultBarHeight] = useState(null);
+  const [seasonTheme, setSeasonTheme] = useState(() => readSeasonTheme(createStorageAdapter(createRuntimeTaro())));
+  const [classicCalculatorColorsEnabled, setClassicCalculatorColorsEnabled] = useState(() => readClassicCalculatorColors(createStorageAdapter(createRuntimeTaro())));
   useEffect(() => {
-    if (seasonTheme.preference === "random") writeLastRandomSeasonTheme(seasonTheme.id, createStorageAdapter(Taro));
+    if (seasonTheme.preference === "random") writeLastRandomSeasonTheme(seasonTheme.id, createStorageAdapter(createRuntimeTaro()));
   }, [seasonTheme.id, seasonTheme.preference]);
   const initialSeasonShow = useRef(true);
   useDidShow(() => {
@@ -143,7 +144,7 @@ export default function IndexPage({ services }) {
       return;
     }
     if (seasonTheme.preference === "random") {
-      setSeasonTheme(writeSeasonTheme("random", createStorageAdapter(Taro), Math.random, seasonTheme.id));
+      setSeasonTheme(writeSeasonTheme("random", createStorageAdapter(createRuntimeTaro()), Math.random, seasonTheme.id));
     }
   });
   const autosave = useRef(null);
@@ -155,7 +156,7 @@ export default function IndexPage({ services }) {
   const skillIconsEnabled = router?.params?.skillIcons !== "0";
   const sharePayload = router?.params?.share;
   const shareMessage = useRef({
-    title: "洛克计算器 · S4「季中」",
+    title: "洛克计算器 · S5",
     path: "/pages/index/index",
   });
   const [pageState, setPageState] = useState({
@@ -726,13 +727,14 @@ export default function IndexPage({ services }) {
   }
 
   return (
-    <View className={`page page--season-${seasonTheme.id}${classicCalculatorColorsEnabled ? " page--classic-calculator-colors" : ""}${compactDemo ? " page--compact-demo" : ""}`}>
+    <View className={`page page--season-${seasonTheme.id}${classicCalculatorColorsEnabled ? " page--classic-calculator-colors" : ""}${compactDemo ? " page--compact-demo" : ""}`}
+      style={resultBarHeight ? { "--result-bar-space": `${resultBarHeight}px` } : undefined}>
       <SeasonBackdrop seasonId={seasonTheme.id} />
       <AppHeader
         classicCalculatorColorsEnabled={classicCalculatorColorsEnabled}
-        onClassicCalculatorColorsChange={(value) => setClassicCalculatorColorsEnabled(writeClassicCalculatorColors(value, createStorageAdapter(Taro)))}
+        onClassicCalculatorColorsChange={(value) => setClassicCalculatorColorsEnabled(writeClassicCalculatorColors(value, createStorageAdapter(createRuntimeTaro())))}
         seasonTheme={seasonTheme}
-        onSeasonThemeChange={(value) => setSeasonTheme(writeSeasonTheme(value, createStorageAdapter(Taro), Math.random, seasonTheme.id))}
+        onSeasonThemeChange={(value) => setSeasonTheme(writeSeasonTheme(value, createStorageAdapter(createRuntimeTaro()), Math.random, seasonTheme.id))}
         damageComparisonEnabled={pageState.damageComparisonEnabled === true}
         onDamageComparisonChange={changeDamageComparisonEnabled}
         commonConfigCount={pageState.configLibrary.entries.length}
@@ -745,8 +747,9 @@ export default function IndexPage({ services }) {
               : "available"
         }
         dataVersion={[
-          "S4「季中」",
-          pageState.snapshot.meta?.bwikiRevision
+          pageState.snapshot.meta?.seasonId ?? "S5",
+          pageState.snapshot.meta?.catalogVersion
+            ?? pageState.snapshot.meta?.bwikiRevision
             ?? pageState.snapshot.meta?.snapshotVersion,
         ].filter(Boolean).join(" · ") || pageState.snapshot.meta?.id}
         memoryEnabled={pageState.memoryEnabled}
@@ -770,6 +773,7 @@ export default function IndexPage({ services }) {
         />
       ) : null}
       <BattleWorkspace
+        onResultBarHeightChange={setResultBarHeight}
         damageComparisonEnabled={pageState.damageComparisonEnabled === true}
         compactDemo={compactDemo}
         configPresetsBySpirit={configPresetsBySpirit(

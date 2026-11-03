@@ -25,6 +25,15 @@ export function createSpiritSearchIndex(snapshot) {
   return {
     items: spirits.map((spirit) => ({
       spirit,
+      nameText: normalizeSearch(spirit.fullName),
+      ownText: normalizeSearch([
+        spirit.fullName,
+        spirit.baseName,
+        spirit.variantName,
+        spirit.pinyin,
+        spirit.initials,
+        ...(spirit.aliases ?? []),
+      ].filter(Boolean).join("|")),
       searchText: normalizeSearch([
         spirit.fullName,
         spirit.baseName,
@@ -45,12 +54,25 @@ function boundResultLimit(limit) {
   );
 }
 
-function findSpiritMatches(index, query) {
+// 名字完全一致优先，其次名字开头、名字包含、别名拼音，最后才是同族进化链命中。
+function matchRank(item, normalized) {
+  if (item.nameText === normalized) return 0;
+  if (item.nameText.startsWith(normalized)) return 1;
+  if (item.nameText.includes(normalized)) return 2;
+  return item.ownText.includes(normalized) ? 3 : 4;
+}
+
+function findRankedMatches(index, query) {
   const normalized = normalizeSearch(query);
-  const matches = normalized
-    ? index.items.filter((item) => item.searchText.includes(normalized))
-    : index.items;
-  return matches.map((item) => item.spirit);
+  if (!normalized) return index.items.map((item) => ({ spirit: item.spirit, rank: 4 }));
+  return index.items
+    .filter((item) => item.searchText.includes(normalized))
+    .map((item, order) => ({ spirit: item.spirit, rank: matchRank(item, normalized), order }))
+    .sort((left, right) => left.rank - right.rank || left.order - right.order);
+}
+
+function findSpiritMatches(index, query) {
+  return findRankedMatches(index, query).map((match) => match.spirit);
 }
 
 export function searchSpirits(index, query, limit = 30) {
@@ -66,13 +88,15 @@ export function searchSpiritsWithFavorites(
 ) {
   const boundedLimit = boundResultLimit(limit);
   const favoriteSet = new Set(favoriteIds ?? []);
+  const exactMatches = [];
   const favoriteMatches = [];
   const otherMatches = [];
 
-  for (const spirit of findSpiritMatches(index, query)) {
-    (favoriteSet.has(spirit.id) ? favoriteMatches : otherMatches)
+  // 输入完整名字时直接给到该精灵；其余仍让收藏排在前面。
+  for (const { spirit, rank } of findRankedMatches(index, query)) {
+    (rank === 0 ? exactMatches : favoriteSet.has(spirit.id) ? favoriteMatches : otherMatches)
       .push(spirit);
   }
 
-  return [...favoriteMatches, ...otherMatches].slice(0, boundedLimit);
+  return [...exactMatches, ...favoriteMatches, ...otherMatches].slice(0, boundedLimit);
 }

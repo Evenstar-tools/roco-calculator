@@ -34,6 +34,10 @@ function explicitValue(record, control, canonical) {
   return key === undefined ? null : { raw: record[key], value: sanitizeTriggerValues({ [control.id]: record[key] }, [control])[control.id] };
 }
 
+function hasLegacyChargeInputs(record, role) {
+  return ROLE_CONTROLS[role].slice(0, 2).some(control => explicitValue(record, control, false));
+}
+
 function chargeCount(record, role, canonical = false) {
   const [active, bonus, count] = ROLE_CONTROLS[role];
   const current = explicitValue(record, count, canonical);
@@ -96,6 +100,10 @@ export function correctS5PreviewChargeInputs(value) {
   if (!corrected.sides || !isRecord(directions?.forward?.context) || !isRecord(directions?.reverse?.context)) return corrected;
   for (const [side, outgoing, incoming] of [["attacker", "forward", "reverse"], ["defender", "reverse", "forward"]]) {
     if (corrected.sides[side]?.spiritId !== GOLD_SPIRIT_ID) continue;
+    // New-only saves keep their exact fields. Mirroring belongs to runtime
+    // updates; adding a missing mirror on read breaks optimistic store writes.
+    if (!hasLegacyChargeInputs(directions[outgoing].context, "attacker") &&
+        !hasLegacyChargeInputs(directions[incoming].context, "defender")) continue;
     const count = chargeCount(directions[outgoing].context, "attacker");
     if (count === null) continue;
     for (const [direction, role] of [[outgoing, "attacker"], [incoming, "defender"]]) {

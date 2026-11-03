@@ -28,7 +28,7 @@ export default function AppHeader({
   quickUndoEnabled = true,
   classicCalculatorColorsEnabled = false,
   onClassicCalculatorColorsChange,
-  seasonTheme = { preference: "s4", id: "s4" },
+  seasonTheme = { preference: "s5", id: "s5" },
   onSeasonThemeChange,
   teamAnalysisEnabled = false,
   typeAnalysisEnabled = false,
@@ -58,7 +58,7 @@ export default function AppHeader({
       <View className="app-header">
         <View className="app-header__identity">
           <Text className="app-header__title">
-            洛克计算器 · <Text className="app-header__season-title">S4「季中」</Text>
+            洛克计算器 · <Text className="app-header__season-title">S5</Text>
           </Text>
         </View>
         <View className="app-header__actions">

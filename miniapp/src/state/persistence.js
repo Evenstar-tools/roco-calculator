@@ -7,6 +7,7 @@ import { normalizeNegativeStatusState } from "../shared/domain/negative-status.j
 import { createInitialState } from "../shared/state/defaults.js";
 import { extractTraitValues } from "../shared/state/trait-values.js";
 import { sanitizePublicContext } from "../share/context-schema.js";
+import { withMiniappBattleLevelDefaults } from "./battle-level-defaults.js";
 
 export const MINIAPP_STATE_KEY = "rock-calculator.miniapp.state.v1";
 export const MINIAPP_MEMORY_ENABLED_KEY =
@@ -802,7 +803,7 @@ export function createPersistence({ storage }) {
         return defaults;
       }
 
-      return repairPersistedState(snapshot, migrated.state);
+      return repairPersistedState(snapshot, withMiniappBattleLevelDefaults(snapshot, migrated.state));
     },
 
     save(state) {

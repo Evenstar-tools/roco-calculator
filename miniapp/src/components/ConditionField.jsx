@@ -1,4 +1,4 @@
-import { Button, Input, Text, View } from "@tarojs/components";
+import { Button, Input, Picker, Text, View } from "@tarojs/components";
 
 function eventValue(event) {
   return event?.detail?.value ?? event?.target?.value ?? "";
@@ -22,6 +22,26 @@ function classes(...values) {
 }
 
 export function ConditionField({ className, input, onChange, value }) {
+  if (input.hidden === true) return null;
+  if (input.action) return (
+    <Button aria-label={input.label} className={classes("condition-editor__choice", className)}
+      onClick={() => onChange(true)}>{input.label}</Button>
+  );
+  if (input.selectOptions?.length) {
+    const options = input.selectOptions;
+    const index = Math.max(0, options.findIndex(option => option.value === (value ?? input.defaultValue)));
+    return (
+      <View className="condition-editor__field">
+        <Text className="condition-editor__label">{input.label}</Text>
+        <Picker aria-label={input.label} mode="selector" range={options.map(option => option.label)} value={index}
+          onChange={event => onChange(options[Number(eventValue(event))]?.value ?? input.defaultValue)}>
+          <View className={classes("condition-editor__choice", className)} style={{ width: "100%", height: "auto", whiteSpace: "normal", wordBreak: "break-all", boxSizing: "border-box" }}>
+            {options[index].label} ▾
+          </View>
+        </Picker>
+      </View>
+    );
+  }
   if (input.type === "boolean") {
     return (
       <Button

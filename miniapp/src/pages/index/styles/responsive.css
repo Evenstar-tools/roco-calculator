@@ -4,8 +4,9 @@
   .page {
     --result-bar-height: 136px;
 
+    min-width: 0;
     padding-right: 8px;
-    padding-bottom: calc(var(--result-bar-height) + 2px + var(--safe-area-bottom));
+    padding-bottom: calc(var(--result-bar-space, calc(var(--result-bar-height) + var(--safe-area-bottom))) + 12px);
     padding-left: 8px;
   }
 
@@ -33,6 +34,7 @@
   }
 
   .battle-workspace__duel {
+    --duel-summary-height: 76px;
     grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
     padding: 5px;
     gap: 3px;
@@ -233,7 +235,7 @@
 
   .skill-slots--matrix .skill-picker__meta {
     gap: 2px;
-    font-size: 9px;
+    font-size: 10px;
     line-height: 13px;
   }
 
@@ -270,7 +272,7 @@
   }
 
   .skill-slots--matrix .skill-result-row__percent--compact {
-    font-size: 9px;
+    font-size: 10px;
   }
 
   /* 说明文字与四技能卡之间加浅分隔线,不再贴卡片边缘。 */
@@ -335,7 +337,7 @@
     left: 0;
     display: grid;
     min-height: calc(var(--result-bar-height) + var(--safe-area-bottom));
-    grid-template-columns: minmax(0, 1fr) 44px;
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
       "matchup action"
       "metrics metrics"
@@ -461,7 +463,7 @@
     padding: 0;
     border: 1px solid var(--border-strong);
     border-radius: 9px;
-    background: var(--surface-card);
+    background: transparent;
     color: var(--text-primary);
     transition: background-color 120ms ease, transform 120ms ease;
   }
@@ -476,7 +478,34 @@
   }
 
   .result-bar__action-label {
-    display: none;
+    display: inline;
+    font-size: 14px;
+    font-weight: var(--weight-emphasis);
+  }
+
+  /* 操作留在右上角，不单独占一行挤压计算区。 */
+  .result-bar .dc-result-actions {
+    grid-area: action;
+    grid-column: auto;
+    align-self: start;
+    gap: 6px;
+  }
+
+  .result-bar .dc-result-actions .result-bar__action {
+    width: auto;
+    flex: 0 0 auto;
+    gap: 2px;
+    padding: 0 6px 0 10px;
+    white-space: nowrap;
+  }
+
+  .result-bar .dc-result-actions .dc-entry {
+    width: auto;
+    flex: 0 0 auto;
+    padding: 0 10px;
+    font-size: 13px;
+    line-height: 42px;
+    white-space: nowrap;
   }
 
   .parameter-sheet,
@@ -555,6 +584,28 @@
 }
 
 @media (max-width: 359px) {
+  /* 窄屏把 NEW 与改动标记移到卡片右上角，名字不再被挤成省略号。 */
+  .combatant-card__summary {
+    position: relative;
+  }
+
+  .combatant-card__name-row > .entity-new-badge,
+  .combatant-card__name-row > .entity-change-hint {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+  }
+
+  /* 窄屏只留箭头，把宽度留给双方名字；读屏仍读按钮标签。 */
+  .result-bar__action-label {
+    display: none;
+  }
+
+  .result-bar .dc-result-actions .result-bar__action {
+    width: 44px;
+    padding: 0;
+  }
+
   .skill-slots--matrix .skill-result-row {
     grid-template-columns: minmax(0, 1fr) 55px;
   }
@@ -610,6 +661,7 @@
   }
 
   .battle-workspace__duel {
+    --duel-summary-height: 68px;
     padding: 4px;
   }
 

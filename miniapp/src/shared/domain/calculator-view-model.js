@@ -1,6 +1,7 @@
 import { getServerRelease } from "./server-environment.js";
 import { withS5PreviewBattleLevels } from "./battle-level.js";
 import { resolveS5PreviewTraitEffect } from "./s5-preview-traits.js";
+import { carriedSkillTotalCost } from "./skill-result/loadout.js";
 import { abilityAdjustedStat } from "./skill-result/numeric.js";
 import { calculateMatchup } from "./calculate.js";
 import { linkedNegativeStatusContext } from "./negative-status-context.js";
@@ -32,6 +33,11 @@ import {
   getTraitSkillPowerBonuses,
 } from "./trait-effects.js";
 
+function isGlobalDraft(snapshot) {
+  return snapshot?.meta?.serverId === "global" &&
+    (!snapshot.meta.id || snapshot.meta.status === "unverified" || Boolean(snapshot.meta.placeholderSource));
+}
+
 const STAT_VIEW = [
   { key: "physicalAttack", label: "物攻" },
   { key: "magicalAttack", label: "魔攻" },
@@ -42,14 +48,14 @@ const STAT_VIEW = [
 ];
 
 export function getAppliedWeatherLabel(weather, result) {
-  if (weather === "dream") return "萌系天气（占位）";
+  if (weather === "dream") return "霞光梦境";
   if (result?.status !== "exact") return null;
   const hasGain = (group, name) => result.gainSources?.[group]?.some(
     (source) => source.name === name && Number.isFinite(source.amount) && source.amount !== 0,
   );
   if (weather === "rain") return hasGain("powerPercent", "雨天") || hasGain("powerPercent", "得寸进尺") ? "雨天" : null;
   if (weather === "blizzard") return hasGain("powerPercent", "冰雪魂魄") || hasGain("condition", "雪原狩猎") ? "暴风雪" : null;
-  if (weather === "sandstorm") return result.traitContributions?.some(
+  if (weather === "sandstorm") return result.sandstormCostReduction > 0 || result.traitContributions?.some(
     ({ source, values }) => source.name === "流沙统治者" &&
       [values.attackerSpeedFlatBonus, values.defenderSpeedFlatBonus].some((value) => Number.isFinite(value) && value !== 0),
   ) ? "沙暴" : null;
@@ -117,7 +123,7 @@ function withManagedStatusContext(entry, context) {
   };
 }
 
-export function buildCombatState(state) {
+export function buildCombatState(state, serverId = "cn") {
   const enabled = state.calculationOptions?.includeNegativeStatusSettlement === true;
   const contexts = {
     forward: negativeStatusContext(state, "defender", enabled),
@@ -129,6 +135,7 @@ export function buildCombatState(state) {
   };
   return {
     ...state,
+    ...(serverId === "global" ? { serverId } : {}),
     directions: Object.fromEntries(
       Object.entries(state.directions).map(([direction, value]) => [
         direction,
@@ -168,7 +175,7 @@ export function buildCombatState(state) {
 }
 
 export function getSpirit(snapshot, side) {
-  if (snapshot?.meta?.serverId === "global") return getSnapshotIndexes(snapshot).spirits[side?.spiritId] ?? null;
+  if (isGlobalDraft(snapshot)) return getSnapshotIndexes(snapshot).spirits[side?.spiritId] ?? null;
   return resolveBattleSpirit(snapshot, side);
 }
 
@@ -248,25 +255,40 @@ function previewPanelForSide(snapshot, state, sideKey, panelStats) {
   const side = state.sides[sideKey];
   const outgoing = state.directions[sideKey === "attacker" ? "forward" : "reverse"];
   const incoming = state.directions[sideKey === "attacker" ? "reverse" : "forward"];
-  let physical = 0, magical = 0, defense = 0, speedFlat = 0, speedStage = 0;
-  let hasPreviewTrait = false;
-  for (const trait of getEffectiveTraits(snapshot, { ...side, spirit: getSpirit(snapshot, side) })) {
+  const opponentKey = sideKey === "attacker" ? "defender" : "attacker";
+  const opponentCost = carriedSkillTotalCost(state.sides[opponentKey], state.mode,
+    getSnapshotIndexes(snapshot).skills, state.directions[opponentKey === "attacker" ? "forward" : "reverse"].overrides,
+    { requireKnown: true });
+  let physical = Number(outgoing.overrides.physicalAttackLevelStageAdd ?? 0),
+    magical = Number(outgoing.overrides.magicalAttackLevelStageAdd ?? 0),
+    physicalDefense = 0, magicalDefense = 0, speedFlat = 0, speedStage = 0;
+  let hasPreviewTrait = physical !== 0 || magical !== 0;
+  const ownTraits = getEffectiveTraits(snapshot, { ...side, spirit: getSpirit(snapshot, side) });
+  const opponent = state.sides[opponentKey];
+  const opponentDiceTraits = getEffectiveTraits(snapshot, { ...opponent, spirit: getSpirit(snapshot, opponent) })
+    .filter(trait => trait.previewIdentity?.mechanicKey === "diliutun");
+  for (const [trait, attackRole, defenseRole] of [
+    ...ownTraits.map(trait => [trait, "attacker", "defender"]),
+    ...opponentDiceTraits.map(trait => [trait, "defender", "attacker"]),
+  ]) {
     const resolve = (role, category, direction) => resolveS5PreviewTraitEffect(trait, role, {
-      context: { ...direction.context, ...direction.overrides?.context }, skill: { category },
+      context: { ...direction.context, ...direction.overrides?.context, automaticEnemyTotalSkillCost: opponentCost }, skill: { category },
     });
-    const physicalEffect = resolve("attacker", "physical", outgoing);
+    const physicalEffect = resolve(attackRole, "physical", outgoing);
     if (!physicalEffect) continue;
     hasPreviewTrait = true;
     physical += physicalEffect.attackLevelBonus;
-    magical += resolve("attacker", "magical", outgoing).attackLevelBonus;
-    defense += resolve("defender", "physical", incoming).defenseLevelBonus;
+    magical += resolve(attackRole, "magical", outgoing).attackLevelBonus;
+    physicalDefense += resolve(defenseRole, "physical", incoming).defenseLevelBonus;
+    magicalDefense += resolve(defenseRole, "magical", incoming).defenseLevelBonus;
     speedFlat += physicalEffect.attackerSpeedFlatBonus;
     speedStage += physicalEffect.attackerSpeedLevelBonus;
   }
   const abilityStageBonuses = {
     attack: physical === magical ? physical : 0,
     attackByCategory: { physical, magical },
-    defense,
+    defense: physicalDefense === magicalDefense ? physicalDefense : 0,
+    ...(physicalDefense === magicalDefense ? {} : { defenseByCategory: { physical: physicalDefense, magical: magicalDefense } }),
   };
   if (!hasPreviewTrait || !panelStats) return { finalStats: null, abilityStageBonuses };
   const attackStage = Number(outgoing.overrides.attackLevelStage ?? 0);
@@ -277,9 +299,9 @@ function previewPanelForSide(snapshot, state, sideKey, panelStats) {
       ...panelStats,
       physicalAttack: Math.floor(abilityAdjustedStat(panelStats.physicalAttack, attackStage + physical)),
       magicalAttack: Math.floor(abilityAdjustedStat(panelStats.magicalAttack, attackStage + magical)),
-      physicalDefense: Math.floor(abilityAdjustedStat(panelStats.physicalDefense, defenseStage + defense)),
+      physicalDefense: Math.floor(abilityAdjustedStat(panelStats.physicalDefense, defenseStage + physicalDefense)),
       magicalDefense: Math.floor(abilityAdjustedStat(panelStats.magicalDefense,
-        defenseStage + defense + Number(incoming.overrides.magicalDefenseLevelStageAdd ?? 0))),
+        defenseStage + magicalDefense + Number(incoming.overrides.magicalDefenseLevelStageAdd ?? 0))),
       speed: Math.round(abilityAdjustedStat(panelStats.speed + speedFlat + Number(outgoing.overrides.attackerSpeedFlat ?? 0), speedStage)),
     },
   };
@@ -304,7 +326,7 @@ function finalPanelStatsForSide(calculation, sideKey, fallback = null) {
 }
 
 export function getTraitView(snapshot, spirit, role = "attacker", skills = []) {
-  if (snapshot?.meta?.serverId === "global") return null;
+  if (isGlobalDraft(snapshot)) return null;
   const traitsById = getSnapshotIndexes(snapshot).traits;
   const primaryTrait =
     spirit.traitIds?.map((traitId) => traitsById[traitId]).find(Boolean) ?? null;
@@ -525,7 +547,7 @@ export function asResultRailModel({ calculation, direction, snapshot, state, inc
         };
         const projectedDirection = calculateMatchup(
           snapshot,
-          buildCombatState(projectedState),
+          buildCombatState(projectedState, snapshot.meta?.serverId ?? "cn"),
         )[direction];
         const projectedResult = directionState.selectedDamageSource === "bloodline"
           ? projectedDirection.bloodlineResult
@@ -728,7 +750,7 @@ export function buildCalculatorViewModel({
   );
   // Catalog editing is independent of calculation availability. Reference data
   // must never enter panel or damage computation, even if it contains numbers.
-  const canCalculate = getServerRelease(serverId).capabilities.calculate;
+  const canCalculate = getServerRelease(serverId).capabilities.calculate && !isGlobalDraft(snapshot);
   const configurationReady =
     canCalculate && selectionsReady && pendingRaceStatSpirits.length === 0;
   const configurationEditable = configurationReady ||
@@ -780,7 +802,7 @@ export function buildCalculatorViewModel({
     );
   } else {
     try {
-      calculation = calculateMatchup(snapshot, buildCombatState(state));
+      calculation = calculateMatchup(snapshot, buildCombatState(state, serverId));
     } catch (error) {
       calculation = unresolvedCalculation(error);
     }

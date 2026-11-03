@@ -8,6 +8,7 @@ import { getSpiritSkillSlotCapacity } from "../shared/domain/skill-slot-capacity
 import { createInitialState } from "../shared/state/defaults.js";
 import { extractTraitValues } from "../shared/state/trait-values.js";
 import { sanitizePublicContext } from "./context-schema.js";
+import { withMiniappBattleLevelDefaults } from "../state/battle-level-defaults.js";
 
 const SHARE_VERSION = 2;
 const PARAMETER_SHARE_VERSION = 3;
@@ -988,7 +989,7 @@ export function decodeSharePayloadResult(encoded, snapshot) {
           ? "reduced"
           : "full",
       direction: payload.y === "r" ? "reverse" : "forward",
-      state,
+      state: withMiniappBattleLevelDefaults(snapshot, state),
       status: payload.v >= 2 ? "valid" : "repaired",
     };
   } catch {

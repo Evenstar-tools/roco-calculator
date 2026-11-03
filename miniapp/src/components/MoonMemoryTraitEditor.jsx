@@ -20,6 +20,7 @@ function supportLabel(support) {
 
 function visibleTraitControls(controls, values) {
   return controls.filter((control) => {
+    if (control.hidden === true) return false;
     if (!control.visibleWhen) return true;
     const dependency = controls.find(
       (candidate) =>
@@ -150,11 +151,9 @@ export default function MoonMemoryTraitEditor({
                         className="moon-memory-editor__control"
                         input={control}
                         key={`${traitId}:${control.canonicalKey}`}
-                        onChange={(value) => onValueChange?.(
-                          traitId,
-                          control.canonicalKey,
-                          value,
-                        )}
+                        onChange={(value) => control.contextKey?.includes("TraitS5")
+                          ? onValueChange?.(traitId, control.canonicalKey, value, control)
+                          : onValueChange?.(traitId, control.canonicalKey, value)}
                         value={Object.hasOwn(values, control.canonicalKey)
                           ? values[control.canonicalKey]
                           : control.defaultValue}

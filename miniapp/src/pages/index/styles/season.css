@@ -132,6 +132,12 @@
   --season-accent-soft: #edf5e8;
 }
 
+.page--season-s5 {
+  --season-title: #f2ce91;
+  --season-accent: #8b641d;
+  --season-accent-soft: #faf3e5;
+}
+
 /* Classic mode leaves the scene/header intact and uses the existing S4 calculation tokens. */
 .page--season-s1:not(.page--classic-calculator-colors) {
   --result: #405c83;
@@ -148,6 +154,11 @@
   --result-soft: #edf3e9;
 }
 
+.page--season-s5:not(.page--classic-calculator-colors) {
+  --result: #8b641d;
+  --result-soft: #faf3e5;
+}
+
 .season-sky--s1 {
   background: linear-gradient(180deg, #17213e, #596d92 65px, #c5ccd6 120px, #f4f2ed 176px);
 }
@@ -160,9 +171,15 @@
   background: linear-gradient(180deg, #21382f, #6e8773 65px, #cbd2c7 120px, #f4f2ed 176px);
 }
 
+/* The CSS palette remains visible if the optional remote scene cannot load. */
+.season-sky--s5 {
+  background: linear-gradient(180deg, #15373e, #63868a 65px, #c5d0cc 120px, #f4f2ed 176px);
+}
+
 .season-sky--s1 .season-sky__panorama,
 .season-sky--s2 .season-sky__panorama,
-.season-sky--s3 .season-sky__panorama {
+.season-sky--s3 .season-sky__panorama,
+.season-sky--s5 .season-sky__panorama {
   top: -28px;
   left: 0;
   width: 100%;
@@ -175,6 +192,10 @@
 
 .season-sky--s3 .season-sky__quiet {
   background: linear-gradient(90deg, #1c3026ed, #21382f80 65%, transparent);
+}
+
+.season-sky--s5 .season-sky__quiet {
+  background: linear-gradient(90deg, #15373ef2, #15373e99 65%, transparent);
 }
 
 @media (max-width: 350px) {
@@ -253,6 +274,7 @@
   .page--season-s1 { --season-accent: #adc5f0; --season-accent-soft: #283951; }
   .page--season-s2 { --season-accent: #e4bb94; --season-accent-soft: #493340; }
   .page--season-s3 { --season-accent: #b3cda5; --season-accent-soft: #2b4037; }
+  .page--season-s5 { --season-accent: #ebc282; --season-accent-soft: #3f4035; }
 
   .page--season-s1:not(.page--classic-calculator-colors) {
     --result: #adc5f0;
@@ -272,10 +294,17 @@
     --season-result-ink: #d1e3c7;
     --season-selected-ink: #172233;
   }
+  .page--season-s5:not(.page--classic-calculator-colors) {
+    --result: #ebc282;
+    --result-soft: #3f4035;
+    --season-result-ink: #f0cf98;
+    --season-selected-ink: #244247;
+  }
 
   .season-sky--s1 { background: linear-gradient(180deg, #10152f, #273653 80px, #101722 229px); }
   .season-sky--s2 { background: linear-gradient(180deg, #2e152b, #40283d 80px, #101722 229px); }
   .season-sky--s3 { background: linear-gradient(180deg, #142b22, #304436 80px, #101722 229px); }
+  .season-sky--s5 { background: linear-gradient(180deg, #12303a, #184450 80px, #101722 229px); }
 
   .season-sky__scene {
     opacity: 0.8;

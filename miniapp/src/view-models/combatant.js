@@ -5,6 +5,8 @@ import {
   getNatureMultipliers,
 } from "../shared/domain/natures.js";
 import { resolveBattleSpirit } from "../shared/domain/battle-form.js";
+import { resolveS5PreviewBattleLevel } from "../shared/domain/battle-level.js";
+import { materializeTraitContext } from "../shared/state/trait-values.js";
 import {
   calculateAllPanelStats,
   hasCompleteRaceStats,
@@ -46,6 +48,10 @@ export function createCombatantView(snapshot, side) {
     raceStats: spirit.raceStats,
     displayIvs,
     natureMultipliers: getNatureMultipliers(nature.id),
+    level: side.level ?? resolveS5PreviewBattleLevel(snapshot, {
+      sides: { attacker: side },
+      directions: { forward: { context: materializeTraitContext(side.traitValues, snapshot, side.spiritId, "attacker") } },
+    }, "attacker"),
   });
 
   return {

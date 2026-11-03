@@ -87,7 +87,7 @@ describe("result action view model", () => {
     expect(actions.modifiers).toHaveLength(1);
     expect(actions.modifiers[0]).toMatchObject({ name: "抓挠", negativeStatusApplication: false, negativeStatusToggle: false });
   });
-  test.each([["有求必应", "己方双攻 +9层 · 己方速度 +60"], ["一意孤行", "己方双攻 +18层"]])("状态动作的预览包含 %s 实际增益", (name, expected) => {
+  test.each([["有求必应", "己方速度 +60 · 己方物攻 +9层"], ["一意孤行", "己方物攻 +18层"]])("状态动作的预览包含 %s 实际增益", (name, expected) => {
     const snapshot = snapshotFixture();
     snapshot.skills[0].description = "选择：自己获得速度+60或物攻+90%。";
     const state = createInitialState(snapshot);

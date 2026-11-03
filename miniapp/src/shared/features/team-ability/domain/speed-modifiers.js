@@ -75,6 +75,16 @@ function traitSpeedModifiers(spirit, traitsById, currentSpeed, traitStackLimit) 
       }];
     }
 
+    if (trait.previewIdentity?.mechanicKey === "boss-ice-bruce") {
+      return [{
+        amount: 75,
+        groupId: `trait:${trait.id}`,
+        id: `trait:${trait.id}:triggered`,
+        label: `${trait.name}（敌方总能耗大于15）`,
+        source: "trait",
+      }];
+    }
+
     const rule = getTraitEffectRule(trait, "attacker");
     if (!rule) return [];
     if (rule.kind === "speed_flat") {

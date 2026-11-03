@@ -1,4 +1,5 @@
 import { calculatePanelStat, hasCompleteRaceStats } from "../../../domain/stat.js";
+import { canRecommendSpirit } from "../../../domain/spirit-discovery.js";
 import {
   BEAST_FLOWER_TRAIT_NAME,
   resolveBeastFlowerBloodline,
@@ -78,6 +79,7 @@ const SPEED_SPECIAL_CASES = Object.freeze([
   ["卡洛儿", "neutral-max", "示弱", undefined, { allowUnlearnedSkill: true }],
   ["古钟蛇", "positive-max", "示弱", undefined, { allowGrowth: true }],
   ["寒音蛇", "positive-max", "示弱"],
+  ["圣冠布鲁斯", "positive-max", "烈冰钻"],
 ]);
 
 function speedProfile(profileId) {
@@ -111,7 +113,7 @@ export function createSpeedTargets({
 
   return spirits
     .flatMap((spirit) => {
-      if (!hasCompleteRaceStats(spirit?.raceStats)) return [];
+      if (!canRecommendSpirit(spirit) || !hasCompleteRaceStats(spirit?.raceStats)) return [];
       const form = resolveRankingFormRole(spirit, { spiritFilterRevision });
       if (form.formRole !== "final" && form.formRole !== "boss") return [];
       return createRankingLevelVariants(spirit).map(variant => ({
@@ -145,7 +147,7 @@ export function createSpeedSpecialTargets({ profileId = "positive-max", snapshot
     .filter(([, caseProfileId]) => caseProfileId === profileId)
     .flatMap(([spiritName, , sourceName, stack, options = {}]) => {
       const spirit = spirits.find((entry) => entry.fullName === spiritName);
-      if (!spirit || !hasCompleteRaceStats(spirit.raceStats)) return [];
+      if (!spirit || !canRecommendSpirit(spirit) || !hasCompleteRaceStats(spirit.raceStats)) return [];
       const form = resolveSpiritFormRole(spirit, {
         spiritFilterRevision: snapshot?.meta?.revisions?.spiritFilter,
       });

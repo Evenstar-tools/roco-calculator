@@ -1,11 +1,14 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import AppHeader from "../src/components/AppHeader.jsx";
 import SeasonBackdrop from "../src/components/SeasonBackdrop.jsx";
 import MarkEditor from "../src/components/MarkEditor.jsx";
 import TraitConditionEditor from "../src/components/TraitConditionEditor.jsx";
 import IndexPage from "../src/pages/index/index.jsx";
 import LoadingState from "../src/components/LoadingState.jsx";
+import ErrorState from "../src/components/ErrorState.jsx";
 import {
   MINIAPP_RELEASE_LABEL,
   MINIAPP_UPDATE_DATE,
@@ -41,10 +44,10 @@ describe("miniapp shell", () => {
     expect(writeClassicCalculatorColors(true, blocked)).toBe(true);
   });
 
-  test.each([[0, "s1"], [0.25, "s2"], [0.5, "s3"], [0.99999, "s4"]])("random theme draw %s persists the mode, not %s", (random, id) => {
+  test.each([[0, "s1"], [0.2, "s2"], [0.4, "s3"], [0.6, "s4"], [0.99999, "s5"]])("random theme draw %s persists the mode, not %s", (random, id) => {
     const values = new Map();
     const storage = { get: (key) => values.get(key), set: (key, value) => values.set(key, value) };
-    expect(readSeasonTheme(storage)).toEqual({ preference: "s4", id: "s4" });
+    expect(readSeasonTheme(storage)).toEqual({ preference: "s5", id: "s5" });
     expect(writeSeasonTheme("random", storage, () => random)).toEqual({ preference: "random", id });
     expect(values.get(SEASON_THEME_STORAGE_KEY)).toBe("random");
     expect(readSeasonTheme(storage, () => random)).toEqual({ preference: "random", id });
@@ -52,19 +55,19 @@ describe("miniapp shell", () => {
     expect(readSeasonTheme(storage)).toEqual({ preference: id, id });
   });
 
-  test("invalid or blocked theme storage restores S4 without blocking the current page", () => {
-    expect(readSeasonTheme({ get: () => "s5" })).toEqual({ preference: "s4", id: "s4" });
+  test("invalid or blocked theme storage restores S5 without blocking the current page", () => {
+    expect(readSeasonTheme({ get: () => "s99" })).toEqual({ preference: "s5", id: "s5" });
     const blocked = { get: () => { throw new Error("blocked"); }, set: () => { throw new Error("blocked"); } };
-    expect(readSeasonTheme(blocked)).toEqual({ preference: "s4", id: "s4" });
+    expect(readSeasonTheme(blocked)).toEqual({ preference: "s5", id: "s5" });
     expect(writeSeasonTheme("s2", blocked)).toEqual({ preference: "s2", id: "s2" });
     expect(writeSeasonTheme("random", blocked, () => 0)).toEqual({ preference: "random", id: "s1" });
     expect(writeSeasonTheme("random", blocked, () => 0, "s1")).toEqual({ preference: "random", id: "s2" });
   });
 
-  test.each(["s1", "s2", "s3", "s4"])("random entry excludes previous %s without writing history during initialization", (previous) => {
+  test.each(["s1", "s2", "s3", "s4", "s5"])("random entry excludes previous %s without writing history during initialization", (previous) => {
     const values = new Map([[SEASON_THEME_STORAGE_KEY, "random"], [SEASON_THEME_LAST_RANDOM_STORAGE_KEY, previous]]);
     const storage = { get: (key) => values.get(key), set: vi.fn((key, value) => values.set(key, value)) };
-    const alternatives = [0, 0.5, 0.999].map((random) => readSeasonTheme(storage, () => random).id);
+    const alternatives = [0, 0.25, 0.5, 0.999].map((random) => readSeasonTheme(storage, () => random).id);
     expect(alternatives).toEqual(SEASON_THEMES.filter(({ id }) => id !== previous).map(({ id }) => id));
     expect(storage.set).not.toHaveBeenCalled();
     const entered = readSeasonTheme(storage, () => 0);
@@ -74,14 +77,40 @@ describe("miniapp shell", () => {
     expect(readSeasonTheme(storage, () => 0).id).not.toBe(entered.id);
   });
 
-  test.each(["s1", "s2", "s3"])("%s backdrop uses only its local decorative scene and never changes the data title", (seasonId) => {
+  test.each(["s1", "s2", "s3"])("%s backdrop uses the deployed decorative scene and never changes the data title", (seasonId) => {
     const { container } = render(<><SeasonBackdrop seasonId={seasonId} /><AppHeader /></>);
     const background = container.querySelector(`.season-sky--${seasonId}`);
     expect(background).toHaveAttribute("aria-hidden", "true");
     expect(background.querySelectorAll("img")).toHaveLength(1);
-    expect(background.querySelector("img").getAttribute("src")).toContain(`/assets/season/${seasonId}-`);
+    expect(background.querySelector("img").getAttribute("src")).toContain(`https://rococalc.top/assets/season/${seasonId}-`);
     expect(background.querySelector(".season-sky__wolf")).toBeNull();
-    expect(container.querySelector(".app-header__title")).toHaveTextContent("洛克计算器 · S4「季中」");
+    expect(container.querySelector(".app-header__title")).toHaveTextContent("洛克计算器 · S5");
+  });
+
+  test.each(["s1", "s2", "s3", "s4"])("the S5 default preserves saved %s preferences", (id) => {
+    const storage = { get: (key) => key === SEASON_THEME_STORAGE_KEY ? id : undefined };
+    expect(readSeasonTheme(storage)).toEqual({ preference: id, id });
+  });
+
+  test.each([
+    ["s1", "s1-night-discovery.webp"],
+    ["s2", "s2-carnival.webp"],
+    ["s3", "s3-storybook.webp"],
+    ["s5", "s5-dragon-treasure.webp"],
+  ])("%s remote scene failure leaves the decorative fallback and settings usable", (seasonId, asset) => {
+    const view = render(<><SeasonBackdrop seasonId={seasonId} /><AppHeader seasonTheme={{ preference: seasonId, id: seasonId }} /></>);
+    const background = view.container.querySelector(`.season-sky--${seasonId}`);
+    expect(background).toHaveAttribute("aria-hidden", "true");
+    const scene = background.querySelector("img");
+    expect(scene).toHaveAttribute("src", `https://rococalc.top/assets/season/${asset}`);
+    expect(scene).toHaveAttribute("alt", "");
+    fireEvent.error(scene);
+    expect(background.querySelector("img")).toBeNull();
+    expect(background.querySelector(".season-sky__quiet")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
+    expect(screen.getByRole("combobox", { name: "赛季主题" })).toHaveValue(String(SEASON_THEMES.findIndex(theme => theme.id === seasonId)));
+    view.rerender(<><SeasonBackdrop seasonId="s4" /><AppHeader /></>);
+    expect(view.container.querySelector(".season-sky--s4 img")).toHaveAttribute("src", expect.stringContaining("s4-moon-night.webp"));
   });
 
   test("native theme picker can fix the same drawn season and the shuffle control remains a separate button", () => {
@@ -91,7 +120,9 @@ describe("miniapp shell", () => {
     fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
     const picker = screen.getByRole("combobox", { name: "赛季主题" });
     expect(picker).toHaveValue("3");
-    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["S1 暗夜拾光", "S2 狂欢怪谈", "S3 铅字幻梦", "S4 月涌狂想"]);
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["S1 暗夜拾光", "S2 狂欢怪谈", "S3 铅字幻梦", "S4 月涌狂想", "S5 圣龙宝藏"]);
+    fireEvent.change(picker, { target: { value: "4" } });
+    expect(change).toHaveBeenLastCalledWith("s5");
     const shuffle = screen.getByRole("button", { name: "每次进入随机主题" });
     expect(shuffle).toHaveAttribute("aria-pressed", "false");
     expect(shuffle.querySelector("img")).toHaveAttribute("src", expect.stringContaining("shuffle.png"));
@@ -110,11 +141,17 @@ describe("miniapp shell", () => {
     expect(shuffle).toHaveAttribute("aria-pressed", "false");
   });
 
-  test("registers native sharing for the page hook", async () => {
+  test("registers native sharing without overriding the current app season title", async () => {
     vi.stubGlobal("definePageConfig", (config) => config);
+    vi.stubGlobal("defineAppConfig", (config) => config);
     try {
       const { default: config } = await import("../src/pages/index/index.config.js");
+      const { default: appConfig } = await import("../src/app.config.js");
       expect(config.enableShareAppMessage).toBe(true);
+      expect(config.navigationBarTitleText).toBe(appConfig.window.navigationBarTitleText);
+      expect(config.navigationBarTitleText).toBe("洛克计算器 · S5「圣龙宝藏」");
+      expect(readFileSync(resolve(process.cwd(), "src/index.html"), "utf8"))
+        .toContain("<title>洛克计算器 · S5</title>");
     } finally {
       vi.unstubAllGlobals();
     }
@@ -136,7 +173,7 @@ describe("miniapp shell", () => {
   });
 
   test("keeps the seasonal background decorative and settings interactive", () => {
-    const { container } = render(<><SeasonBackdrop /><AppHeader /></>);
+    const { container } = render(<><SeasonBackdrop seasonId="s4" /><AppHeader /></>);
     const background = container.querySelector(".season-sky");
     expect(background).toHaveAttribute("aria-hidden", "true");
     expect(background.querySelectorAll("img")).toHaveLength(2);
@@ -145,7 +182,7 @@ describe("miniapp shell", () => {
       expect(image.getAttribute("src")).toMatch(/assets\/season\/s4-.+\.webp/u);
     }
     expect(screen.queryAllByRole("img")).toHaveLength(0);
-    expect(container.querySelector(".app-header__title")).toHaveTextContent("洛克计算器 · S4「季中」");
+    expect(container.querySelector(".app-header__title")).toHaveTextContent("洛克计算器 · S5");
     fireEvent.click(screen.getByRole("button", { name: "打开设置" }));
     expect(screen.getByRole("dialog", { name: "设置" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
@@ -175,9 +212,12 @@ describe("miniapp shell", () => {
   });
 
   test("renders the calculator title without requesting identity", () => {
-    render(<IndexPage />);
-    expect(screen.getByText("洛克计算器 · S4「季中」")).toBeInTheDocument();
+    const view = render(<IndexPage />);
+    expect(screen.getByText("洛克计算器 · S5")).toBeInTheDocument();
     expect(screen.queryByText("微信登录")).not.toBeInTheDocument();
+    view.rerender(<ErrorState message="测试加载失败" />);
+    expect(screen.getByText("洛克计算器 · S5")).toBeInTheDocument();
+    expect(screen.getByText("测试加载失败")).toBeInTheDocument();
   });
 
   test("exposes compact settings actions, common configs and data attribution", () => {

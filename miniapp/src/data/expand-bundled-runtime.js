@@ -1,7 +1,7 @@
 export function expandBundledRuntime(payload) {
   if (!Array.isArray(payload?.learnsetSkillIndexes)) return payload;
 
-  const { defaultSkillIndexes = {}, learnsetSkillIndexes, ...snapshot } = payload;
+  const { defaultSkillIndexes = {}, learnsetMetadata = {}, learnsetSkillIndexes, ...snapshot } = payload;
   const skills = snapshot.skills ?? [];
   const spirits = snapshot.spirits ?? [];
 
@@ -20,6 +20,7 @@ export function expandBundledRuntime(payload) {
   const learnsets = learnsetSkillIndexes.map((skillIndexes, spiritIndex) => {
     const defaultIndexes = defaultSkillIndexes[spiritIndex];
     return {
+      ...learnsetMetadata[spiritIndex],
       spiritId: spirits[spiritIndex].id,
       skillIds: skillIndexesToIds(skillIndexes),
       ...(Array.isArray(defaultIndexes)

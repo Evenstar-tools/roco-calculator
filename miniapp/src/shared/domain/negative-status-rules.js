@@ -1,3 +1,4 @@
+import { usesS3MidseasonRules } from "./season-rules.js";
 import { createNegativeStatusSide } from "./negative-status.js";
 import { getDefaultHitCount, getSkillEffectInputs } from "./skill-effects.js";
 import { getSkillStatusEffectInputs } from "./skill-status-effects.js";
@@ -25,6 +26,10 @@ const SKILL_RULES = {
   惊雷: { classification: "weather" },
   通电: { stacks: { electrified: 1 } },
   孢子: { stacks: { parasitism: 3 } },
+  外附传播: {
+    inputs: [booleanInput("negativeStatusCounterAttack", "应对攻击")],
+    resolve: (context) => ({ parasitism: context.negativeStatusCounterAttack ? 2 : 0 }),
+  },
   易燃物质: { resolve: (_context, { effectiveHitCount }) => ({ burn: effectiveHitCount * 2 }) },
   引燃: { stacks: { burn: 10 } },
   充分燃烧: {
@@ -63,6 +68,7 @@ const SKILL_RULES = {
     }),
     special: "double-freeze-on-counter",
   },
+  严霜: { stacks: { freeze: 8 } },
   霜降: { stacks: { freeze: 4 } },
   霜天: { stacks: { freeze: 1 } },
   冰墙: {
@@ -120,7 +126,7 @@ const TRAIT_APPLICATIONS = {
   电子音乐: ({ context, skill }) =>
     context.weatherThunder && skill?.type === "电" ? { electrified: 1 } : {},
   生物碱: ({ skill }) => (skill?.type === "草" ? { poison: 2 } : {}),
-  高浓生物碱: ({ skill }) => (skill?.type === "草" ? { poison: 3 } : {}),
+  高浓生物碱: ({ skill, trait }) => usesS3MidseasonRules(trait) ? { poison: 2 } : (skill?.type === "草" ? { poison: 3 } : {}),
   灵魂灼伤: ({ skill }) =>
     skill?.type === "冰" ? { burn: 4 } : skill?.type === "火" ? { freeze: 2 } : {},
   毒腺: ({ skill }) => (Number(skill?.cost) <= 1 ? { poison: 4 } : {}),
@@ -260,6 +266,7 @@ export function resolveNegativeStatusApplications({
     const resolver = TRAIT_APPLICATIONS[trait?.name];
     if (!resolver) continue;
     const addition = resolver({
+      trait,
       baselineStatuses,
       context,
       freezeApplicationCount,

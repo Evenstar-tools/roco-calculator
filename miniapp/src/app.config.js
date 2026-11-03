@@ -3,7 +3,7 @@ export default defineAppConfig({
   darkmode: true,
   themeLocation: "theme.json",
   window: {
-    navigationBarTitleText: "洛克计算器 · S4「季中」",
+    navigationBarTitleText: "洛克计算器 · S5「圣龙宝藏」",
     navigationBarBackgroundColor: "@navigationBackground",
     navigationBarTextStyle: "white",
     backgroundColor: "@pageBackground",

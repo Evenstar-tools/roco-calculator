@@ -15,8 +15,8 @@ export function requireInside(parent, target) {
   return absolute;
 }
 
-export function readPreviewReleasePin(root) {
-  const pin = JSON.parse(readFileSync(path.join(root, "config/preview-release.json"), "utf8"));
+export function readPreviewReleasePin(root, pinFile = "config/preview-release.json") {
+  const pin = JSON.parse(readFileSync(requireInside(root, path.join(root, pinFile)), "utf8"));
   if (pin.schemaVersion !== 1 || !REVISION.test(pin.sourceRevision ?? "")) {
     throw new Error("Preview release requires a pinned full 40-character sourceRevision");
   }
@@ -86,17 +86,17 @@ export function copyPreviewRelease(root, sourceDirectory) {
 }
 
 /** Prepare the exact release source for Web and CLI; never copy a dirty checkout. */
-export function preparePreviewSource({ root = ROOT, run = execute, mode = "pre", reuse = false, allowFetch = true } = {}) {
-  if (!["pre", "cn"].includes(mode)) throw new Error("Unsupported pinned source build mode: " + mode);
+export function preparePreviewSource({ root = ROOT, run = execute, mode = "pre", reuse = false, allowFetch = true, pinFile } = {}) {
+  if (!["pre", "cn", "miniapp"].includes(mode)) throw new Error("Unsupported pinned source build mode: " + mode);
   root = realpathSync(root);
-  const { sourceRevision } = readPreviewReleasePin(root);
+  const { sourceRevision } = readPreviewReleasePin(root, pinFile);
   const modules = path.join(root, "node_modules");
   const vite = path.join(modules, "vite/bin/vite.js");
   if (!existsSync(vite)) throw new Error("Root dependencies must be installed before the preview build");
   const output = requireInside(root, path.join(root, "output"));
   mkdirSync(output, { recursive: true });
   requireInside(root, realpathSync(output));
-  const receipt = path.join(output, "cli-source-" + sourceRevision + ".json");
+  const receipt = path.join(output, (mode === "miniapp" ? "miniapp" : "cli") + "-source-" + sourceRevision + ".json");
   if (reuse && existsSync(receipt)) {
     const cached = JSON.parse(readFileSync(receipt, "utf8"));
     const source = requireInside(output, cached.source);
@@ -106,7 +106,7 @@ export function preparePreviewSource({ root = ROOT, run = execute, mode = "pre",
     }
     return { sourceRevision, source };
   }
-  const source = mkdtempSync(path.join(output, (mode === "pre" ? "preview" : "cn") + "-source-" + sourceRevision + "-"));
+  const source = mkdtempSync(path.join(output, (mode === "pre" ? "preview" : mode) + "-source-" + sourceRevision + "-"));
   const archive = requireInside(output, source + ".tar");
   const gitOptions = { cwd: root };
   if (run("git", ["cat-file", "-e", sourceRevision + "^{commit}"], { ...gitOptions, allowFailure: true }) !== 0) {

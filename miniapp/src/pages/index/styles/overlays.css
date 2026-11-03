@@ -11,7 +11,7 @@
   pointer-events: none;
 }
 
-.combatant-card--identity-only .spirit-picker__input {
+.combatant-card--identity-only .spirit-picker__search-field {
   display: none;
 }
 
@@ -43,7 +43,7 @@
 }
 
 .spirit-picker__mobile-trigger,
-.spirit-picker__input {
+.spirit-picker__search-field {
   width: 100%;
   min-height: var(--touch-target);
   border: 1px solid var(--border-neutral);
@@ -65,22 +65,34 @@
   border-color: var(--defender);
 }
 
-.spirit-picker__input {
+.spirit-picker__search-field {
   position: relative;
   z-index: 82;
+  display: flex;
+  min-height: 46px;
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.spirit-picker__input {
+  width: 0;
+  min-width: 0;
   height: var(--touch-target);
+  flex: 1;
   box-sizing: border-box;
   padding: 0 13px;
+  border: 0;
+  background: transparent;
   font-size: 15px;
   line-height: 20px;
 }
 
-.combatant-card--identity-only .spirit-picker--open .spirit-picker__input {
+.combatant-card--identity-only .spirit-picker--open .spirit-picker__search-field {
   position: fixed;
   top: calc(env(safe-area-inset-top, 0px) + 70px);
   left: 14px;
   right: 14px;
-  display: block;
+  display: flex;
   width: auto;
 }
 
@@ -1176,8 +1188,8 @@
 .skill-picker__search-field {
   display: flex;
   width: 100%;
-  height: var(--touch-target);
-  min-height: var(--touch-target);
+  height: 46px;
+  min-height: 46px;
   box-sizing: border-box;
   align-items: center;
   gap: 8px;
@@ -1193,6 +1205,29 @@
   height: 18px;
   flex: 0 0 18px;
   opacity: 0.48;
+}
+
+.picker-search-clear {
+  display: flex;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  flex: 0 0 44px;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1;
+}
+
+.picker-search-clear::after {
+  display: none;
 }
 
 .skill-picker__categories {
@@ -1605,7 +1640,6 @@
   margin: 0;
 }
 
-.result-actions__hint,
 .result-actions__description,
 .result-actions__trigger,
 .result-actions__feedback,
@@ -2698,4 +2732,15 @@
 
 .result-sheet__share::after {
   pointer-events: none;
+}
+
+/* H5 按钮默认宽 100% 且无行高，与微信原生按钮对齐。 */
+.result-sheet__share {
+  box-sizing: border-box;
+  width: auto;
+  line-height: 50px;
+}
+
+.skill-picker__search .weui-input {
+  height: 100%;
 }

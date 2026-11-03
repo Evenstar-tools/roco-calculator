@@ -428,6 +428,9 @@ describe("mini program skill workflow", () => {
     let dialog = screen.getByRole("dialog", { name: "攻击方技能 1选项" });
     const search = within(dialog).getByLabelText("搜索攻击方技能 1");
     expect(search).not.toHaveAttribute("autofocus");
+    expect(within(dialog).queryByRole("button", {
+      name: "清空攻击方技能 1搜索",
+    })).not.toBeInTheDocument();
     expect(search).toHaveAttribute("data-adjust-position", "false");
     expect(search).toHaveAttribute("data-keyboard-height-handler", "true");
     expect(within(dialog).getByAltText("搜索")).toHaveAttribute(
@@ -460,6 +463,21 @@ describe("mini program skill workflow", () => {
     fireEvent.input(search, { target: { value: "sg" } });
     expect(within(dialog).getByText("魔法 1 项")).toBeInTheDocument();
     expect(within(dialog).getByRole("button", { name: /闪光/u })).toBeInTheDocument();
+
+    fireEvent.blur(search);
+    fireEvent.click(within(dialog).getByRole("button", {
+      name: "清空攻击方技能 1搜索",
+    }));
+    expect(search).toHaveValue("");
+    expect(search).toHaveAttribute("autofocus");
+    expect(within(dialog).getByRole("button", {
+      name: "筛选魔法技能，共 1 项",
+    })).toHaveAttribute("aria-pressed", "true");
+    expect(within(dialog).getByAltText("当前已选技能")).toBeInTheDocument();
+    expect(onChange).not.toHaveBeenCalled();
+    expect(within(dialog).queryByRole("button", {
+      name: "清空攻击方技能 1搜索",
+    })).not.toBeInTheDocument();
 
     fireEvent.input(search, { target: { value: "不存在" } });
     expect(within(dialog).getByText("当前筛选无结果")).toBeInTheDocument();

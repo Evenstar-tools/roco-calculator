@@ -8,6 +8,7 @@ import { createCalculatorStore } from "../src/state/calculator-store.js";
 import {
   createSpiritSearchIndex,
   searchSpirits,
+  searchSpiritsWithFavorites,
 } from "../src/view-models/spirit-search.js";
 
 const spirits = [
@@ -50,14 +51,30 @@ describe("SpiritPicker", () => {
       <SpiritPicker
         side="attacker"
         spirits={spirits}
-        value={null}
+        value="spirit-water"
         onChange={onChange}
       />,
     );
 
-    fireEvent.input(screen.getByLabelText("搜索攻击方宠物"), {
+    const search = screen.getByLabelText("搜索攻击方宠物");
+    expect(screen.queryByRole("button", { name: "清空攻击方宠物搜索" }))
+      .not.toBeInTheDocument();
+    fireEvent.input(search, {
       target: { value: "音速" },
     });
+    fireEvent.blur(search);
+    fireEvent.click(screen.getByRole("button", { name: "清空攻击方宠物搜索" }));
+    expect(search).toHaveValue("");
+    expect(search).toHaveAttribute("autofocus");
+    expect(screen.queryByRole("button", { name: "清空攻击方宠物搜索" }))
+      .not.toBeInTheDocument();
+    expect(screen.queryByLabelText("攻击方宠物搜索结果"))
+      .not.toBeInTheDocument();
+    expect(screen.getByText("输入名称关键字，选择后自动带出技能与种族值"))
+      .toBeInTheDocument();
+    expect(onChange).not.toHaveBeenCalled();
+
+    fireEvent.input(search, { target: { value: "音速" } });
     fireEvent.click(screen.getByRole("button", { name: "选择音速犬" }));
 
     expect(onChange).toHaveBeenCalledWith("spirit-sonic-dog");
@@ -234,7 +251,7 @@ describe("CombatantCard", () => {
     })).not.toBeInTheDocument();
     fireEvent.click(screen.getByLabelText("攻击方宠物摘要"));
     expect(onActivate).toHaveBeenCalledTimes(1);
-    expect(screen.getByLabelText("搜索攻击方宠物").parentElement)
+    expect(screen.getByLabelText("搜索攻击方宠物").closest(".spirit-picker"))
       .toHaveClass("spirit-picker--open");
   });
 });
@@ -281,7 +298,7 @@ describe("BattleWorkspace combatants", () => {
       name: "打开防守方详细参数",
     }));
 
-    expect(screen.getByLabelText("搜索攻击方宠物").parentElement)
+    expect(screen.getByLabelText("搜索攻击方宠物").closest(".spirit-picker"))
       .not.toHaveClass("spirit-picker--open");
     expect(
       screen.getByRole("dialog", { name: "防守方参数设置" }),
@@ -559,5 +576,29 @@ describe("spirit search index", () => {
 
     expect(searchSpirits(index, "")).toHaveLength(30);
     expect(searchSpirits(index, "测试", 5)).toHaveLength(5);
+  });
+});
+
+describe("精灵搜索排序", () => {
+  const snapshot = {
+    spirits: [
+      { id: "small", fullName: "小冥龙", pinyin: "xiaominglong", evolutionChainNames: ["小冥龙", "冥古龙"] },
+      { id: "abu", fullName: "阿布", pinyin: "abu", evolutionChainNames: ["阿布", "超能阿布"] },
+      { id: "super-abu", fullName: "超能阿布", pinyin: "chaonengabu", evolutionChainNames: ["阿布", "超能阿布"] },
+      { id: "ming", fullName: "冥古龙", pinyin: "minggulong", evolutionChainNames: ["小冥龙", "冥古龙"] },
+    ],
+  };
+
+  test("完整名字排第一，同族只靠进化链命中的排后面", () => {
+    const index = createSpiritSearchIndex(snapshot);
+    expect(searchSpirits(index, "冥古龙").map((item) => item.id)).toEqual(["ming", "small"]);
+    expect(searchSpirits(index, "超能阿布").map((item) => item.id)).toEqual(["super-abu", "abu"]);
+    expect(searchSpirits(index, "阿布").map((item) => item.id)).toEqual(["abu", "super-abu"]);
+  });
+
+  test("完整名字排在收藏前，其余收藏仍优先", () => {
+    const index = createSpiritSearchIndex(snapshot);
+    expect(searchSpiritsWithFavorites(index, "冥古龙", ["small"]).map((item) => item.id)).toEqual(["ming", "small"]);
+    expect(searchSpiritsWithFavorites(index, "阿", ["super-abu"]).map((item) => item.id)).toEqual(["super-abu", "abu"]);
   });
 });

@@ -53,7 +53,6 @@ export default function ResultActionPanel({
     <View aria-label="结果调整工作台" className="result-actions">
       <View className="result-actions__heading">
         <Text className="result-sheet__section-title">结果调整</Text>
-        <Text className="result-actions__hint">修改后原位更新结果</Text>
       </View>
       <View aria-label="调整分类" className="result-actions__categories">
         {CATEGORIES.map((item) => (
@@ -94,11 +93,11 @@ export default function ResultActionPanel({
         <View className="result-actions__list">
         {visibleActions.length ? visibleActions.map((action) => {
           const active = actionIsActive(action, activeActionKeys);
-          const repeatableUse = action.negativeStatusApplication && !action.negativeStatusToggle;
+          const repeatableUse = action.repeatableUse || (action.negativeStatusApplication && !action.negativeStatusToggle);
           const editableControls = action.kind === "trait" &&
               action.control?.type === "boolean"
             ? []
-            : action.controls ?? [];
+            : (action.controls ?? []).filter(input => input.hidden !== true);
           const showsActionButton = action.kind === "skill" ||
             action.control?.type === "boolean";
           return (

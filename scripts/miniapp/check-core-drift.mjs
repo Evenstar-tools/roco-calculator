@@ -14,6 +14,7 @@ import {
   parseManifestSource,
   SHARED_SOURCE_MANIFEST_PATH,
 } from "./shared-source-manifest.mjs";
+import { MINIAPP_RELEASE_PIN_PATH } from "./release-source.mjs";
 
 const VALID_SCOPES = new Set(["working-tree", "index", "HEAD"]);
 const DECLARED_RELEASE_PATCHES = Object.freeze({
@@ -137,6 +138,22 @@ function readAtRef(repositoryRoot, reference, relativePath) {
   }
 }
 
+function pinAtScope(repositoryRoot, scope) {
+  const bytes = readAtScope(repositoryRoot, scope, MINIAPP_RELEASE_PIN_PATH);
+  if (bytes === null) return { sourceRevision: null, drift: [] };
+  try {
+    const pin = JSON.parse(bytes.toString("utf8"));
+    if (pin.schemaVersion !== 1 || !/^[a-f0-9]{40}$/u.test(pin.sourceRevision ?? "")) {
+      throw new Error("Miniapp release requires a pinned full 40-character sourceRevision");
+    }
+    git(repositoryRoot, ["cat-file", "-e", `${pin.sourceRevision}^{commit}`]);
+    return { sourceRevision: pin.sourceRevision, drift: [] };
+  } catch (error) {
+    return { sourceRevision: null, drift: [{ scope, sourcePath: MINIAPP_RELEASE_PIN_PATH,
+      type: "invalid-release-pin", message: error.message }] };
+  }
+}
+
 function listFilesRecursively(root, relative = "") {
   const absolute = path.join(root, relative);
   if (!existsSync(absolute)) return [];
@@ -149,10 +166,8 @@ function listFilesRecursively(root, relative = "") {
 }
 
 function listMirrors(repositoryRoot, scope) {
-  const roots = [
-    "miniapp/src/shared/domain",
-    "miniapp/src/shared/state",
-  ];
+  const roots = ["domain", "state", "features", "data"]
+    .map(directory => `miniapp/src/shared/${directory}`);
   if (scope === "working-tree") {
     return roots
       .flatMap((root) =>
@@ -176,22 +191,22 @@ function listMirrors(repositoryRoot, scope) {
   return output.toString("utf8").split("\0").filter(Boolean).sort();
 }
 
-function listDomainSources(repositoryRoot, scope) {
+function listDomainSources(repositoryRoot, scope, sourceRevision) {
   const root = "src/domain";
-  if (scope === "working-tree") {
+  if (!sourceRevision && scope === "working-tree") {
     return listFilesRecursively(path.join(repositoryRoot, root))
       .filter((relativePath) => relativePath.endsWith(".js"))
       .map((relativePath) => path.posix.join(root, relativePath))
       .sort();
   }
-  const output = scope === "index"
+  const output = !sourceRevision && scope === "index"
     ? git(repositoryRoot, ["ls-files", "-z", "--", root])
     : git(repositoryRoot, [
         "ls-tree",
         "-r",
         "-z",
         "--name-only",
-        "HEAD",
+        sourceRevision ?? "HEAD",
         "--",
         root,
       ]);
@@ -276,11 +291,12 @@ function manifestAtRef(repositoryRoot, releaseRef, manifestOverride) {
   }
 }
 
-function coverageDrift(repositoryRoot, scope, manifest) {
+function coverageDrift(repositoryRoot, scope, manifest, sourceRevision) {
   const coverage = getManifestCoverage({
-    actualDomain: listDomainSources(repositoryRoot, scope),
+    actualDomain: listDomainSources(repositoryRoot, scope, sourceRevision),
     hasSource: (sourcePath) =>
-      readAtScope(repositoryRoot, scope, sourcePath) !== null,
+      (sourceRevision ? readAtRef(repositoryRoot, sourceRevision, sourcePath)
+        : readAtScope(repositoryRoot, scope, sourcePath)) !== null,
     manifest,
     repositoryRoot,
   });
@@ -317,13 +333,16 @@ export function getCoreDrift({
     const scoped = manifestAtScope(repositoryRoot, scope, manifest);
     drift.push(...scoped.drift);
     if (!scoped.manifest) continue;
+    const pinned = pinAtScope(repositoryRoot, scope);
+    drift.push(...pinned.drift);
+    if (pinned.drift.length) continue;
     const expectedMirrors = new Map(
       scoped.manifest.shared.map((sourcePath) => [
         mirrorPathFor(sourcePath),
         sourcePath,
       ]),
     );
-    drift.push(...coverageDrift(repositoryRoot, scope, scoped.manifest));
+    drift.push(...coverageDrift(repositoryRoot, scope, scoped.manifest, pinned.sourceRevision));
     const actualMirrors = listMirrors(repositoryRoot, scope);
     for (const mirrorPath of actualMirrors) {
       if (!expectedMirrors.has(mirrorPath)) {
@@ -331,7 +350,9 @@ export function getCoreDrift({
       }
     }
     for (const [mirrorPath, sourcePath] of expectedMirrors) {
-      const source = readAtScope(repositoryRoot, scope, sourcePath);
+      const source = pinned.sourceRevision
+        ? readAtRef(repositoryRoot, pinned.sourceRevision, sourcePath)
+        : readAtScope(repositoryRoot, scope, sourcePath);
       const mirror = readAtScope(repositoryRoot, scope, mirrorPath);
       if (source === null) {
         drift.push({ mirrorPath, scope, sourcePath, type: "missing-source" });
@@ -368,9 +389,16 @@ export function getReleaseCoreDrift({
   if (!VALID_SCOPES.has(mirrorScope)) {
     throw new Error(`Unknown mirror scope: ${mirrorScope}`);
   }
-  const scoped = manifestAtRef(repositoryRoot, releaseRef, manifest);
-  const drift = [...scoped.drift];
+  const pinned = pinAtScope(repositoryRoot, mirrorScope);
+  const scoped = pinned.sourceRevision
+    ? manifestAtScope(repositoryRoot, mirrorScope, manifest)
+    : manifestAtRef(repositoryRoot, releaseRef, manifest);
+  const drift = [...pinned.drift, ...scoped.drift];
+  if (pinned.drift.length) return drift;
   if (!scoped.manifest) return drift;
+  if (pinned.sourceRevision) {
+    drift.push(...coverageDrift(repositoryRoot, mirrorScope, scoped.manifest, releaseRef));
+  }
 
   for (const sourcePath of scoped.manifest.shared) {
     const mirrorPath = mirrorPathFor(sourcePath);
@@ -396,7 +424,7 @@ export function getReleaseCoreDrift({
     }
     if (!releaseSource.equals(mirror)) {
       const mirrorHash = hash(mirror);
-      const allowedPatch = allowedReleasePatches[sourcePath];
+      const allowedPatch = pinned.sourceRevision ? undefined : allowedReleasePatches[sourcePath];
       if (allowedPatch?.mirrorHash === mirrorHash) continue;
       drift.push({
         mirrorHash,
@@ -477,6 +505,10 @@ export function runCoreDriftCheck({
   if (currentOnly) return { releaseRef: null };
 
   const releaseRef = declaredReleaseRef(repositoryRoot);
+  const pinned = pinAtScope(repositoryRoot, "working-tree");
+  if (pinned.sourceRevision && releaseRef !== pinned.sourceRevision) {
+    throw new Error("WEB_CORE_REVISION must match config/miniapp-release.json sourceRevision");
+  }
   assertReleaseCoreMatches({
     allowedReleasePatches: releaseRef.startsWith("v") ? allowedReleasePatches : {},
     manifest,

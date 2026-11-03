@@ -5,7 +5,7 @@
     --result-bar-height: 136px;
 
     padding-right: 6px;
-    padding-bottom: calc(var(--result-bar-height) + 2px + var(--safe-area-bottom));
+    padding-bottom: calc(var(--result-bar-space, calc(var(--result-bar-height) + var(--safe-area-bottom))) + 12px);
     padding-left: 6px;
   }
 
@@ -48,7 +48,7 @@
 
   .battle-workspace--compact-demo .combatant-card__label,
   .battle-workspace--compact-demo .combatant-card__types {
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .battle-workspace--compact-demo .combatant-card__name {
@@ -145,7 +145,7 @@
   }
 
   .battle-workspace--compact-demo .active-ability-stage__control {
-    grid-template-columns: 26px minmax(0, 1fr);
+    grid-template-columns: 30px minmax(0, 1fr);
     align-items: center;
     gap: 2px;
   }
@@ -165,9 +165,9 @@
   }
 
   .battle-workspace--compact-demo .active-ability-stage__side {
-    font-size: 8px;
+    font-size: 10px;
     font-weight: var(--weight-emphasis);
-    line-height: 9px;
+    line-height: 11px;
     white-space: nowrap;
   }
 
@@ -213,7 +213,7 @@
 
   .battle-workspace--compact-demo .active-ability-stage__value-line--percent {
     color: var(--text-muted);
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .battle-workspace--compact-demo .workspace-section--skills {
@@ -298,7 +298,7 @@
   }
 
   .battle-workspace--compact-demo .active-ability-stage__control {
-    grid-template-columns: 20px minmax(0, 1fr);
+    grid-template-columns: 30px minmax(0, 1fr);
   }
 
   .battle-workspace--compact-demo .active-ability-stage__stepper {

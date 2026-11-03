@@ -16,7 +16,8 @@ import {
   hasFairPigeonBalance,
 } from "../domain/fair-pigeon.js";
 import { recordRefractionUsage } from "../domain/refraction.js";
-import { expireTransientGainSources, recordGainChanges } from "../domain/gain-provenance.js";
+import { applyAttackStageChanges, positiveAttackStageGains, postAttackStageChanges } from "../domain/attack-stages.js";
+import { expireTransientGainSources, recordGainChanges, recordSkillAndPostAttackGains } from "../domain/gain-provenance.js";
 import { recordSkillActivation } from "../domain/skill-gain-summary.js";
 import { getNatureMultipliers } from "../domain/natures.js";
 import { normalizeNegativeStatusSide } from "../domain/negative-status.js";
@@ -24,9 +25,9 @@ import { getNegativeStatusInputs, hasNegativeStatusSkillApplication, resolveNega
 import { linkedNegativeStatusContext } from "../domain/negative-status-context.js";
 import { advancePressureValveContext, getSkillStatusEffectInputs, resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
-import { resolveS5PreviewBattleLevel } from "../domain/battle-level.js";
+import { getS5SkillBattleLevelChange, getS5SkillBattleLevelControl, resolveS5PreviewBattleLevel } from "../domain/battle-level.js";
 import { getEffectiveTraits } from "../domain/effective-traits.js";
-import { projectBattleLevelHealth, updateGlobalWeather } from "./calculator-session.js";
+import { projectBattleLevelHealth, updateGlobalWeather, updateMirroredTraitContext } from "./calculator-session.js";
 import { getSkillEffectInputs } from "../domain/skill-effects.js";
 import { normalizeTriggerControls, projectTriggerContext } from "../domain/trigger-controls.js";
 
@@ -156,10 +157,14 @@ function abilityStagesForSide(state, side) {
   return side === "attacker"
     ? {
         attack: state.directions.forward.overrides?.attackLevelStage ?? 0,
+        physicalAttack: state.directions.forward.overrides?.physicalAttackLevelStageAdd ?? 0,
+        magicalAttack: state.directions.forward.overrides?.magicalAttackLevelStageAdd ?? 0,
         defense: state.directions.reverse.overrides?.defenseLevelStage ?? 0,
       }
     : {
         attack: state.directions.reverse.overrides?.attackLevelStage ?? 0,
+        physicalAttack: state.directions.reverse.overrides?.physicalAttackLevelStageAdd ?? 0,
+        magicalAttack: state.directions.reverse.overrides?.magicalAttackLevelStageAdd ?? 0,
         defense: state.directions.forward.overrides?.defenseLevelStage ?? 0,
       };
 }
@@ -168,7 +173,9 @@ function setAbilityStagesForSide(state, side, stages) {
   const attackDirection = sideDirection(side);
   const defenseDirection = oppositeDirection(attackDirection);
   updateDirection(state, attackDirection, {
-    overrides: { attackLevelStage: clampStage(stages.attack) },
+    overrides: { attackLevelStage: clampStage(stages.attack),
+      physicalAttackLevelStageAdd: stages.physicalAttack ?? 0,
+      magicalAttackLevelStageAdd: stages.magicalAttack ?? 0 },
   });
   updateDirection(state, defenseDirection, {
     overrides: { defenseLevelStage: clampStage(stages.defense) },
@@ -227,7 +234,8 @@ export function canApplyBattleActivation(skill, context = {}, options = {}) {
   const effects = options.postAttackEffects;
   const currentHp = effects?.selfCurrentHpAfterSettlement;
   return Boolean(
-    resolveSkillStatusActivation(skill, context) ||
+    (options.levelChangeEnabled === true && getS5SkillBattleLevelChange(skill)) ||
+      resolveSkillStatusActivation(skill, context) ||
       isChoiceSkill(skill) ||
       hasPersistentSkillProgression(skill) ||
       Number(effects?.attackLevelStageAdd) > 0 ||
@@ -264,7 +272,7 @@ export function applyBattleActivation({
   snapshot,
   state,
 }) {
-  const next = clone(projectBattleLevelHealth(state, { snapshot, side }));
+  let next = clone(projectBattleLevelHealth(state, { snapshot, side }));
   const selfDirection = sideDirection(side);
   const targetDirection = oppositeDirection(selfDirection);
   const targetSide = oppositeSide(side);
@@ -371,6 +379,7 @@ export function applyBattleActivation({
     choiceTrait,
     effectiveHitCount:
       calculation?.[selfDirection]?.results?.[skillIndex]?.hitCount,
+    effectiveSkillCost: skillResult?.skillCost ?? skill.cost,
     sproutStacks,
     statusTriggerCount,
   });
@@ -387,6 +396,7 @@ export function applyBattleActivation({
     0,
     Math.floor(Number(postAttackEffects?.attackLevelStageAdd) || 0),
   );
+  const postAttackStages = postAttackStageChanges(postAttackEffects);
   const rawPostAttackCurrentHp =
     postAttackEffects?.selfCurrentHpAfterSettlement;
   const postAttackCurrentHp = Number(rawPostAttackCurrentHp);
@@ -396,15 +406,20 @@ export function applyBattleActivation({
     Number.isFinite(postAttackCurrentHp);
 
   if (!resolution) {
+    const levelControl = getS5SkillBattleLevelControl(snapshot, next, side, skill);
+    if (levelControl) {
+      const previousLevel = resolveS5PreviewBattleLevel(snapshot, next, side);
+      const level = Math.max(levelControl.min, Math.min(levelControl.max, previousLevel + getS5SkillBattleLevelChange(skill)));
+      next = updateMirroredTraitContext(next, { direction: selfDirection, key: levelControl.id, value: level }).state;
+      next = projectBattleLevelHealth(next, { snapshot, side });
+      recordSkillActivation(next, side, skill, context);
+      return { applied: true, reason: null, state: next, skillUsed: true };
+    }
     if (postAttackStageAdd > 0 || hasPostAttackCurrentHp) {
       const selfOverrides = next.directions[selfDirection].overrides ?? {};
       if (postAttackStageAdd > 0) {
         updateDirection(next, selfDirection, {
-          overrides: {
-            attackLevelStage: clampStage(
-              Number(selfOverrides.attackLevelStage ?? 0) + postAttackStageAdd,
-            ),
-          },
+          overrides: applyAttackStageChanges(selfOverrides, postAttackStages),
         });
       }
       if (hasPostAttackCurrentHp) {
@@ -456,11 +471,12 @@ export function applyBattleActivation({
   const { deltas, operations = {} } = resolution;
   const doublePositive = (value) =>
     operations.doublePositiveOwnBuffs && value > 0 ? value * 2 : value;
-  const ownAttackStage = clampStage(doublePositive(
-    Number(selfOverrides.attackLevelStage ?? 0) +
-      deltas.ownAttack +
-      postAttackStageAdd,
-  ));
+  const ownAttackStages = applyAttackStageChanges(selfOverrides, {
+    attack: deltas.ownAttack + postAttackStages.attack,
+    physical: Number(operations.ownPhysicalAttackStageAdd ?? 0) + postAttackStages.physical,
+    magical: operations.ownMagicalAttackStageAdd,
+    doublePositive: operations.doublePositiveOwnBuffs,
+  });
   const ownDefenseStage = clampStage(doublePositive(
     Number(targetOverrides.defenseLevelStage ?? 0) + deltas.ownDefense,
   ));
@@ -530,7 +546,7 @@ export function applyBattleActivation({
 
   updateDirection(next, selfDirection, {
     overrides: {
-      attackLevelStage: ownAttackStage,
+      ...ownAttackStages,
       attackerSpeedFlat: ownSpeedFlat,
       defenderSpeedFlat:
         Number(selfOverrides.defenderSpeedFlat ?? 0) +
@@ -562,9 +578,11 @@ export function applyBattleActivation({
   });
   updateDirection(next, targetDirection, {
     overrides: {
-      attackLevelStage: clampStage(
-        Number(targetOverrides.attackLevelStage ?? 0) + deltas.targetAttack,
-      ),
+      ...applyAttackStageChanges(targetOverrides, {
+        attack: deltas.targetAttack,
+        physical: operations.targetPhysicalAttackStageAdd,
+        magical: operations.targetMagicalAttackStageAdd,
+      }),
       attackerSpeedFlat:
         Number(targetOverrides.attackerSpeedFlat ?? 0) +
         Number(deltas.targetSpeedFlat ?? 0),
@@ -579,26 +597,24 @@ export function applyBattleActivation({
     },
   });
 
-  recordGainChanges(gainBaseline, next, { kind: "skill", id: `${side}:${skill.id}`, name: skill.name, countDelta: resolution.triggerCount, transient: Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0 });
+  recordSkillAndPostAttackGains(gainBaseline, next, { kind: "skill", id: `${side}:${skill.id}`, name: skill.name, countDelta: resolution.triggerCount, transient: Number.isFinite(transientPowerPercent) && transientPowerPercent !== 0 }, { direction: selfDirection, effects: postAttackEffects });
   const targetSpirit = getSpirit(snapshot, next.sides[targetSide]);
   if (
     hasFairPigeonBalance(targetSpirit) &&
     balanceIsTriggered(next, snapshot, targetSide)
   ) {
     const gained = {
-      attack: Math.max(
-        0,
-        ownAttackStage - Number(selfOverrides.attackLevelStage ?? 0),
-      ),
+      ...positiveAttackStageGains(selfOverrides, ownAttackStages),
       defense: Math.max(
         0,
         ownDefenseStage - Number(targetOverrides.defenseLevelStage ?? 0),
       ),
     };
-    if (gained.attack > 0 || gained.defense > 0) {
+    if (gained.attack > 0 || gained.physicalAttack > 0 || gained.magicalAttack > 0 || gained.defense > 0) {
       const copied = copyPositiveAbilityStages(
         gained,
         abilityStagesForSide(next, targetSide),
+        { sourceIsDelta: true },
       );
       const beforeCopy = clone(next);
       setAbilityStagesForSide(next, targetSide, copied);

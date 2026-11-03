@@ -466,6 +466,25 @@
   gap: 7px;
 }
 
+.active-ability-stage__specific {
+  display: flex;
+  grid-column: 1 / -1;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.active-ability-stage__specific-summary {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .active-ability-stage__control {
   display: grid;
   min-width: 0;
@@ -1845,7 +1864,7 @@
   padding: 0;
   border: 1px solid var(--border-strong);
   border-radius: 9px;
-  background: var(--surface-card);
+  background: transparent;
   color: var(--text-primary);
   font-size: 14px;
   font-weight: 600;
@@ -1875,3 +1894,13 @@
 .skill-usage__notice { display: block; color: var(--text-secondary); font-size: 11px; }
 
 .condition-editor__number-stepper--usage { grid-template-columns: 44px minmax(0, 1fr) 44px 48px; }
+
+/* 标题与“恢复默认”同行：标签不折行，按钮按文字宽度（H5 按钮默认占满一行）。 */
+.condition-editor__field-heading .condition-editor__label {
+  white-space: nowrap;
+}
+
+.condition-editor__field-heading .condition-editor__power-reset {
+  width: auto;
+  flex: 0 0 auto;
+}

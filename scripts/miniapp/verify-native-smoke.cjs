@@ -30,6 +30,7 @@ async function run() {
   const comparisonKey = "rock-calculator.miniapp.damage-comparison-enabled.v1";
   let previousComparisonChoice;
   let comparisonChoiceCaptured = false;
+  let storageBackup;
   miniProgram.on("exception", (error) => errors.push(error));
   const report = { version, passed: false, checks, errors };
   async function refresh() {
@@ -78,6 +79,16 @@ async function run() {
       }
     }
   }
+  async function checkShareButtons() {
+    const viewport = await miniProgram.systemInfo();
+    for (const selector of [".share-preview__primary", ".share-preview__secondary"]) {
+      const button = await find(selector);
+      const offset = await button.offset();
+      const size = await button.size();
+      assert.ok(Number(offset.top) >= 0 && Number(offset.top) + Number(size.height) <= viewport.windowHeight,
+        `${selector} is clipped below the native viewport`);
+    }
+  }
   async function spirit(side, name) {
     const scope = `.combatant-card--${side}`;
     await tap(`${scope} .combatant-card__summary`);
@@ -98,13 +109,18 @@ async function run() {
   }
   try {
     report.toolInfo = await miniProgram.send("Tool.getInfo");
+    const storageInfo = await miniProgram.callWxMethod("getStorageInfoSync");
+    storageBackup = new Map();
+    for (const key of storageInfo.keys) {
+      storageBackup.set(key, await miniProgram.callWxMethod("getStorageSync", key));
+    }
     previousComparisonChoice = await miniProgram.callWxMethod("getStorageSync", comparisonKey);
     comparisonChoiceCaptured = true;
     await miniProgram.callWxMethod("removeStorageSync", comparisonKey);
     await refresh();
     assert.equal(await root.$(".dc-entry"), null, "fresh settings must hide damage comparison");
     checks.push("comparison-default: no saved preference means entry hidden");
-    checks.push("cold-start: bundled S4 workspace rendered");
+    checks.push("cold-start: bundled workspace rendered");
     await screenshot("01-cold-start.png");
 
     await tap(".app-header__action");
@@ -164,7 +180,13 @@ async function run() {
       assert.ok(shareText.includes(label), `share preview is missing ${label}`);
     }
     checks.push("share-preview: both configurations, skill parameters and battle conditions present");
+    await checkShareButtons();
     await screenshot("04-share-preview.png");
+    await (await find(".share-preview__scroll")).scrollTo(0, 10000);
+    await wait(250);
+    await checkShareButtons();
+    await screenshot("04b-share-preview-scrolled.png");
+    checks.push("share-preview-layout: both actions stay visible before and after native scroll");
     await tap(".share-preview__secondary");
     await tap(".result-sheet__close");
     const restoredNames = {
@@ -188,6 +210,82 @@ async function run() {
     await checkResultBounds();
     checks.push("four-skills: four result cards rendered");
     await screenshot("05-four-skills.png");
+    if (process.argv.includes("--s5")) {
+      process.stdout.write("native: S5 dice, energy and independent stat controls\n");
+      await (await root.$$(".mode-switch__button"))[0].tap();
+      await wait(350);
+      async function skill(name) {
+        await tap(".skill-panel--active .skill-picker__trigger");
+        await (await find(".skill-picker__search")).input(name);
+        await wait(400);
+        await (await matchText(".skill-picker__option", name)).tap();
+        await wait(450);
+      }
+      async function modifiers() {
+        await tap(".result-bar__action");
+        await (await matchText(".result-actions__category", "增减")).tap();
+        await wait(350);
+      }
+      await spirit("attacker", "滴廿豚");
+      await skill("抓挠");
+      await modifiers();
+      const diceField = await matchText(".result-sheet .condition-editor__field", "骰点");
+      const dicePicker = await diceField.$("picker");
+      assert.ok(dicePicker, "S5 dice requires the native picker");
+      await dicePicker.trigger("change", { value: 1 });
+      await wait(450);
+      assert.match(await diceField.text(), /双方技能威力\+20/u);
+      const diceDamage = String(await (await find(".result-sheet__damage")).text());
+      assert.ok(Number(diceDamage) > 0, "supported dice result must be numeric");
+      await screenshot("06-s5-dice.png");
+      await tap(".result-sheet__share");
+      assert.match(await (await find(".share-preview__configuration")).text(), /双方技能威力\+20/u);
+      await checkShareButtons();
+      await (await find(".share-preview__scroll")).scrollTo(0, 10000);
+      await wait(250);
+      await screenshot("07-s5-dice-share.png");
+      await tap(".share-preview__secondary");
+      await tap(".result-sheet__close");
+      await refresh();
+      assert.equal(String(await (await find(".result-bar__damage")).text()), diceDamage);
+      checks.push("S5 dice: native picker applies, share explains and restart restores result");
+
+      await spirit("attacker", "地绡银龙");
+      await skill("扬尘");
+      await modifiers();
+      const energyField = await matchText(".result-sheet .condition-editor__field", "累计消耗能量");
+      await (await energyField.$("input")).input("0");
+      await wait(350);
+      const useAction = await matchText(".result-actions__item", "扬尘");
+      await (await useAction.$(".result-actions__apply")).tap();
+      await wait(450);
+      const energy = Number(await (await energyField.$("input")).value());
+      assert.ok(energy > 0, "skill use must accumulate actual energy");
+      await (await matchText(".result-sheet .condition-editor__choice", "回合结束")).tap();
+      await wait(450);
+      const settled = await (await find(".result-actions__list")).text();
+      await (await matchText(".result-sheet .condition-editor__choice", "回合结束")).tap();
+      await wait(350);
+      assert.equal(await (await find(".result-actions__list")).text(), settled);
+      const energyPosition = await energyField.offset();
+      await (await find(".result-sheet__scroll")).scrollTo(0, Math.max(0, Number(energyPosition.top) - 300));
+      await wait(250);
+      await screenshot("08-s5-energy-settlement.png");
+      checks.push("S5 silver dragon: actual energy accumulates; repeated end-turn does not settle twice");
+      await tap(".result-sheet__close");
+      await skill("矿物置换");
+      await tap(".result-bar__action");
+      assert.equal(await root.$(".result-sheet .condition-editor__power-modes"), null);
+      assert.match(await (await find(".result-actions__parameters")).text(), /己方魔攻 \+12层/u);
+      await screenshot("09-s5-status-skill.png");
+      await tap(".result-sheet__close");
+      const summary = await find(".active-ability-stage__specific");
+      assert.match(await summary.text(), /物攻 0% · 魔攻 \+120%/u);
+      const bounds = await summary.size();
+      assert.ok(bounds.width <= (await miniProgram.systemInfo()).windowWidth);
+      await screenshot("10-s5-independent-magic-attack.png");
+      checks.push("S5 mineral conversion: status controls and independent magic-attack +120% summary");
+    }
     report.systemInfo = await miniProgram.systemInfo();
     assert.deepEqual(errors, [], "native runtime exceptions detected");
     report.passed = true;
@@ -196,7 +294,17 @@ async function run() {
     await screenshot("failure.png").catch(() => {});
     throw error;
   } finally {
-    if (comparisonChoiceCaptured) {
+    if (storageBackup) {
+      const { keys } = await miniProgram.callWxMethod("getStorageInfoSync");
+      for (const key of keys) {
+        if (!storageBackup.has(key)) await miniProgram.callWxMethod("removeStorageSync", key);
+      }
+      for (const [key, value] of storageBackup) {
+        await miniProgram.callWxMethod("setStorageSync", key, value);
+        assert.deepEqual(await miniProgram.callWxMethod("getStorageSync", key), value);
+      }
+      report.storageRestored = true;
+    } else if (comparisonChoiceCaptured) {
       if (previousComparisonChoice === "" || previousComparisonChoice === undefined) {
         await miniProgram.callWxMethod("removeStorageSync", comparisonKey);
       } else {

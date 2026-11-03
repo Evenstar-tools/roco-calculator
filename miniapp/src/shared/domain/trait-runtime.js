@@ -58,8 +58,15 @@ export function projectTraitRuntimeContext(
     { ...context, ...instanceValues },
     controls,
   );
-  if (projected.enemyTotalSkillCostAuto === true && context.automaticEnemyTotalSkillCost !== undefined) {
-    projected.enemyTotalSkillCost = context.automaticEnemyTotalSkillCost;
+  if (projected.enemyTotalSkillCostAuto === true) {
+    const cost = controls.find(control => control.contextKey === "enemyTotalSkillCost");
+    // The manual field is hidden in automatic mode. Its linked value still
+    // belongs to this role; preserve null/invalid totals for the caller's guard.
+    if (context.automaticEnemyTotalSkillCost !== undefined) {
+      projected.enemyTotalSkillCost = context.automaticEnemyTotalSkillCost;
+    } else if (cost && Object.hasOwn(context, cost.id)) {
+      projected.enemyTotalSkillCost = context[cost.id];
+    }
   }
   return projected;
 }

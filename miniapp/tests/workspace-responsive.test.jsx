@@ -65,6 +65,37 @@ function createSnapshot() {
 }
 
 describe("responsive battle workspace", () => {
+  test("HP允许清空重填，空白失焦恢复，越界确认收敛且切方向清除草稿", () => {
+    const snapshot = createSnapshot();
+    const store = createCalculatorStore(snapshot);
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+    const input = screen.getByLabelText("目标当前生命");
+    const maximum = Number(input.max);
+    fireEvent.input(input, { target: { value: "" } });
+    expect(input.value).toBe("");
+    expect(store.getState().directions.forward.currentHp).toBeNull();
+    fireEvent.input(input, { target: { value: "123" } });
+    expect(input).toHaveValue(123);
+    expect(store.getState().directions.forward.currentHp).toBe(123);
+    expect(screen.getByLabelText("结果栏目标当前生命")).toHaveValue(123);
+    fireEvent.input(input, { target: { value: "" } });
+    fireEvent.blur(input);
+    expect(input).toHaveValue(123);
+    fireEvent.input(input, { target: { value: "9999" } });
+    expect(store.getState().directions.forward.currentHp).toBe(123);
+    fireEvent.keyDown(input, { key: "Enter" });
+    expect(input).toHaveValue(maximum);
+    expect(store.getState().directions.forward.currentHp).toBe(maximum);
+    fireEvent.input(input, { target: { value: "-1" } });
+    fireEvent.blur(input);
+    expect(input).toHaveValue(0);
+    fireEvent.input(input, { target: { value: "" } });
+    fireEvent.click(screen.getByRole("button", { name: "切换计算方向" }));
+    expect(input.value).not.toBe("");
+    expect(store.getState().directions.reverse.currentHp).toBeNull();
+    expect(screen.getByRole("button", { name: "展开伤害结果" })).toHaveTextContent("伤害详情");
+  });
+
   test("技能天气勾选联动环境与特性，并且切换雨天后同时取消", () => {
     const snapshot = createSnapshot();
     snapshot.skills[0].name = "雪原狩猎";
