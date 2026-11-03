@@ -2,7 +2,7 @@
 
 [English](README.en.md)
 
-《洛克王国：世界》的非官方 PVP 伤害计算与队伍工具。选择双方精灵和技能，查看伤害、HP 占比与剩余生命。国服使用 S4 数据；国际服网页支持中文、English 和日本語，数值与规则沿用 S3 季中，提供 S1–S5 赛季装扮。
+《洛克王国：世界》的非官方 PVP 伤害计算与队伍工具。选择双方精灵和技能，查看伤害、HP 占比与剩余生命。国服使用 S5 数据；国际服网页支持中文、English 和日本語，数值与规则沿用 S3 季中，提供 S1–S5 赛季装扮。
 
 [国服](https://rococalc.top/) · [Global · English](https://rococalc.top/en/) · [Global · 日本語](https://rococalc.top/jp/) · [国际服中文](https://rococalc.top/global/zh-CN/) · [Windows 安装包](https://github.com/Evenstar-tools/roco-calculator/releases/latest)
 
