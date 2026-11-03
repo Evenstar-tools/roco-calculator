@@ -82,6 +82,7 @@ export function TeamDrawer({
   const [exchangeMode, setExchangeMode] = useState(null);
   const [deletePending, setDeletePending] = useState(false);
   const [memberPage, setMemberPage] = useState("configure");
+  const [hideSkillDescriptions, setHideSkillDescriptions] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
   const [paneMode, setPaneMode] = useState("member");
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -202,6 +203,103 @@ export function TeamDrawer({
       ? t("临时攻击方")
       : t("临时防御方")
     : t("{index}号位", { index: selectedIndex + 1 });
+
+  const renderMemberHeader = (picker) => (
+    <>
+      <header className="team-workbench__member-header">
+        {picker ?? (
+          <div className="team-workbench__identity">
+            {spiritAsset(activeSpirit) ? (
+              <SpiritImage name={activeSpirit?.fullName} alt="" src={spiritAsset(activeSpirit)} />
+            ) : null}
+            <div>
+              <h3>
+                {t(sourceLabel)} · {t(activeSpirit?.fullName ?? t("待选择精灵"))}
+              </h3>
+              {analysisEntry ? <span>{t("临时配置")}</span> : (
+                <button type="button" onClick={() => navigate(() => {
+                  setMemberPage("configure");
+                  requestAnimationFrame(() => {
+                    const picker = drawerRef.current?.querySelector('.team-member-editor input[role="combobox"]');
+                    picker?.scrollIntoView({ block: "center" });
+                    picker?.focus({ preventScroll: true });
+                  });
+                  return true;
+                })}>
+                  <PencilSimple aria-hidden="true" size={13} />{t("更换精灵")}
+                </button>
+              )}
+              {!analysisEntry ? (
+                <small>
+                  <CheckCircle aria-hidden="true" size={14} weight="fill" />
+                  {t("更改自动保存")}
+                </small>
+              ) : null}
+            </div>
+          </div>
+        )}
+        {activeTeam && !analysisEntry && memberPage === "configure" ? (
+          <div className="team-drawer__capture-actions">
+            {[true, false].flatMap((apply) => ["attacker", "defender"].map((side) => {
+              const name = side === "attacker" ? t("攻击方") : t("防御方");
+              const label = apply ? t("设为{side}", { side: name }) : t("从{side}复制", { side: name });
+              return (
+                <button
+                  aria-label={t(apply ? label : t("用当前{side}填入{index}号位", { side: name, index: selectedIndex + 1 }))}
+                  data-side={side}
+                  disabled={apply && (!selectedMember || selectedMember.needsRepair)}
+                  key={`${side}-${apply}`}
+                  onClick={() => navigate(() => apply
+                    ? onApply(side, selectedMember)
+                    : onCaptureSide(side, activeTeam.id, selectedIndex))}
+                  title={t(apply ? t("将{index}号位设为{side}", { index: selectedIndex + 1, side: name }) : label)}
+                  type="button"
+                >
+                  <svg aria-hidden="true" className={apply ? undefined : "team-capture-icon"} width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
+                    <use href={publicResourceUrl(`/assets/ui/team-actions.svg#${apply ? "set" : "copy"}`)} />
+                  </svg>
+                  {t(label)}
+                </button>
+              );
+            }))}
+          </div>
+        ) : null}
+      </header>
+
+      <div aria-label={t("成员页面")} className="team-workbench__member-tabs">
+        <button
+          aria-pressed={memberPage === "configure"}
+          disabled={!activeTeam}
+          onClick={() =>
+            navigate(() => {
+              setMemberPage("configure");
+              requestAnimationFrame(() => drawerRef.current?.querySelector('.team-workbench__member-tabs button[aria-pressed="true"]')?.focus({ preventScroll: true }));
+              return true;
+            }, memberPage !== "configure")
+          }
+          type="button"
+        >
+          {t("成员配置")}
+        </button>
+        <button
+          aria-pressed={memberPage === "ability"}
+          disabled={!analysisAvailable}
+          title={!analysisAvailable ? t("当前服务器暂不支持此分析") : undefined}
+          onClick={() =>
+            navigate(() => {
+              setMemberPage("ability");
+              requestAnimationFrame(() => drawerRef.current?.querySelector('.team-workbench__member-tabs button[aria-pressed="true"]')?.focus({ preventScroll: true }));
+              return true;
+            }, memberPage !== "ability")
+          }
+          type="button"
+        >
+          {t("能力分析")}
+        </button>
+        {picker && <small className="team-workbench__saved"><CheckCircle aria-hidden="true" size={14} weight="fill" />{t("更改自动保存")}</small>}
+      </div>
+    </>
+  );
 
   return (
     <div
@@ -443,139 +541,56 @@ export function TeamDrawer({
             <main className="team-drawer__editor-pane">
               {paneMode === "member" || !analysisAvailable ? (
                 <>
-                  <header className="team-workbench__member-header">
-                    <div className="team-workbench__identity">
-                      {spiritAsset(activeSpirit) ? (
-                        <SpiritImage name={activeSpirit?.fullName} alt="" src={spiritAsset(activeSpirit)} />
-                      ) : null}
-                      <div>
-                        <h3>
-                          {t(sourceLabel)} · {t(activeSpirit?.fullName ?? t("待选择精灵"))}
-                        </h3>
-                        {analysisEntry ? <span>{t("临时配置")}</span> : (
-                          <button type="button" onClick={() => navigate(() => {
-                            setMemberPage("configure");
-                            requestAnimationFrame(() => {
-                              const picker = drawerRef.current?.querySelector('.team-member-editor input[role="combobox"]');
-                              picker?.scrollIntoView({ block: "center" });
-                              picker?.focus({ preventScroll: true });
-                            });
-                            return true;
-                          })}>
-                            <PencilSimple aria-hidden="true" size={13} />{t("更换精灵")}
-                          </button>
-                        )}
-                        {!analysisEntry ? (
-                          <small>
-                            <CheckCircle aria-hidden="true" size={14} weight="fill" />
-                            {t("更改自动保存")}
-                          </small>
-                        ) : null}
-                      </div>
-                    </div>
-                    {activeTeam && !analysisEntry && memberPage === "configure" ? (
-                      <div className="team-drawer__capture-actions">
-                        {[true, false].flatMap((apply) => ["attacker", "defender"].map((side) => {
-                          const name = side === "attacker" ? t("攻击方") : t("防御方");
-                          const label = apply ? t("设为{side}", { side: name }) : t("从{side}复制", { side: name });
-                          return (
-                            <button
-                              aria-label={t(apply ? label : t("用当前{side}填入{index}号位", { side: name, index: selectedIndex + 1 }))}
-                              data-side={side}
-                              disabled={apply && (!selectedMember || selectedMember.needsRepair)}
-                              key={`${side}-${apply}`}
-                              onClick={() => navigate(() => apply
-                                ? onApply(side, selectedMember)
-                                : onCaptureSide(side, activeTeam.id, selectedIndex))}
-                              title={t(apply ? t("将{index}号位设为{side}", { index: selectedIndex + 1, side: name }) : label)}
-                              type="button"
-                            >
-                              <svg aria-hidden="true" className={apply ? undefined : "team-capture-icon"} width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
-                                <use href={publicResourceUrl(`/assets/ui/team-actions.svg#${apply ? "set" : "copy"}`)} />
-                              </svg>
-                              {t(label)}
-                            </button>
-                          );
-                        }))}
-                      </div>
-                    ) : null}
-                  </header>
-
-                  <div aria-label={t("成员页面")} className="team-workbench__member-tabs">
-                    <button
-                      aria-pressed={memberPage === "configure"}
-                      disabled={!activeTeam}
-                      onClick={() =>
-                        navigate(() => {
-                          setMemberPage("configure");
-                          return true;
-                        }, memberPage !== "configure")
-                      }
-                      type="button"
-                    >
-                      {t("成员配置")}
-                    </button>
-                    <button
-                      aria-pressed={memberPage === "ability"}
-                      disabled={!analysisAvailable}
-                      title={!analysisAvailable ? t("当前服务器暂不支持此分析") : undefined}
-                      onClick={() =>
-                        navigate(() => {
-                          setMemberPage("ability");
-                          return true;
-                        }, memberPage !== "ability")
-                      }
-                      type="button"
-                    >
-                      {t("能力分析")}
-                    </button>
-                  </div>
-
                   {(memberPage === "configure" || !analysisAvailable) && activeTeam ? (
                     <TeamMemberEditor
                       getSpiritConfiguration={getSpiritConfiguration}
+                      hideSkillDescriptions={hideSkillDescriptions}
                       index={selectedIndex}
                       member={selectedMember}
                       members={activeTeam.members}
                       onChange={(member) =>
                         onMemberChange(activeTeam.id, selectedIndex, member)
                       }
-                      onOpenAbilityAnalysis={() => setMemberPage("ability")}
+                      renderHeader={renderMemberHeader}
+                      onHideSkillDescriptionsChange={setHideSkillDescriptions}
                       snapshot={snapshot}
                       spiritChoices={spiritChoices}
                     />
                   ) : !analysisAvailable ? <p role="status">{t("当前服务器暂不支持此分析")}</p> : (
-                    <AbilityWorkbench
-                      configuration={activeConfiguration}
-                      onApplyMember={
-                        activeTeam && !analysisEntry
-                          ? (member) => {
-                              const applied = onMemberChange(
-                                activeTeam.id,
-                                selectedIndex,
-                                member,
-                              );
-                              if (applied !== false) setAnalysisDirty(false);
-                              return applied;
-                            }
-                          : undefined
-                      }
-                      onApplySide={
-                        analysisEntry
-                          ? (configuration) => {
-                              const applied = onApplyAnalysisSide?.(
-                                analysisEntry.side,
-                                configuration,
-                              );
-                              if (applied !== false) setAnalysisDirty(false);
-                              return applied;
-                            }
-                          : undefined
-                      }
-                      onDirtyChange={setAnalysisDirty}
-                      snapshot={snapshot}
-                      source={analysisSource}
-                    />
+                    <>
+                      {renderMemberHeader()}
+                      <AbilityWorkbench
+                        configuration={activeConfiguration}
+                        onApplyMember={
+                          activeTeam && !analysisEntry
+                            ? (member) => {
+                                const applied = onMemberChange(
+                                  activeTeam.id,
+                                  selectedIndex,
+                                  member,
+                                );
+                                if (applied !== false) setAnalysisDirty(false);
+                                return applied;
+                              }
+                            : undefined
+                        }
+                        onApplySide={
+                          analysisEntry
+                            ? (configuration) => {
+                                const applied = onApplyAnalysisSide?.(
+                                  analysisEntry.side,
+                                  configuration,
+                                );
+                                if (applied !== false) setAnalysisDirty(false);
+                                return applied;
+                              }
+                            : undefined
+                        }
+                        onDirtyChange={setAnalysisDirty}
+                        snapshot={snapshot}
+                        source={analysisSource}
+                      />
+                    </>
                   )}
                 </>
               ) : (

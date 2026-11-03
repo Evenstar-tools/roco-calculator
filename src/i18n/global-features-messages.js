@@ -1,5 +1,12 @@
 // Product UI copy; entity names and descriptions come from the official client catalog.
 export const globalFeaturesMessages = Object.fromEntries([
+  ["队伍配置布局", "Team layout", "チーム設定のレイアウト"],
+  ["队伍配置合并精灵身份与选择入口，桌面并排查看六维、耐久和配招；保留原顶部工具栏。", "Jini details and selection now share one header. On desktop, stats, durability and the moveset appear side by side. The top toolbar stays unchanged.", "ジニの情報と選択欄を一つにまとめました。デスクトップでは6つの能力値・耐久・技構成を横並びで確認できます。上部のツールバーはそのままです。"],
+  ["配招说明开关", "Skill description toggle", "スキル説明の表示切り替え"],
+  ["配招旁新增小眼睛，可隐藏技能说明，保留属性、能耗、威力和血脉提示。", "Use the eye button beside the moveset to hide skill descriptions. Class, energy cost, power and Bloodline notices remain visible.", "技構成の横にある目のボタンでスキル説明を非表示にできます。属性・消費エネルギー・威力・血統の注意表示は残ります。"],
+  ["队伍竖屏浏览", "Portrait team view", "縦画面でのチーム表示"],
+  ["竖屏队伍改为整体内容滚动，六个槽位随内容移走，成员页签吸顶；切换页签保留键盘焦点。", "In portrait view, the six team slots scroll with the content while member tabs stay at the top. Keyboard focus is preserved when switching tabs.", "縦画面では6つのメンバー枠が内容と一緒にスクロールし、メンバーのタブは上部に固定されます。タブを切り替えてもキーボードフォーカスを維持します。"],
+  ["队伍配置重排，配招说明可收起，竖屏浏览更顺畅。", "Team settings have a new layout, skill descriptions can be hidden, and portrait browsing is smoother.", "チーム設定の配置を整理し、スキル説明を折りたためるようにしました。縦画面でも閲覧しやすくなりました。"],
   ["队伍六维与个体切换", "Team stats and Individual Aptitude", "チームの能力と個体資質の切り替え"],
   ["队伍六维显示60级实际面板，点击数值牌切换个体0/60；性格增益图标变亮，已加点数值呈金色。", "The team chart shows actual stats at Lv. 60. Click a stat badge to switch Individual Aptitude between 0 and 60. Nature-boosted icons are highlighted, and invested stats appear in gold.", "チームのチャートにレベル60の能力実数値を表示します。数値を押すと個体資質を0／60に切り替えられます。性格で上がる能力のアイコンを強調し、個体資質を振った能力の数値を金色で表示します。"],
   ["学习更新按家族查看", "Learning updates by family", "系統ごとの習得更新"],

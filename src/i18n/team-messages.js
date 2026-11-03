@@ -1,4 +1,7 @@
 export const teamMessages = Object.fromEntries([
+  ["能力值", "Stats", "能力値"],
+  ["配招", "Moveset", "技構成"],
+  ["点击数值切换个体 0 / 60", "Click a value to toggle IV 0 / 60", "数値を選んで個体値0／60を切替"],
   ["按住拖动排序", "Hold and drag to reorder", "長押ししてドラッグで並べ替え"],
   ["队伍草稿导入导出", "Team draft import and export", "チーム下書きのインポートとエクスポート"],
   ["导入队伍草稿", "Import team draft", "チーム下書きをインポート"], ["导出队伍草稿", "Export team draft", "チーム下書きをエクスポート"],

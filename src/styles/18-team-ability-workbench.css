@@ -2918,6 +2918,90 @@
 .ability-speed__table-toggle { flex-wrap: wrap; }
 .ability-speed__table-toggle small { line-height: 1.5; }
 .ability-build-card dl > div { flex-wrap: wrap; }
+
+/* UX43: member workspace only; the team toolbar and primary navigation stay unchanged. */
+.team-workbench .team-member-editor { padding: 0 4px; }
+.team-member-editor__columns { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; padding-top: 12px; }
+.team-member-editor__panel, .team-member-editor__loadout { min-width: 0; }
+.team-member-editor__section-heading { display: flex; min-height: 34px; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.team-member-editor__section-heading > strong { font-size: 15px; }
+.team-member-editor__loadout-title { display: flex; align-items: center; gap: 6px; }
+.team-member-editor__loadout-title > strong { font-size: 15px; }
+.team-workbench .team-member-editor__description-toggle { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 34px; height: 34px; padding: 0; color: var(--text-muted); border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
+.team-member-editor__description-toggle[aria-pressed="true"] { color: var(--accent-strong); background: var(--surface-soft); }
+.team-member-editor__section-heading > span { max-width: 65%; color: var(--text-muted); font-size: 11px; line-height: 1.5; text-align: right; }
+.team-member-editor__section-heading > .is-warning { color: var(--damage-warning); }
+.team-workbench__saved { display: inline-flex; align-items: center; gap: 5px; margin-left: auto; color: var(--damage-safe); font-size: 11px; }
+.team-workbench .team-member-editor__nature { grid-template-columns: minmax(0, 1fr); gap: 0; margin-top: 0; }
+.team-workbench .team-member-editor__nature .nature-effect { min-height: 24px; border: 0; background: transparent; }
+.team-workbench .team-member-editor__bloodline { grid-template-columns: auto minmax(80px, 110px); }
+.team-workbench .team-member-editor__stats--radar { margin-top: 4px; padding: 0; }
+.team-workbench .team-member-editor__radar.stat-radar--game { width: min(295px, 100%); height: auto; aspect-ratio: 320 / 260; flex: none; }
+.team-member-editor__iv-help { color: var(--text-muted); font-size: 12px; text-align: center; margin: 0 0 6px; }
+.team-workbench .team-member-editor__durability { border: 0; border-top: 1px solid var(--border); border-radius: 0; margin-top: 0; overflow: visible; }
+.team-workbench .team-member-editor__durability > header { min-height: 28px; padding: 8px 0 0; border: 0; background: transparent; }
+.team-workbench .team-member-editor__durability > header strong { color: var(--text-muted); font-weight: 400; }
+.team-workbench .team-member-editor__durability > div { min-height: 54px; }
+.team-workbench .team-member-editor__durability > div > span { padding: 6px 0; }
+.team-workbench .team-member-editor__durability > div > span + span::before { display: none; }
+.team-workbench .team-member-editor__durability small { font-size: 12px; }
+.team-workbench .team-member-editor__durability b { font-size: 17px; }
+.team-workbench .team-member-editor__durability > div > span:last-child b { color: var(--accent-strong); }
+.team-workbench .team-member-editor__skills { display: grid; gap: 0; margin-top: 0; }
+.team-member-editor__skill { display: grid; grid-template-columns: 14px minmax(0, 1fr); align-items: start; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.team-member-editor__skill:first-child { padding-top: 0; }
+.team-member-editor__skill-number { padding-top: 12px; color: var(--text-muted); font-size: 12px; }
+.team-member-editor__skill-body { min-width: 0; }
+.team-workbench .team-member-editor__skills .skill-picker { min-height: 40px; }
+.team-member-editor__skill-meta { display: flex; flex-wrap: wrap; gap: 3px 14px; margin-top: 6px; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+.team-member-editor__skill-description { margin: 3px 0 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.team-member-editor__skill.has-bloodline-conflict .skill-picker { border-color: var(--bloodline-warning); }
+
+.team-workbench .team-member-editor .team-workbench__member-header { padding-top: 2px; padding-bottom: 6px; }
+.team-workbench .spirit-picker--identity { flex: 1; min-width: 0; width: 100%; border: 0; display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; column-gap: 10px; row-gap: 0; }
+.team-workbench .spirit-picker--identity > .spirit-picker__eyebrow { display: none; }
+.team-workbench .spirit-picker--identity .spirit-picker__search { grid-column: 2; grid-row: 1; min-height: 32px; height: auto; padding: 0; border: 0; border-radius: 4px; background: transparent; box-shadow: none; }
+.team-workbench .spirit-picker--identity .spirit-picker__search > svg { display: none; }
+.team-workbench .spirit-picker--identity .spirit-picker__search > input { width: 100%; min-width: 0; height: 32px; color: var(--text); font-size: 20px; font-weight: 750; }
+.team-workbench .spirit-picker--identity .spirit-picker__selected-name { color: var(--text); }
+.team-workbench .spirit-picker--identity .spirit-picker__search:focus-within { outline: 1px solid var(--accent); outline-offset: 2px; }
+.team-workbench .spirit-picker--identity .spirit-card,
+.team-workbench .spirit-picker--identity .spirit-card__identity { display: contents; }
+.team-workbench .spirit-picker--identity .spirit-card__image { grid-column: 1; grid-row: 1 / 4; align-self: center; width: 64px; height: 64px; }
+.team-workbench .spirit-picker--identity .spirit-card__title { grid-column: 3; grid-row: 1; align-self: center; }
+.team-workbench .spirit-picker--identity .spirit-card__tags { grid-column: 2 / 4; grid-row: 2; gap: 6px; margin-top: 0; font-size: 12px; }
+.team-workbench .spirit-picker--identity .spirit-card__identity > p { grid-column: 2 / 4; margin: 0; font-size: 12px; line-height: 1.5; }
+.team-workbench .spirit-picker--identity[data-has-selection="false"] { grid-template-columns: minmax(0, 1fr); }
+.team-workbench .spirit-picker--identity[data-has-selection="false"] .spirit-picker__search { grid-column: 1; border: 1px solid var(--border); padding-left: 8px; }
+.team-workbench .spirit-picker--identity[data-has-selection="false"] .spirit-picker__search > input { font-size: 15px; }
+@media (min-width: 1024px) {
+  .team-workbench > .team-drawer__content { grid-template-columns: 244px minmax(0, 1fr); }
+  .team-workbench .team-slot { min-height: 76px; grid-template-columns: minmax(0, 1fr) 44px; }
+  .team-workbench .team-slot__select { min-height: 74px; padding: 6px; grid-template-columns: 40px minmax(0, 1fr); gap: 4px 7px; }
+  .team-workbench .team-slot__select > img { width: 40px; height: 40px; }
+  .team-workbench .team-slot__actions { width: 44px; padding: 4px; }
+  .team-workbench .team-slot__actions button { min-height: 29px; padding: 3px; }
+}
+@media (min-width: 1180px) {
+  .team-member-editor__columns { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+  .team-member-editor__loadout { border-left: 1px solid var(--border); padding-left: 24px; }
+  .team-workbench .team-member-editor__nature { grid-template-columns: minmax(160px, 1fr) minmax(0, 1.2fr); gap: 6px; align-items: center; }
+}
+@media (max-width: 760px) {
+  .team-workbench .spirit-picker--identity .spirit-picker__search > input { height: 40px; font-size: 17px; }
+  .team-workbench .spirit-picker--identity .spirit-picker__selected-name { font-size: 17px; }
+  .team-workbench__saved { max-width: 32%; font-size: 10px; }
+  .team-workbench .team-member-editor__nature .nature-effect { min-height: 28px; }
+  .team-workbench .team-member-editor__skills .skill-picker { min-height: 44px; }
+}
+/* One scrolling workspace on portrait-size screens; the existing top toolbar stays fixed. */
+@media (max-width: 1023px) {
+  .team-workbench > .team-drawer__content { display: block; padding-top: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; }
+  .team-workbench .team-drawer__roster-pane { padding-top: 7px; }
+  .team-workbench .team-drawer__editor-pane { display: block; overflow: visible; padding: 10px 0 0; scrollbar-gutter: auto; }
+  .team-workbench__member-tabs { position: sticky; z-index: 3; top: 0; background: var(--surface); }
+  .team-workbench .team-member-editor__description-toggle { width: 44px; height: 44px; }
+}
 @media (min-width: 761px) {
   .ability-speed .ability-speed__selected-target { display: none; }
 }

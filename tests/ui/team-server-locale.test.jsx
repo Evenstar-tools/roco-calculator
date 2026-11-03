@@ -3,6 +3,7 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
 import { getMissingUiMessages, clearMissingUiMessages, translateUi } from "../../src/i18n/messages.js";
 import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
+import { localizeGlobalSkill } from "../../src/runtime/global-entity-localization.js";
 import { TeamDrawer } from "../../src/components/TeamDrawer.jsx";
 import { ConfigLibraryDialog } from "../../src/components/ConfigLibraryDialog.jsx";
 import { TeamExchange } from "../../src/components/TeamExchange.jsx";
@@ -28,7 +29,7 @@ test.each(["zh-CN", "en", "ja"])("original Global team UI translates and gates u
   expect(tabs[0]).toBeEnabled();
   expect(tabs[1]).toBeDisabled();
   expect(tabs[2]).toBeDisabled();
-  expect(container.querySelector('.team-workbench__member-tabs button:last-child')).toBeDisabled();
+  expect(screen.getByRole("button", { name: translateUi(locale, "能力分析"), exact: true })).toBeDisabled();
   expect(container.textContent).not.toContain("Translation unavailable");
   expect(container.textContent).not.toContain("翻訳未対応");
   expect(getMissingUiMessages()).toEqual([]);
@@ -54,6 +55,18 @@ test.each(["en", "ja"])("%s preserves custom team names in selectors and matchup
   fireEvent.click(screen.getByRole("button", { name: text("导入队伍"), exact: true }));
   expect(container.querySelector(".team-analysis__matchup-controls > span").textContent).toBe(team.name);
   expect(onRenameTeam).not.toHaveBeenCalled();
+});
+
+test("Global equipped skill details use the same entity-specific translation as the skill picker", () => {
+  const skill = globalSnapshot.skills.find(entry => entry.id === "cn-placeholder:skill_72742c144153d716");
+  const spiritId = globalSnapshot.learnsets.find(entry => entry.skillIds.includes(skill.id)).spiritId;
+  const member = { ...createTeamMember(globalSnapshot, spiritId), skills: { four: [skill.id, null, null, null], single: skill.id } };
+  const team = { id: "localized", name: "Local team", members: [member, ...Array(5).fill(null)] };
+  const { container } = render(<TeamDrawer open teamsState={{ activeTeamId: team.id, teams: [team] }}
+    snapshot={globalSnapshot} onClose={vi.fn()} />, { wrapper: wrapper("en") });
+  const localized = localizeGlobalSkill(skill, "en");
+  expect(screen.getByRole("combobox", { name: translateUi("en", "成员技能{index}", { index: 1 }) })).toHaveValue(localized.name);
+  expect(container.querySelector(".team-member-editor__skill-description")).toHaveTextContent(localized.description);
 });
 
 test.each(["en", "ja"])("Global draft import uses a translated tool format without fetching CN native mappings (%s)", (locale) => {

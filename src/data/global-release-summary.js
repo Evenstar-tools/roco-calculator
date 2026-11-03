@@ -1,9 +1,12 @@
 export const GLOBAL_RELEASE_SUMMARY = Object.freeze({
-  date: "2026.11.02",
+  date: "2026.11.03",
   eyebrow: "国际服",
   title: "国际服计算器",
   description: "采用 S3 季中数值与规则。",
   items: [
+    { id: "teamLayout", title: "队伍配置布局", description: "队伍配置合并精灵身份与选择入口，桌面并排查看六维、耐久和配招；保留原顶部工具栏。" },
+    { id: "skillDescriptions", title: "配招说明开关", description: "配招旁新增小眼睛，可隐藏技能说明，保留属性、能耗、威力和血脉提示。" },
+    { id: "teamPortrait", title: "队伍竖屏浏览", description: "竖屏队伍改为整体内容滚动，六个槽位随内容移走，成员页签吸顶；切换页签保留键盘焦点。" },
     { id: "teamStats", title: "队伍六维与个体切换", description: "队伍六维显示60级实际面板，点击数值牌切换个体0/60；性格增益图标变亮，已加点数值呈金色。" },
     { id: "learningUpdates", title: "学习更新按家族查看", description: "赛季学习更新补齐头像；家族全员改动一致时合并，部分分支独立，支持筛选与按图鉴顺序分批查看。" },
     { id: "skillIcons", title: "技能图标加载恢复", description: "技能图标失败后有限次重试，网络恢复后自动重载；18系愿力冲击使用对应属性原图。" },

@@ -148,6 +148,8 @@ export function SpiritPicker({
   renderComparisonAction,
   selected: sourceSelected,
   showFavorite = true,
+  compactIdentity = false,
+  identityLabel,
   side,
   spirits: sourceSpirits,
 }) {
@@ -401,7 +403,8 @@ export function SpiritPicker({
 
   return (
     <article
-      className={`spirit-picker spirit-picker--${side}`}
+      className={`spirit-picker spirit-picker--${side}${compactIdentity ? " spirit-picker--identity" : ""}`}
+      data-has-selection={Boolean(selected?.id)}
       data-guide-root={guideTarget}
       onBlur={(event) => {
         if (
@@ -561,15 +564,20 @@ export function SpiritPicker({
           ) : null}
           <div className="spirit-card__identity">
             <span className="spirit-card__title">
-              <strong data-new={shouldShowNewBadge(selected) || undefined}>
-                {selected.fullName}
-              </strong>
+              {compactIdentity ? (
+                shouldShowNewBadge(selected) ? <strong data-new="true" /> : null
+              ) : (
+                <strong data-new={shouldShowNewBadge(selected) || undefined}>
+                  {selected.fullName}
+                </strong>
+              )}
               <EntityChangeHint changeInfo={selected.changeInfo} entityName={selected.fullName} active={comparisonReady && comparisonActive}
                 renderPatchAction={comparisonReady ? renderComparisonAction : undefined}>
                 {comparisonReady ? comparisonControls : null}
               </EntityChangeHint>
             </span>
             <div className="spirit-card__tags">
+              {compactIdentity && identityLabel ? <span>{identityLabel}</span> : null}
               {selected.types.map((type) => (
                 <span
                   className={`type-tag type-tag--${type}`}
