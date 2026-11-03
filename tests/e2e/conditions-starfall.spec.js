@@ -286,11 +286,16 @@ test("compact conditions expose repeat counts, branch health and expandable burs
   dialog = await open();
   await expect(dialog.getByRole("spinbutton", { name: "自身生命百分比" })).toHaveCount(0);
   await dialog.getByRole("combobox", { name: "选择效果" }).selectOption("lowHp");
+  await expect(dialog.getByRole("spinbutton", { name: "自身生命百分比" })).toHaveValue("49");
+  await dialog.getByRole("spinbutton", { name: "自身生命百分比" }).fill("20");
+  await dialog.getByRole("combobox", { name: "选择效果" }).selectOption("fixed");
+  await dialog.getByRole("combobox", { name: "选择效果" }).selectOption("lowHp");
+  await expect(dialog.getByRole("spinbutton", { name: "自身生命百分比" })).toHaveValue("20");
   await dialog.getByRole("spinbutton", { name: "自身生命百分比" }).fill("50");
   await dialog.getByRole("combobox", { name: "选择效果" }).selectOption("fixed");
   await expect(dialog.getByRole("spinbutton", { name: "自身生命百分比" })).toHaveCount(0);
   await dialog.getByRole("combobox", { name: "选择效果" }).selectOption("lowHp");
-  await expect(dialog.getByRole("spinbutton", { name: "自身生命百分比" })).toHaveValue("50");
+  await expect(dialog.getByRole("spinbutton", { name: "自身生命百分比" })).toHaveValue("49");
   await page.screenshot({ path: testInfo.outputPath("adapt-health-1920.png") });
   await page.keyboard.press("Escape");
   await selectSkill(page, "雷暴");
