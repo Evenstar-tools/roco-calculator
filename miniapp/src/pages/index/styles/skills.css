@@ -365,6 +365,10 @@
   font-size: 10px;
 }
 
+.skill-result-row__percent--muted {
+  color: var(--text-muted);
+}
+
 .active-skill-conditions {
   display: grid;
   padding: 10px;
