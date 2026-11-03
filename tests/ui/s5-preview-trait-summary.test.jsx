@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
-import { S5PreviewTraitSummary } from "../../src/components/S5PreviewTraitSummary.jsx";
+import { hasBattleLevelInput, S5PreviewTraitSummary } from "../../src/components/S5PreviewTraitSummary.jsx";
 import { SingleSkillEditor } from "../../src/components/SingleSkillEditor.jsx";
 import { FourSkillEditor } from "../../src/components/FourSkillEditor.jsx";
 import { getTraitView } from "../../src/domain/calculator-view-model.js";
@@ -184,7 +184,7 @@ test.each(["egg-wrap", "minggulong", "abu"])("%s保留真正影响防御的输�
     rerender(<SingleSkillEditor hitCount={1} selectedSkill={skill} skills={[skill]}
       defenderTrait={trait} traitContext={{ [trigger.id]: true }} />);
     expect(screen.getByRole("status", { name: "防御特性当前效果" })).toHaveTextContent("双防 +50%");
-  } else expect(screen.getByRole("status", { name: "防御特性当前效果" })).toBeInTheDocument();
+  } else expect(screen.queryByRole("status", { name: "防御特性当前效果" })?.textContent ?? "").not.toMatch(/当前等级/u);
   expect(key === "egg-wrap" ? screen.getByRole("checkbox", { name: "特性触发" })
     : screen.getByRole("spinbutton", { name: "当前等级" })).toBeInTheDocument();
 });
@@ -213,4 +213,28 @@ test.each([["gold-vein-dragon", "过充电", "已聚能至少1次"],
   expect(screen.queryByRole("spinbutton", { name: inputLabel })).toBeNull();
   expect(screen.queryByRole("checkbox", { name: inputLabel })).toBeNull();
   expect(screen.getByRole("spinbutton", { name: key === "gold-vein-dragon" ? "聚能次数" : "累计消耗能量" })).toBeInTheDocument();
+});
+
+test("等级输入框旁不重复“当前等级”，承伤等其他效果保留", () => {
+  const ming = traitView("minggulong");
+  expect(hasBattleLevelInput(ming.inputs)).toBe(true);
+  const { container, rerender } = render(<S5PreviewTraitSummary trait={ming} owner levelInputShown />);
+  expect(container).toBeEmptyDOMElement();
+  const abu = traitView("abu", "defender");
+  rerender(<S5PreviewTraitSummary trait={abu} role="defender" levelInputShown context={withValues(abu, { defenderTraitS5BattleLevel: 60 })} />);
+  const summary = screen.getByRole("status", { name: "防御特性当前效果" });
+  expect(summary).toHaveTextContent("承伤 +30%");
+  expect(summary).not.toHaveTextContent("当前等级");
+});
+
+test("对方特性行没有等级输入框时仍显示其当前等级", () => {
+  const attack = traitView("minggulong");
+  const defense = traitView("abu", "defender");
+  const { container } = render(<FourSkillEditor attackerName="冥古龙" defenderName="超能阿布"
+    attackerSkills={[skill]} defenderSkills={[skill]} skills={[skill]}
+    attackerTrait={attack} attackerDefenseTrait={defense} attackerTraitContext={withValues(defense, { defenderTraitS5BattleLevel: 60 })} />);
+  const side = within(container.querySelector(".four-skill-side--attacker"));
+  expect(side.getAllByRole("spinbutton", { name: "当前等级" }).length).toBeGreaterThan(0);
+  const statuses = side.queryAllByRole("status").map((node) => node.textContent);
+  expect(statuses.filter((text) => /当前等级 99/u.test(text))).toHaveLength(0);
 });

@@ -25,7 +25,7 @@ import {
 import { buildRefractionHint } from "../domain/refraction.js";
 import { getDefaultHitCount } from "../domain/skill-effects.js";
 import { resolveLifestealCapability } from "../domain/baron-greed.js";
-import { S5PreviewTraitSummary } from "./S5PreviewTraitSummary.jsx";
+import { hasBattleLevelInput, S5PreviewTraitSummary } from "./S5PreviewTraitSummary.jsx";
 import { getS5PreviewTraitPresentation } from "../features/s5-preview/trait-presentation.js";
 
 const CATEGORY_LABELS = {
@@ -211,7 +211,7 @@ function SkillSide({
         showsLifestealCapability ? (
           <div className="four-skill-trait-controls">
             <TraitHint trait={trait} description={trait.description} name={trait.name} />
-            <S5PreviewTraitSummary trait={trait} role="attacker" context={traitContext} />
+            <S5PreviewTraitSummary trait={trait} role="attacker" context={traitContext} levelInputShown={hasBattleLevelInput(offensiveTraitInputs)} />
             <TraitSkillPowerBonuses
               ariaLabel={tc("{v0}技能加成", { v0: trait.name })}
               bonuses={trait.skillPowerBonuses}
@@ -239,7 +239,7 @@ function SkillSide({
               description={entityDescription("trait", defenseTrait)}
               name={`${entityName("spirit", { name: opponentName })} · ${entityName("trait", defenseTrait)}`}
             />
-            <S5PreviewTraitSummary trait={defenseTrait} role="defender" context={traitContext} linked />
+            <S5PreviewTraitSummary trait={defenseTrait} role="defender" context={traitContext} linked levelInputShown={hasBattleLevelInput(defensiveTraitInputs)} />
             <TraitInputs
               context={traitContext}
               inputs={defensiveTraitInputs}

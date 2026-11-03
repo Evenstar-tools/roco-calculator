@@ -495,7 +495,7 @@
   .calculator-layout--compact .spirit-picker__eyebrow {
     min-height: 19px;
     gap: 4px;
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .calculator-layout--compact .spirit-picker__eyebrow .side-pill + span {
@@ -536,13 +536,13 @@
   .calculator-layout--compact .spirit-card__tags {
     gap: 4px;
     margin-top: 3px;
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .calculator-layout--compact .spirit-card__identity p {
     overflow: visible;
     margin-top: 3px;
-    font-size: 10px;
+    font-size: 11px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }

@@ -19,6 +19,11 @@
   margin-right: auto;
 }
 
+/* 摘要因与等级输入框重复而隐藏时，输入框仍紧跟特性名。 */
+.s5-preview-trait-editor > .trait-hint {
+  margin-right: 0;
+}
+
 .s5-preview-trait-summary[data-level="true"] {
   display: flex;
   flex-wrap: wrap;

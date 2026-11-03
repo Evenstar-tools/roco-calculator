@@ -23,6 +23,10 @@ function setup(key, mode = "four", skillName = "撕咬", negative = false, confi
 }
 const primary = () => Number(screen.getByTestId("primary-damage").textContent);
 
+
+// 等级输入框旁的摘要只保留输入框之外的效果；只剩等级时摘要不渲染。
+const statusText = (name) => screen.queryAllByRole("status", { name })[0]?.textContent ?? "";
+
 test("防守方6面骰使用现有控件，双方物攻与单项魔防面板同步且已知点数可算", () => {
   const official = Object.values(JSON.parse(readFileSync("data/reviewed/nrc-s5-20261101.json", "utf8")).modules.Skills)
     .find(skill => skill.name === "游戏的本质" && skill.desc.includes("1~6点"));
@@ -117,17 +121,17 @@ test.each(["single", "four"])("%s冥古龙仅有当前等级框，按钮与键�
   expect(increase).toBeDisabled();
   fireEvent.click(decrease);
   expect(level).toHaveValue(89);
-  expect(screen.getAllByRole("status", { name: summaryRole })[0]).not.toHaveTextContent("承伤 +40%");
+  expect(statusText(summaryRole)).not.toContain("承伤 +40%");
   fireEvent.click(decrease);
   expect(level).toHaveValue(79);
-  expect(screen.getAllByRole("status", { name: summaryRole })[0]).toHaveTextContent("承伤 +40%");
+  expect(statusText(summaryRole)).toContain("承伤 +40%");
   expect(primary()).toBeLessThan(at99);
   fireEvent.keyDown(level, { key: "ArrowUp" });
   expect(level).toHaveValue(89);
   fireEvent.keyDown(level, { key: "ArrowDown" });
   expect(level).toHaveValue(79);
   fireEvent.change(level, { target: { value: "80" } });
-  expect(screen.getAllByRole("status", { name: summaryRole })[0]).not.toHaveTextContent("承伤 +40%");
+  expect(statusText(summaryRole)).not.toContain("承伤 +40%");
   fireEvent.click(decrease);
   expect(level).toHaveValue(70);
   fireEvent.click(increase);
@@ -165,7 +169,7 @@ test.each([["abu", "single"], ["boss-abu", "four"], ["super-abu", "four"]])("%s 
   const level = screen.getByRole("spinbutton", { name: "当前等级", exact: true });
   const increase = screen.getByRole("button", { name: "当前等级增加2", exact: true });
   const decrease = screen.getByRole("button", { name: "当前等级减少2", exact: true });
-  const summary = () => screen.getAllByRole("status", { name: mode === "four" ? "防御特性当前效果" : "攻击特性当前效果" })[0];
+  const summary = () => statusText(mode === "four" ? "防御特性当前效果" : "攻击特性当前效果");
   expect(level).toHaveValue(60);
   expect(screen.queryByRole("spinbutton", { name: /起始等级|3能耗.*次数/u })).not.toBeInTheDocument();
   const at60 = primary();
@@ -181,12 +185,12 @@ test.each([["abu", "single"], ["boss-abu", "four"], ["super-abu", "four"]])("%s 
   fireEvent.keyDown(level, { key: "ArrowDown" });
   expect(level).toHaveValue(60);
   fireEvent.change(level, { target: { value: "78" } });
-  expect(summary()).toHaveTextContent(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
+  expect(summary()).toContain(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
   fireEvent.click(increase);
   expect(level).toHaveValue(80);
-  expect(summary()).not.toHaveTextContent(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
+  expect(summary()).not.toContain(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
   fireEvent.change(level, { target: { value: "79" } });
-  expect(summary()).toHaveTextContent(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
+  expect(summary()).toContain(`承伤 +${key === "boss-abu" ? 40 : 30}%`);
   fireEvent.change(level, { target: { value: "149" } });
   fireEvent.click(increase);
   expect(level).toHaveValue(150);
@@ -418,34 +422,34 @@ test.each([["single", "compact"], ["single", "detailed"], ["four", "compact"], [
     render(<App initialSnapshot={current} initialWorkspace={{ state, activeDirection: "forward", viewMode }} />);
     expect(screen.queryByRole("spinbutton", { name: "战斗中累计提升等级", exact: true })).not.toBeInTheDocument();
     const level = screen.getByRole("spinbutton", { name: "当前等级", exact: true });
-    const summary = () => screen.getAllByRole("status", { name: "攻击特性当前效果" })[0];
+    const summary = () => statusText("攻击特性当前效果");
     const at60 = primary();
     expect(level).toHaveValue(60);
     expect(level).toHaveAttribute("max", "150");
     fireEvent.keyDown(level, { key: "ArrowUp" });
     expect(level).toHaveValue(61);
-    expect(summary()).toHaveTextContent("物攻 +5%");
+    expect(summary()).toContain("物攻 +5%");
     expect(primary()).toBeGreaterThan(at60);
     fireEvent.change(level, { target: { value: "99" } });
-    expect(summary()).toHaveTextContent("物攻 +195%");
+    expect(summary()).toContain("物攻 +195%");
     const at99 = primary();
     activateSkill(mode, { view: viewMode });
     expect(level).toHaveValue(94);
-    expect(summary()).toHaveTextContent("物攻 +170%");
+    expect(summary()).toContain("物攻 +170%");
     expect(primary()).toBeLessThan(at99);
     fireEvent.change(level, { target: { value: "150" } });
-    expect(summary()).toHaveTextContent("物攻 +450%");
+    expect(summary()).toContain("物攻 +450%");
     fireEvent.keyDown(level, { key: "ArrowUp" });
     expect(level).toHaveValue(150);
     const at150 = primary();
     activateSkill(mode, { view: viewMode });
     expect(level).toHaveValue(145);
-    expect(summary()).toHaveTextContent("物攻 +425%");
+    expect(summary()).toContain("物攻 +425%");
     expect(primary()).toBeLessThan(at150);
     fireEvent.change(level, { target: { value: "60" } });
     activateSkill(mode, { view: viewMode });
     expect(level).toHaveValue(55);
-    expect(summary()).not.toHaveTextContent(/物攻 \+[1-9]/u);
+    expect(summary()).not.toMatch(/物攻 \+[1-9]/u);
   },
 );
 
