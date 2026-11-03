@@ -59,6 +59,18 @@ export async function buildS5BwikiRuntime(options = {}) {
   const { identityAudit: _identityAudit, ...sync } = snapshot.meta.s5NrcSync;
   const runtime = buildRuntimeSnapshot({ ...snapshot,
     meta: { ...snapshot.meta, s5NrcSync: sync } }, { ...manifest, assets });
+  // Hidden identities are already projected. Keep their source and portrait evidence
+  // in the transport so production need not ship and replay the candidate catalog.
+  const hiddenIdentities = new Map(snapshot.spirits
+    .filter(spirit => spirit.previewIdentity?.catalogId === "candymo-hidden-20261101")
+    .map(spirit => [spirit.id, spirit.previewIdentity]));
+  for (const spirit of runtime.spirits) {
+    const identity = hiddenIdentities.get(spirit.id);
+    if (!identity) continue;
+    for (const field of ["source", "asset"]) {
+      if (Object.hasOwn(identity, field)) spirit.previewIdentity[field] = { ...identity[field] };
+    }
+  }
   const base = await readJson(path.join(root, "data/snapshots/current.json"));
   const previousPools = new Map(base.learnsets.map(pool => [pool.spiritId, pool]));
   const runtimePools = new Map(runtime.learnsets.map(pool => [pool.spiritId, pool]));

@@ -3,8 +3,6 @@ import path from "node:path";
 import { parse } from "@babel/parser";
 import { expect, test } from "vitest";
 import { CN_ICON_WEIGHTS, cnProductionPruningPlugin, pruneCnProductionModule } from "../../scripts/cn-production-pruning.mjs";
-import hiddenCatalog from "../../data/candidates/candymo-hidden-spirits-20261101.json";
-import { withS5PreviewCatalog } from "../../src/features/s5-preview/catalog.js";
 
 test("CN preview excludes official Global display records while preserving export contracts and metadata", () => {
   const code = readFileSync("src/data/global-entity-text.js", "utf8");
@@ -41,6 +39,7 @@ test.each([
   ["Star", ["regular", "fill"]],
   ["ArrowCounterClockwise", ["regular", "bold"]],
   ["EyeSlash", ["regular"]],
+  ["ArrowSquareOut", ["regular"]],
   ["ArrowFatUp", ["fill"]],
   ["List", ["bold"]],
 ])("%s keeps its used SVG nodes unchanged, including favorite and dynamic states", (name, retained) => {
@@ -145,23 +144,21 @@ test("reviewed S5 production consumes the complete transport without the old pre
   const result = pruneCnProductionModule(code, `D:/project/${file}`, { reviewedS5: true });
   expect(result).not.toContain("s5-preview-new-spirits");
   expect(result).not.toContain("applyS5SeasonAnnouncement");
-  expect(result).toContain("candymo-hidden-spirits-20261101.json");
+  expect(result).not.toContain("candymo-hidden-spirits-20261101.json");
+  expect(result).not.toContain("withS5PreviewCatalog");
   const events = [];
   const compile = result.replace(/^import .*;\n/gmu, "").replace("export function", "function") + "\nreturn withWebPreview;";
-  const apply = new Function("restoreS5RuntimeRelations", "withCalculatorExtras", "withPublicResourceUrls", "withS5PreviewCatalog", "hiddenCatalog", compile)(
+  const apply = new Function("restoreS5RuntimeRelations", "withCalculatorExtras", "withPublicResourceUrls", compile)(
     value => { events.push("restore"); return { ...value, restored: true }; },
     value => { events.push("extras"); return { ...value, wishes: true }; },
     value => { events.push("urls"); return value; },
-    (value, catalog) => { events.push("hidden"); return withS5PreviewCatalog(value, catalog); },
-    hiddenCatalog,
   );
   const snapshot = { meta: { s5NrcSync: { complete: true } }, spirits: [{ id: "bruce", raceStats: { speed: 90 } }],
     traits: [], skills: [], learnsets: [] };
   const projected = apply(snapshot);
   expect(projected).toMatchObject({ restored: true, wishes: true });
   expect(projected.spirits[0]).toBe(snapshot.spirits[0]);
-  expect(projected.spirits.slice(1)).toHaveLength(27);
-  expect(projected.spirits.slice(1).every(spirit => spirit.raceStats === null && spirit.sourceCategory === "未开放")).toBe(true);
-  expect(events).toEqual(["restore", "extras", "hidden", "urls"]);
+  expect(projected.spirits).toBe(snapshot.spirits);
+  expect(events).toEqual(["restore", "extras", "urls"]);
   expect(() => apply({ meta: {} })).toThrow("S5资料尚未完整加载");
 });

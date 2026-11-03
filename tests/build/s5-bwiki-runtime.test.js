@@ -1,4 +1,5 @@
 // @vitest-environment node
+import { readFileSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
 import { buildS5BwikiRuntime } from "../../scripts/s5-bwiki-runtime.mjs";
 import { resolveSpiritFormRole } from "../../src/features/team-ability/domain/spirit-form-role.js";
@@ -6,6 +7,12 @@ import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.j
 import { getS5PreviewTraitEvaluation, getS5PreviewTraitInputs } from "../../src/domain/s5-preview-traits.js";
 import { packS5RuntimeRelations, restoreS5RuntimeRelations } from "../../src/data/s5-runtime-relations.js";
 import { loadServerSnapshot } from "../../src/runtime/load-snapshot.js";
+import { pruneCnProductionModule } from "../../scripts/cn-production-pruning.mjs";
+import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
+import { withPublicResourceUrls } from "../../src/runtime/public-resource-url.js";
+import { createSpiritSearchIndex } from "../../src/data/search-index.js";
+import { buildCalculatorViewModel } from "../../src/domain/calculator-view-model.js";
+import { createInitialState } from "../../src/state/defaults.js";
 
 describe("isolated BWIKI S5 runtime", () => {
   let runtime;
@@ -50,21 +57,47 @@ describe("isolated BWIKI S5 runtime", () => {
       .toBe("boss-ice-bruce");
   });
 
-  it("retains the separate unreleased directory through full S5 import and runtime compaction", () => {
+  it.each(["/", "/pre/"])("%s production transport equals the full hidden overlay including evidence and blocked calculations", base => {
+    const packed = packS5RuntimeRelations(runtime);
+    const legacy = withPublicResourceUrls(withWebPreview(packed), base);
     const hidden = runtime.spirits.filter(spirit => spirit.previewIdentity?.catalogId === "candymo-hidden-20261101");
     expect(hidden).toHaveLength(27);
-    const web = withWebPreview(runtime);
     for (const spirit of hidden) {
+      const expected = legacy.spirits.find(entry => entry.id === spirit.id);
+      expect(spirit.previewIdentity).toEqual(expected.previewIdentity);
+      expect(spirit.previewIdentity.source).toMatchObject({ authority: "third-party-hidden" });
       expect(spirit.raceStats).toBeNull();
       expect(spirit.calculationStatus).toBe("pending-race-stats");
       expect(runtime.learnsets.find(pool => pool.spiritId === spirit.id).skillIds).toEqual([]);
-      const restored = web.spirits.find(entry => entry.id === spirit.id);
-      expect(restored.previewIdentity.source).toMatchObject({ authority: "third-party-hidden" });
-      expect(restored.raceStats).toBeNull();
-      expect(resolveSpiritFormRole(restored).formRoleStatus).not.toBe("verified");
+      expect(resolveSpiritFormRole(spirit).formRoleStatus).not.toBe("verified");
     }
-    expect(web.spirits.find(spirit => spirit.fullName === "呼拉猫").asset.localUrl)
-      .toContain("/assets/spirits/candymo-hidden/3217.png");
+    const file = "src/features/s5-preview/with-web-preview.js";
+    const result = pruneCnProductionModule(readFileSync(file, "utf8"), `D:/project/${file}`, { reviewedS5: true });
+    const compile = result.replace(/^import .*;\n/gmu, "").replace("export function", "function") + "\nreturn withWebPreview;";
+    const apply = new Function("restoreS5RuntimeRelations", "withCalculatorExtras", "withPublicResourceUrls", compile)(
+      restoreS5RuntimeRelations, withCalculatorExtras, value => withPublicResourceUrls(value, base),
+    );
+    const production = apply(packed);
+    expect(production).toEqual(legacy);
+    const index = createSpiritSearchIndex(production.spirits);
+    for (const spirit of hidden) {
+      expect(index.search(spirit.fullName).find(entry => entry.id === spirit.id))
+        .toMatchObject(withPublicResourceUrls(spirit, base));
+    }
+    const portrait = production.spirits.find(spirit => spirit.fullName === "呼拉猫");
+    expect(portrait.asset.localUrl).toBe(`${base}assets/spirits/candymo-hidden/3217.png`);
+    expect(portrait.previewIdentity.asset).toEqual(hidden.find(spirit => spirit.id === portrait.id).previewIdentity.asset);
+    expect(portrait.previewIdentity.asset.localUrl).toBe("/assets/spirits/candymo-hidden/3217.png");
+    for (const side of ["attacker", "defender"]) {
+      const state = createInitialState(production);
+      state.sides[side].spiritId = portrait.id;
+      const view = buildCalculatorViewModel({ snapshot: production, state, activeDirection: "forward" });
+      expect(view.sides[side].spirit.id).toBe(portrait.id);
+      expect(view.sides[side].panelStats).toBeNull();
+      expect(view.configurationReady).toBe(false);
+      expect(view.configurationIssue).toBe("种族值待确认");
+      expect(view.result).toBeNull();
+    }
   });
 
   it("retains rank eligibility and newly published learning methods after compaction", () => {
