@@ -78,3 +78,8 @@
   .compact-condition-dialog .burst-source-controls__menu label { min-height: 44px; }
   .spirit-card .compact-condition-trigger { max-width: min(190px, 100%); margin-left: 0; margin-top: 4px; }
 }
+@media (max-width: 380px) {
+  /* 英文“Conditions”较长：去掉图标、缩小内边距，按钮收在卡片内。 */
+  .spirit-card .compact-condition-trigger { max-width: 100%; padding-inline: 4px; font-size: 11px; }
+  .spirit-card .compact-condition-trigger > svg { display: none; }
+}
