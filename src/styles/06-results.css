@@ -277,7 +277,7 @@
   height: 5px;
   overflow: hidden;
   border-radius: 999px;
-  background: #d9deea;
+  background: var(--border);
 }
 
 .skill-result-row__bar > span {
