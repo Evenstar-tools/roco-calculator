@@ -35,7 +35,9 @@ function weightEntries(code) {
 }
 
 test.each([
-  ["Gear", CN_ICON_WEIGHTS],
+  ["Sword", CN_ICON_WEIGHTS],
+  ["Gear", ["regular"]],
+  ["Lightning", ["regular", "fill"]],
   ["Star", ["regular", "fill"]],
   ["ArrowCounterClockwise", ["regular", "bold"]],
   ["EyeSlash", ["regular"]],
@@ -123,7 +125,7 @@ test("source coverage catches new aliases, spreads and unsupported weights befor
   }
   expect(() => applicationIconWeights(source('const view = <RandomIcon weight="thin" />;'), "fixture")).toThrow();
   expect(() => expectRetainedIconWeights(applicationIconWeights(
-    'import { Gear } from "@phosphor-icons/react"; const Icon = Gear; const view = <Icon {...props} />;', "fixture"), "fixture")).not.toThrow();
+    'import { Sword } from "@phosphor-icons/react"; const Icon = Sword; const view = <Icon {...props} />;', "fixture"), "fixture")).not.toThrow();
 });
 
 
