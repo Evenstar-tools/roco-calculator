@@ -5,10 +5,11 @@ import { Toolbox as ToolboxIcon, Shapes, MagnifyingGlass, Lightning, Gear, Speed
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+// Icons are written as elements so the CN build can see which icon styles are used.
 const groups = [
-  ["查询", [["types", "属性查询", Shapes], ["skills", "技能检索", MagnifyingGlass]]],
-  ["计算", [["deer", "电鹿斩杀线", Lightning], ["transmission", "传动计算器", Gear]]],
-  ["排行", [["speed", "速度线排行", Speedometer], ["durability", "耐久排行", Shield]]],
+  ["查询", [["types", "属性查询", <Shapes size={18} aria-hidden="true" />], ["skills", "技能检索", <MagnifyingGlass size={18} aria-hidden="true" />]]],
+  ["计算", [["deer", "电鹿斩杀线", <Lightning size={18} aria-hidden="true" />], ["transmission", "传动计算器", <Gear size={18} aria-hidden="true" />]]],
+  ["排行", [["speed", "速度线排行", <Speedometer size={18} aria-hidden="true" />], ["durability", "耐久排行", <Shield size={18} aria-hidden="true" />]]],
 ];
 
 export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
@@ -16,8 +17,8 @@ export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
   const { serverId } = useRuntime();
   const showReturnEntry = serverId === "cn" && IS_PREVIEW_BUILD;
   const toolGroups = groups.map(([label, entries]) => [label, label !== "查询" ? entries
-    : serverId === "cn" ? [...entries, ["balanceHistory", "平衡调整回顾", ClockCounterClockwise]]
-      : [...entries, ["typeChart", "18 系克制图", Table]]]);
+    : serverId === "cn" ? [...entries, ["balanceHistory", "平衡调整回顾", <ClockCounterClockwise size={18} aria-hidden="true" />]]
+      : [...entries, ["typeChart", "18 系克制图", <Table size={18} aria-hidden="true" />]]]);
   const [open, setOpen] = useState(false);
   const [top, setTop] = useState(60);
   const [narrow, setNarrow] = useState(() => window.innerWidth <= 760);
@@ -58,11 +59,11 @@ export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
       {toolGroups.map(([label, entries]) => <section key={label} aria-label={t(label)}>
         <div className="app-menu__group-label">{t(label)}</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 4 }}>
-          {entries.map(([id, title, Icon]) => <button key={id} type="button" aria-current={activeTool === id ? "true" : undefined} disabled={!actions?.[id]}
+          {entries.map(([id, title, icon]) => <button key={id} type="button" aria-current={activeTool === id ? "true" : undefined} disabled={!actions?.[id]}
             className={activeTool === id ? "app-menu__primary" : undefined}
             style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44, gridColumn: ["typeChart", "balanceHistory"].includes(id) ? "1 / -1" : undefined }}
             onPointerEnter={() => onWarm?.(id)} onFocus={() => onWarm?.(id)} onPointerDown={() => onWarm?.(id)}
-            onClick={() => { setOpen(false); trigger.current?.focus(); actions[id](); }}><Icon size={18} aria-hidden="true" />{t(title)}</button>)}
+            onClick={() => { setOpen(false); trigger.current?.focus(); actions[id](); }}>{icon}{t(title)}</button>)}
         </div>
       </section>)}
       {showReturnEntry && <a href={window.location.protocol === "app:" ? "/" : "/cn/"} style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44 }}
