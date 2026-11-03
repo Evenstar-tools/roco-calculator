@@ -2733,3 +2733,14 @@
 .result-sheet__share::after {
   pointer-events: none;
 }
+
+/* H5 按钮默认宽 100% 且无行高，与微信原生按钮对齐。 */
+.result-sheet__share {
+  box-sizing: border-box;
+  width: auto;
+  line-height: 50px;
+}
+
+.skill-picker__search .weui-input {
+  height: 100%;
+}
