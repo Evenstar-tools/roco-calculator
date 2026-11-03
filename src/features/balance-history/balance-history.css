@@ -103,8 +103,8 @@
 .bh-overview-metric > strong, .bh-overview-detail summary > strong { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 14px; }
 .bh-owners { display: inline-flex; flex-wrap: wrap; gap: 4px 12px; font-weight: 600; }
 .bh-owner { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-.bh-owner-list { margin: 8px 0 0; color: var(--text); font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
-.bh-owner-list small { display: block; color: var(--text-muted); font-size: 12px; }
+.bh-owner-list { max-height: 10em; margin: 8px 0 0; overflow-y: auto; overscroll-behavior: contain; color: var(--text); font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
+.bh-owner-list small { position: sticky; top: 0; display: block; background: var(--surface); color: var(--text-muted); font-size: 12px; }
 .bh-overview-expanded > .bh-note:first-child { margin-top: 0; }
 .bh-overview-detail { border-bottom: 1px solid var(--border); }
 .bh-overview-detail summary { display: flex; align-items: center; gap: 12px; min-height: 45px; padding: 9px 0; cursor: pointer; list-style: none; }
