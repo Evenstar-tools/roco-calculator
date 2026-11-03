@@ -101,6 +101,26 @@ function historyItemIdentity(item) {
     ? Object.fromEntries(Object.keys(value).sort().map((key) => [key, value[key]])) : value);
 }
 
+// Batch overviews group by adjustment content, independent of family membership.
+// Callers pass normalized records; the first item and original owners are retained.
+export function summarizeBatchChanges(entries = []) {
+  const changes = new Map();
+  for (const { entity, record } of entries) {
+    const patchId = record.patch?.id;
+    const patch = patchId != null && String(patchId).trim() !== ""
+      ? { id: patchId }
+      // An unknown batch cannot be inferred across owners from a shared date.
+      : { source: record, owner: entity.id };
+    for (const item of record.items ?? []) {
+      const id = historyItemIdentity({ patch, item });
+      if (!changes.has(id)) changes.set(id, { id, item, entities: [] });
+      const change = changes.get(id);
+      if (!change.entities.includes(entity)) change.entities.push(entity);
+    }
+  }
+  return [...changes.values()];
+}
+
 function buildFamilyRecords(families, spiritRecords) {
   const familyRecords = new Map();
   for (const family of families) {

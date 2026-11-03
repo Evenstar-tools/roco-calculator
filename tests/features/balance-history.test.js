@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { classifyHistoryItem, getBalanceHistoryIndex } from "../../src/features/balance-history/history-index.js";
+import { classifyHistoryItem, getBalanceHistoryIndex, summarizeBatchChanges } from "../../src/features/balance-history/history-index.js";
 
 const oldPatch = { id: "s4-2026-09-10", date: "2026.09.10", fetchedAt: "2028-01-01" };
 const newPatch = { id: "s5-2026-10-31", date: "2026.10.31", displayDate: "2026.11.05" };
@@ -252,4 +252,63 @@ test("家族内缺少patch ID的相同日期条目不跨成员拼成一次更新
   expect(unknown.map(record => record.scopes.flatMap(scope => memberIds(scope)).sort()).sort()).toEqual([["bloom"], ["seed"]]);
   for (const record of unknown) expect(record.items).toEqual([familyTrait]);
   expect(index.patches).toHaveLength(1);
+});
+
+
+test("更新概览跨家族合并完整相同内容，保留稳定顺序、签名和唯一原始所有者", () => {
+  const snapshot = familyFixture();
+  const [seed, , , outsider] = snapshot.spirits;
+  const reordered = Object.fromEntries(Object.entries(familyTrait).reverse());
+  const entries = [
+    { entity: seed, record: { patch: oldPatch, items: [familyTrait, power, familyTrait] } },
+    { entity: outsider, record: { patch: { ...oldPatch, label: "补齐批次标题" }, items: [reordered] } },
+    { entity: seed, record: { patch: oldPatch, items: [reordered] } },
+  ];
+  const original = structuredClone(entries);
+  const summary = summarizeBatchChanges(entries);
+  expect(summary.map(change => change.item)).toEqual([familyTrait, power]);
+  expect(summary[0].item).toBe(familyTrait);
+  expect(summary[0].entities).toEqual([seed, outsider]);
+  expect(summary[0].entities[0]).toBe(seed);
+  expect(summary[0].entities[1]).toBe(outsider);
+  expect(summary[1].entities).toEqual([seed]);
+  expect(summary.every(change => typeof change.id === "string" && change.id.length > 0)).toBe(true);
+  expect(summary[0].id).toBe(summarizeBatchChanges([entries[1], entries[0]])[0].id);
+  expect(entries).toEqual(original);
+  expect(summarizeBatchChanges([])).toEqual([]);
+});
+
+test("更新概览不吞同名调整的前后值、说明或技能身份差异", () => {
+  const [seed, , , outsider] = familyFixture().spirits;
+  const differences = [
+    { ...power, before: 99 }, { ...power, after: 111 },
+    { ...power, note: "仅适用特殊形态" }, { ...power, notes: ["来源另有说明"] },
+    { ...power, skillId: "skill-one" }, { ...power, skillId: "skill-two" },
+    { ...power, skill: { id: "skill-one", name: "同名技能" } },
+    { ...power, skill: { id: "skill-two", name: "同名技能" } },
+  ];
+  const summary = summarizeBatchChanges([
+    { entity: seed, record: { patch: oldPatch, items: [power] } },
+    { entity: outsider, record: { patch: oldPatch, items: differences } },
+  ]);
+  expect(summary.map(change => change.item)).toEqual([power, ...differences]);
+  expect(new Set(summary.map(change => change.id)).size).toBe(differences.length + 1);
+  expect(summary[0].entities).toEqual([seed]);
+  for (const change of summary.slice(1)) expect(change.entities).toEqual([outsider]);
+});
+
+test("更新概览混入同日不同patch时仍隔离，缺ID来源不跨实体推定共同批次", () => {
+  const [seed, , , outsider] = familyFixture().spirits;
+  const first = { entity: seed, record: { patch: oldPatch, items: [power] } };
+  const second = { entity: outsider, record: { patch: { ...oldPatch, id: "s4-other" }, items: [power] } };
+  const unknown = { date: oldPatch.date };
+  const summary = summarizeBatchChanges([first, second,
+    { entity: seed, record: { patch: unknown, items: [power] } },
+    { entity: outsider, record: { patch: unknown, items: [power] } },
+  ]);
+  expect(summary).toHaveLength(4);
+  expect(new Set(summary.map(change => change.id)).size).toBe(4);
+  expect(summary.map(change => change.entities)).toEqual([[seed], [outsider], [seed], [outsider]]);
+  expect(summary[0].id).toBe(summarizeBatchChanges([first])[0].id);
+  expect(summary[1].id).toBe(summarizeBatchChanges([second])[0].id);
 });
