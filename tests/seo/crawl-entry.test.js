@@ -80,7 +80,7 @@ test("抢先版三个旧入口直接回到主站，不重定向历史资源", ()
   })));
 });
 
-test("robots和sitemap是可随构建复制的真实文件，包含当前三个页面", () => {
+test("robots和sitemap是可随构建复制的真实文件，包含国服与现有海外五个规范页面", () => {
   const robots = source("public/robots.txt");
   expect(robots).toMatch(/^User-agent:\s*\*\s*$/m);
   expect(robots).toMatch(/^Allow:\s*\/\s*$/m);
@@ -94,6 +94,7 @@ test("robots和sitemap是可随构建复制的真实文件，包含当前三个�
     expect(doc.documentElement.namespaceURI).toBe("http://www.sitemaps.org/schemas/sitemap/0.9");
     expect([...doc.querySelectorAll("loc")].map((loc) => loc.textContent)).toEqual([
       HOME_PAGE_METADATA.canonical, DEER_PAGE_METADATA.canonical, "https://rococalc.top/en/",
+      "https://rococalc.top/jp/", "https://rococalc.top/global/zh-CN/",
     ]);
   } finally { sitemap.window.close(); }
 });

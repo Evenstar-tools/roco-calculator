@@ -27,7 +27,21 @@ test("SEO serves crawler files and a direct deer entry without an introduction",
   expect(sitemap.status()).toBe(200);
   expect(sitemap.headers()["content-type"]).toContain("xml");
   const sitemapText = await sitemap.text();
-  expect(sitemapText).toContain("https://rococalc.top/en/");
+  const overseas = [
+    ["/en/", "en", "Roco Kingdom World Damage Calculator | RocoCalc"],
+    ["/jp/", "ja", "ロコ・キングダム ダメージ計算機 | RocoCalc"],
+    ["/global/zh-CN/", "zh-CN", "洛克王国：世界 国际服伤害计算器 | RocoCalc"],
+  ];
+  for (const [path, , title] of overseas) {
+    expect(sitemapText).toContain(`https://rococalc.top${path}`);
+    const response = await request.get(path);
+    expect(response.status()).toBe(200);
+    const html = await response.text();
+    expect(html).toContain(`<title>${title}</title>`);
+    for (const [alternate, locale] of overseas) {
+      expect(html).toContain(`hreflang="${locale}" href="https://rococalc.top${alternate}"`);
+    }
+  }
   expect(sitemapText).not.toContain("https://rococalc.top/guide/");
   const deer = await request.get("/dianlu/");
   expect(deer.status()).toBe(200);
@@ -83,6 +97,7 @@ for (const theme of ["light"]) {
 
 test("SEO Global S3 release keeps calculation across English, Japanese, refresh and offline", async ({ page, context }) => {
   await page.goto("/en/");
+  await expect(page).toHaveTitle("Roco Kingdom World Damage Calculator | RocoCalc");
   await page.getByRole("combobox", { name: "Attacker Jini", exact: true }).fill("Dimo");
   await page.getByRole("option", { name: "Dimo 001 · Stage 1", exact: true }).click();
   await page.getByRole("combobox", { name: "Defender Jini", exact: true }).fill("Meodow");
@@ -101,6 +116,7 @@ test("SEO Global S3 release keeps calculation across English, Japanese, refresh 
   await expect(page).toHaveURL(/\/jp\/$/);
   await page.reload();
   await expect(page.getByRole("combobox", { name: "攻撃側のジニ", exact: true })).toHaveValue("ディーモ");
+  await expect(page).toHaveTitle("ロコ・キングダム ダメージ計算機 | RocoCalc");
   await expect(page.locator(".result-column").getByRole("status")).toHaveText("23");
   await expect(page.locator("html")).toHaveAttribute("data-season", "s5");
   await expect(page.locator("body")).not.toContainText(/CBT|Translation unavailable|翻訳未対応|CN reference|Unverified/);

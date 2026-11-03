@@ -20,6 +20,7 @@ function artifact(source, base = "/", label = "S5") {
   put(source, "dist/client/assets/app.js", label);
   put(source, "dist/client/data/runtime.json", label);
   put(source, "dist/client/sw.js", "old source SW");
+  put(source, "dist/client/sitemap.xml", "old CN-only sitemap");
 }
 function fixture() {
   const root = mkdtempSync(path.join(temporaryParent, "roco-cn-build-test-"));
@@ -27,6 +28,7 @@ function fixture() {
   put(root, "config/preview-release.json", JSON.stringify({ schemaVersion: 1, sourceRevision: pin }));
   put(root, "node_modules/vite/bin/vite.js");
   put(root, "public/sw.js", "current release SW");
+  put(root, "public/sitemap.xml", "current CN and Global sitemap");
   artifact(root, "/", "old root");
   return root;
 }
@@ -57,6 +59,8 @@ describe("pinned CN root release assembly", () => {
     expect(readFileSync(path.join(root, "dist/client/data/runtime.json"), "utf8")).toBe("S5");
     expect(readFileSync(path.join(root, "dist/client/sw.js"), "utf8")).toBe("current release SW");
     expect(readFileSync(path.join(source, "dist/client/sw.js"), "utf8")).toBe("old source SW");
+    expect(readFileSync(path.join(root, "dist/client/sitemap.xml"), "utf8")).toBe("current CN and Global sitemap");
+    expect(readFileSync(path.join(source, "dist/client/sitemap.xml"), "utf8")).toBe("old CN-only sitemap");
     expect(readFileSync(path.join(root, "dist/keep.txt"), "utf8")).toBe("unrelated output");
     expect(existsSync(path.join(root, "dist/client/pre"))).toBe(false);
     expect(existsSync(path.join(root, "dist/client/assets/stale.js"))).toBe(false);
@@ -77,6 +81,9 @@ describe("pinned CN root release assembly", () => {
     artifact(source);
     unlinkSync(path.join(root, "public/sw.js"));
     expect(() => copyCnRelease(root, source)).toThrow("service worker is missing");
+    put(root, "public/sw.js", "current release SW");
+    unlinkSync(path.join(root, "public/sitemap.xml"));
+    expect(() => copyCnRelease(root, source)).toThrow("sitemap is missing");
     expect(readFileSync(path.join(root, "dist/client/data/runtime.json"), "utf8")).toBe("old root");
   });
 

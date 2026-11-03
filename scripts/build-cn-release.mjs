@@ -64,6 +64,9 @@ export function copyCnRelease(root, sourceDirectory) {
   }
   const serviceWorker = requirePlainPath(root, path.join(root, "public/sw.js"));
   if (!lstatSync(serviceWorker, { throwIfNoEntry: false })?.isFile()) throw new Error("Release service worker is missing");
+  // The sitemap describes the assembled CN + Global site, not the CN source pin.
+  const sitemap = requirePlainPath(root, path.join(root, "public/sitemap.xml"));
+  if (!lstatSync(sitemap, { throwIfNoEntry: false })?.isFile()) throw new Error("Release sitemap is missing");
   const target = requirePlainPath(root, path.join(root, "dist/client"));
   if (existsSync(target)) {
     requirePlainTree(target);
@@ -76,6 +79,7 @@ export function copyCnRelease(root, sourceDirectory) {
   mkdirSync(path.dirname(target), { recursive: true });
   cpSync(childDist, target, { recursive: true, force: false, errorOnExist: true });
   cpSync(serviceWorker, path.join(target, "sw.js"));
+  cpSync(sitemap, path.join(target, "sitemap.xml"));
   return target;
 }
 
