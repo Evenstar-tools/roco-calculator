@@ -1,9 +1,13 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.3.0-20261103-team-layout";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.0-20261103-tool-portraits";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 // 图片长期缓存不随发布清空；摘要由 scripts/stamp-image-cache.mjs 按图片内容写入。
 const IMAGE_CACHE_PREFIX = "rock-calculator-images-";
 const IMAGE_VERSION = "__IMAGE_DIGEST__";
 const IMAGE_CACHE = `${IMAGE_CACHE_PREFIX}${IMAGE_VERSION}`;
+const pendingImages = new Map();
+const VISITED_ASSET_CONCURRENCY = 2;
+const visitedAssetQueue = [];
+let activeVisitedAssets = 0;
 const STABLE_IMAGE_RE = /^\/(?:global-assets\/)?assets\/(?:spirits\/spirit_[a-f0-9]{16}\.(?:png|webp)|skills\/(?:skill_(?:[a-f0-9]{16}|preview_s5_[a-z0-9][a-z0-9_-]*)\.(?:png|webp)|wish-power\/77000(?:0[1-57-9]|1[0-9])\.png))$/;
 const APP_SHELL = [
   "/manifest.webmanifest",
@@ -95,6 +99,25 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// One queue covers all windows/messages. Foreground requests never enter it.
+function queueVisitedAsset(load) {
+  return new Promise((resolve, reject) => {
+    visitedAssetQueue.push({ load, resolve, reject });
+    drainVisitedAssets();
+  });
+}
+
+function drainVisitedAssets() {
+  while (activeVisitedAssets < VISITED_ASSET_CONCURRENCY && visitedAssetQueue.length) {
+    const { load, resolve, reject } = visitedAssetQueue.shift();
+    activeVisitedAssets += 1;
+    Promise.resolve().then(load).then(resolve, reject).finally(() => {
+      activeVisitedAssets -= 1;
+      drainVisitedAssets();
+    });
+  }
+}
+
 self.addEventListener("message", (event) => {
   if (event.data?.type !== "CACHE_VISITED_ASSETS" || !Array.isArray(event.data.urls)) return;
   const urls = [...new Set(event.data.urls.flatMap((value) => {
@@ -114,15 +137,15 @@ self.addEventListener("message", (event) => {
     if (urls.length) {
       try {
         const cache = await caches.open(CACHE_NAME);
-        const results = await Promise.allSettled(urls.map(async (url) => {
+        const results = await Promise.allSettled(urls.map(url => queueVisitedAsset(async () => {
           const imageUrl = stableImageUrl(url);
           if (imageUrl) {
             // 访问记录只补缓存，不重复触发组件已经发起的强制重试。
-            const response = await cacheFirstImage(new Request(imageUrl.href));
+            const response = await cacheFirstImage(new Request(imageUrl.href), { background: true });
             if (!isImageResponse(response)) throw new Error("Image cache fill failed");
           } else if (!(await cache.match(url))) await cache.add(url);
-        }));
-        failed = results.filter((result) => result.status === "rejected").length;
+        })));
+        failed = results.filter(result => result.status === "rejected").length;
       } catch {
         failed = urls.length;
       }
@@ -168,7 +191,28 @@ function isImageResponse(response) {
   return response?.ok && /^image\//i.test(response.headers.get("content-type") ?? "");
 }
 
-async function cacheFirstImage(request) {
+async function cacheFirstImage(request, { background = false } = {}) {
+  const url = stableImageUrl(request.url);
+  // A CORS response, a no-CORS response and an explicit recovery request keep
+  // separate in-flight entries. Header variants retain their existing meaning.
+  const key = JSON.stringify([url.href, new URL(request.url).searchParams.has("image-retry"),
+    request.mode ?? "cors", request.credentials ?? "same-origin", request.redirect ?? "follow",
+    request.referrer ?? "about:client", request.referrerPolicy ?? "", request.integrity ?? "",
+    [...(request.headers ?? [])].sort(([a], [b]) => a.localeCompare(b))]);
+  let pending = pendingImages.get(key);
+  if (!pending) {
+    pending = loadImage(request, background);
+    pendingImages.set(key, pending);
+  }
+  try {
+    // Each client owns a body; consuming one response cannot disturb another.
+    return (await pending).clone();
+  } finally {
+    if (pendingImages.get(key) === pending) pendingImages.delete(key);
+  }
+}
+
+async function loadImage(request, background) {
   const url = stableImageUrl(request.url);
   const key = new Request(url.href, request);
   const retry = new URL(request.url).searchParams.get("image-retry") === "1";
@@ -183,7 +227,10 @@ async function cacheFirstImage(request) {
   url.searchParams.set("image-cache", IMAGE_VERSION);
   if (retry) url.searchParams.set("image-retry", "1");
   try {
-    const response = await fetch(new Request(url.href, request), { cache: "reload" });
+    // An image can serve several windows. Aborting the first requester must not
+    // cancel the shared transfer or prevent the other clients filling the cache.
+    const networkRequest = new Request(new Request(url.href, request), { signal: null });
+    const response = await fetch(networkRequest, { cache: "reload", ...(background ? { priority: "low" } : {}) });
     if (isImageResponse(response) && cache) {
       try { await cache.put(key, response.clone()); }
       catch { /* 存储失败不影响在线图片。 */ }

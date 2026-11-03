@@ -67,13 +67,14 @@ function createHarness({ cached = {}, cachedRequestHeaders = {}, fetchImpl, clie
   return { cacheApi, caches, listeners, self, stores };
 }
 
-function dispatchFetch(listener, path, { mode = "cors", headers = {} } = {}) {
+function dispatchFetch(listener, path, { mode = "cors", headers = {}, signal, request } = {}) {
   const background = [];
   let responsePromise;
   listener({
-    request: {
+    request: request ?? {
       method: "GET",
       mode,
+      signal,
       url: `https://calculator.test${path}`,
       headers: new Headers(headers),
     },
@@ -425,7 +426,7 @@ describe("repeat requests and cache failures", () => {
     const url = "/assets/spirits/spirit_0123456789abcdef.png";
     const harness = createHarness({ cached: { [`https://calculator.test${url}`]: response }, fetchImpl });
     const event = dispatchFetch(harness.listeners.fetch, url);
-    await expect(event.responsePromise).resolves.toBe(response);
+    await expect((await event.responsePromise).text()).resolves.toBe("portrait");
     expect(fetchImpl).not.toHaveBeenCalled();
     expect(harness.caches.open).toHaveBeenCalledWith("rock-calculator-images-__IMAGE_DIGEST__");
   });
@@ -466,7 +467,7 @@ describe("repeat requests and cache failures", () => {
     const harness = createHarness({ fetchImpl });
     await dispatchFetch(harness.listeners.fetch, path).responsePromise;
     expect(harness.cacheApi.put).not.toHaveBeenCalled();
-    await expect(dispatchFetch(harness.listeners.fetch, path).responsePromise).resolves.toBe(healthy);
+    await expect((await dispatchFetch(harness.listeners.fetch, path).responsePromise).text()).resolves.toBe("image");
     expect(fetchImpl).toHaveBeenCalledTimes(2);
   });
 
@@ -482,11 +483,11 @@ describe("repeat requests and cache failures", () => {
     const healthy = new Response("valid image", { headers: { "Content-Type": "image/png" } });
     const fetchImpl = vi.fn(async () => healthy);
     const harness = createHarness({ cached, fetchImpl });
-    await expect(dispatchFetch(harness.listeners.fetch, `${path}?image-retry=1`).responsePromise).resolves.toBe(healthy);
+    await expect((await dispatchFetch(harness.listeners.fetch, `${path}?image-retry=1`).responsePromise).text()).resolves.toBe("valid image");
     expect(fetchImpl.mock.calls[0][1]).toEqual({ cache: "reload" });
     expect(harness.cacheApi.delete).toHaveBeenCalledWith(expect.objectContaining({ url: key }));
     expect(Object.keys(cached)).toEqual([key]);
-    await expect(dispatchFetch(harness.listeners.fetch, path).responsePromise).resolves.toBe(cached[key]);
+    await expect((await dispatchFetch(harness.listeners.fetch, path).responsePromise).text()).resolves.toBe("valid image");
     expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
 
@@ -554,5 +555,178 @@ describe("repeat requests and cache failures", () => {
     harness.cacheApi.put.mockRejectedValue(new Error("quota exceeded"));
     const event = dispatchFetch(harness.listeners.fetch, "/", { mode: "navigate" });
     await expect(event.responsePromise).resolves.toBe(response);
+  });
+});
+
+
+const deferred = () => {
+  let resolve;
+  let reject;
+  const promise = new Promise((done, fail) => { resolve = done; reject = fail; });
+  return { promise, resolve, reject };
+};
+const imageResponse = (body = "image") => new Response(body, { headers: { "Content-Type": "image/png" } });
+const imagePath = index => `/assets/spirits/spirit_${String(index).padStart(16, "0")}.png`;
+
+function dispatchVisited(listener, paths) {
+  let completed;
+  const reply = vi.fn();
+  listener({ data: { type: "CACHE_VISITED_ASSETS", urls: paths }, ports: [{ postMessage: reply }],
+    waitUntil(value) { completed = value; } });
+  return { completed, reply };
+}
+
+describe("concurrent image loading", () => {
+  test("shares one in-flight transfer and clones the body for every consumer", async () => {
+    const gate = deferred();
+    const fetchImpl = vi.fn(async () => { await gate.promise; return imageResponse("shared"); });
+    const harness = createHarness({ fetchImpl });
+    const first = dispatchFetch(harness.listeners.fetch, imagePath(1));
+    const second = dispatchFetch(harness.listeners.fetch, imagePath(1));
+    await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
+    gate.resolve();
+    const [a, b] = await Promise.all([first.responsePromise, second.responsePromise]);
+    expect(a).not.toBe(b);
+    await expect(a.text()).resolves.toBe("shared");
+    await expect(b.text()).resolves.toBe("shared");
+    expect(harness.cacheApi.put).toHaveBeenCalledOnce();
+  });
+
+  test("failed shared loads are removed so the next request can really retry", async () => {
+    const gate = deferred();
+    const fetchImpl = vi.fn().mockImplementationOnce(() => gate.promise).mockResolvedValue(imageResponse("recovered"));
+    const harness = createHarness({ fetchImpl });
+    const first = dispatchFetch(harness.listeners.fetch, imagePath(2));
+    const second = dispatchFetch(harness.listeners.fetch, imagePath(2));
+    await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
+    gate.reject(new Error("offline"));
+    const responses = await Promise.all([first.responsePromise, second.responsePromise]);
+    expect(responses.every(response => response.type === "error")).toBe(true);
+    await expect((await dispatchFetch(harness.listeners.fetch, imagePath(2)).responsePromise).text()).resolves.toBe("recovered");
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  test("request modes and explicit retries retain separate in-flight transfers", async () => {
+    const gate = deferred();
+    const fetchImpl = vi.fn(async () => { await gate.promise; return imageResponse(); });
+    const harness = createHarness({ fetchImpl });
+    const cors = dispatchFetch(harness.listeners.fetch, imagePath(3));
+    const noCors = dispatchFetch(harness.listeners.fetch, imagePath(3), { mode: "no-cors" });
+    const retry = dispatchFetch(harness.listeners.fetch, `${imagePath(3)}?image-retry=1`);
+    await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledTimes(3));
+    expect(fetchImpl.mock.calls.filter(([request]) => new URL(request.url).searchParams.has("image-retry"))).toHaveLength(1);
+    gate.resolve();
+    await Promise.all([cors.responsePromise, noCors.responsePromise, retry.responsePromise]);
+  });
+
+  test("real img requests share with equivalent img requests while background modes and header variants stay separate", async () => {
+    const gate = deferred();
+    const fetchImpl = vi.fn(async () => {
+      await gate.promise;
+      return new Response("image", { headers: { "Content-Type": "image/png",
+        Vary: "Origin,Access-Control-Request-Headers,Access-Control-Request-Method" } });
+    });
+    const harness = createHarness({ fetchImpl });
+    const path = imagePath(6);
+    const request = new Request(`https://calculator.test${path}`, { mode: "no-cors", credentials: "include",
+      headers: { Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8" } });
+    const first = dispatchFetch(harness.listeners.fetch, path, { request });
+    const second = dispatchFetch(harness.listeners.fetch, path, { request: request.clone() });
+    const background = dispatchVisited(harness.listeners.message, [path]);
+    await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledTimes(2));
+    expect(fetchImpl.mock.calls.map(([value]) => [value.mode, value.credentials, value.headers.get("accept")]))
+      .toEqual(expect.arrayContaining([
+        ["no-cors", "include", request.headers.get("accept")],
+        ["cors", "same-origin", null],
+      ]));
+    gate.resolve();
+    const [a, b] = await Promise.all([first.responsePromise, second.responsePromise]);
+    await expect(a.text()).resolves.toBe("image");
+    await expect(b.text()).resolves.toBe("image");
+    await background.completed;
+    expect(background.reply).toHaveBeenCalledWith({ type: "VISITED_ASSETS_CACHED", failed: 0 });
+  });
+
+  test("aborting one consumer does not abort the shared image transfer", async () => {
+    const gate = deferred();
+    const controller = new AbortController();
+    const fetchImpl = vi.fn(async request => {
+      await gate.promise;
+      if (request.signal.aborted) throw new Error("aborted");
+      return imageResponse("still available");
+    });
+    const harness = createHarness({ fetchImpl });
+    const first = dispatchFetch(harness.listeners.fetch, imagePath(4), { signal: controller.signal });
+    const second = dispatchFetch(harness.listeners.fetch, imagePath(4));
+    await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
+    controller.abort();
+    expect(fetchImpl.mock.calls[0][0].signal.aborted).toBe(false);
+    gate.resolve();
+    await first.responsePromise;
+    await expect((await second.responsePromise).text()).resolves.toBe("still available");
+  });
+
+  test("a cache write failure still shares the online response and leaves no stuck pending entry", async () => {
+    const gate = deferred();
+    const fetchImpl = vi.fn(async () => { await gate.promise; return imageResponse("online"); });
+    const harness = createHarness({ fetchImpl });
+    harness.cacheApi.put.mockRejectedValue(new Error("quota"));
+    const first = dispatchFetch(harness.listeners.fetch, imagePath(5));
+    const second = dispatchFetch(harness.listeners.fetch, imagePath(5));
+    await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
+    gate.resolve();
+    for (const response of await Promise.all([first.responsePromise, second.responsePromise])) {
+      await expect(response.text()).resolves.toBe("online");
+    }
+    await dispatchFetch(harness.listeners.fetch, imagePath(5)).responsePromise;
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("visited-asset backfill scheduling", () => {
+  test("overlapping messages share two background slots while foreground images load immediately", async () => {
+    const waits = [];
+    let active = 0;
+    let maximum = 0;
+    const foreground = imagePath(99);
+    const fetchImpl = vi.fn(async (request, options) => {
+      if (new URL(request.url).pathname === foreground) return imageResponse("foreground");
+      expect(options.priority).toBe("low");
+      active += 1;
+      maximum = Math.max(maximum, active);
+      const gate = deferred();
+      waits.push(gate);
+      await gate.promise;
+      active -= 1;
+      return imageResponse();
+    });
+    const harness = createHarness({ fetchImpl });
+    const first = dispatchVisited(harness.listeners.message, [1, 2, 3].map(imagePath));
+    const second = dispatchVisited(harness.listeners.message, [4, 5, 6].map(imagePath));
+    await vi.waitFor(() => expect(waits).toHaveLength(2));
+    expect(active).toBe(2);
+    await expect((await dispatchFetch(harness.listeners.fetch, foreground).responsePromise).text()).resolves.toBe("foreground");
+    expect(waits).toHaveLength(2);
+    for (let index = 0; index < 6; index += 1) {
+      await vi.waitFor(() => expect(waits.length).toBeGreaterThan(index));
+      waits[index].resolve();
+    }
+    await Promise.all([first.completed, second.completed]);
+    expect(maximum).toBe(2);
+    expect(first.reply).toHaveBeenCalledWith({ type: "VISITED_ASSETS_CACHED", failed: 0 });
+    expect(second.reply).toHaveBeenCalledWith({ type: "VISITED_ASSETS_CACHED", failed: 0 });
+  });
+
+  test("a failed backfill releases its slot and does not block either message", async () => {
+    const harness = createHarness();
+    harness.cacheApi.add.mockImplementation(async url => {
+      if (url.endsWith("missing.js")) throw new Error("offline");
+    });
+    const first = dispatchVisited(harness.listeners.message, ["/assets/missing.js", "/assets/good.js", "/assets/also-good.js"]);
+    const second = dispatchVisited(harness.listeners.message, ["/assets/later.js"]);
+    await Promise.all([first.completed, second.completed]);
+    expect(harness.cacheApi.add).toHaveBeenCalledTimes(4);
+    expect(first.reply).toHaveBeenCalledWith({ type: "VISITED_ASSETS_CACHED", failed: 1 });
+    expect(second.reply).toHaveBeenCalledWith({ type: "VISITED_ASSETS_CACHED", failed: 0 });
   });
 });
