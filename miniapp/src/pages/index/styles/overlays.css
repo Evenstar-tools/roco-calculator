@@ -2405,6 +2405,17 @@
   color: var(--text-muted);
 }
 
+/* 非伤害技能等说明文字占用进度条位置，不再压在进度条上。 */
+.result-row--message .result-row__track {
+  display: none;
+}
+
+.result-row--message .result-row__damage {
+  grid-column: 3 / -1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .result-sheet__trait-result {
   display: flex;
   justify-content: space-between;
@@ -2662,7 +2673,8 @@
   padding: 4px 7px;
   border: 1px solid #e1c98f;
   border-radius: 7px;
-  background: rgba(255, 255, 255, 0.78);
+  /* 跟随主题底色，深色下数值不再是浅底浅字。 */
+  background: var(--surface-card);
   color: var(--text-secondary);
   font-size: 11px;
   font-weight: var(--weight-emphasis);
