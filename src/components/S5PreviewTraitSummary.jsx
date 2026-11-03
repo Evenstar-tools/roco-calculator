@@ -1,7 +1,10 @@
 import { getS5PreviewTraitEvaluation } from "../domain/s5-preview-traits.js";
 import { getS5PreviewTraitPresentation } from "../features/s5-preview/trait-presentation.js";
 
-export function S5PreviewTraitSummary({ trait, role = "attacker", context = {}, owner = false, linked = false }) {
+// 等级输入框与摘要同排时，摘要只保留输入框表达不了的效果。
+export const hasBattleLevelInput = (inputs) => (inputs ?? []).some((input) => input?.suffix === "BattleLevel" || /BattleLevel$/u.test(input?.contextKey ?? ""));
+
+export function S5PreviewTraitSummary({ trait, role = "attacker", context = {}, owner = false, linked = false, levelInputShown = false }) {
   const presentation = getS5PreviewTraitPresentation(trait, role, { owner });
   if (!presentation?.visible) return null;
   const evaluation = getS5PreviewTraitEvaluation(trait?.previewTraitEntity, role, context);
@@ -20,6 +23,9 @@ export function S5PreviewTraitSummary({ trait, role = "attacker", context = {}, 
   if (!linked && evaluation.mechanicKey === "diliutun" && evaluation.calcStatus === "ready") return null;
   if (["lele-shark", "egg-wrap"].includes(evaluation.mechanicKey) && evaluation.calcStatus === "ready" && !evaluation.effects.length) return null;
   if (!hasLevel && !summary && !reason) return null;
+  const showsPhysicalAttack = Boolean(physicalAttack && (owner || role === "attacker"));
+  const showsIncoming = Boolean(incoming && (owner || role === "defender"));
+  if (hasLevel && levelInputShown && !showsPhysicalAttack && !showsIncoming && !reason) return null;
 
   return (
     <div
@@ -30,11 +36,11 @@ export function S5PreviewTraitSummary({ trait, role = "attacker", context = {}, 
       role="status"
     >
       {hasLevel ? <>
-        <span>当前等级 {level}</span>
-        {physicalAttack && (owner || role === "attacker") ? <span>
+        {levelInputShown ? null : <span>当前等级 {level}</span>}
+        {showsPhysicalAttack ? <span>
           {evaluation.levelGain !== undefined ? `被动 ${evaluation.levelGain} 层 · ` : ""}物攻 +{physicalAttack.amount}%
         </span> : null}
-        {incoming && (owner || role === "defender") ? <span>承伤 +{incoming.amount}%</span> : null}
+        {showsIncoming ? <span>承伤 +{incoming.amount}%</span> : null}
       </> : <span>{summary}</span>}
       {reason ? <small>{reason}</small> : null}
     </div>
