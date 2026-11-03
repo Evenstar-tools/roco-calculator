@@ -146,6 +146,7 @@ const TransmissionPanel = recoverableLazy(() => import("./features/transmission/
 const TypeQueryPanel = recoverableLazy(() => import("./features/type-query/TypeQueryPanel.jsx"));
 const TypeChartPanel = recoverableLazy(() => import("./features/type-query/TypeChartPanel.jsx"));
 const RankingsPanel = recoverableLazy(() => import("./components/RankingsPanel.jsx"));
+const BalanceHistoryPanel = recoverableLazy(() => import("./features/balance-history/BalanceHistoryPanel.jsx"));
 const DamageComparisonDialog = recoverableLazy(() => import("./components/DamageComparisonDialog.jsx"));
 const StarfallThresholdDialog = recoverableLazy(() => import("./components/StarfallThresholdDialog.jsx"));
 const DeerPage = recoverableLazy(() => import("./features/deer/DeerPage.jsx"));
@@ -170,6 +171,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
   const [skillQueryOpen, setSkillQueryOpen] = useState(false);
   const [transmissionOpen, setTransmissionOpen] = useState(false);
   const [typeQueryOpen, setTypeQueryOpen] = useState(false);
+  const [balanceHistoryOpen, setBalanceHistoryOpen] = useState(false);
+  const [balanceHistoryVisited, setBalanceHistoryVisited] = useState(false);
   const [queryTypes, setQueryTypes] = useState([]);
   const typeQueryReturnView = useRef(null);
   const returnToTypeQuery = () => { setSkillQueryOpen(false); setTypeQueryOpen(true); };
@@ -584,7 +587,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
 
   // 任一弹层/抽屉打开时引导浮层让位,关闭后恢复。
   const overlayCoveringGuide = Boolean(
-    conditionTarget || starfallSource || shortcutsOpen || (damageComparisonEnabled && comparisonSource) || overlays.menu.open ||
+    conditionTarget || starfallSource || shortcutsOpen || balanceHistoryOpen || (damageComparisonEnabled && comparisonSource) || overlays.menu.open ||
       overlays.team.open ||
       overlays.mobileResultProps.open ||
       overlays.cleanupConfigsProps.open ||
@@ -2462,11 +2465,12 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         toolbox={{
           onOpen: () => overlays.menu.setOpen(false),
           onWarm: (id) => { if (id === "skills" && release.capabilities.search) preloadSkillQuery(serverId, snapshot, locale); },
-          activeTool: typeQueryOpen === "chart" ? "typeChart" : typeQueryOpen ? "types" : skillQueryOpen ? "skills" : transmissionOpen ? "transmission" : rankingKind,
+          activeTool: balanceHistoryOpen ? "balanceHistory" : typeQueryOpen === "chart" ? "typeChart" : typeQueryOpen ? "types" : skillQueryOpen ? "skills" : transmissionOpen ? "transmission" : rankingKind,
           actions: {
             types: () => setTypeQueryOpen(true),
             typeChart: serverId === "global" ? () => setTypeQueryOpen("chart") : undefined,
             skills: () => setSkillQueryOpen(true),
+            balanceHistory: serverId === "cn" ? () => { setBalanceHistoryVisited(true); setBalanceHistoryOpen(true); } : undefined,
             transmission: () => setTransmissionOpen(true),
             speed: () => { setRankingsVisited(true); setRankingKind("speed"); },
             durability: () => { setRankingsVisited(true); setRankingKind("durability"); },
@@ -2918,6 +2922,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         }}
       /></FeatureBoundary> : null}
       {rankingsVisited ? <FeatureBoundary onClose={() => { setRankingKind(null); setRankingsVisited(false); }} fallback={<div role="status">{t("正在打开排行榜…")}</div>}><RankingsPanel kind={rankingKind} snapshot={snapshot} onClose={() => setRankingKind(null)} /></FeatureBoundary> : null}
+      {serverId === "cn" && balanceHistoryVisited ? <FeatureBoundary onClose={() => { setBalanceHistoryOpen(false); setBalanceHistoryVisited(false); }} fallback={<div role="status">正在打开平衡调整回顾…</div>}><BalanceHistoryPanel snapshot={snapshot} open={balanceHistoryOpen} onClose={() => setBalanceHistoryOpen(false)} /></FeatureBoundary> : null}
       {transmissionOpen && <FeatureBoundary onClose={() => setTransmissionOpen(false)} fallback={<div role="status">{t("正在打开传动计算器…")}</div>}><TransmissionPanel snapshot={snapshot} sides={state.sides} getSpiritConfiguration={storedData.getSpiritConfiguration} onClose={() => setTransmissionOpen(false)} /></FeatureBoundary>}
       {typeQueryOpen && <FeatureBoundary onClose={() => setTypeQueryOpen(false)} fallback={<div role="status">{t(typeQueryOpen === "chart" ? "正在打开克制图…" : "正在打开属性查询…")}</div>}>
         {typeQueryOpen === "chart" ? <TypeChartPanel typeChart={snapshot.typeChart} onClose={() => setTypeQueryOpen(false)} />

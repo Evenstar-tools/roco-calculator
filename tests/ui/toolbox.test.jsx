@@ -12,8 +12,8 @@ test("加载阶段不开放会在就绪时消失的工具菜单", () => {
   expect(screen.getByRole("button", { name: "工具箱" })).toBeEnabled();
 });
 
-test("六项工具按分组打开，先收起并还原焦点再执行入口", () => {
-  const ids = ["types", "skills", "deer", "transmission", "speed", "durability"];
+test("七项工具按分组打开，先收起并还原焦点再执行入口", () => {
+  const ids = ["types", "skills", "balanceHistory", "deer", "transmission", "speed", "durability"];
   const actions = Object.fromEntries(ids.map(id => [id, vi.fn(() => {
     expect(screen.getByRole("button", {name:"工具箱"})).toHaveFocus();
   })]));
@@ -21,7 +21,10 @@ test("六项工具按分组打开，先收起并还原焦点再执行入口", ()
   for (const [index,id] of ids.entries()) {
     fireEvent.click(screen.getByRole("button", {name:"工具箱"}));
     const panel=screen.getByRole("navigation", {name:"工具箱"});
-    expect(within(panel).getAllByRole("button")).toHaveLength(6);
+    expect(within(panel).getAllByRole("button")).toHaveLength(7);
+    expect(within(within(panel).getByRole("region", { name: "查询" })).getAllByRole("button").map(button => button.textContent))
+      .toEqual(["属性查询", "技能检索", "平衡调整回顾"]);
+    expect(within(panel).getByRole("button", { name: "平衡调整回顾" })).toHaveStyle({ gridColumn: "1 / -1" });
     fireEvent.click(within(panel).getAllByRole("button")[index]);
     expect(actions[id]).toHaveBeenCalledOnce();
     expect(screen.queryByRole("navigation", {name:"工具箱"})).toBeNull();
@@ -37,17 +40,20 @@ test("only warms the tool under pointer or keyboard focus", () => {
   expect(onWarm).toHaveBeenCalledWith("skills");
 });
 
-test("Global 工具箱不新增国服抢先入口", () => {
+test("Global 工具箱保留克制图，不显示国服平衡调整回顾入口", () => {
   const openChart = vi.fn();
-  render(<RuntimeProvider serverId="global"><Toolbox actions={{ types: vi.fn(), typeChart: openChart }} /></RuntimeProvider>);
+  const openBalanceHistory = vi.fn();
+  render(<RuntimeProvider serverId="global"><Toolbox actions={{ types: vi.fn(), typeChart: openChart, balanceHistory: openBalanceHistory }} /></RuntimeProvider>);
   fireEvent.click(screen.getByRole("button", { name: "工具箱" }));
   expect(screen.queryByRole("link", { name: "S5 抢先体验" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "平衡调整回顾" })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "18 系克制图" }));
   expect(openChart).toHaveBeenCalledOnce();
+  expect(openBalanceHistory).not.toHaveBeenCalled();
 });
 
 test("正式版隐藏抢先入口，重复点击、外部点击、Esc 关闭，键盘焦点只在工具间循环", () => {
-  const actions=Object.fromEntries(["types","skills","deer","transmission","speed","durability"].map(id=>[id,vi.fn()]));
+  const actions=Object.fromEntries(["types","skills","balanceHistory","deer","transmission","speed","durability"].map(id=>[id,vi.fn()]));
   render(<Toolbox actions={actions} />);
   const trigger=screen.getByRole("button",{name:"工具箱"});
   fireEvent.click(trigger);
@@ -73,7 +79,7 @@ test("抢先版工具箱返回正式版，链接参与键盘焦点循环", async
   vi.stubEnv("MODE", "pre");
   vi.resetModules();
   const { Toolbox: PreviewToolbox } = await import("../../src/components/Toolbox.jsx");
-  const actions = Object.fromEntries(["types", "skills", "deer", "transmission", "speed", "durability"].map(id => [id, vi.fn()]));
+  const actions = Object.fromEntries(["types", "skills", "balanceHistory", "deer", "transmission", "speed", "durability"].map(id => [id, vi.fn()]));
   render(<PreviewToolbox actions={actions} />);
   fireEvent.click(screen.getByRole("button", { name: "工具箱" }));
   const panel = screen.getByRole("navigation", { name: "工具箱" });
