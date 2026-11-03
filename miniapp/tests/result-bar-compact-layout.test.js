@@ -24,3 +24,16 @@ describe("手机结果栏与小字", () => {
     expect(rule(styles("responsive"), ".skill-slots--matrix .skill-picker__meta")).toContain("font-size: 10px");
   });
 });
+
+describe("窄屏名字与小按钮", () => {
+  it("窄屏把 NEW 与改动标记移出名字行", () => {
+    const css = styles("responsive");
+    const narrow = css.slice(css.indexOf("@media (max-width: 359px) {"));
+    expect(narrow).toMatch(/\.combatant-card__name-row > \.entity-new-badge,\s*\.combatant-card__name-row > \.entity-change-hint \{\s*position: absolute;/);
+    expect(styles("entity-change-hints")).toMatch(/\.entity-new-badge \{[^}]*font-size: 10px;/);
+  });
+
+  it("排行“重置”保持 44px 点击区域", () => {
+    expect(styles("rankings")).toMatch(/\.ranking-summary \.ranking-action \{ min-width: 44px; min-height: 44px;/);
+  });
+});
