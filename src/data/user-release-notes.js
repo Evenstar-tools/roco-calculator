@@ -237,6 +237,27 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.2",
+    date: "2026.11.03",
+    seasonId: "S5",
+    title: "S5 平衡回顾易读性",
+    whatsNew: S5_FEATURE_INTRO,
+    summaryHighlights: [
+      "平衡回顾的每条改动都写明是哪只精灵，多只可展开看名单。",
+      "改前改后的效果文字标出差异，删掉标红、新增标绿。",
+      "电脑大屏弹窗放大，家族名改用基础形态。",
+    ],
+    features: [
+      "按更新浏览的改动行直接显示涉及的精灵头像和名字，涉及多只时可展开完整名单。",
+      "技能和特性效果展开后，删掉的内容标红并加删除线，新增的内容标绿，数值整体标出。",
+    ],
+    fixes: [
+      "电脑大屏弹窗放大到1280×960，一屏能看到更多改动。",
+      "家族名用基础形态，不再显示变体名；标题已含赛季时不重复赛季标签。",
+      "国际服继续使用S3季中数据与规则，本次不变。",
+    ],
+  }),
+  createRelease({
     version: "v2.3.1",
     date: "2026.11.03",
     seasonId: "S5",
