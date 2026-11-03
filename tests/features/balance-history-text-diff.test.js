@@ -25,8 +25,10 @@ test("几乎整段重写或缺一侧时不标记", () => {
   expect(diffText("", "新内容").after).toEqual([{ text: "新内容", changed: false }]);
 });
 
-test("夹在两处改动之间的单个相同字并入改动", () => {
-  const diff = diffText("使用技能后提升的速度+10，回合结束", "使用技能后降低的力量+10，回合结束");
-  expect(marked(diff.before)).toEqual(["提升的速度"]);
-  expect(marked(diff.after)).toEqual(["降低的力量"]);
+test("两侧对相同文字的判断一致，空格两侧的改动并成一段", () => {
+  const diff = diffText("获得攻防+20%。", "获得双攻和双防+20%。");
+  expect(marked(diff.before)).toEqual([]);
+  expect(marked(diff.after)).toEqual(["双", "和双"]);
+  const words = diffText("Gain power up now", "Gain speed boost now");
+  expect(marked(words.after)).toEqual(["speed boost"]);
 });
