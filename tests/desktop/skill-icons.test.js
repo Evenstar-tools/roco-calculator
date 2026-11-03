@@ -3,6 +3,7 @@ import path from "node:path";
 import { tmpdir } from "node:os";
 import { expect, test } from "vitest";
 import { prepareDesktopClient, verifyDesktopSkillIcons } from "../../scripts/desktop-skill-icons.mjs";
+import { withPublicResourceUrls } from "../../src/runtime/public-resource-url.js";
 
 test("每个当前技能都有可内置的 PNG 图标", () => {
   const snapshot = JSON.parse(readFileSync("data/snapshots/current.json", "utf8"));
@@ -60,7 +61,9 @@ test("双构建的 S5 技能与愿力图标离线内置，保留两套网页运�
   const skillId = "skill_0000000000000003";
   const previewIconUrl = "/assets/skills/skill_preview_s5_bwiki_dc5a_4d57cc90d796c5.png";
   const wishPowerIconUrl = "/assets/skills/wish-power/7700001.png";
-  const runtime = JSON.stringify({ skills: [
+  const runtime = JSON.stringify({
+    meta: { counts: { spirits: 99, skills: 99, learnsets: 99, traits: 99, typeChart: 18 } },
+    spirits: [], learnsets: [], traits: [], skills: [
     { id: skillId, name: "预览旧技能", iconUrl: "https://example.com/icon.png" },
     { id: "skill_preview_s5_dream-building", name: "筑梦", iconUrl: previewIconUrl },
     { id: "calculator_wish_power_normal", name: "愿力冲击" },
@@ -86,6 +89,7 @@ test("双构建的 S5 技能与愿力图标离线内置，保留两套网页运�
   for (const prefix of ["", "pre"]) {
     const channel = path.join(staged, prefix);
     const bundled = JSON.parse(readFileSync(path.join(channel, "data/runtime.json"), "utf8"));
+    expect(bundled.meta.counts).toEqual({ spirits: 0, skills: 3, learnsets: 0, traits: 0, typeChart: 18 });
     expect(bundled.skills[0].iconUrl).toBe(`/assets/skills/${skillId}.png`);
     expect(bundled.skills[1].iconUrl).toBe(previewIconUrl);
     expect(bundled.skills[2].iconUrl).toBe(wishPowerIconUrl);
@@ -103,4 +107,57 @@ test("双构建的 S5 技能与愿力图标离线内置，保留两套网页运�
   writeFileSync(stagedPreviewIcon, png);
   writeFileSync(path.join(staged, `pre/assets/skills/${skillId}.png`), "broken", "utf8");
   expect(() => verifyDesktopSkillIcons(staged)).toThrow("损坏：预览旧技能");
+});
+
+test.each(["expanded", "shared"])("国际服运行数据与 %s 检索目录内置来源技能图标，保留地区 ID 和网页产物", (format) => {
+  const root = mkdtempSync(path.join(tmpdir(), "desktop-global-icons-"));
+  const web = path.join(root, "dist/client");
+  const global = path.join(web, "global-assets");
+  const sourceId = "skill_0000000000000005";
+  const catalogOnlyId = "skill_0000000000000006";
+  const png = Buffer.from("89504e470d0a1a0a", "hex");
+  const skill = { id: `cn-placeholder:${sourceId}`, name: "抓挠", reference: { sourceId }, iconUrl: "https://example.com/scratch.png" };
+  const wish = { id: "cn-placeholder:calculator_wish_power_normal", name: "愿力冲击", reference: { sourceId: "calculator_wish_power_normal" } };
+  const runtime = JSON.stringify({
+    meta: { serverId: "global", counts: { spirits: 99, skills: 99, learnsets: 99, traits: 99, typeChart: 18 } },
+    spirits: [], learnsets: [], traits: [], skills: [skill, wish],
+  });
+  const querySkills = [skill, wish, { id: `cn-placeholder:${catalogOnlyId}`, name: "目录技能", reference: { sourceId: catalogOnlyId }, iconUrl: "https://example.com/catalog.png" }];
+  const catalog = JSON.stringify({ schemaVersion: 1, serverId: "global",
+    ...(format === "shared" ? { sharedSkills: querySkills } : {}),
+    seasons: [{ id: "S3", skills: format === "shared" ? [0, 1, 2] : querySkills }],
+  });
+  for (const directory of ["data", "dianlu", "global-assets/data/global/skill-query", "global-assets/assets/skills/wish-power"]) {
+    mkdirSync(path.join(web, directory), { recursive: true });
+  }
+  mkdirSync(path.join(root, "data/desktop-skill-icons"), { recursive: true });
+  for (const id of [sourceId, catalogOnlyId]) writeFileSync(path.join(root, `data/desktop-skill-icons/${id}.png`), png);
+  for (const page of ["index.html", "dianlu/index.html"]) writeFileSync(path.join(web, page), '<div id="root"></div>', "utf8");
+  writeFileSync(path.join(web, "data/runtime.json"), JSON.stringify({ skills: [] }), "utf8");
+  writeFileSync(path.join(global, "data/global-runtime.json"), runtime, "utf8");
+  writeFileSync(path.join(global, "data/global/skill-query/catalog.json"), catalog, "utf8");
+  writeFileSync(path.join(global, "assets/skills/wish-power/7700001.png"), png);
+
+  const staged = prepareDesktopClient(root);
+  const bundledGlobal = path.join(staged, "global-assets");
+  const bundled = JSON.parse(readFileSync(path.join(bundledGlobal, "data/global-runtime.json"), "utf8"));
+  expect(bundled.meta).toEqual({ serverId: "global", counts: { spirits: 0, skills: 2, learnsets: 0, traits: 0, typeChart: 18 } });
+  const expectedIcon = `/assets/skills/${sourceId}.png`;
+  expect(bundled.skills[0]).toEqual({ ...skill, iconUrl: expectedIcon });
+  expect(bundled.skills[1]).toEqual({ ...wish, iconUrl: "/assets/skills/wish-power/7700001.png" });
+  expect(withPublicResourceUrls(bundled, "/global-assets/").skills[0].iconUrl).toBe(`/global-assets${expectedIcon}`);
+  const bundledCatalog = JSON.parse(readFileSync(path.join(bundledGlobal, "data/global/skill-query/catalog.json"), "utf8"));
+  const bundledQuerySkills = bundledCatalog.sharedSkills ?? bundledCatalog.seasons[0].skills;
+  expect(bundledQuerySkills.map(({ id }) => id)).toEqual(querySkills.map(({ id }) => id));
+  expect(bundledQuerySkills.map(({ iconUrl }) => iconUrl)).toEqual([
+    expectedIcon, "/assets/skills/wish-power/7700001.png", `/assets/skills/${catalogOnlyId}.png`,
+  ]);
+  expect(readFileSync(path.join(global, "data/global-runtime.json"), "utf8")).toBe(runtime);
+  expect(readFileSync(path.join(global, "data/global/skill-query/catalog.json"), "utf8")).toBe(catalog);
+  expect(verifyDesktopSkillIcons(staged)).toBe(2);
+  writeFileSync(path.join(bundledGlobal, `assets/skills/${sourceId}.png`), "broken", "utf8");
+  expect(() => verifyDesktopSkillIcons(staged)).toThrow("损坏：抓挠");
+  writeFileSync(path.join(bundledGlobal, `assets/skills/${sourceId}.png`), png);
+  writeFileSync(path.join(bundledGlobal, `assets/skills/${catalogOnlyId}.png`), "broken", "utf8");
+  expect(() => verifyDesktopSkillIcons(staged)).toThrow("损坏：目录技能");
 });
