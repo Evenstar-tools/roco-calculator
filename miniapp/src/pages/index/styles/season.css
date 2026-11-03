@@ -418,3 +418,16 @@
     color: #99abc1;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  /* 公式结果胶囊与进度槽的浅色写死值，在深色下改用低亮度底色。 */
+  .result-formula__chip--result {
+    border-color: rgba(150, 168, 255, 0.45);
+    background: rgba(120, 140, 255, 0.16);
+    color: #c3cdff;
+  }
+
+  .result-row__track {
+    background: rgba(255, 255, 255, 0.14);
+  }
+}
