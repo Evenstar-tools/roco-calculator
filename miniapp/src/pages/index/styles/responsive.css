@@ -34,6 +34,7 @@
   }
 
   .battle-workspace__duel {
+    --duel-summary-height: 76px;
     grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
     padding: 5px;
     gap: 3px;
@@ -660,6 +661,7 @@
   }
 
   .battle-workspace__duel {
+    --duel-summary-height: 68px;
     padding: 4px;
   }
 
