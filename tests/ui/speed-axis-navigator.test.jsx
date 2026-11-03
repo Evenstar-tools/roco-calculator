@@ -239,3 +239,18 @@ test("首次从隐藏视图展开仅读取父组件位置，筛选空档和单�
   expect(container.querySelector(".speed-axis-nav")).toBeNull();
   expect(container.querySelector("[data-speed-axis-current]")).toBeNull();
 });
+
+
+test("scrolling deep into a long speed table reads logarithmically many row bounds", () => {
+  const data = Array.from({ length: 512 }, (_, index) => ({ key: String(index), value: 1024 - index }));
+  const metrics = metric({ heights: Array.from({ length: 512 }, () => 60) });
+  const { container } = render(<Harness data={data} metrics={metrics} />);
+  let reads = 0;
+  for (const row of container.querySelectorAll("tbody tr")) {
+    const bounds = row.getBoundingClientRect;
+    row.getBoundingClientRect = () => { reads += 1; return bounds(); };
+  }
+  manuallyScroll(metrics, 500 * 60);
+  expect(currentRow(container)).toHaveAttribute("data-speed-nav-key", "500");
+  expect(reads).toBeLessThanOrEqual(10);
+});

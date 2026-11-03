@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { localizeToolText } from "../i18n/useToolLocale.js";
 import { reportImageFailure } from "../runtime/chunk-recovery.js";
@@ -19,10 +19,18 @@ function recoverySource(src) {
 }
 
 /** 精灵头像：失败后自动重试，仍失败时显示名字；网络恢复时再试一次。 */
-export function SpiritImage({ src, name, className, style, ...props }) {
+export function SpiritImage({ decoding = "async", loading = "eager", ...props }) {
+  return <SpiritImageContent key={props.src} {...props} decoding={decoding} loading={loading} />;
+}
+
+function SpiritImageContent({ src, name, className, style, showLoadingName = false, ...props }) {
   const { locale } = useLocale();
   const [stored, setStored] = useState({ src, attempt: 0, box: null });
   const timer = useRef(null);
+  const [imageReady, setImageReady] = useState(false);
+  const captureImage = useCallback((image) => {
+    if (showLoadingName && image?.complete && image.naturalWidth > 0) setImageReady(true);
+  }, [showLoadingName]);
   const load = stored.src === src ? stored : { src, attempt: 0, box: null };
   const showingPlaceholder = Boolean(load.box);
   const recovering = load.attempt > 0 || load.recovering;
@@ -36,6 +44,7 @@ export function SpiritImage({ src, name, className, style, ...props }) {
   }, [showingPlaceholder, src]);
 
   function handleError(event) {
+    if (showLoadingName) setImageReady(false);
     const image = event.currentTarget;
     // 空 alt 的失败图片会塌成零宽内联元素，这里保住版面占位。
     image.dataset.loadRetrying = "";
@@ -51,10 +60,16 @@ export function SpiritImage({ src, name, className, style, ...props }) {
     setStored({ src, attempt: load.attempt, box: { width, height } });
   }
 
+  const label = (showLoadingName || load.box) && name ? localizeToolText(name, locale) : "";
   if (load.box) {
-    const label = name ? localizeToolText(name, locale) : "";
-    return <span className={["spirit-image-fallback", className].filter(Boolean).join(" ")} title={label}
+    return <span className={["spirit-image-fallback", className].filter(Boolean).join(" ")} title={label} aria-hidden={showLoadingName || undefined}
       style={{ ...style, ...(load.box.width ? { width: load.box.width, height: load.box.height } : {}) }}>{label}</span>;
   }
-  return <img key={load.attempt} {...props} className={className} style={style} src={recovering ? recoverySource(src) : src} data-load-retrying={recovering ? "" : undefined} onError={handleError} />;
+  const image = <img key={load.attempt} {...props} className={className} style={style} src={recovering ? recoverySource(src) : src} data-load-retrying={recovering ? "" : undefined} ref={showLoadingName ? captureImage : undefined}
+    onLoad={(event) => { if (showLoadingName) setImageReady(true); props.onLoad?.(event); }} onError={handleError} />;
+  if (!showLoadingName) return image;
+  return <span className={["spirit-image-frame", className].filter(Boolean).join(" ")} style={style} aria-hidden="true">
+    {!imageReady ? <span className="spirit-image-fallback">{label}</span> : null}
+    {image}
+  </span>;
 }

@@ -2454,7 +2454,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         menuOpen={overlays.menu.open}
         onMenuOpen={() => overlays.menu.setOpen((open) => !open)}
         toolbox={{
-          onOpen: () => { overlays.menu.setOpen(false); if (release.capabilities.search) preloadSkillQuery(serverId, snapshot, locale); },
+          onOpen: () => overlays.menu.setOpen(false),
+          onWarm: (id) => { if (id === "skills" && release.capabilities.search) preloadSkillQuery(serverId, snapshot, locale); },
           activeTool: typeQueryOpen === "chart" ? "typeChart" : typeQueryOpen ? "types" : skillQueryOpen ? "skills" : transmissionOpen ? "transmission" : rankingKind,
           actions: {
             types: () => setTypeQueryOpen(true),

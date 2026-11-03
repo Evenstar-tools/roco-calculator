@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
+import { getSnapshotIndexes } from "../../src/domain/snapshot-indexes.js";
 import { getEffectiveTraits } from "../../src/domain/effective-traits.js";
 import { resolveCombatant } from "../../src/domain/skill-result/loadout.js";
 import {
@@ -281,4 +282,34 @@ describe("getEffectiveTraits", () => {
       traits: [{ ...contract, runtimeInputValues: contractValues }],
     })).toMatchObject({ active: true, ballType: "sand", hitCountAdd: 2 });
   });
+});
+
+
+test("deeply frozen trait records reuse one ID index across repeated lookups", () => {
+  const traits = [Object.freeze({ id: "native", name: "固有特性" })];
+  const map = vi.fn(Array.prototype.map);
+  Object.defineProperty(traits, "map", { value: map });
+  Object.freeze(traits);
+  const source = { traits };
+  const side = { spirit: { traitIds: ["native"] } };
+  expect(getEffectiveTraits(source, side)).toEqual([traits[0]]);
+  expect(getEffectiveTraits(source, side)).toEqual([traits[0]]);
+  expect(map).toHaveBeenCalledOnce();
+});
+
+test("mutable trait IDs remain current before and after freezing, including an older snapshot index", () => {
+  const trait = { id: "old", name: "固有特性" };
+  const source = { traits: [trait] };
+  getSnapshotIndexes(source);
+  expect(getEffectiveTraits(source, { spirit: { traitIds: ["old"] } })).toEqual([trait]);
+  Object.freeze(source.traits);
+  trait.id = "intermediate";
+  expect(getEffectiveTraits(source, { spirit: { traitIds: ["intermediate"] } })).toEqual([trait]);
+  trait.id = "final";
+  Object.freeze(trait);
+  expect(getEffectiveTraits(source, { spirit: { traitIds: ["final"] } })).toEqual([trait]);
+  expect(getEffectiveTraits(source, { spirit: { traitIds: ["old", "intermediate"] } })).toEqual([]);
+  const replacement = Object.freeze({ id: "replacement", name: "替代特性" });
+  source.traits = [replacement];
+  expect(getEffectiveTraits(source, { spirit: { traitIds: ["replacement"] } })).toEqual([replacement]);
 });

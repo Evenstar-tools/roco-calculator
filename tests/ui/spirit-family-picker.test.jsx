@@ -47,3 +47,22 @@ test("普通选择器和精确搜索也能找到关联家族", () => {
   expect(screen.getAllByRole("option")).toHaveLength(4);
   expect(screen.getByRole("option", { name: /熔岩布丁/ })).toBeVisible();
 });
+
+
+test("list portraits load lazily while the selected portrait stays eager", () => {
+  const spirits = snapshot.spirits.slice(0, 5).map(spirit => ({
+    ...spirit, assetUrl: spirit.asset?.localUrl ?? `/assets/spirits/${spirit.id}.png`,
+  }));
+  const { container } = render(<SpiritPicker label="攻击方" side="attack" spirits={spirits}
+    selected={spirits[0]} onSelect={vi.fn()} />);
+  fireEvent.focus(screen.getByRole("combobox", { name: "攻击方精灵" }));
+  const options = screen.getByRole("listbox").querySelectorAll("img");
+  expect(options.length).toBeGreaterThan(0);
+  for (const image of options) {
+    expect(image).toHaveAttribute("loading", "lazy");
+    expect(image).toHaveAttribute("decoding", "async");
+    expect(image).toHaveAttribute("width", "36");
+    expect(image).toHaveAttribute("height", "36");
+  }
+  expect(container.querySelector(".spirit-card__image")).toHaveAttribute("loading", "eager");
+});

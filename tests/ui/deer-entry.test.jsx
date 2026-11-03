@@ -166,3 +166,20 @@ test("reactivating a CN session at /cn/ does not retain its old deer route", asy
   expect(await screen.findByRole("combobox", { name: "攻击方精灵" })).toBeVisible();
   expect(screen.queryByRole("region", { name: "技能斩杀线" })).not.toBeInTheDocument();
 });
+
+
+test("reopening deer reuses static data and still reloads the latest private preset", async () => {
+  const side = createDeerSetup(snapshot).state.sides.defender;
+  const repository = spiritConfigsRepository();
+  repository.clear();
+  const first = render(<DeerPage />);
+  await screen.findByRole("region", { name: "防御方配置" });
+  first.unmount();
+  repository.save({ configs: {} }, { ...side, nature: "cheerful", displayIvs: { ...side.displayIvs, hp: 42 } }, snapshot);
+  render(<DeerPage />);
+  const defense = await screen.findByRole("region", { name: "防御方配置" });
+  expect(within(defense).getByText(/开朗 · 生命42/)).toBeInTheDocument();
+  expect(fetch.mock.calls.filter(([url]) => String(url).includes("runtime.json"))).toHaveLength(1);
+  expect(fetch.mock.calls.filter(([url]) => String(url).includes("presets/"))).toHaveLength(1);
+  repository.clear();
+});

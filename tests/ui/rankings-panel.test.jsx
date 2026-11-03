@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import RankingsPanel from "../../src/components/RankingsPanel.jsx";
 import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
@@ -114,6 +114,16 @@ test("关闭重开保留独立筛选，速度口径不串状态且无伪造参�
 
 test("数字基准、种族速度和去字模式保留可点击详情", () => {
   render(<RankingsPanel kind="speed" snapshot={snapshot} onClose={vi.fn()} />);
+  const input = screen.getByLabelText("搜索速度榜精灵");
+  for (const value of ["-1", "2.5"]) {
+    fireEvent.change(input, { target: { value } });
+    expect(screen.getByRole("status")).toHaveTextContent("请输入非负整数速度值");
+    expect(screen.queryByText("基准位置 · 没有同速配置")).not.toBeInTheDocument();
+  }
+  fireEvent.change(input, { target: { value: "0" } });
+  expect(screen.getByRole("status")).toHaveTextContent("比 0 快 4 · 同速 0 · 慢 0 个配置");
+  fireEvent.change(input, { target: { value: "" } });
+  expect(screen.queryByText("基准位置 · 没有同速配置")).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "试查 267" }));
   expect(screen.getByRole("status")).toHaveTextContent("比 267 快 0 · 同速 0 · 慢 12 个配置");
   expect(screen.getByText("基准位置 · 没有同速配置")).toBeInTheDocument();
@@ -121,7 +131,7 @@ test("数字基准、种族速度和去字模式保留可点击详情", () => {
   fireEvent.change(screen.getByLabelText("搜索速度榜精灵"), { target: { value: "100" } });
   expect(screen.getAllByRole("button", { name: /在速度表选择水测试/ })).toHaveLength(4);
   expect(screen.getByRole("button", { name: "显示精灵文字" })).toHaveAttribute("aria-pressed", "true");
-  expect(within(screen.getByRole("table", { name: "速度档位表" })).queryByText("水测试")).not.toBeInTheDocument();
+  expect(screen.getAllByRole("button", { name: /在速度表选择水测试/ })[0].querySelector("strong")).toBeNull();
   fireEvent.click(screen.getAllByRole("button", { name: /在速度表选择水测试/ })[0]);
   expect(screen.getByRole("region", { name: "速度配置详情" })).toBeInTheDocument();
 });
@@ -332,4 +342,234 @@ test("60级阿布详情展示原生承伤倍率，关闭特殊配置也不漏算
     const highlighted = screen.getByRole("table", { name: "标准耐久完整榜" }).querySelector('tr[aria-current="true"]');
     expect(highlighted).toHaveTextContent(effective.toLocaleString("zh-CN"));
   }
+});
+
+
+const largeRankingSnapshot = { ...snapshot, spirits: Array.from({ length: 100 }, (_, index) => ({
+  ...snapshot.spirits[0], id: `batch-${index}`, dexNo: index + 1, fullName: `批次${String(index).padStart(3, "0")}`,
+  raceStats: { ...snapshot.spirits[0].raceStats, hp: 200 - index, physicalDefense: 200 - index, magicalDefense: 200 - index },
+})) };
+
+test("long durability rankings append on approach without repeatedly observing a visible sentinel", () => {
+  const observers = [];
+  vi.stubGlobal("IntersectionObserver", class {
+    constructor(callback, options) { this.callback = callback; this.options = options; observers.push(this); }
+    observe = vi.fn();
+    disconnect = vi.fn();
+  });
+  try {
+    const { container } = render(<RankingsPanel kind="durability" snapshot={largeRankingSnapshot} onClose={vi.fn()} />);
+    const table = screen.getByRole("table", { name: "标准耐久完整榜" });
+    expect(table).toHaveAttribute("aria-rowcount", "101");
+    expect(table.tBodies[0].rows).toHaveLength(36);
+    expect(screen.getByRole("status")).toHaveTextContent("100只");
+    expect(observers).toHaveLength(1);
+    expect(observers[0].options.root).toBe(table.parentElement);
+    act(() => observers[0].callback([{ isIntersecting: true }]));
+    expect(table.tBodies[0].rows).toHaveLength(72);
+    // Recreating an observer here would immediately append the next batch too.
+    expect(observers).toHaveLength(1);
+    act(() => observers[0].callback([{ isIntersecting: true }]));
+    expect(table.tBodies[0].rows).toHaveLength(100);
+    expect(observers[0].disconnect).toHaveBeenCalledOnce();
+    expect(container.querySelector(".rank-load-more")).toBeNull();
+    fireEvent.change(screen.getByLabelText("搜索耐久榜精灵"), { target: { value: "批次099" } });
+    expect(table.tBodies[0].rows).toHaveLength(1);
+    expect(table.tBodies[0].rows[0]).toHaveTextContent("100批次099");
+  } finally { vi.unstubAllGlobals(); }
+});
+
+test("keyboard-accessible durability batches keep scroll and filters when closed and reopened", async () => {
+  const close = vi.fn();
+  const { rerender } = render(<RankingsPanel kind="durability" snapshot={largeRankingSnapshot} onClose={close} />);
+  const table = screen.getByRole("table", { name: "标准耐久完整榜" });
+  fireEvent.click(screen.getByRole("button", { name: "显示更多 · 36 / 100" }));
+  expect(table.tBodies[0].rows).toHaveLength(72);
+  await waitFor(() => expect(within(table).getByRole("button", { name: /批次036/ })).toHaveFocus());
+  table.parentElement.scrollTop = 750;
+  rerender(<RankingsPanel kind={null} snapshot={largeRankingSnapshot} onClose={close} />);
+  rerender(<RankingsPanel kind="durability" snapshot={largeRankingSnapshot} onClose={close} />);
+  expect(table.tBodies[0].rows).toHaveLength(72);
+  expect(table.parentElement.scrollTop).toBe(750);
+  fireEvent.change(screen.getByLabelText("搜索耐久榜精灵"), { target: { value: "批次099" } });
+  fireEvent.click(screen.getByRole("button", { name: /批次099/ }));
+  fireEvent.click(screen.getByRole("button", { name: "返回榜单" }));
+  expect(table.querySelector('tr[aria-current="true"]')).toHaveTextContent("批次099");
+  expect(screen.getByLabelText("搜索耐久榜精灵")).toHaveValue("批次099");
+  fireEvent.change(screen.getByLabelText("搜索耐久榜精灵"), { target: { value: "" } });
+  fireEvent.click(screen.getByRole("button", { name: "物理耐久", exact: true }));
+  expect(table.querySelector('tr[aria-current="true"]')).toHaveTextContent("100批次099");
+});
+
+
+const portraitSnapshot = { ...snapshot, spirits: snapshot.spirits.map((spirit, index) => ({
+  ...spirit, raceStats: { ...spirit.raceStats, speed: 100 - index * 10 },
+  asset: { localUrl: `/assets/spirits/${spirit.id}.png` },
+})) };
+
+function mockPortraitObservers() {
+  const observers = [];
+  vi.stubGlobal("IntersectionObserver", class {
+    constructor(callback, options) { this.callback = callback; this.options = options; observers.push(this); }
+    observe = vi.fn();
+    unobserve = vi.fn();
+    disconnect = vi.fn();
+  });
+  return observers;
+}
+
+test("actual speed portraits withhold offscreen sources through searches and target location", async () => {
+  const observers = mockPortraitObservers();
+  const originalScrollIntoView = Element.prototype.scrollIntoView;
+  const scrollIntoView = vi.fn();
+  Element.prototype.scrollIntoView = scrollIntoView;
+  try {
+    render(<RankingsPanel kind="speed" snapshot={portraitSnapshot} onClose={vi.fn()} />);
+    const table = screen.getByRole("table", { name: "速度档位表" });
+    const observer = observers.find(item => item.options.root === table.parentElement);
+    expect(observers).toHaveLength(1);
+    expect(table.querySelector("img")).toBeNull();
+    const water = within(table).getAllByRole("button", { name: /在速度表选择水测试/ })[0];
+    expect(water.firstElementChild).toHaveClass("speed-portrait-placeholder");
+    expect(water.firstElementChild).not.toHaveClass("spirit-image-fallback");
+    expect(water.firstElementChild).toBeEmptyDOMElement();
+    expect(water.firstElementChild).toHaveAttribute("aria-hidden", "true");
+    act(() => observer.callback([{ target: water, isIntersecting: true }]));
+    expect(water.querySelector("img")).toHaveAttribute("src", "/assets/spirits/water.png");
+    expect(water.querySelector("img")).toHaveAttribute("loading", "eager");
+    expect(water.querySelector(".spirit-image-fallback")).toHaveTextContent("水测试");
+    fireEvent.load(water.querySelector("img"));
+    expect(water.querySelector(".spirit-image-fallback")).toBeNull();
+    for (const target of within(table).getAllByRole("button", { name: /在速度表选择草测试/ })) expect(target.querySelector("img")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "显示精灵文字" }));
+    fireEvent.change(screen.getByLabelText("搜索速度榜精灵"), { target: { value: "草测试" } });
+    const grass = within(table).getAllByRole("button", { name: /在速度表选择草测试/ })[0];
+    expect(grass.firstElementChild).toHaveClass("speed-portrait-placeholder");
+    expect(grass.querySelector("img")).toBeNull();
+    expect(observer.observe).toHaveBeenCalledWith(grass);
+    scrollIntoView.mockClear();
+    fireEvent.click(screen.getByRole("button", { name: "定位 草测试" }));
+    await waitFor(() => expect(scrollIntoView).toHaveBeenCalled());
+    const located = scrollIntoView.mock.contexts.at(-1);
+    expect(table).toContainElement(located);
+    expect(located).toHaveAttribute("data-deferred-portrait", "/assets/spirits/grass.png");
+    expect(located.querySelector("img")).toBeNull();
+    act(() => observer.callback([{ target: located, isIntersecting: true }]));
+    expect(located.querySelector("img")).toHaveAttribute("src", "/assets/spirits/grass.png");
+    fireEvent.change(screen.getByLabelText("搜索速度榜精灵"), { target: { value: "龙测试" } });
+    const dragon = within(table).getAllByRole("button", { name: /在速度表选择龙测试/ })[0];
+    expect(observer.observe).toHaveBeenCalledWith(dragon);
+    expect(dragon.querySelector("img")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "按种族速查" }));
+    act(() => observer.callback([{ target: dragon, isIntersecting: true }]));
+    expect(dragon.querySelector("img")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "实速排行" }));
+    act(() => observer.callback([{ target: dragon, isIntersecting: true }]));
+    expect(dragon.querySelector("img")).toHaveAttribute("src", "/assets/spirits/dragon.png");
+    expect(observers.filter(item => item.options.root === table.parentElement)).toHaveLength(1);
+  } finally {
+    Element.prototype.scrollIntoView = originalScrollIntoView;
+    vi.unstubAllGlobals();
+  }
+});
+
+test("base speed portraits withhold offscreen sources until the shared scroll observer sees them", () => {
+  const observers = mockPortraitObservers();
+  try {
+    render(<RankingsPanel kind="speed" snapshot={portraitSnapshot} onClose={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: "按种族速查" }));
+    const table = screen.getByRole("table", { name: "种族速度档位表" });
+    const targets = [...table.querySelectorAll("[data-deferred-portrait]")];
+    expect(targets).toHaveLength(3);
+    expect(table.querySelector("img")).toBeNull();
+    for (const target of targets) {
+      expect(target.firstElementChild).toHaveStyle({ width: "64px", height: "64px" });
+      expect(target.firstElementChild).toBeEmptyDOMElement();
+      expect(target.querySelector(".spirit-image-fallback")).toBeNull();
+    }
+    expect(observers.filter(item => item.options.root === table.parentElement)).toHaveLength(1);
+    const observer = observers.find(item => item.options.root === table.parentElement);
+    expect(observer.options).toEqual({ root: table.parentElement, rootMargin: "256px 0px" });
+    expect(observer.observe.mock.calls.map(([target]) => target)).toEqual(targets);
+    act(() => observer.callback([{ target: targets[0], isIntersecting: false }]));
+    expect(table.querySelector("img")).toBeNull();
+    act(() => observer.callback([{ target: targets[0], isIntersecting: true }]));
+    const image = targets[0].querySelector("img");
+    expect(image).toHaveAttribute("src", "/assets/spirits/water.png");
+    expect(image).toHaveAttribute("loading", "eager");
+    expect(image).toHaveAttribute("decoding", "async");
+    expect(image).toHaveAttribute("width", "64");
+    expect(image).toHaveAttribute("height", "64");
+    expect(targets[0].querySelector(".spirit-image-fallback")).toHaveTextContent("水测试");
+    fireEvent.load(image);
+    expect(targets[0].querySelector(".spirit-image-fallback")).toBeNull();
+    expect(observer.unobserve).toHaveBeenCalledWith(targets[0]);
+    expect(targets[1].querySelector("img")).toBeNull();
+    fireEvent.scroll(table.parentElement, { target: { scrollTop: 500 } });
+    act(() => observer.callback([{ target: targets[1], isIntersecting: true }]));
+    expect(targets[1].querySelector("img")).toHaveAttribute("src", "/assets/spirits/grass.png");
+    expect(targets[2].querySelector("img")).toBeNull();
+    expect(observers.filter(item => item.options.root === table.parentElement)).toHaveLength(1);
+  } finally { vi.unstubAllGlobals(); }
+});
+
+test("base speed portrait observation follows searches, retained views and source changes, then cleans up", () => {
+  const observers = mockPortraitObservers();
+  try {
+    const close = vi.fn();
+    const { rerender, unmount } = render(<RankingsPanel kind="speed" snapshot={portraitSnapshot} onClose={close} />);
+    fireEvent.click(screen.getByRole("button", { name: "按种族速查" }));
+    const table = screen.getByRole("table", { name: "种族速度档位表" });
+    const observer = observers.find(item => item.options.root === table.parentElement);
+    const water = within(table).getByRole("button", { name: "查看水测试标准速度详情" });
+    const oldDragon = within(table).getByRole("button", { name: "查看龙测试标准速度详情" });
+    act(() => observer.callback([{ target: water, isIntersecting: true }]));
+    fireEvent.change(screen.getByLabelText("搜索种族总览"), { target: { value: "草测试" } });
+    const grass = within(table).getByRole("button", { name: "查看草测试标准速度详情" });
+    expect(observer.unobserve).toHaveBeenCalledWith(oldDragon);
+    expect(observer.observe).toHaveBeenLastCalledWith(grass);
+    expect(grass.querySelector("img")).toBeNull();
+    act(() => observer.callback([{ target: oldDragon, isIntersecting: true }, { target: grass, isIntersecting: true }]));
+    expect(grass.querySelector("img")).toHaveAttribute("src", "/assets/spirits/grass.png");
+    fireEvent.change(screen.getByLabelText("搜索种族总览"), { target: { value: "" } });
+    expect(within(table).getByRole("button", { name: "查看水测试标准速度详情" }).querySelector("img")).toHaveAttribute("src", "/assets/spirits/water.png");
+    const dragon = within(table).getByRole("button", { name: "查看龙测试标准速度详情" });
+    expect(dragon.querySelector("img")).toBeNull();
+    expect(observer.observe).toHaveBeenCalledWith(dragon);
+    rerender(<RankingsPanel kind={null} snapshot={portraitSnapshot} onClose={close} />);
+    act(() => observer.callback([{ target: dragon, isIntersecting: true }]));
+    expect(dragon.querySelector("img")).toBeNull();
+    rerender(<RankingsPanel kind="speed" snapshot={portraitSnapshot} onClose={close} />);
+    act(() => observer.callback([{ target: dragon, isIntersecting: true }]));
+    expect(dragon.querySelector("img")).toHaveAttribute("src", "/assets/spirits/dragon.png");
+    const updatedSnapshot = { ...portraitSnapshot, spirits: portraitSnapshot.spirits.map(spirit => spirit.id === "water" ? { ...spirit, asset: { localUrl: "/assets/spirits/water-new.png" } } : spirit) };
+    rerender(<RankingsPanel kind="speed" snapshot={updatedSnapshot} onClose={close} />);
+    const updatedWater = within(table).getByRole("button", { name: "查看水测试标准速度详情" });
+    expect(updatedWater.querySelector("img")).toBeNull();
+    expect(observer.observe).toHaveBeenLastCalledWith(updatedWater);
+    expect(observers.filter(item => item.options.root === table.parentElement)).toHaveLength(1);
+    unmount();
+    expect(observer.disconnect).toHaveBeenCalledOnce();
+    expect(observer.unobserve).toHaveBeenCalledWith(updatedWater);
+    const callsAfterCleanup = observer.unobserve.mock.calls.length;
+    act(() => observer.callback([{ target: updatedWater, isIntersecting: true }]));
+    expect(observer.unobserve).toHaveBeenCalledTimes(callsAfterCleanup);
+  } finally { vi.unstubAllGlobals(); }
+});
+
+test("speed table portraits remain available without IntersectionObserver", () => {
+  vi.stubGlobal("IntersectionObserver", undefined);
+  try {
+    render(<RankingsPanel kind="speed" snapshot={portraitSnapshot} onClose={vi.fn()} />);
+    expect(screen.getByRole("table", { name: "速度档位表" }).querySelectorAll("img").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", { name: "按种族速查" }));
+    const table = screen.getByRole("table", { name: "种族速度档位表" });
+    const images = table.querySelectorAll("img");
+    expect(images).toHaveLength(3);
+    expect(table.querySelector("[data-deferred-portrait]")).toBeNull();
+    for (const image of images) {
+      expect(image.getAttribute("src")).toMatch(/^\/assets\/spirits\//);
+      expect(image).toHaveAttribute("loading", "lazy");
+    }
+  } finally { vi.unstubAllGlobals(); }
 });

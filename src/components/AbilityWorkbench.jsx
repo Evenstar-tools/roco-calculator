@@ -50,6 +50,7 @@ import {
 import { NatureSelect } from "./NatureSelect.jsx";
 import { StatIcon } from "./StatIcon.jsx";
 import { SpiritImage } from "./SpiritImage.jsx";
+import { useDeferredPortraits } from "../hooks/useDeferredPortraits.js";
 import { FeatureBoundary } from "../runtime/FeatureBoundary.jsx";
 import { recoverableLazy } from "../runtime/chunk-recovery.js";
 const DurabilityRankingView = recoverableLazy(() => import("./RankingsPanel.jsx").then((module) => ({ default: module.DurabilityRankingView })));
@@ -709,7 +710,9 @@ export function SpeedOverview({
   const activeTargetId = standalone ? targetId : selected?.id;
   const targetGroups = useMemo(() => groupSpeedTargets(targets), [targets]);
   const search = speedQuery(query, queryMode);
-  const reference = speedReference(targetGroups, standalone ? location?.speed ?? (search.kind === "actual" ? search.value : null) : null);
+  // Keep the parsed number/null as a primitive memo dependency.
+  const referenceSpeed = standalone ? location?.speed ?? (search.kind === "actual" && search.value !== null ? Number(search.value) : null) : null;
+  const reference = useMemo(() => speedReference(targetGroups, referenceSpeed), [targetGroups, referenceSpeed]);
   const referenceValue = reference?.value;
   const matchSummary = standalone && query && reference ? speedMatchSummary(targets, reference.value) : "";
   const namedTargets = standalone && query ? [...new Map(targets.filter(target => search.kind === "text" || target.matchReasons?.some(reason => reason === "图鉴号" || reason === "名称 / 别名")).map(target => [`${target.spiritId}:${target.level ?? 60}`, target])).values()] : [];
@@ -718,7 +721,8 @@ export function SpeedOverview({
   const hasActualMatch = targets.some(target => target.matchReasons?.includes("实际速度"));
   const baseOnlyMatch = hasBaseMatch && !hasActualMatch;
   const displayGroups = baseOnlyMatch ? targetGroups : reference?.groups ?? targetGroups;
-  const axisItems = displayGroups.map((group) => ({ key: String(group.speed), value: group.speed }));
+  const { isDeferred: isPortraitDeferred, loading: portraitLoading } = useDeferredPortraits(scrollRef, displayGroups);
+  const axisItems = useMemo(() => displayGroups.map((group) => ({ key: String(group.speed), value: group.speed })), [displayGroups]);
   const nearestCurrentTarget = standalone ? null : findNearestSpeedTarget(targets, currentSpeed);
   const resolvedLocateTargetId = targets.some((target) => target.id === locateTargetId)
     ? locateTargetId
@@ -823,23 +827,26 @@ export function SpeedOverview({
                 <td>
                   <div className="ability-speed__tier-spirits">
                     {!group.targets.length ? <span className="rank-note">{t("基准位置 · 没有同速配置")}</span> : null}
-                    {group.targets.map((target) => (
-                      <button
+                    {group.targets.map((target) => {
+                      const source = assetUrl(target.spirit);
+                      const deferred = isPortraitDeferred(source);
+                      return <button
                         aria-label={t("在速度表选择{v0}，速度{v1}{v2}", { v0: target.name, v1: target.speed, v2: target.specialLabel ? `，${target.specialLabel}` : "" })}
                         aria-pressed={target.id === activeTargetId}
                         key={target.id}
                         onClick={() => onTargetChange(target.id)}
                         ref={target.id === resolvedLocateTargetId ? locateTargetRef : null}
+                        data-deferred-portrait={deferred ? source : undefined}
                         title={`${target.matchReasons?.length ? `${t("命中{value}", { value: target.matchReasons.map(reason => t(reason)).join(" · ") })} · ` : ""}${t(target.name)} · ${t(target.qualifier)} · ${t(target.formRole === "boss" ? "首领" : "最终形态")}`}
                         type="button"
                       >
-                        {assetUrl(target.spirit) ? <SpiritImage name={target.name} alt="" loading="lazy" decoding="async" src={assetUrl(target.spirit)} /> : null}
+                        {source ? deferred ? <span aria-hidden="true" className="speed-portrait-placeholder" /> : <SpiritImage name={target.name} showLoadingName className="speed-portrait-placeholder" alt="" loading={portraitLoading} decoding="async" src={source} /> : null}
                         {iconOnly ? <small className="speed-profile-badge">{t(speedBadge(target))}</small> : <span>
                           <strong>{t(target.name)}</strong>
                           <small>{speedTargetMeta(target, {}, t)}</small>
                         </span>}
-                      </button>
-                    ))}
+                      </button>;
+                    })}
                   </div>
                   {detail && group.targets.some(target => target.id === detail.id) ? detailPanel : null}
                 </td>
