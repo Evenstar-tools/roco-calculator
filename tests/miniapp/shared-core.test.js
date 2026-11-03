@@ -276,7 +276,7 @@ describe("miniapp shared calculator core", () => {
     expect(() => runCoreDriftCheck(options)).toThrow("must be a full commit SHA");
   });
 
-  test("web build validates current mirrors without requiring release tags", async () => {
+  test("web build stays independent while miniapp entries retain shared core checks", async () => {
     const coreDriftModule = await import(
       "../../scripts/miniapp/check-core-drift.mjs"
     );
@@ -285,12 +285,19 @@ describe("miniapp shared calculator core", () => {
     expect(rootPackage.scripts["test:core-current"]).toBe(
       "node scripts/miniapp/check-core-drift.mjs --current-only",
     );
-    expect(rootPackage.scripts.build).toContain("npm run test:core-current");
+    expect(rootPackage.scripts.build).not.toContain("npm run test:core-current");
     expect(rootPackage.scripts.build).not.toContain("npm run test:core-drift");
+    expect(rootPackage.scripts.build).not.toContain("scripts/miniapp/");
+    expect(rootPackage.scripts["miniapp:test"]).toContain(
+      "npm run test:core-current",
+    );
     expect(rootPackage.scripts["miniapp:build"]).toContain(
       "npm run test:core-current",
     );
     expect(rootPackage.scripts["miniapp:build"]).not.toContain(
+      "npm run test:core-drift",
+    );
+    expect(rootPackage.scripts["miniapp:build:prod"]).toContain(
       "npm run test:core-drift",
     );
     expect(

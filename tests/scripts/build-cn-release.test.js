@@ -169,7 +169,7 @@ describe("pinned CN root release assembly", () => {
   test("release gates precede CN build, minification and budget; /pre and global assemble last", () => {
     const scripts = JSON.parse(readFileSync(path.resolve("package.json"), "utf8")).scripts;
     expect(scripts.build.split(" && ")).toEqual([
-      "npm run acceptance:verify", "npm run test:core-current", "npm run data:runtime", "npm run data:verify-bindings",
+      "npm run acceptance:verify", "npm run data:runtime", "npm run data:verify-bindings -- --web-only",
       "node scripts/build-cn-release.mjs", "node scripts/minify-service-worker.mjs", "npm run performance:verify",
       "node scripts/build-preview-release.mjs", "node scripts/build-global-release.mjs", "node scripts/stamp-image-cache.mjs",
     ]);

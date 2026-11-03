@@ -2,17 +2,11 @@
 import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { avatarFileTitle } from "./portrait-bindings.mjs";
 import { readImageDimensions } from "./sync-assets.mjs";
-import { loadMiniappReleaseData } from "../miniapp/release-source.mjs";
-import { getMiniappRuntimeBindingErrors } from "../miniapp/verify-runtime-bindings.mjs";
 
 const PROJECT_ROOT = path.resolve(import.meta.dirname, "../..");
-const SPIRIT_IMAGE_DIR = path.join(PROJECT_ROOT, "public/assets/spirits");
-const S4_PREVIEW_CANDIDATE_PATH = path.join(
-  PROJECT_ROOT,
-  "data/candidates/s4-preview-new-spirits.json",
-);
 const S4_PREVIEW_SOURCE_KIND = "s4-preview-local";
 const S4_PREVIEW_FORM_COUNT = 23;
 const MAX_SPIRIT_EDGE = 128;
@@ -36,30 +30,34 @@ function sha256(buffer) {
   return createHash("sha256").update(buffer).digest("hex");
 }
 
-export async function verifySpiritBindings() {
-  const [snapshot, manifest, runtime, bundled, s4Candidate] = await Promise.all([
-    readFile(path.join(PROJECT_ROOT, "data/snapshots/current.json"), "utf8").then(JSON.parse),
+export async function verifySpiritBindings({ root = PROJECT_ROOT, includeMiniapp = true } = {}) {
+  const SPIRIT_IMAGE_DIR = path.join(root, "public/assets/spirits");
+  const S4_PREVIEW_CANDIDATE_PATH = path.join(root, "data/candidates/s4-preview-new-spirits.json");
+  const [snapshot, manifest, runtime, s4Candidate] = await Promise.all([
+    readFile(path.join(root, "data/snapshots/current.json"), "utf8").then(JSON.parse),
     readFile(
-      path.join(PROJECT_ROOT, "public/assets/spirits/manifest.json"),
+      path.join(root, "public/assets/spirits/manifest.json"),
       "utf8",
     ).then(JSON.parse),
-    readFile(path.join(PROJECT_ROOT, "public/data/runtime.json"), "utf8").then(JSON.parse),
-    readFile(
-      path.join(PROJECT_ROOT, "miniapp/src/data/bundled-runtime.json"),
-      "utf8",
-    ).then(JSON.parse),
+    readFile(path.join(root, "public/data/runtime.json"), "utf8").then(JSON.parse),
     readFile(S4_PREVIEW_CANDIDATE_PATH, "utf8").then(JSON.parse),
   ]);
-  const miniOverrideSource = await readFile(
-    path.join(
-      PROJECT_ROOT,
-      "miniapp/src/data/s4-preview-pet-image-overrides.js",
-    ),
-    "utf8",
-  ).catch(() => "");
-  const miniappRelease = await loadMiniappReleaseData({ root: PROJECT_ROOT });
-  const errors = getMiniappRuntimeBindingErrors({ ...miniappRelease,
-    payload: bundled, sourceRoot: miniappRelease.source });
+  let bundled = null;
+  let miniOverrideSource = "";
+  const errors = [];
+  if (includeMiniapp) {
+    [bundled, miniOverrideSource] = await Promise.all([
+      readFile(path.join(root, "miniapp/src/data/bundled-runtime.json"), "utf8").then(JSON.parse),
+      readFile(path.join(root, "miniapp/src/data/s4-preview-pet-image-overrides.js"), "utf8").catch(() => ""),
+    ]);
+    const [{ loadMiniappReleaseData }, { getMiniappRuntimeBindingErrors }] = await Promise.all([
+      import("../miniapp/release-source.mjs"),
+      import("../miniapp/verify-runtime-bindings.mjs"),
+    ]);
+    const miniappRelease = await loadMiniappReleaseData({ root });
+    errors.push(...getMiniappRuntimeBindingErrors({ ...miniappRelease,
+      payload: bundled, sourceRoot: miniappRelease.source }));
+  }
   const spiritById = new Map(snapshot.spirits.map((spirit) => [spirit.id, spirit]));
   const manifestById = new Map(manifest.assets.map((asset) => [asset.id, asset]));
   const runtimeById = new Map(runtime.spirits.map((spirit) => [spirit.id, spirit]));
@@ -117,7 +115,7 @@ export async function verifySpiritBindings() {
       return match[1];
     }),
   );
-  if (miniRemoteIds.size !== S4_PREVIEW_FORM_COUNT) {
+  if (includeMiniapp && miniRemoteIds.size !== S4_PREVIEW_FORM_COUNT) {
     errors.push(
       `小程序 S4 前瞻远程头像映射必须为 ${S4_PREVIEW_FORM_COUNT} 个唯一项`,
     );
@@ -176,7 +174,7 @@ export async function verifySpiritBindings() {
   for (const asset of manifest.assets) {
     if (!spiritById.has(asset.id)) continue;
     const localPath = path.join(
-      PROJECT_ROOT,
+      root,
       "public",
       asset.localFile.replace(/^[/\\]+/u, ""),
     );
@@ -186,16 +184,16 @@ export async function verifySpiritBindings() {
     }
     if (asset.sourceKind === S4_PREVIEW_SOURCE_KIND) {
       const miniPath = path.join(
-        PROJECT_ROOT,
+        root,
         "miniapp/src/assets/spirits",
         path.basename(asset.localFile),
       );
-      const miniBuffer = await readFile(miniPath).catch(() => null);
-      if (
+      const miniBuffer = includeMiniapp ? await readFile(miniPath).catch(() => null) : null;
+      if (includeMiniapp && (
         !miniBuffer ||
         sha256(miniBuffer) !== asset.sha256 ||
         !buffer.equals(miniBuffer)
-      ) {
+      )) {
         errors.push(`${asset.name} 小程序前瞻头像缺失或哈希不一致`);
       }
       const pngSignature = Buffer.from("89504e470d0a1a0a", "hex");
@@ -221,7 +219,7 @@ export async function verifySpiritBindings() {
       ) {
         errors.push(`${asset.name} S4 前瞻头像尺寸或字节数与清单不一致`);
       }
-      if (!miniRemoteIds.has(asset.id)) {
+      if (includeMiniapp && !miniRemoteIds.has(asset.id)) {
         errors.push(`${asset.name} 小程序前瞻头像未正确注册覆盖映射`);
       }
     }
@@ -256,13 +254,18 @@ export async function verifySpiritBindings() {
     namedPortraits,
     fallbackPortraits: snapshot.spirits.length - namedPortraits,
     localFiles: manifest.assets.length,
-    miniappSpirits: bundled.spirits.length,
+    ...(bundled ? { miniappSpirits: bundled.spirits.length } : {}),
   };
 }
 
-const result = await verifySpiritBindings();
-console.log(`spirits=${result.spirits}`);
-console.log(`namedPortraits=${result.namedPortraits}`);
-console.log(`fallbackPortraits=${result.fallbackPortraits}`);
-console.log(`localFiles=${result.localFiles}`);
-console.log("status=valid");
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  const args = process.argv.slice(2);
+  const unknownArgs = args.filter((argument) => argument !== "--web-only");
+  if (unknownArgs.length) throw new Error(`Unknown arguments: ${unknownArgs.join(", ")}`);
+  const result = await verifySpiritBindings({ includeMiniapp: !args.includes("--web-only") });
+  console.log(`spirits=${result.spirits}`);
+  console.log(`namedPortraits=${result.namedPortraits}`);
+  console.log(`fallbackPortraits=${result.fallbackPortraits}`);
+  console.log(`localFiles=${result.localFiles}`);
+  console.log("status=valid");
+}

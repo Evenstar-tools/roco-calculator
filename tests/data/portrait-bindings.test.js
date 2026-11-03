@@ -1,5 +1,8 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, test, vi } from "vitest";
 import {
   applyNamedPortraitAssets,
@@ -13,6 +16,48 @@ const manifest = JSON.parse(
 );
 
 describe("BWIKI 精灵头像身份绑定", () => {
+  test("Web-only validates real Web files without miniapp dependencies and still rejects mismatches", async () => {
+    const { verifySpiritBindings } = await import("../../scripts/bwiki/verify-spirit-bindings.mjs");
+    const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+    const temporaryRoot = path.resolve(os.tmpdir());
+    const root = mkdtempSync(path.join(temporaryRoot, "rock-web-bindings-"));
+    try {
+      for (const relative of ["data/snapshots/current.json", "data/candidates/s4-preview-new-spirits.json", "public/assets/spirits", "public/data/runtime.json"]) {
+        const target = path.join(root, relative);
+        mkdirSync(path.dirname(target), { recursive: true });
+        cpSync(path.join(projectRoot, relative), target, { recursive: true });
+      }
+      expect(existsSync(path.join(root, "miniapp"))).toBe(false);
+      await expect(verifySpiritBindings({ root, includeMiniapp: false })).resolves.toMatchObject({
+        spirits: snapshot.spirits.length,
+        localFiles: manifest.assets.length,
+      });
+
+      const runtimePath = path.join(root, "public/data/runtime.json");
+      const runtimeSource = readFileSync(runtimePath, "utf8");
+      const changedRuntime = JSON.parse(runtimeSource);
+      changedRuntime.spirits[0].fullName = "fixture-runtime-name-mismatch";
+      writeFileSync(runtimePath, JSON.stringify(changedRuntime), "utf8");
+      await expect(verifySpiritBindings({ root, includeMiniapp: false })).rejects.toThrow("网页运行时名称或种族值错配");
+      writeFileSync(runtimePath, runtimeSource, "utf8");
+
+      const imagePath = path.join(root, "public", manifest.assets[0].localFile.replace(/^[/\\]+/u, ""));
+      const image = readFileSync(imagePath);
+      writeFileSync(imagePath, Buffer.concat([image, Buffer.from([0])]));
+      await expect(verifySpiritBindings({ root, includeMiniapp: false })).rejects.toThrow("本地头像哈希与清单不一致");
+      writeFileSync(imagePath, image);
+
+      await expect(verifySpiritBindings({ root })).rejects.toMatchObject({
+        code: "ENOENT",
+        path: expect.stringContaining("miniapp"),
+      });
+    } finally {
+      expect(path.dirname(root)).toBe(temporaryRoot);
+      expect(path.basename(root)).toMatch(/^rock-web-bindings-/u);
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, 60_000);
+
   test("圣代甜甜九种口味按正式图鉴文件绑定，不混淆水果饰品与冰淇淋口味", () => {
     const evidence = JSON.parse(readFileSync("data/reviewed/nrc-2026-09-10.json", "utf8"));
     const bundled = JSON.parse(readFileSync("miniapp/src/data/bundled-runtime.json", "utf8"));
