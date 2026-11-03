@@ -583,6 +583,18 @@
 }
 
 @media (max-width: 359px) {
+  /* 窄屏把 NEW 与改动标记移到卡片右上角，名字不再被挤成省略号。 */
+  .combatant-card__summary {
+    position: relative;
+  }
+
+  .combatant-card__name-row > .entity-new-badge,
+  .combatant-card__name-row > .entity-change-hint {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+  }
+
   /* 窄屏只留箭头，把宽度留给双方名字；读屏仍读按钮标签。 */
   .result-bar__action-label {
     display: none;
