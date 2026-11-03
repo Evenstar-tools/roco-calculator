@@ -123,6 +123,7 @@ import {
   patchFourSkill,
   projectBattleLevelHealth,
   reduceSessionAction,
+  selectBetLowHp,
   rememberSingleSkill as rememberSessionSingleSkill,
   selectFourSkill as selectSessionFourSkill,
   selectSingleSkill as selectSessionSingleSkill,
@@ -1743,6 +1744,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     </div>
   ) : null;
   function updateSingleSkillCondition(key, value) {
+    const betChoice = selectBetLowHp(stateRef.current, { side: activeAttackSideKey,
+      skill: selectedSingleSkill, key, value, snapshot });
+    if (betChoice) { commitSession(betChoice); return; }
     if (updateLinkedNegativeStatus(activeAttackSideKey, selectedSingleSkill, key, value)) return;
     if (
       selectedSingleSkill?.name === "多维击打" &&
@@ -1763,6 +1767,8 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       snapshot,
       stateRef.current.sides[side].skills.four[index],
     );
+    const betChoice = selectBetLowHp(stateRef.current, { side, index, skill, key, value, snapshot });
+    if (betChoice) { commitSession(betChoice); return; }
     if (updateLinkedNegativeStatus(side, skill, key, value)) return;
     if (skill?.name === "多维击打" && isEnemyStarfallInput(skill, key)) {
       updateTargetStarfallStacks(side, value);

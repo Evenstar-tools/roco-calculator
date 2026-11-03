@@ -17,9 +17,51 @@ import {
   selectSpirit,
   selectFourSkill,
   selectSingleSkill,
+  selectBetLowHp,
   shareHashFromInput,
   updateMirroredTraitContext,
 } from "../../src/state/calculator-session.js";
+import { decodeShareState, encodeShareState } from "../../src/state/share.js";
+import { calculateAllPanelStats } from "../../src/domain/stat.js";
+
+test.each(["single", "four"].flatMap((mode) => ["attacker", "defender"].map((side) => [mode, side])))(
+  "下注低血输入 %s %s 保留已有低血，分享及旧存档载入不触发额外扣血",
+  async (mode, side) => {
+    const skill = runtimeSnapshot.skills.find(({ name }) => name === "下注");
+    const choice = getSkillEffectInputs(skill).find((input) => input.contextKey === "betMode");
+    const direction = side === "attacker" ? "forward" : "reverse";
+    const healthDirection = side === "attacker" ? "reverse" : "forward";
+    for (const percent of [0, 25, 49, 49.9, 50, 100]) {
+      const state = createProductInitialState(runtimeSnapshot);
+      state.mode = mode;
+      state.sides[side].spiritId = runtimeSnapshot.spirits.find(({ fullName }) => fullName === "恶魔叮").id;
+      state.sides[side].skills = { single: skill.id, four: [skill.id, null, null, null] };
+      const owner = runtimeSnapshot.spirits.find(({ id }) => id === state.sides[side].spiritId);
+      const maxHp = calculateAllPanelStats({ raceStats: owner.raceStats, displayIvs: state.sides[side].displayIvs }).hp;
+      state.directions[healthDirection] = { ...state.directions[healthDirection], currentHp: Math.round(maxHp * percent / 100),
+        context: { currentHpPercent: percent } };
+      const updated = selectBetLowHp(state, { snapshot: runtimeSnapshot, side, skill,
+        ...(mode === "four" ? { index: 0 } : {}), key: choice.id, value: "lowHp" }).state;
+      const expected = percent < 50 ? percent : 49;
+      expect(updated.directions[healthDirection].context.currentHpPercent).toBe(expected);
+      expect(updated.directions[healthDirection].currentHp).toBe(Math.round(maxHp * expected / 100));
+      expect(updated.directions[direction].currentHp).toBe(state.directions[direction].currentHp);
+      expect(updated.directions[direction].overrides).toEqual(state.directions[direction].overrides);
+      const shared = await decodeShareState(await encodeShareState(updated));
+      expect(migrateSharedConfiguration(shared, updated.versions, runtimeSnapshot).directions[healthDirection]).toEqual(updated.directions[healthDirection]);
+    }
+    const legacy = createProductInitialState(runtimeSnapshot);
+    legacy.mode = mode;
+    legacy.sides[side].skills = { single: { skillId: skill.id, context: { betMode: "lowHp" } },
+      four: [{ skillId: skill.id, context: { betMode: "lowHp" } }, null, null, null] };
+    legacy.directions[direction].context.betMode = "lowHp";
+    expect(migrateSharedConfiguration(legacy, legacy.versions, runtimeSnapshot).directions[healthDirection]).toEqual(legacy.directions[healthDirection]);
+    legacy.sides[side].spiritId = runtimeSnapshot.spirits.find(({ fullName }) => fullName === "恶魔叮").id;
+    legacy.directions[healthDirection].currentHp = 1;
+    expect(selectBetLowHp(legacy, { snapshot: runtimeSnapshot, side, skill,
+      ...(mode === "four" ? { index: 0 } : {}), key: "betMode", value: "lowHp" }).state.directions[healthDirection]).toEqual(legacy.directions[healthDirection]);
+  },
+);
 
 test("所有技能复选框和异常输入都能通过真实保存链路开启、关闭", () => {
   const initial = createProductInitialState(runtimeSnapshot);

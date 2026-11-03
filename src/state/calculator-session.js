@@ -881,6 +881,35 @@ export function patchFourSkill(state, { index, patch, side, snapshot }) {
   });
 }
 
+// Choosing the low-HP branch is a calculator input shortcut, not a skill use.
+// Commit the choice and its real owner HP together so undo/share keep one state.
+export function selectBetLowHp(state, { side, skill, index, key, value, snapshot }) {
+  const choice = skill?.name === "下注"
+    ? getSkillEffectInputs(skill).find((input) => input.contextKey === "betMode")
+    : null;
+  if (!choice || ![choice.id, choice.contextKey].includes(key) || value !== "lowHp") return null;
+
+  const direction = side === "attacker" ? "forward" : "reverse";
+  const result = index == null
+    ? rememberSingleSkill(updateMirroredTraitContext(state, { direction, key, value }).state,
+      { direction, side, skillId: skill.id, snapshot })
+    : patchFourSkill(state, { side, index, patch: { context: { [key]: value } }, snapshot });
+  const spirit = getSpirit(snapshot, state.sides[side]);
+  if (!hasCompleteRaceStats(spirit?.raceStats)) return result;
+  const maxHp = calculateAllPanelStats({ raceStats: spirit.raceStats,
+    displayIvs: state.sides[side].displayIvs,
+    natureMultipliers: getNatureMultipliers(state.sides[side].nature),
+    level: resolveS5PreviewBattleLevel(snapshot, state, side) }).hp;
+  const healthDirection = side === "attacker" ? "reverse" : "forward";
+  const health = state.directions[healthDirection];
+  const percent = health.context?.currentHpPercent ?? ((health.currentHp ?? maxHp) / maxHp) * 100;
+  // Existing low HP, including 49.x%, must never be raised by this shortcut.
+  if (percent < 50) return result;
+  result.state = calculatorReducer(result.state, { type: "direction/update", direction: healthDirection,
+    value: { currentHp: Math.round(maxHp * 0.49), context: { currentHpPercent: 49 } } });
+  return result;
+}
+
 export function selectFourSkill(
   state,
   { index, side, skillId, snapshot },

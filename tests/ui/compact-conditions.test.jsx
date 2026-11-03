@@ -8,6 +8,10 @@ import { getSkillSlotConditions } from "../../src/components/skill-condition-inp
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 import { getSkillStatusEffectInputs } from "../../src/domain/skill-status-effects.js";
 import { getNegativeStatusInputs } from "../../src/domain/negative-status-rules.js";
+import { App } from "../../src/App.jsx";
+import { createInitialState } from "../../src/state/defaults.js";
+import { FIRST_RUN_GUIDE_STORAGE_KEY } from "../../src/state/first-run-guide.js";
+import { createCalculatorSessionStore } from "../../src/runtime/workspace-store.js";
 
 const prefix = "攻击方技能1";
 const skillNamed = (name) => snapshot.skills.find((skill) => skill.name === name);
@@ -16,6 +20,61 @@ const inputId = (input) => input.id ?? input.key;
 const conditions = (skill, context = {}) => getSkillSlotConditions({
   selected: { ...skill, slotContext: context }, selectedSkills: [skill], negativeStatusEnabled: true,
 });
+
+test.each(["single", "four"].flatMap((mode) => ["attacker", "defender"].flatMap((side) =>
+  ["compact", "detailed"].map((viewMode) => [mode, side, viewMode]))))(
+  "下注暗分支 %s %s %s 从满血降为49并立即重算，仅更改自身生命",
+  async (mode, side, viewMode) => {
+    localStorage.clear();
+    localStorage.setItem(FIRST_RUN_GUIDE_STORAGE_KEY, "1");
+    const state = createInitialState(snapshot);
+    const bet = skillNamed("下注");
+    const owner = snapshot.spirits.find((spirit) => spirit.fullName === "恶魔叮");
+    state.mode = mode;
+    for (const key of ["attacker", "defender"]) {
+      state.sides[key].spiritId = owner.id;
+      state.sides[key].skills = { single: bet.id, four: [bet.id, null, null, null] };
+    }
+    const direction = side === "attacker" ? "forward" : "reverse";
+    render(<App initialSnapshot={snapshot} initialWorkspace={{ state, activeDirection: direction, viewMode }} />);
+    const label = side === "attacker" ? "攻击方" : "防御方";
+    const damageBefore = screen.getByTestId("primary-damage").textContent;
+    if (viewMode === "compact") {
+      fireEvent.click(screen.getByRole("button", { name: mode === "single" ? `${label}当前技能条件` : `${label}技能1条件`, exact: true }));
+      fireEvent.change(within(screen.getByRole("dialog")).getByRole("combobox", { name: "选择效果" }), { target: { value: "lowHp" } });
+      expect(within(screen.getByRole("dialog")).getByRole("spinbutton", { name: "自身生命百分比" })).toHaveValue(49);
+      fireEvent.click(screen.getByRole("button", { name: "关闭条件" }));
+      fireEvent.click(screen.getByRole("button", { name: "具体版" }));
+    } else if (mode === "single") {
+      fireEvent.click(screen.getByRole("button", { name: "低血加威", exact: true }));
+    } else {
+      fireEvent.change(screen.getByRole("combobox", { name: `${label}技能1选择效果` }), { target: { value: "lowHp" } });
+    }
+    expect(screen.getByRole("spinbutton", { name: mode === "single" ? "攻击方生命百分比" : `${label}生命百分比`, exact: true })).toHaveValue(49);
+    expect(screen.getByTestId("primary-damage").textContent).not.toBe(damageBefore);
+    const saved = createCalculatorSessionStore().loadSession();
+    const healthDirection = side === "attacker" ? "reverse" : "forward";
+    const percentInput = screen.getByRole("spinbutton", { name: mode === "single" ? "攻击方生命百分比" : `${label}生命百分比`, exact: true });
+    fireEvent.click(within(percentInput.closest(".health-input")).getByRole("button", { name: "按当前值输入" }));
+    const hpInput = within(percentInput.closest(".health-input")).getByRole("spinbutton");
+    expect(hpInput).toHaveValue(Math.round(Number(hpInput.max) * 0.49));
+    expect(saved.present.directions[healthDirection].currentHp).toBe(Number(hpInput.value));
+    expect(saved.present.directions[direction]).toEqual(expect.objectContaining({ currentHp: null, overrides: state.directions[direction].overrides }));
+    expect(saved.present.directions[healthDirection].context.currentHpPercent).toBe(49);
+    expect(saved.past).toHaveLength(1);
+    expect(saved.past[0].state).toEqual(state);
+    const otherLabel = side === "attacker" ? "防御方" : "攻击方";
+    if (mode === "four") expect(screen.getByRole("spinbutton", { name: `${otherLabel}生命百分比`, exact: true })).toHaveValue(100);
+    await Promise.resolve();
+    if (mode === "single") fireEvent.click(screen.getByRole("button", { name: "固定加威", exact: true }));
+    else fireEvent.change(screen.getByRole("combobox", { name: `${label}技能1选择效果` }), { target: { value: "fixed" } });
+    expect(hpInput).toHaveValue(Math.round(Number(hpInput.max) * 0.49));
+    fireEvent.click(screen.getByRole("button", { name: /撤回上一步/ }));
+    expect(hpInput).toHaveValue(Math.round(Number(hpInput.max) * 0.49));
+    fireEvent.click(screen.getByRole("button", { name: /撤回上一步/ }));
+    expect(hpInput).toHaveValue(Number(hpInput.max));
+  },
+);
 
 function Harness({ skill, onChange, onApply, result, initiallyOpen = true, action = true }) {
   const [context, setContext] = useState({});
