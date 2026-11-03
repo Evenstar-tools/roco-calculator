@@ -103,6 +103,7 @@ npm run -s data:check-updates
 - 特殊技能与特性的规则修改必须附测试和可核验依据。
 - Web 权威计算核心和小程序镜像必须通过漂移检查。
 - 数据变动不得静默覆盖用户收藏、配置库、队伍或分享状态。
+- 平衡调整写入精灵和技能的 `changeInfo`（新批次在前，旧批次进 `history`），国服“赛季平衡性调整回顾”直接读取它；字段写法、更新步骤与显示规范见[平衡调整回顾更新规范](maintenance/balance-history-update-guide.md)。
 
 ## 提交拆分
 
