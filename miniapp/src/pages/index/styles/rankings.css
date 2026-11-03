@@ -19,7 +19,7 @@
 .ranking-sheet .ranking-metrics .is-active { color: #5846dc; background: var(--surface-card); font-weight: 700; }
 .ranking-summary,.ranking-columns { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 14px; border-bottom: 1px solid var(--border-neutral); font-size: 11px; }
 .ranking-summary { background: var(--surface-muted); color: var(--text-secondary); }
-.ranking-sheet .ranking-summary .ranking-action { padding: 3px; border: 0; background: transparent; color: var(--text-secondary); flex-shrink: 0; }
+.ranking-sheet .ranking-summary .ranking-action { min-width: 44px; min-height: 44px; margin: -10px -8px; padding: 0 8px; border: 0; background: transparent; color: var(--text-secondary); flex-shrink: 0; }
 .ranking-columns { color: var(--text-secondary); }
 .ranking-sheet__scroll { flex: 1; min-height: 0; height: 0; overflow-y: auto; }
 .ranking-sheet .ranking-row { display: flex; width: calc(100% - 24px); margin: 0 12px; align-items: center; gap: 8px; border: 0; border-bottom: 1px solid var(--border-neutral); border-radius: 0; min-height: 72px; padding: 10px 0; text-align: left; }
