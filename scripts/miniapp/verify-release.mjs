@@ -28,6 +28,7 @@ const MAX_MAIN_PACKAGE_BYTES = 2 * 1024 * 1024;
 // DevTools preprocessing can grow a valid raw dist beyond the upload limit.
 // A 2,015,482-byte dist was rejected as 2057 KB; keep a 192 KiB safety margin.
 const MAX_LOCAL_PACKAGE_BYTES = MAX_MAIN_PACKAGE_BYTES - 192 * 1024;
+const MAX_TOTAL_PACKAGE_BYTES = 20 * 1024 * 1024;
 const REQUIRED_DIST_FILES = [
   "app.json",
   "pages/index/index.js",
@@ -141,6 +142,86 @@ function validateVersions(release, errors) {
   }
 }
 
+function safeArtifactPath(value, label) {
+  if (
+    typeof value !== "string" || !value
+    || /[\\<>:"|?*\u0000-\u001f]/u.test(value)
+    || value.split("/").some((segment) => !segment || segment === "." || segment === ".." || /[. ]$/u.test(segment))
+  ) throw new Error(`${label}路径无效: ${String(value)}`);
+  return value;
+}
+
+function artifactContent(file) {
+  return Buffer.isBuffer(file.content) ? file.content : Buffer.from(file.content ?? "");
+}
+
+// Package boundaries come only from the built app.json and actual file bytes.
+// Keep artifactEvidence over the complete dist; package sizes are not evidence substitutes.
+function partitionArtifacts(artifactFiles) {
+  if (!Array.isArray(artifactFiles)) throw new Error("产物真实文件列表无效");
+  const seen = new Set();
+  const files = artifactFiles.map((file) => {
+    const filePath = safeArtifactPath(typeof file?.path === "string" ? file.path.replaceAll("\\", "/") : file?.path, "产物");
+    const identity = filePath.toLowerCase();
+    if (seen.has(identity)) throw new Error(`产物路径重复: ${filePath}`);
+    seen.add(identity);
+    return { path: filePath, content: artifactContent(file) };
+  });
+  const manifest = files.find((file) => file.path === "app.json");
+  if (!manifest) throw new Error("生产产物缺失: app.json");
+  let app;
+  try {
+    app = JSON.parse(manifest.content.toString("utf8"));
+  } catch {
+    throw new Error("产物 app.json 无法解析分包声明");
+  }
+  if (!app || typeof app !== "object" || Array.isArray(app)) {
+    throw new Error("产物 app.json 分包声明必须来自配置对象");
+  }
+  if (Object.hasOwn(app, "subPackages") && Object.hasOwn(app, "subpackages")) {
+    throw new Error("分包声明不能同时使用 subPackages 与 subpackages");
+  }
+  const declarations = Object.hasOwn(app, "subPackages") ? app.subPackages
+    : Object.hasOwn(app, "subpackages") ? app.subpackages : [];
+  if (!Array.isArray(declarations)) throw new Error("分包声明必须为数组");
+  const packages = declarations.map((entry) => ({
+    root: safeArtifactPath(entry?.root, "分包"), bytes: 0, fileCount: 0,
+  }));
+  for (let index = 0; index < packages.length; index += 1) {
+    const root = packages[index].root.toLowerCase();
+    if (packages.slice(0, index).some((entry) => {
+      const other = entry.root.toLowerCase();
+      return root === other || root.startsWith(`${other}/`) || other.startsWith(`${root}/`);
+    })) throw new Error(`分包路径重叠: ${packages[index].root}`);
+    if (REQUIRED_DIST_FILES.some((file) => file.toLowerCase().startsWith(`${root}/`))) {
+      throw new Error(`主包必需文件不能划入分包: ${packages[index].root}`);
+    }
+  }
+  let mainPackageBytes = 0;
+  let totalBytes = 0;
+  for (const file of files) {
+    totalBytes += file.content.length;
+    const subpackage = packages.find((entry) => file.path.startsWith(`${entry.root}/`));
+    if (subpackage) {
+      subpackage.bytes += file.content.length;
+      subpackage.fileCount += 1;
+    } else {
+      mainPackageBytes += file.content.length;
+    }
+  }
+  const missing = packages.find((entry) => entry.fileCount === 0);
+  if (missing) throw new Error(`声明分包缺失产物: ${missing.root}`);
+  return { files, mainPackageBytes, packages, totalBytes };
+}
+
+function validatePackageBytes(bytes, label, errors) {
+  if (!Number.isSafeInteger(bytes) || bytes < 0 || bytes > MAX_MAIN_PACKAGE_BYTES) {
+    errors.push(`${label}包体必须不超过 2 MiB，当前 ${String(bytes)} 字节`);
+  } else if (bytes > MAX_LOCAL_PACKAGE_BYTES) {
+    errors.push(`${label}需为微信预处理保留打包余量，原始产物不得超过 ${MAX_LOCAL_PACKAGE_BYTES} 字节，当前 ${bytes} 字节；最终仍以官方上传结果为准`);
+  }
+}
+
 function validateArtifacts(release, errors) {
   const distFiles = new Set(
     Array.isArray(release.distFiles)
@@ -152,25 +233,33 @@ function validateArtifacts(release, errors) {
     errors.push(`生产产物缺失: ${missingFiles.join(", ")}`);
   }
 
-  if (
-    !Number.isFinite(release.mainPackageBytes)
-    || release.mainPackageBytes < 0
-    || release.mainPackageBytes > MAX_MAIN_PACKAGE_BYTES
-  ) {
-    errors.push(
-      `主包包体必须不超过 2 MiB，当前 ${String(release.mainPackageBytes)} 字节`,
-    );
-  } else if (release.mainPackageBytes > MAX_LOCAL_PACKAGE_BYTES) {
-    errors.push(
-      `主包需为微信预处理保留打包余量，原始产物不得超过 ${MAX_LOCAL_PACKAGE_BYTES} 字节，当前 ${release.mainPackageBytes} 字节；最终仍以官方上传结果为准`,
-    );
+  let layout;
+  if (release.artifactFiles !== undefined) {
+    try {
+      layout = partitionArtifacts(release.artifactFiles);
+    } catch (error) {
+      errors.push(error.message);
+      return;
+    }
+    if (layout.files.length !== distFiles.size || layout.files.some((file) => !distFiles.has(file.path))) {
+      errors.push("产物文件列表与真实文件不一致");
+    }
+    if (release.mainPackageBytes !== layout.mainPackageBytes) {
+      errors.push("主包包体与真实产物文件不一致");
+    }
+    for (const subpackage of layout.packages) {
+      validatePackageBytes(subpackage.bytes, `分包 ${subpackage.root}`, errors);
+    }
   }
+  validatePackageBytes(layout?.mainPackageBytes ?? release.mainPackageBytes, "主包", errors);
+  const totalBytes = layout?.totalBytes ?? release.mainPackageBytes;
+  if (totalBytes > MAX_TOTAL_PACKAGE_BYTES) errors.push(`主包与分包合计不得超过 20 MiB，当前 ${totalBytes} 字节`);
 
   if (release.artifactEvidence) {
     const evidence = release.artifactEvidence;
     if (
       evidence.fileCount !== distFiles.size
-      || evidence.totalBytes !== release.mainPackageBytes
+      || evidence.totalBytes !== totalBytes
       || !/^[a-f0-9]{64}$/u.test(evidence.manifestSha256 ?? "")
     ) errors.push("产物证据无法复算当前文件数量、包体或 manifest SHA256");
   }
@@ -507,7 +596,12 @@ function validateSource(release, errors) {
   const sourceFiles = Array.isArray(release?.sourceFiles)
     ? release.sourceFiles
     : [{ path: "inline.js", text: release?.sourceText ?? "" }];
-  const findings = sourceFiles.map(scanSourceFile);
+  const artifactSources = Array.isArray(release?.artifactFiles)
+    ? release.artifactFiles
+      .filter((file) => TEXT_EXTENSIONS.has(path.extname(String(file?.path ?? "")).toLowerCase()))
+      .map((file) => ({ path: file.path, text: artifactContent(file).toString("utf8") }))
+    : [];
+  const findings = [...sourceFiles, ...artifactSources].map(scanSourceFile);
   if (findings.some((finding) => finding.secret)) {
     errors.push("源码或产物包含 AppSecret、密钥、私钥或固定 openid 等秘密");
   }
@@ -535,12 +629,18 @@ export function verifyRelease(release) {
   return true;
 }
 
-function walkFiles(directory) {
+function walkFiles(directory, rejectSymbolicLinks = false) {
   if (!fs.existsSync(directory)) return [];
+  if (rejectSymbolicLinks && fs.lstatSync(directory).isSymbolicLink()) {
+    throw new Error(`产物目录禁止符号链接: ${directory}`);
+  }
   return fs.readdirSync(directory, { withFileTypes: true })
     .flatMap((entry) => {
       const absolutePath = path.join(directory, entry.name);
-      return entry.isDirectory() ? walkFiles(absolutePath) : [absolutePath];
+      if (rejectSymbolicLinks && entry.isSymbolicLink()) {
+        throw new Error(`产物文件禁止符号链接: ${absolutePath}`);
+      }
+      return entry.isDirectory() ? walkFiles(absolutePath, rejectSymbolicLinks) : [absolutePath];
     });
 }
 
@@ -566,13 +666,15 @@ function loadReleaseInput(repositoryRoot) {
   const localConfigFile = path.join(miniappRoot, "local.config.json");
   const config = loadReleaseConfig({ miniappRoot });
   const distRoot = path.join(miniappRoot, "dist");
-  const distAbsoluteFiles = walkFiles(distRoot);
-  const artifactEvidence = createArtifactEvidence(distAbsoluteFiles.map(
+  const distAbsoluteFiles = walkFiles(distRoot, true);
+  const artifactFiles = distAbsoluteFiles.map(
     (file) => ({
       content: fs.readFileSync(file),
-      path: path.relative(distRoot, file),
+      path: path.relative(distRoot, file).replaceAll("\\", "/"),
     }),
-  ));
+  );
+  const artifactEvidence = createArtifactEvidence(artifactFiles);
+  const { mainPackageBytes } = partitionArtifacts(artifactFiles);
   const distProjectConfigFile = path.join(distRoot, "project.config.json");
   const productionSourceFiles = [
     ...walkFiles(path.join(miniappRoot, "src")),
@@ -587,18 +689,16 @@ function loadReleaseInput(repositoryRoot) {
 
   return {
     ...config,
+    artifactFiles,
     artifactEvidence,
     distAppId: fs.existsSync(distProjectConfigFile)
       ? readJson(distProjectConfigFile).appid
       : "",
     distFiles: relativeFileList(distRoot, distAbsoluteFiles),
-    mainPackageBytes: artifactEvidence.totalBytes,
+    mainPackageBytes,
     miniappVersion: readJson(path.join(miniappRoot, "package.json")).version,
     rootVersion: readJson(path.join(repositoryRoot, "package.json")).version,
-    sourceFiles: readTextFiles(
-      [...productionSourceFiles, ...distAbsoluteFiles],
-      repositoryRoot,
-    ),
+    sourceFiles: readTextFiles(productionSourceFiles, repositoryRoot),
   };
 }
 

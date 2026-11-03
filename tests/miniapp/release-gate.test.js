@@ -81,6 +81,22 @@ function writeFixtureFile(root, relativePath, text) {
   fs.writeFileSync(file, text);
 }
 
+function createPackagedRelease(declarations, payloads = []) {
+  const mainFiles = [
+    { path: "app.json", content: JSON.stringify(declarations) },
+    { path: "pages/index/index.js", content: "export default {};" },
+    { path: "project.config.json", content: JSON.stringify({ appid: validRelease.appId }) },
+  ];
+  const artifactFiles = [...mainFiles, ...payloads];
+  return {
+    ...validRelease,
+    artifactFiles,
+    artifactEvidence: createArtifactEvidence(artifactFiles),
+    distFiles: artifactFiles.map((file) => file.path),
+    mainPackageBytes: mainFiles.reduce((bytes, file) => bytes + Buffer.byteLength(file.content), 0),
+  };
+}
+
 describe("miniapp production release gate", () => {
   test("creates deterministic evidence from sorted artifact hashes", () => {
     expect(createArtifactEvidence([
@@ -166,6 +182,154 @@ describe("miniapp production release gate", () => {
         totalBytes: 1023,
       },
     })).toThrow(/产物证据/u);
+  });
+
+  test.each(["subPackages", "subpackages"])("partitions declared independent skills from the main package using %s", (key) => {
+    const release = createPackagedRelease({ [key]: [{ root: "skills/rock", independent: true }] }, [
+      { path: "skills/rock/runtime.bin", content: Buffer.alloc(1500 * 1024) },
+      { path: "main.bin", content: Buffer.alloc(1500 * 1024) },
+    ]);
+    release.mainPackageBytes += 1500 * 1024;
+    expect(release.artifactEvidence.totalBytes).toBeGreaterThan(2 * 1024 * 1024);
+    expect(verifyRelease(release)).toBe(true);
+  });
+
+  test("loads package declarations from the actual built app.json", () => {
+    const root = createReleaseFixture(validRelease);
+    writeFixtureFile(root, "miniapp/dist/app.json", JSON.stringify({
+      subPackages: [{ root: "skills/rock", independent: true }],
+    }));
+    writeFixtureFile(root, "miniapp/dist/main.bin", Buffer.alloc(1500 * 1024));
+    writeFixtureFile(root, "miniapp/dist/skills/rock/runtime.bin", Buffer.alloc(1500 * 1024));
+    expect(runReleaseCli(root)).toBe(true);
+  });
+
+  test.each([
+    [2 * 1024 * 1024 + 1, /分包.*2 MiB/u],
+    [2 * 1024 * 1024 - 192 * 1024 + 1, /分包.*打包余量/u],
+  ])("rejects an oversized declared subpackage of %s bytes", (bytes, message) => {
+    const release = createPackagedRelease({ subPackages: [{ root: "skills" }] }, [
+      { path: "skills/runtime.bin", content: Buffer.alloc(bytes) },
+    ]);
+    // Caller-supplied package counters cannot override real artifact contents.
+    release.subpackages = [{ root: "skills", bytes: 1 }];
+    expect(() => verifyRelease(release)).toThrow(message);
+  });
+
+  test("enforces the 20 MiB aggregate limit even when each package has upload headroom", () => {
+    const subPackages = Array.from({ length: 11 }, (_, index) => ({ root: `skill-${index}` }));
+    const release = createPackagedRelease({ subPackages }, [
+      ...subPackages.map(({ root }) => ({ path: `${root}/runtime.bin`, content: Buffer.alloc(2 * 1024 * 1024 - 192 * 1024) })),
+      { path: "main.bin", content: Buffer.alloc(1024 * 1024) },
+    ]);
+    release.mainPackageBytes += 1024 * 1024;
+    expect(() => verifyRelease(release)).toThrow(/合计.*20 MiB/u);
+  });
+
+  test("does not exempt undeclared skills files from the main package", () => {
+    const release = createPackagedRelease({}, [
+      { path: "skills/runtime.bin", content: Buffer.alloc(2 * 1024 * 1024 + 1) },
+    ]);
+    expect(() => verifyRelease(release)).toThrow(/主包.*2 MiB/u);
+  });
+
+  test("rejects declared packages with no corresponding artifact files", () => {
+    const release = createPackagedRelease({ subPackages: [{ root: "missing" }] });
+    expect(() => verifyRelease(release)).toThrow(/分包.*缺失/u);
+  });
+
+  test.each([null, {}, "skills"])("rejects malformed subpackage declarations %j", (subPackages) => {
+    expect(() => verifyRelease(createPackagedRelease({ subPackages }))).toThrow(/分包.*数组/u);
+  });
+
+  test("rejects ambiguous declaration aliases", () => {
+    expect(() => verifyRelease(createPackagedRelease({ subPackages: [], subpackages: [] })))
+      .toThrow(/分包声明.*同时/u);
+  });
+
+  test("matches complete root segments and retains the exact subpackage upload-headroom boundary", () => {
+    const release = createPackagedRelease({ subPackages: [{ root: "skills" }] }, [
+      { path: "skills/runtime.bin", content: Buffer.alloc(2 * 1024 * 1024 - 192 * 1024) },
+      { path: "skills-extra/main.bin", content: Buffer.alloc(100) },
+    ]);
+    release.mainPackageBytes += 100;
+    expect(verifyRelease(release)).toBe(true);
+  });
+
+  test.each(["../skills", "/skills", "C:/skills", "skills/../data", "skills//rock", "skills\\rock", ".", ""])(
+    "rejects an unsafe package root %j", (root) => {
+      const release = createPackagedRelease({ subPackages: [{ root }] }, [
+        { path: "skills/runtime.bin", content: Buffer.alloc(1) },
+      ]);
+      expect(() => verifyRelease(release)).toThrow(/分包.*路径/u);
+    },
+  );
+
+  test.each([
+    ["skills", "skills"],
+    ["skills", "skills/rock"],
+    ["skills/rock", "SKILLS"],
+  ])("rejects overlapping package roots %j and %j", (first, second) => {
+    const release = createPackagedRelease({ subPackages: [{ root: first }, { root: second }] }, [
+      { path: "skills/rock/runtime.bin", content: Buffer.alloc(1) },
+    ]);
+    expect(() => verifyRelease(release)).toThrow(/分包.*重叠/u);
+  });
+
+  test("does not let package declarations move required main files out of the main package", () => {
+    const release = createPackagedRelease({ subPackages: [{ root: "pages" }] });
+    expect(() => verifyRelease(release)).toThrow(/主包.*分包/u);
+  });
+
+  test("rejects forged main bytes and omitted artifact listings", () => {
+    const release = createPackagedRelease({ subPackages: [{ root: "skills" }] }, [
+      { path: "skills/runtime.bin", content: Buffer.alloc(100) },
+    ]);
+    expect(() => verifyRelease({ ...release, mainPackageBytes: 1 })).toThrow(/主包.*真实/u);
+    expect(() => verifyRelease({ ...release, distFiles: validRelease.distFiles })).toThrow(/产物.*文件/u);
+    expect(() => verifyRelease({ ...release, artifactEvidence: { ...release.artifactEvidence, totalBytes: release.mainPackageBytes } }))
+      .toThrow(/产物证据/u);
+  });
+
+  test.each(["../outside.bin", "skills/../runtime.bin", "/outside.bin", "C:/outside.bin"])(
+    "rejects an escaping artifact path %j", (artifactPath) => {
+      const release = createPackagedRelease({ subPackages: [{ root: "skills" }] }, [
+        { path: artifactPath, content: Buffer.alloc(1) },
+      ]);
+      expect(() => verifyRelease(release)).toThrow(/产物.*路径/u);
+    },
+  );
+
+  test("rejects duplicate artifact paths rather than double-counting a package exemption", () => {
+    const release = createPackagedRelease({ subPackages: [{ root: "skills" }] }, [
+      { path: "skills/runtime.bin", content: Buffer.alloc(1) },
+      { path: "SKILLS/runtime.bin", content: Buffer.alloc(1) },
+    ]);
+    expect(() => verifyRelease(release)).toThrow(/产物.*重复/u);
+  });
+
+  test("still scans forbidden APIs inside declared independent packages", () => {
+    const root = createReleaseFixture(validRelease);
+    writeFixtureFile(root, "miniapp/dist/app.json", JSON.stringify({ subPackages: [{ root: "skills", independent: true }] }));
+    writeFixtureFile(root, "miniapp/dist/skills/index.js", "wx.login({});");
+    expect(() => runReleaseCli(root)).toThrow(/禁用 API/u);
+  });
+
+  test("cannot omit independent-package code from the security scan using a separate source listing", () => {
+    const release = createPackagedRelease({ subPackages: [{ root: "skills", independent: true }] }, [
+      { path: "skills/index.js", content: "wx.login({});" },
+    ]);
+    release.sourceFiles = [];
+    expect(() => verifyRelease(release)).toThrow(/禁用 API/u);
+  });
+
+  test("rejects symbolic links in the dist tree that could escape declared roots", () => {
+    const root = createReleaseFixture(validRelease);
+    const outside = path.join(root, "outside");
+    fs.mkdirSync(outside);
+    fs.writeFileSync(path.join(outside, "runtime.bin"), "payload");
+    fs.symlinkSync(outside, path.join(root, "miniapp", "dist", "skills"), "junction");
+    expect(() => runReleaseCli(root)).toThrow(/产物.*符号链接/u);
   });
 
   test.each([
