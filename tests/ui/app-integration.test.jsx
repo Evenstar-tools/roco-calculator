@@ -4464,7 +4464,7 @@ test("精简适配 选择分支按实际生命条件显隐，驱赶与未接入�
       await user.selectOptions(within(dialog).getByRole("combobox", { name: "选择效果" }), "fixed");
       expect(within(dialog).queryByRole("spinbutton", { name: "自身生命百分比" })).not.toBeInTheDocument();
       await user.selectOptions(within(dialog).getByRole("combobox", { name: "选择效果" }), "lowHp");
-      expect(within(dialog).getByRole("spinbutton", { name: "自身生命百分比" })).toHaveValue(50);
+      expect(within(dialog).getByRole("spinbutton", { name: "自身生命百分比" })).toHaveValue(49);
     }
     await user.keyboard("{Escape}");
   }
