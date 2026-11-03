@@ -242,7 +242,6 @@ export const USER_RELEASE_NOTES = Object.freeze([
     seasonId: "S5",
     title: "S5 平衡回顾易读性",
     whatsNew: S5_FEATURE_INTRO,
-    summaryHighlights: ["平衡回顾每条改动写明精灵，效果改动标出差异。"],
     features: ["改动行显示涉及的精灵，多只可展开名单；效果文字删减标红、新增标绿。"],
     fixes: ["大屏弹窗放大，家族名用基础形态；国际服S3季中不变。"],
   }),
