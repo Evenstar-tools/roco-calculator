@@ -1,5 +1,15 @@
 # 洛克计算器维护交接
 
+## 2026-11-03：2.3.3 补齐漏上线的界面修复
+
+- 用户要求继续跑网页优化、不设限，随后批准推送与发布。详见[待办池 UX42](web-ux-backlog.md)。
+- 发现 UX37 六项、UX38-01/03 只提交到了旧 S4 源码线，国服切到 S5 固定源码后从未上线。本轮补入国服源码，连同 UX39-01 一起随 2.3.3 发布。**今后网页修复必须提交到 `config/preview-release.json`（国服）或 `config/global-release.json`（国际服）固定的源码分支，再改 pin；主线自己的 `src/` 不会部署。**
+- 国服固定源码 `7fb6256`（分支 `web-ux42-cn-20261103`，基于 2.3.2 的 `335dbe0`）；国际服仍为 `09fbc7b`，未改。小程序内置配置只同步来源版本号，不上传小程序。
+- 体积：工具箱图标改为直接写成元素，国服剪枝表新增 7 个图标，只保留用到的样式。正式构建 JS gzip 从 511.98 降到 509.80 KiB，余量约 2 KiB。
+- 已知未处理：国服源码 `s5-season-announcement` 一项（2.3.1 起），`global-tools-localization` 国际服成员编辑器一项（基线即失败，不在发布门禁内）。
+- 环境坑：`build-cn-release.mjs` 和主线发布测试里的 CLI 用例会调用 tar 解包固定源码，Git Bash 的 tar 会把 `D:` 当远程主机而失败，须在 PowerShell 里运行。
+- 发布：GitHub Release [v2.3.3](https://github.com/Evenstar-tools/roco-calculator/releases/tag/v2.3.3)（`RocoCalc-2.3.3-Windows-x64.exe`，207,924,868 字节，已标 latest）；本机安装包 `release/洛克计算器-2.3.3.exe`。
+
 ## 2026-11-03：2.3.2 平衡回顾易读性
 
 - 用户确认 UX41 方案 1–3 并要求小问题一起修，随后要求文档化更新规范并上传网页、发布桌面版。
