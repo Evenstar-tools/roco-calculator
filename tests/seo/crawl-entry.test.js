@@ -31,18 +31,25 @@ test.each([
 });
 
 test.each([
-  ["cn/index.html", "zh-CN", "洛克计算器 · 国服", "/cn/"],
-  ["en/index.html", "en", "Roco Calculator · Global", "/en/"],
-  ["global/zh-CN/index.html", "zh-CN", "洛克计算器 · 国际服", "/global/zh-CN/"],
-  ["jp/index.html", "ja", "Roco Calculator · グローバル版", "/jp/"],
-  ["global/ja/index.html", "ja", "Roco Calculator · グローバル版", "/jp/"],
-])("%s直接挂载对应语言工具，不恢复静态介绍或SEO内容", (path, locale, title, canonicalPath) => {
+  ["cn/index.html", "zh-CN", "洛克计算器 · 国服", "/cn/", "洛克计算器 · 国服"],
+  ["en/index.html", "en", "Roco Kingdom World Damage Calculator | RocoCalc", "/en/", "Roco Calculator · Global"],
+  ["global/zh-CN/index.html", "zh-CN", "洛克王国：世界 国际服伤害计算器 | RocoCalc", "/global/zh-CN/", "洛克计算器 · 国际服"],
+  ["jp/index.html", "ja", "ロコ・キングダム ダメージ計算機 | RocoCalc", "/jp/", "Roco Calculator · グローバル版"],
+  ["global/ja/index.html", "ja", "ロコ・キングダム ダメージ計算機 | RocoCalc", "/jp/", "Roco Calculator · グローバル版"],
+])("%s直接挂载对应语言工具，不恢复静态介绍或SEO内容", (path, locale, title, canonicalPath, appTitle) => {
   const page = new JSDOM(source(path));
   try {
     const doc = page.window.document;
     expect(doc.documentElement.lang).toBe(locale);
     expect(doc.title).toBe(title);
     expect(doc.querySelector('link[rel="canonical"]').getAttribute("href")).toBe(`https://rococalc.top${canonicalPath}`);
+    expect(doc.querySelector('meta[name="apple-mobile-web-app-title"]').content).toBe(appTitle);
+    expect([...doc.querySelectorAll('link[rel="alternate"][hreflang]')].map((link) => [link.hreflang, link.href]))
+      .toEqual(canonicalPath === "/cn/" ? [] : [
+        ["en", "https://rococalc.top/en/"],
+        ["ja", "https://rococalc.top/jp/"],
+        ["zh-CN", "https://rococalc.top/global/zh-CN/"],
+      ]);
     expect(doc.querySelector("#root").childNodes).toHaveLength(0);
     expect(doc.querySelector('script[type="module"]').getAttribute("src")).toBe("/src/main.jsx");
     const manifestPath = canonicalPath === "/cn/" ? "/manifest.webmanifest" : `/manifest-global-${locale}.webmanifest`;

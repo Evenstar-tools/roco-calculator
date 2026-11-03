@@ -41,7 +41,9 @@ vi.mock("../../src/App.jsx", () => ({
 }));
 vi.mock("../../src/analytics/metrics.js", () => ({ metrics: { setServer: vi.fn(), start: vi.fn() } }));
 
+let originalHead;
 beforeEach(() => {
+  originalHead = document.head.innerHTML;
   localStorage.clear();
   history.replaceState(null, "", "/en/");
   vi.stubGlobal("fetch", vi.fn());
@@ -49,6 +51,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   cleanup();
+  document.head.innerHTML = originalHead;
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   history.replaceState(null, "", "/");
@@ -60,11 +63,14 @@ afterEach(() => {
 
 test("Global direct entry mounts the reference-capable App without CN workspace; locale changes keep the server", async () => {
   localStorage.setItem("rock-calculator.teams.v1", "cn-team-sentinel");
+  document.head.innerHTML = '<title>Original title</title><meta name="apple-mobile-web-app-title" content="Roco Calculator · Global">';
   render(<WebEntry />);
   await screen.findByRole("heading", { name: "Global calculator" }, { timeout: 10000 });
   expect(screen.queryByLabelText("CN draft")).toBeNull();
   expect(fetch).not.toHaveBeenCalled();
   expect(document.documentElement.dataset.season).toBe("s3");
+  expect(document.title).toBe("Roco Kingdom World Damage Calculator | RocoCalc");
+  expect(document.querySelector('meta[name="apple-mobile-web-app-title"]').content).toBe("Roco Calculator · Global");
   expect(document.documentElement.style.getPropertyValue("--season-scene-image")).toContain("s3-storybook.webp");
   fireEvent.change(screen.getByRole("combobox", { name: "Language" }), { target: { value: "ja" } });
   await screen.findByRole("heading", { name: "グローバル版計算機" });
@@ -72,6 +78,14 @@ test("Global direct entry mounts the reference-capable App without CN workspace;
   expect(document.documentElement.lang).toBe("ja");
   expect(JSON.parse(localStorage.getItem(MANUAL_PREFERENCE_KEY))).toEqual({ serverId: "global", locale: "ja" });
   expect(localStorage.getItem("rock-calculator.teams.v1")).toBe("cn-team-sentinel");
+  expect(document.title).toBe("ロコ・キングダム ダメージ計算機 | RocoCalc");
+  expect(document.querySelector('link[rel="canonical"]').href).toBe("https://rococalc.top/jp/");
+  expect(document.querySelector('meta[name="apple-mobile-web-app-title"]').content).toBe("ロコ計算機 · グローバル");
+  fireEvent.change(screen.getByRole("combobox", { name: "Language" }), { target: { value: "zh-CN" } });
+  expect(location.pathname).toBe("/global/zh-CN/");
+  expect(document.title).toBe("洛克王国：世界 国际服伤害计算器 | RocoCalc");
+  expect(document.querySelector('link[rel="canonical"]').href).toBe("https://rococalc.top/global/zh-CN/");
+  expect(document.querySelector('meta[name="apple-mobile-web-app-title"]').content).toBe("洛克计算器 · 国际服");
 });
 
 test("switching servers restores the current CN draft and never copies it into Global", async () => {
