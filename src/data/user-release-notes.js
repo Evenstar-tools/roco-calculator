@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.3",
+    date: "2026.11.03",
+    seasonId: "S5",
+    title: "S5 界面细节修复",
+    whatsNew: S5_FEATURE_INTRO,
+    fixes: ["暗色无伤害技能不再显示满条，精简版序号与伤害字号调大。", "查询关闭改图标钮，耐久表居中；国际服S3季中不变。"],
+  }),
+  createRelease({
     version: "v2.3.2",
     date: "2026.11.03",
     seasonId: "S5",
