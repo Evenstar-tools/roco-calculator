@@ -36,7 +36,7 @@ import { QuickIvPicker } from "./components/QuickIvPicker.jsx";
 import { ResultRail } from "./components/ResultRail.jsx";
 import { dynamicInputsForSkill, isDynamicInputVisible, mergeDynamicInputs, withoutTraitLinkedSkillInputs, SingleSkillEditor, TraitInputs } from "./components/SingleSkillEditor.jsx";
 import { TraitHint } from "./components/TraitHint.jsx";
-import { S5PreviewTraitSummary } from "./components/S5PreviewTraitSummary.jsx";
+import { hasBattleLevelInput, S5PreviewTraitSummary } from "./components/S5PreviewTraitSummary.jsx";
 import { CompactConditionDialog, CompactConditionTrigger } from "./components/CompactConditions.jsx";
 import { getSkillSlotConditions } from "./components/skill-condition-inputs.js";
 import { SkillStep } from "./components/SkillStep.jsx";
@@ -1727,7 +1727,7 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
         <TraitHint name={trait.name} description={trait.description} />
         <TraitInputs inputs={trait.inputs} context={context}
           onChange={(key, value) => updateTraitContext(direction, key, value)} />
-        <S5PreviewTraitSummary trait={trait} role="attacker" context={context} owner />
+        <S5PreviewTraitSummary trait={trait} role="attacker" context={context} owner levelInputShown={hasBattleLevelInput(trait.inputs)} />
       </div>
     ) : null;
     return [side, moonMemoryEditors[side] || previewEditor ? <>{moonMemoryEditors[side]}{previewEditor}</> : null];
