@@ -17,8 +17,10 @@ export default function SingleSkillResultRow({
 }) {
   const exact = row?.status === "exact" && Number.isFinite(row?.hpPercent);
   const presentation = damagePresentation(row);
-  const damageLabel = exact ? presentation.damage ?? "—" : "--";
-  const percentLabel = exact ? `${presentation.percent.toFixed(1)}%${presentation.freezePercent > 0 ? "" : " HP"}` : "--% HP";
+  // 辅助类技能本来就不计伤害，不显示像缺数据一样的“--% HP”。
+  const nonDamage = row?.message === "非伤害技能不计算伤害";
+  const damageLabel = exact ? presentation.damage ?? "—" : nonDamage ? "—" : "--";
+  const percentLabel = exact ? `${presentation.percent.toFixed(1)}%${presentation.freezePercent > 0 ? "" : " HP"}` : nonDamage ? "不计伤害" : "--% HP";
   const skillName = row?.skillName ?? fallbackSkill?.name ?? "当前技能";
   const displaySkill = row
     ? {
@@ -78,6 +80,7 @@ export default function SingleSkillResultRow({
         ].filter(Boolean).join(" ")}>{damageLabel}</Text>
         <Text className={[
           "skill-result-row__percent",
+          nonDamage ? "skill-result-row__percent--muted" : "",
           percentLength >= 9 ? "skill-result-row__percent--compact" : "",
         ].filter(Boolean).join(" ")}>{percentLabel}</Text>
       </Button>
