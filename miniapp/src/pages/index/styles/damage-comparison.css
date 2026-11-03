@@ -52,3 +52,7 @@
 .dc-notice { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface-card); border: 1px solid var(--border-neutral); font-size: 13px; }
 @media (min-width: 700px) { .dc-source,.dc-options,.dc-search,.dc-filters,.dc-summary,.dc-scroll,.dc-footer { width: min(100%, 1080px); box-sizing: border-box; align-self: center; } }
 @media (prefers-color-scheme: dark) { .dc-sheet .dc-link,.result-bar .dc-entry { color: #dfcb85; }.result-bar .dc-entry { border-color: #dfcb85; } }
+
+/* 未缩小范围时五档只描边，选了具体范围才实心。 */
+.dc-sheet .dc-filters--all .dc-button.is-selected { color: #5546dc; background: transparent; border-color: rgba(85, 70, 220, 0.45); }
+@media (prefers-color-scheme: dark) { .dc-sheet .dc-filters--all .dc-button.is-selected { color: #dfcb85; border-color: rgba(223, 203, 133, 0.5); } }
