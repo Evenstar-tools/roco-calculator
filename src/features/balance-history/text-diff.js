@@ -34,12 +34,13 @@ function segments(tokens, kept) {
   return parts;
 }
 
+// Both sides are strings; callers convert stored values first.
 export function diffText(before, after) {
-  const left = String(before).match(TOKEN) ?? [], right = String(after).match(TOKEN) ?? [];
+  const left = before.match(TOKEN) ?? [], right = after.match(TOKEN) ?? [];
   const pairs = left.length * right.length <= 250_000 ? commonPairs(left, right) : [];
   // A rewrite with little in common is clearer unmarked than marked end to end.
-  if (pairs.reduce((sum, [i]) => sum + left[i].length, 0) < 0.2 * Math.min(String(before).length, String(after).length) || !pairs.length) {
-    return { before: [{ text: String(before), changed: false }], after: [{ text: String(after), changed: false }] };
+  if (pairs.reduce((sum, [i]) => sum + left[i].length, 0) < 0.2 * Math.min(before.length, after.length) || !pairs.length) {
+    return { before: [{ text: before, changed: false }], after: [{ text: after, changed: false }] };
   }
   return { before: segments(left, new Set(pairs.map(([i]) => i))), after: segments(right, new Set(pairs.map(([, j]) => j))) };
 }
