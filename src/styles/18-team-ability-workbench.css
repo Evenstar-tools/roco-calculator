@@ -337,6 +337,8 @@
 
 .team-workbench .team-drawer__capture-actions [data-side="attacker"] { color: var(--attack); }
 .team-workbench .team-drawer__capture-actions [data-side="defender"] { color: var(--defense); }
+/* 空位或待修复成员不能设为攻防方，禁用态需覆盖上面的攻防色，与名单按钮一致。 */
+.team-workbench .team-drawer__capture-actions button:disabled { color: var(--text-faint); cursor: not-allowed; opacity: .55; }
 .team-capture-icon { transform: rotate(180deg); }
 
 .team-workbench__member-tabs {
