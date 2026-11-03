@@ -1,4 +1,5 @@
 import { Button, Input, Text, View } from "@tarojs/components";
+import CurrentHpInput from "./CurrentHpInput.jsx";
 
 function readNumber(event, fallback = 0) {
   const raw = event?.detail?.value ?? event?.target?.value ?? "";
@@ -55,18 +56,15 @@ export default function BattleEnvironmentEditor({
         <Text className="battle-environment__hint">影响当前计算</Text>
       </View>
       <View className="battle-environment__grid">
-        <NumericField
-          label="目标当前生命"
-          max={defenderMaxHp}
-          onChange={(currentHp) => onCurrentHpChange(
-            Math.min(
-              defenderMaxHp ?? currentHp,
-              Math.max(0, Math.floor(currentHp)),
-            ),
-          )}
-          suffix={defenderMaxHp ? `/ ${defenderMaxHp}` : "HP"}
-          value={direction.currentHp ?? defenderMaxHp ?? ""}
-        />
+        <View className="battle-environment__field">
+          <Text className="battle-environment__label">目标当前生命</Text>
+          <View className="battle-environment__input-wrap">
+            <CurrentHpInput label="目标当前生命" className="battle-environment__input"
+              maxHp={defenderMaxHp} onChange={onCurrentHpChange}
+              value={direction.currentHp ?? defenderMaxHp} />
+            <Text className="battle-environment__suffix">{defenderMaxHp ? `/ ${defenderMaxHp}` : "HP"}</Text>
+          </View>
+        </View>
         <View className="battle-environment__weather">
           <Text className="battle-environment__label">天气</Text>
           <View className="battle-environment__weather-choices">

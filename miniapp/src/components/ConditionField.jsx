@@ -1,13 +1,8 @@
 import { Button, Input, Picker, Text, View } from "@tarojs/components";
+import { useEffect, useState } from "react";
 
 function eventValue(event) {
   return event?.detail?.value ?? event?.target?.value ?? "";
-}
-
-function numericValue(event, minimum = 0, maximum) {
-  const numeric = Number(eventValue(event));
-  const safe = Number.isFinite(numeric) ? numeric : minimum;
-  return clampNumeric(safe, minimum, maximum);
 }
 
 function clampNumeric(value, minimum = 0, maximum) {
@@ -19,6 +14,33 @@ function clampNumeric(value, minimum = 0, maximum) {
 
 function classes(...values) {
   return values.filter(Boolean).join(" ");
+}
+
+function NumericConditionInput({ className, input, onChange, value }) {
+  const canonical = value ?? input.defaultValue ?? "";
+  const [draft, setDraft] = useState(String(canonical));
+  useEffect(() => setDraft(String(canonical)), [canonical]);
+  const minimum = input.min ?? 0;
+  const maximum = input.max;
+  function commit(event) {
+    const text = String(event?.detail?.value ?? event?.target?.value ?? draft);
+    const numeric = Number(text);
+    const next = text.trim() && Number.isFinite(numeric)
+      ? clampNumeric(numeric, minimum, maximum)
+      : canonical;
+    setDraft(String(next));
+    if (next !== canonical) onChange(next);
+  }
+  return <Input aria-label={input.label} className={classes("condition-editor__input", className)}
+    confirmType="done" inputMode="numeric" max={maximum} min={minimum} step={input.step ?? 1}
+    type="number" value={draft} onBlur={commit} onConfirm={commit}
+    onInput={event => {
+      const text = String(eventValue(event));
+      setDraft(text);
+      const numeric = Number(text);
+      if (text.trim() && Number.isFinite(numeric) && numeric >= minimum &&
+          (maximum === undefined || numeric <= maximum)) onChange(numeric);
+    }} />;
 }
 
 export function ConditionField({ className, input, onChange, value }) {
@@ -117,19 +139,7 @@ export function ConditionField({ className, input, onChange, value }) {
         >
           −
         </Button>
-        <Input
-          aria-label={input.label}
-          className={classes("condition-editor__input", className)}
-          inputMode="numeric"
-          max={maximum}
-          min={minimum}
-          onInput={(event) =>
-            onChange(numericValue(event, minimum, maximum))
-          }
-          step={step}
-          type="number"
-          value={value ?? input.defaultValue ?? ""}
-        />
+        <NumericConditionInput className={className} input={input} onChange={onChange} value={value} />
         <Button
           aria-label={`${input.label}增加`}
           className={classes(

@@ -287,6 +287,17 @@ export default function SkillConditionEditor({
     });
   };
 
+  function updateInput(input, value) {
+    const key = input.contextKey ?? input.key ?? input.id;
+    const next = { ...context, [key]: value };
+    if (key === "betMode") {
+      next[input.id] = value;
+      onContextChange(next, key);
+    } else {
+      onContextChange(next);
+    }
+  }
+
   return (
     <View aria-label="技能条件" className="condition-editor">
       {presentation?.description || presentation?.effectHint || presentation?.usageSummary ? (
@@ -308,15 +319,11 @@ export default function SkillConditionEditor({
         <View key={input.id ?? input.contextKey ?? input.key}>
         <ConditionField
           input={input}
-          onChange={(value) =>
-            onContextChange({
-              ...context,
-              [input.contextKey ?? input.key ?? input.id]: value,
-            })
-          }
+          onChange={(value) => updateInput(input, value)}
           value={
             ((input.contextKey ?? input.key) === "actualSkillCost" ? result?.effectiveCostInput : undefined) ??
             context[input.contextKey ?? input.key ?? input.id] ??
+            context[input.id] ??
             input.defaultValue
           }
         />
