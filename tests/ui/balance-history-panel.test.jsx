@@ -23,6 +23,63 @@ function Harness({ snapshot = fixture() }) {
   return <><button type="button" onClick={() => setOpen(true)}>打开回顾</button><BalanceHistoryPanel snapshot={snapshot} open={open} onClose={() => setOpen(false)} /></>;
 }
 
+function familyFixture() {
+  const shared = { kind: "trait", label: "家族特性", before: "原效果", after: "新效果" };
+  return { meta: { serverId: "cn" }, spirits: [
+    { id: "bud", fullName: "喵喵", dexNo: "002", evolutionChainIds: ["bud", "cat", "leaf"], changeInfo: { patch: s4, items: [shared, power] } },
+    { id: "cat", fullName: "魔力猫", dexNo: "004", aliases: ["猫王"], pinyin: "molimao", initials: "mlm", changeInfo: { patch: s4, items: [shared, power, hp] } },
+    { id: "leaf", fullName: "叶冕魔力猫", dexNo: "004", changeInfo: { patch: s4, items: [shared] } },
+    { id: "unrelated", fullName: "独立精灵", dexNo: "004", changeInfo: { patch: s4, items: [shared] } },
+  ], skills: [] };
+}
+
+test("家族只列一行，共同、部分成员和单独调整保留明确适用范围", async () => {
+  const user = userEvent.setup();
+  render(<BalanceHistoryPanel snapshot={familyFixture()} open onClose={vi.fn()} />);
+  expect(document.querySelectorAll(".bh-entity")).toHaveLength(2);
+  expect(screen.getByRole("button", { name: /喵喵家族.*3 位成员.*1 次调整记录/ })).toBeVisible();
+  expect(screen.getByRole("button", { name: /独立精灵/ })).toBeVisible();
+  const all = screen.getByRole("region", { name: "喵喵、魔力猫、叶冕魔力猫的调整" });
+  expect(within(all).getByText("家族共同调整")).toBeVisible();
+  expect(within(all).getByText("家族特性")).toBeVisible();
+  const partial = screen.getByRole("region", { name: "喵喵、魔力猫的调整" });
+  expect(within(partial).getByText("共同调整")).toBeVisible();
+  expect(within(partial).getByRole("region", { name: "技能调整" })).toHaveTextContent("四维降解·威力100 → 110+10");
+  const individual = screen.getByRole("region", { name: "魔力猫的调整" });
+  expect(within(individual).getByText("仅魔力猫")).toBeVisible();
+  expect(within(individual).getByRole("region", { name: "种族值" })).toHaveTextContent("生命122 → 132+10");
+  expect(screen.getAllByText("四维降解·威力")).toHaveLength(1);
+  expect(screen.getAllByText("家族特性")).toHaveLength(1);
+  await user.click(screen.getByRole("button", { name: "种族值", exact: true }));
+  expect(screen.queryByText("家族共同调整")).not.toBeInTheDocument();
+  expect(screen.getByText("仅魔力猫")).toBeVisible();
+});
+
+test("成员搜索定位家族，更新回查沿用同一适用范围并恢复筛选和滚动", async () => {
+  const user = userEvent.setup();
+  render(<BalanceHistoryPanel snapshot={familyFixture()} open onClose={vi.fn()} />);
+  const search = screen.getByRole("textbox", { name: "名称、别名或图鉴号" });
+  await user.type(search, "猫王");
+  expect(document.querySelectorAll(".bh-entity")).toHaveLength(1);
+  expect(screen.getByText("匹配：魔力猫")).toBeVisible();
+  expect(screen.getByRole("heading", { name: /喵喵家族/ })).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "技能调整", exact: true }));
+  document.querySelector(".bh-scroll").scrollTop = 93;
+  await user.click(screen.getByRole("button", { name: "查看本次全部调整" }));
+  expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(2);
+  expect(screen.getByRole("button", { name: /喵喵家族.*收起/ })).toHaveAttribute("aria-expanded", "true");
+  expect(screen.getByRole("region", { name: "魔力猫的调整" })).toHaveTextContent("仅魔力猫");
+  expect(screen.getByText("全部 3 位成员：喵喵、魔力猫、叶冕魔力猫")).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "返回按精灵回查" }));
+  expect(screen.getByRole("textbox", { name: "名称、别名或图鉴号" })).toHaveValue("猫王");
+  expect(screen.getByRole("button", { name: "技能调整", exact: true })).toHaveAttribute("aria-pressed", "true");
+  expect(document.querySelector(".bh-scroll").scrollTop).toBe(93);
+  await user.click(screen.getByRole("tab", { name: "按更新浏览" }));
+  await user.click(screen.getByRole("button", { name: "查看喵喵家族历次调整" }));
+  expect(screen.getByRole("heading", { name: /喵喵家族/ })).toBeVisible();
+  expect(screen.getByRole("region", { name: "魔力猫的调整" })).toHaveTextContent("仅魔力猫");
+});
+
 test("四维降解的威力归技能段，精灵六维、学习面与特性分别展示和筛选", async () => {
   const user = userEvent.setup();
   render(<BalanceHistoryPanel snapshot={fixture()} open onClose={vi.fn()} />);

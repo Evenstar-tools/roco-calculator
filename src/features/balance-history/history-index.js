@@ -1,5 +1,6 @@
 import { mergeEntityChangeInfo } from "../../data/entity-change-history.js";
 import { createSpiritSearchIndex } from "../../data/search-index.js";
+import { buildSpiritFamilyIndex } from "../../components/spirit-family.js";
 
 const indexes = new WeakMap();
 const STAT_FIELDS = new Set(["hp", "physicalAttack", "physicalDefense", "magicalAttack", "magicalDefense", "speed"]);
@@ -50,6 +51,98 @@ function entityRecords(entity) {
   return [...records.values()];
 }
 
+// Adapt explicit raw/runtime relationships to the existing discovery helper.
+// These copies only carry links; every public family member stays the original entity.
+function buildFamilies(spirits) {
+  const byId = new Map(spirits.map((spirit) => [spirit.id, spirit]));
+  const byName = new Map(spirits.filter((spirit) => spirit.fullName ?? spirit.name)
+    .map((spirit) => [spirit.fullName ?? spirit.name, spirit.id]));
+  const groupOwners = new Map(["familyId", "evolutionGroupId"].map((field) => [field, new Map()]));
+  const variants = new Map();
+  const linkedSpirits = spirits.map((spirit) => {
+    const ids = new Set(spirit.evolutionChainIds ?? []);
+    for (const name of spirit.evolutionChainNames ?? []) {
+      if (byName.has(name)) ids.add(byName.get(name));
+    }
+    for (const [field, owners] of groupOwners) {
+      const group = spirit[field];
+      if (group == null || String(group).trim() === "") continue;
+      if (owners.has(group)) ids.add(owners.get(group));
+      else owners.set(group, spirit.id);
+      // familyId can explicitly identify a member that does not repeat the field.
+      if (field === "familyId" && byId.has(group)) ids.add(group);
+    }
+    // Match the catalog's explicit base-name + form relationship, including forms
+    // without dex numbers. A shared dex number alone never creates a relationship.
+    if (spirit.baseName) {
+      const previous = variants.get(spirit.baseName);
+      if (previous && (previous.variantName || spirit.variantName)) ids.add(previous.id);
+      else if (!previous) variants.set(spirit.baseName, spirit);
+    }
+    return { ...spirit, evolutionChainIds: [...ids] };
+  });
+  const membership = buildSpiritFamilyIndex(linkedSpirits);
+  const families = [];
+  const familyBySpiritId = new Map();
+  for (const spirit of spirits) {
+    if (familyBySpiritId.has(spirit.id)) continue;
+    const members = membership.get(spirit.id).map((member) => byId.get(member.id));
+    const family = { id: spirit.id, representative: spirit, members };
+    families.push(family);
+    for (const member of members) familyBySpiritId.set(member.id, family);
+  }
+  return { families, familyBySpiritId };
+}
+
+// Compare every item field, including nested values, without depending on object
+// insertion order. Array order and distinct labels/notes/skill identities stay intact.
+function historyItemIdentity(item) {
+  return JSON.stringify(item, (_key, value) => value && typeof value === "object" && !Array.isArray(value)
+    ? Object.fromEntries(Object.keys(value).sort().map((key) => [key, value[key]])) : value);
+}
+
+function buildFamilyRecords(families, spiritRecords) {
+  const familyRecords = new Map();
+  for (const family of families) {
+    const batches = new Map();
+    const memberOrder = new Map(family.members.map((member, index) => [member.id, index]));
+    for (const member of family.members) {
+      for (const record of spiritRecords.get(member.id) ?? []) {
+        const id = record.patch?.id;
+        // Unknown patches cannot acquire a common scope merely by sharing a date.
+        const key = id != null && String(id).trim() !== "" ? id : record;
+        if (!batches.has(key)) batches.set(key, { patch: record.patch, entries: new Map() });
+        const batch = batches.get(key);
+        for (const item of record.items) {
+          const identity = historyItemIdentity(item);
+          if (!batch.entries.has(identity)) batch.entries.set(identity, { item, members: new Set() });
+          batch.entries.get(identity).members.add(member.id);
+        }
+      }
+    }
+    const records = [...batches.values()].map(({ patch, entries }) => {
+      const scopesByMembers = new Map();
+      for (const { item, members: applicable } of entries.values()) {
+        const members = family.members.filter((member) => applicable.has(member.id));
+        const key = members.map((member) => memberOrder.get(member.id)).join(",");
+        if (!scopesByMembers.has(key)) scopesByMembers.set(key, { members, items: [] });
+        scopesByMembers.get(key).items.push(item);
+      }
+      const scopes = [...scopesByMembers.values()].sort((left, right) => {
+        if (left.members.length !== right.members.length) return right.members.length - left.members.length;
+        for (let index = 0; index < left.members.length; index += 1) {
+          const order = memberOrder.get(left.members[index].id) - memberOrder.get(right.members[index].id);
+          if (order) return order;
+        }
+        return 0;
+      });
+      return { patch, items: [...entries.values()].map(({ item }) => item), scopes };
+    }).sort((left, right) => comparePatches(left.patch, right.patch));
+    familyRecords.set(family.id, records);
+  }
+  return familyRecords;
+}
+
 function buildIndex(snapshot) {
   const global = snapshot?.meta?.serverId === "global";
   const spirits = global ? [] : snapshot?.spirits ?? [];
@@ -85,15 +178,21 @@ function buildIndex(snapshot) {
   }
   const seasons = [...new Set(patches.map((patch) => patch.seasonId).filter(Boolean))]
     .sort((left, right) => Number(right.slice(1)) - Number(left.slice(1)));
+  const { families, familyBySpiritId } = buildFamilies(spirits);
+  const familyRecords = buildFamilyRecords(families, spiritRecords);
   const spiritSearch = createSpiritSearchIndex(spirits);
   const spiritById = new Map(spirits.map((spirit) => [spirit.id, spirit]));
   const skillSearch = skills.map((skill) => ({ skill,
     fields: [skill.name, skill.id, ...(skill.aliases ?? [])].filter(Boolean).map((value) => String(value).normalize("NFKC").toLowerCase()),
   }));
   return {
-    spirits, skills, patches, seasons, spiritRecords, skillRecords,
+    spirits, skills, patches, seasons, spiritRecords, skillRecords, families, familyBySpiritId, familyRecords,
     searchSpirits(query, limit = 60) {
       return spiritSearch.search(query, Math.max(0, limit)).map(({ id }) => spiritById.get(id));
+    },
+    searchFamilies(query, limit = 60) {
+      const matches = new Set(spiritSearch.search(query, Infinity).map(({ id }) => familyBySpiritId.get(id)));
+      return [...matches].slice(0, Math.max(0, limit));
     },
     searchSkills(query, limit = 60) {
       const needle = String(query ?? "").normalize("NFKC").trim().toLowerCase();

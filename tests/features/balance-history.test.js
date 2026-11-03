@@ -134,7 +134,122 @@ test("Global拒绝读取国服历史并返回可复用空结构", () => {
   expect(index.seasons).toEqual([]);
   expect(index.spiritRecords.size).toBe(0);
   expect(index.skillRecords.size).toBe(0);
+  expect(index.families).toEqual([]);
+  expect(index.familyBySpiritId.size).toBe(0);
+  expect(index.familyRecords.size).toBe(0);
   expect(index.searchSpirits("")).toEqual([]);
   expect(index.searchSkills("")).toEqual([]);
+  expect(index.searchFamilies("")).toEqual([]);
   expect(getBalanceHistoryIndex(snapshot)).toBe(index);
+});
+
+const familyTrait = { kind: "trait", label: "特性·花香", before: "旧效果", after: "新效果" };
+const memberIds = scope => scope.members.map(member => member.id).sort();
+
+function familyFixture() {
+  return { meta: { serverId: "cn" }, skills: [], spirits: [
+    { id: "seed", fullName: "小芽", baseName: "小芽", dexNo: "099", evolutionChainIds: ["bloom"],
+      changeInfo: { patch: oldPatch, items: [familyTrait, power] } },
+    { id: "bloom", fullName: "花枝", baseName: "花枝", dexNo: "100", evolutionChainNames: ["花冠"],
+      changeInfo: { patch: oldPatch, items: [Object.fromEntries(Object.entries(familyTrait).reverse()), { ...power }] } },
+    { id: "crown", fullName: "花冠", baseName: "花冠", dexNo: "101", aliases: ["冠冠"], pinyin: "huaguan", initials: "hg",
+      changeInfo: { patch: oldPatch, items: [familyTrait, hp] } },
+    { id: "outsider", fullName: "花外族", baseName: "花外族", dexNo: "101",
+      changeInfo: { patch: oldPatch, items: [familyTrait] } },
+  ] };
+}
+
+test("明确链ID和单向链名连接家族，同图鉴号外族独立，共同、部分和独有改动各显示一次", () => {
+  const snapshot = familyFixture();
+  const original = structuredClone(snapshot);
+  const index = getBalanceHistoryIndex(snapshot);
+  const family = index.familyBySpiritId.get("seed");
+  expect(index.families).toHaveLength(2);
+  expect(family.members.map(member => member.id).sort()).toEqual(["bloom", "crown", "seed"]);
+  expect(family.members).toContain(family.representative);
+  for (const id of ["seed", "bloom", "crown"]) expect(index.familyBySpiritId.get(id)).toBe(family);
+  expect(index.familyBySpiritId.get("outsider")).not.toBe(family);
+  expect(index.familyBySpiritId.get("outsider").members).toEqual([snapshot.spirits[3]]);
+  const records = index.familyRecords.get(family.id);
+  expect(records).toHaveLength(1);
+  const record = records[0];
+  expect(record.patch.id).toBe(oldPatch.id);
+  expect(record.items).toHaveLength(3);
+  expect(record.scopes).toHaveLength(3);
+  expect(record.scopes.find(scope => scope.members.length === 3).items).toEqual([familyTrait]);
+  expect(record.scopes.find(scope => memberIds(scope).join() === "bloom,seed").items).toEqual([power]);
+  expect(record.scopes.find(scope => memberIds(scope).join() === "crown").items).toEqual([hp]);
+  expect(classifyHistoryItem(record.items.find(item => item.field === "basePower"))).toBe("skills");
+  expect(classifyHistoryItem(record.items.find(item => item.field === "hp"))).toBe("stats");
+  expect(snapshot).toEqual(original);
+});
+
+test("家族按完整规范条目去重，HP同义合并，不吞不同技能、备注或冲突值", () => {
+  const snapshot = familyFixture();
+  snapshot.spirits[0].changeInfo.items.push({ ...hp, label: "精力" },
+    { ...power, label: "另一技能·威力" }, { ...power, note: "仅适用特殊形态" }, { ...power, after: 111 });
+  snapshot.spirits[1].changeInfo.items.push({ ...hp });
+  const original = structuredClone(snapshot);
+  const index = getBalanceHistoryIndex(snapshot);
+  const family = index.familyBySpiritId.get("seed");
+  const record = index.familyRecords.get(family.id)[0];
+  const common = record.scopes.find(scope => scope.members.length === 3);
+  expect(common.items).toEqual(expect.arrayContaining([familyTrait, hp]));
+  expect(record.items.filter(item => item.field === "hp")).toEqual([hp]);
+  const powers = record.items.filter(item => item.field === "basePower");
+  expect(powers).toHaveLength(4);
+  expect(powers).toEqual(expect.arrayContaining([power, { ...power, label: "另一技能·威力" },
+    { ...power, note: "仅适用特殊形态" }, { ...power, after: 111 }]));
+  expect(record.scopes.find(scope => memberIds(scope).join() === "bloom,seed").items).toEqual([power]);
+  expect(record.scopes.find(scope => memberIds(scope).join() === "seed").items).toHaveLength(3);
+  expect(snapshot).toEqual(original);
+});
+
+test("家族未改动成员仍在适用范围分母中，部分成员的相同改动不冒充全家族", () => {
+  const snapshot = familyFixture();
+  delete snapshot.spirits[2].changeInfo;
+  const index = getBalanceHistoryIndex(snapshot);
+  const family = index.familyBySpiritId.get("crown");
+  expect(family.members).toHaveLength(3);
+  const record = index.familyRecords.get(family.id)[0];
+  expect(record.scopes).toHaveLength(1);
+  expect(memberIds(record.scopes[0])).toEqual(["bloom", "seed"]);
+  expect(record.scopes[0].items).toEqual(expect.arrayContaining([familyTrait, power]));
+  expect(index.spiritRecords.get("crown")).toEqual([]);
+});
+
+test("家族检索覆盖所有成员含无记录成员，去重后限量且不污染快照缓存", () => {
+  const snapshot = familyFixture();
+  snapshot.spirits.push({ id: "quiet", fullName: "静芽", aliases: ["休眠芽"], pinyin: "jingya", initials: "jy", evolutionChainIds: ["seed"] });
+  const original = structuredClone(snapshot);
+  const index = getBalanceHistoryIndex(snapshot);
+  const family = index.familyBySpiritId.get("seed");
+  for (const query of ["花冠", "冠冠", "huaguan", "hg", "静芽", "休眠芽", "jingya", "jy"]) {
+    expect(index.searchFamilies(query)).toEqual([family]);
+  }
+  expect(index.familyBySpiritId.get("quiet")).toBe(family);
+  expect(index.spiritRecords.get("quiet")).toEqual([]);
+  expect(index.searchFamilies("花", 2)).toHaveLength(2);
+  expect(index.searchFamilies("花", 1)).toHaveLength(1);
+  expect(index.searchFamilies("花", 0)).toEqual([]);
+  expect(index.searchFamilies("不存在")).toEqual([]);
+  expect(getBalanceHistoryIndex(snapshot).familyRecords).toBe(index.familyRecords);
+  expect(getBalanceHistoryIndex(snapshot).families).toBe(index.families);
+  const independent = getBalanceHistoryIndex(structuredClone(snapshot));
+  expect(independent.familyBySpiritId.get("seed")).not.toBe(family);
+  expect(snapshot).toEqual(original);
+});
+
+test("家族内缺少patch ID的相同日期条目不跨成员拼成一次更新", () => {
+  const snapshot = familyFixture();
+  for (const spirit of snapshot.spirits.slice(0, 2)) spirit.changeInfo.history = [
+    { patch: { date: "2026.08.01" }, items: [familyTrait] },
+  ];
+  const index = getBalanceHistoryIndex(snapshot);
+  const family = index.familyBySpiritId.get("seed");
+  const unknown = index.familyRecords.get(family.id).filter(record => !record.patch?.id);
+  expect(unknown).toHaveLength(2);
+  expect(unknown.map(record => record.scopes.flatMap(scope => memberIds(scope)).sort()).sort()).toEqual([["bloom"], ["seed"]]);
+  for (const record of unknown) expect(record.items).toEqual([familyTrait]);
+  expect(index.patches).toHaveLength(1);
 });

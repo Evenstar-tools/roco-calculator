@@ -53,7 +53,12 @@
 .bh-source { display: inline-flex; align-items: center; gap: 4px; color: var(--text-muted); font-size: 12px; text-decoration: none; }
 .bh-record-actions button, .bh-text-button { display: inline-flex; align-items: center; gap: 3px; padding: 0; border: 0; background: none; color: var(--accent-strong); font-size: 13px; }
 .bh-change-group { margin-top: 15px; }
-.bh-change-group h5 { margin: 0 0 6px; color: var(--text-muted); font-size: 13px; font-weight: 600; }
+.bh-change-group h5, .bh-change-group h6 { margin: 0 0 6px; color: var(--text-muted); font-size: 13px; font-weight: 600; }
+.bh-family-members { margin: 10px 0 0; color: var(--text-muted); font-size: 13px; overflow-wrap: anywhere; }
+.bh-entity .bh-match { margin-top: 3px; color: var(--accent-strong); overflow-wrap: anywhere; }
+.bh-scope + .bh-scope { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+.bh-scope-head h5 { margin: 0; font-size: 14px; font-weight: 650; }
+.bh-scope-head p { margin: 3px 0 0; font-size: 13px; color: var(--text-muted); overflow-wrap: anywhere; }
 .bh-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 22px; }
 .bh-metric { display: grid; grid-template-columns: minmax(0, 1fr) auto 34px; align-items: center; gap: 8px; min-height: 34px; padding: 4px 0; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
 .bh-metric span { overflow-wrap: anywhere; }

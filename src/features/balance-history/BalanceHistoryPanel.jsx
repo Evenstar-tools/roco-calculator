@@ -9,7 +9,12 @@ import "./balance-history.css";
 
 const PAGE_SIZE = 24;
 const GROUPS = [["stats", "种族值"], ["skills", "技能调整"], ["learnset", "学习面调整"], ["traits", "特性调整"], ["other", "其他调整"]];
-const nameOf = entity => entity?.fullName ?? entity?.name ?? "";
+const nameOf = entity => entity?.representative
+  ? `${nameOf(entity.representative)}${entity.members.length > 1 ? "家族" : ""}`
+  : entity?.fullName ?? entity?.name ?? "";
+const identityOf = entity => entity?.members?.length > 1
+  ? `${entity.members.length} 位成员 · `
+  : (entity?.representative ?? entity)?.dexNo != null ? `#${(entity.representative ?? entity).dexNo} · ` : "";
 const dateOf = patch => patch?.displayDate ?? patch?.date ?? "日期未提供";
 const hasType = (record, type) => record.items.some(item => type === "all" || classifyHistoryItem(item) === type);
 
@@ -20,6 +25,7 @@ function SourceLink({ patch }) {
 }
 
 function Portrait({ entity, skill = false, size = 38 }) {
+  entity = entity?.representative ?? entity;
   return skill ? <SkillIcon skill={entity} size={size} loading="lazy" />
     : entity?.asset?.localUrl ? <SpiritImage src={entity.asset.localUrl} name={nameOf(entity)} alt="" width={size} height={size} loading="lazy" /> : null;
 }
@@ -37,11 +43,12 @@ function TypeFilters({ value, onChange }) {
   </div>;
 }
 
-function ChangeGroups({ items, type, owner, skill = false }) {
+function ChangeGroups({ items, type, owner, skill = false, nested = false }) {
+  const Heading = nested ? "h6" : "h5";
   return GROUPS.map(([key, title]) => {
     const changes = items.filter(item => classifyHistoryItem(item) === key && (type === "all" || type === key));
     if (!changes.length) return null;
-    return <section className="bh-change-group" key={key} aria-label={title}><h5>{title}</h5>
+    return <section className="bh-change-group" key={key} aria-label={title}><Heading>{title}</Heading>
       <div className={key === "stats" ? "bh-stats" : "bh-details"}>{changes.map((item, index) => {
         const numeric = typeof item.before === "number" && typeof item.after === "number";
         const label = skill && key === "skills" && !item.label?.includes(nameOf(owner)) ? `${nameOf(owner)}·${item.label ?? "效果"}` : item.label;
@@ -57,6 +64,19 @@ function ChangeGroups({ items, type, owner, skill = false }) {
           {item.after != null && <p><small>{item.before != null ? "调整后" : "内容"}</small>{String(item.after)}</p>}
         </div>{item.note && <p className="bh-note">{item.note}</p>}</div>;
       })}</div>
+    </section>;
+  });
+}
+
+function RecordChanges({ record, type, owner, skill = false, showFamilyMembers = false }) {
+  if (skill || owner.members.length < 2) return <ChangeGroups items={record.items} type={type} owner={owner} skill={skill} />;
+  return record.scopes.filter(scope => hasType(scope, type)).map((scope, position) => {
+    const names = scope.members.map(nameOf).join("、");
+    const all = scope.members.length === owner.members.length;
+    const title = scope.members.length === 1 ? `仅${names}` : all ? "家族共同调整" : "共同调整";
+    return <section className="bh-scope" key={position} aria-label={`${names}的调整`}>
+      <div className="bh-scope-head"><h5>{title}</h5>{scope.members.length > 1 && <p>{all ? `全部 ${scope.members.length} 位成员${showFamilyMembers ? `：${names}` : ""}` : names}</p>}</div>
+      <ChangeGroups items={scope.items} type={type} owner={owner} nested />
     </section>;
   });
 }
@@ -90,18 +110,20 @@ function BalanceHistoryContent({ snapshot, open, onClose }) {
   useModalFocus(open, dialogRef, () => { savePosition(); onClose(); });
 
   const matches = useMemo(() => spiritView.query.trim()
-    ? index.searchSpirits(spiritView.query, Infinity)
-    : index.spirits.filter(entity => index.spiritRecords.get(entity.id)?.length), [index, spiritView.query]);
+    ? index.searchFamilies(spiritView.query, Infinity)
+    : index.families.filter(entity => index.familyRecords.get(entity.id)?.length), [index, spiritView.query]);
+  const matchedMembers = useMemo(() => spiritView.query.trim()
+    ? new Set(index.searchSpirits(spiritView.query, Infinity).map(entity => entity.id)) : null, [index, spiritView.query]);
   const selected = matches.find(entity => entity.id === spiritView.entityId) ?? matches[0];
-  const spiritRecords = (index.spiritRecords.get(selected?.id) ?? [])
+  const spiritRecords = (index.familyRecords.get(selected?.id) ?? [])
     .filter(record => (spiritView.season === "all" || record.patch.seasonId === spiritView.season) && hasType(record, spiritView.type));
   const choices = index.patches.filter(patch => batchView.season === "all" || patch.seasonId === batchView.season);
   const patch = choices.find(item => item.id === batchView.patchId) ?? choices[0];
   const batchEntries = useMemo(() => {
-    const entities = batchView.entityType === "spirits" ? index.spirits : index.skills;
-    const records = batchView.entityType === "spirits" ? index.spiritRecords : index.skillRecords;
+    const entities = batchView.entityType === "spirits" ? index.families : index.skills;
+    const records = batchView.entityType === "spirits" ? index.familyRecords : index.skillRecords;
     const matchingIds = batchView.query.trim() ? new Set((batchView.entityType === "spirits"
-      ? index.searchSpirits(batchView.query, Infinity) : index.searchSkills(batchView.query, Infinity)).map(entity => entity.id)) : null;
+      ? index.searchFamilies(batchView.query, Infinity) : index.searchSkills(batchView.query, Infinity)).map(entity => entity.id)) : null;
     const entries = entities.flatMap(entity => {
       if (matchingIds && !matchingIds.has(entity.id)) return [];
       const record = records.get(entity.id)?.find(record => record.patch.id === patch?.id && hasType(record, batchView.type));
@@ -147,7 +169,7 @@ function BalanceHistoryContent({ snapshot, open, onClose }) {
   function jumpToSpirit(entity) {
     remember();
     positions.current.spirit = [0, 0];
-    setSpiritView({ query: nameOf(entity), entityId: entity.id, season: "all", type: "all", limit: PAGE_SIZE });
+    setSpiritView({ query: nameOf(entity.representative), entityId: entity.id, season: "all", type: "all", limit: PAGE_SIZE });
     setMode("spirit");
   }
   function goBack() {
@@ -183,16 +205,19 @@ function BalanceHistoryContent({ snapshot, open, onClose }) {
           <aside className="bh-side" ref={sideRef}><h3 className="bh-side-title">检索精灵</h3>
             <Search label="名称、别名或图鉴号" value={spiritView.query} onChange={query => updateSpirit({ query, entityId: null, limit: PAGE_SIZE }, true)} />
             <div className="bh-search-results" aria-label="精灵检索结果">{matches.slice(0, spiritView.limit).map(entity => <button type="button" className="bh-entity" key={entity.id} aria-pressed={entity.id === selected?.id} onClick={() => updateSpirit({ entityId: entity.id })}>
-              <Portrait entity={entity} /><span><strong>{nameOf(entity)}</strong><small>{entity.dexNo != null ? `#${entity.dexNo} · ` : ""}{index.spiritRecords.get(entity.id)?.length ?? 0} 次调整记录</small></span>
+              <Portrait entity={entity} /><span><strong>{nameOf(entity)}</strong><small>{identityOf(entity)}{index.familyRecords.get(entity.id)?.length ?? 0} 次调整记录</small>
+                {matchedMembers && entity.members.length > 1 && <small className="bh-match">匹配：{entity.members.filter(member => matchedMembers.has(member.id)).map(nameOf).join("、")}</small>}
+              </span>
             </button>)}{matches.length > spiritView.limit && <button type="button" className="bh-more" onClick={() => { savePosition(); setSpiritView(previous => ({ ...previous, limit: previous.limit + PAGE_SIZE })); }}>显示更多精灵</button>}</div>
             {!matches.length && <p className="bh-note">没有匹配的精灵，请试试名称、别名或图鉴号。</p>}
           </aside>
-          <section className="bh-content">{selected && <div className="bh-summary"><div className="bh-summary-head"><Portrait entity={selected} size={44} /><div><h3>{nameOf(selected)} <small>{selected.dexNo != null ? `#${selected.dexNo}` : ""}</small></h3><p>已收录 {index.spiritRecords.get(selected.id)?.length ?? 0} 次调整 · 按资料日期倒序</p></div></div>
+          <section className="bh-content">{selected && <div className="bh-summary"><div className="bh-summary-head"><Portrait entity={selected} size={44} /><div><h3>{nameOf(selected)} <small>{selected.members.length > 1 ? `${selected.members.length} 位成员` : selected.representative.dexNo != null ? `#${selected.representative.dexNo}` : ""}</small></h3><p>已收录 {index.familyRecords.get(selected.id)?.length ?? 0} 次调整 · 按资料日期倒序</p></div></div>
+            {selected.members.length > 1 && <p className="bh-family-members">{selected.members.map(nameOf).join("、")}</p>}
             <TypeFilters value={spiritView.type} onChange={type => updateSpirit({ type })} /></div>}
-            <div className="bh-scroll" ref={scrollRef}>{!selected ? <Empty>没有匹配的精灵</Empty> : !index.spiritRecords.get(selected.id)?.length ? <Empty>尚未收录{nameOf(selected)}的平衡调整记录</Empty> : !spiritRecords.length ? <Empty onReset={() => updateSpirit({ season: "all", type: "all" })}>当前筛选下没有调整记录</Empty> : spiritRecords.map(record => <article className="bh-record" key={record.patch.id}>
+            <div className="bh-scroll" ref={scrollRef}>{!selected ? <Empty>没有匹配的精灵</Empty> : !index.familyRecords.get(selected.id)?.length ? <Empty>尚未收录{nameOf(selected)}的平衡调整记录</Empty> : !spiritRecords.length ? <Empty onReset={() => updateSpirit({ season: "all", type: "all" })}>当前筛选下没有调整记录</Empty> : spiritRecords.map((record, recordIndex) => <article className="bh-record" key={record.patch.id ?? `unlinked-${recordIndex}`}>
               <header className="bh-record-head"><div className="bh-record-date"><PatchDate patch={record.patch} /></div><span className="bh-season-tag">{record.patch.seasonId}</span><h4>{record.patch.label}</h4>
-                <div className="bh-record-actions"><SourceLink patch={record.patch} /><button type="button" onClick={() => jumpToBatch(record)}>查看本次全部调整 <CaretRight size={14} /></button></div></header>
-              <ChangeGroups items={record.items} type={spiritView.type} owner={selected} />
+                <div className="bh-record-actions"><SourceLink patch={record.patch} />{record.patch.id && <button type="button" onClick={() => jumpToBatch(record)}>查看本次全部调整 <CaretRight size={14} /></button>}</div></header>
+              <RecordChanges record={record} type={spiritView.type} owner={selected} />
             </article>)}</div>
           </section>
         </> : <>
@@ -207,8 +232,8 @@ function BalanceHistoryContent({ snapshot, open, onClose }) {
             <div className="bh-scroll" ref={scrollRef}>{!patch ? <Empty>该赛季尚未收录调整批次</Empty> : !batchEntries.length ? <Empty onReset={() => updateBatch({ query: "", type: "all", limit: PAGE_SIZE })}>本次更新没有符合条件的{batchView.entityType === "spirits" ? "精灵" : "技能"}调整记录</Empty> : batchEntries.slice(0, batchView.limit).map(({ entity, record }, entityIndex) => {
               const expanded = batchView.expandedId === entity.id || batchView.expandedId == null && entityIndex === 0;
               return <article className="bh-record" key={entity.id}><button type="button" className="bh-owner-head" aria-expanded={expanded} onClick={() => { savePosition(); setBatchView(previous => ({ ...previous, expandedId: expanded ? "" : entity.id })); }}>
-                <Portrait entity={entity} skill={batchView.entityType === "skills"} /><span><strong>{nameOf(entity)}</strong><small>{entity.dexNo != null ? `#${entity.dexNo} · ` : ""}{record.items.length} 项调整</small></span><span className="bh-owner-action">{expanded ? "收起" : "展开详情"}</span>{expanded ? <CaretDown size={16} /> : <CaretRight size={16} />}
-              </button>{expanded && <div className="bh-owner-details"><ChangeGroups items={record.items} type={batchView.type} owner={entity} skill={batchView.entityType === "skills"} />
+                <Portrait entity={entity} skill={batchView.entityType === "skills"} /><span><strong>{nameOf(entity)}</strong><small>{identityOf(entity)}{record.items.length} 项调整</small></span><span className="bh-owner-action">{expanded ? "收起" : "展开详情"}</span>{expanded ? <CaretDown size={16} /> : <CaretRight size={16} />}
+              </button>{expanded && <div className="bh-owner-details"><RecordChanges record={record} type={batchView.type} owner={entity} skill={batchView.entityType === "skills"} showFamilyMembers />
                 {batchView.entityType === "spirits" && <button className="bh-text-button" type="button" onClick={() => jumpToSpirit(entity)}>查看{nameOf(entity)}历次调整 <CaretRight size={14} /></button>}
               </div>}</article>;
             })}{batchEntries.length > batchView.limit && <button type="button" className="bh-more" onClick={() => { savePosition(); setBatchView(previous => ({ ...previous, limit: previous.limit + PAGE_SIZE })); }}>显示更多调整（还有 {batchEntries.length - batchView.limit} 项）</button>}</div>
