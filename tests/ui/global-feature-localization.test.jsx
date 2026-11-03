@@ -6,6 +6,9 @@ import { GlobalTeamDraftExchange } from "../../src/components/GlobalTeamDraftExc
 import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
 import { clearMissingUiMessages, getMissingUiMessages, translateUi } from "../../src/i18n/messages.js";
 import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
+import { DataSourceDialog } from "../../src/components/DataSourceDialog.jsx";
+import { FEATURED_USER_RELEASE } from "../../src/data/user-release-notes.js";
+import { GLOBAL_RELEASE_SUMMARY } from "../../src/data/global-release-summary.js";
 import { ConfigLibraryDialog } from "../../src/components/ConfigLibraryDialog.jsx";
 import { useConfigLibraryFlow } from "../../src/hooks/useConfigLibraryFlow.js";
 import { localizeGlobalSpirit, localizeGlobalSkill } from "../../src/runtime/global-entity-localization.js";
@@ -181,4 +184,19 @@ test("team JSON files use a localized picker and retain filename, preview and la
   expect(screen.getByRole("textbox")).toHaveValue(content);
   expect(file.text).toHaveBeenCalledTimes(2);
   expect(onImport).not.toHaveBeenCalled();
+});
+
+test.each(["en", "ja"])("Global 2.3.1 release fixes render in %s with localized history and S3 rules", (locale) => {
+  clearMissingUiMessages();
+  const releaseCopy = [FEATURED_USER_RELEASE.title, ...FEATURED_USER_RELEASE.summaryHighlights, ...FEATURED_USER_RELEASE.highlights];
+  for (const source of releaseCopy) expect(translateUi(locale, source)).not.toBe(source);
+  const rule = FEATURED_USER_RELEASE.highlights.find(text => text.includes("国际服"));
+  expect(translateUi(locale, rule)).toContain("S3");
+  render(wrap(locale, <DataSourceDialog open initialView="release" />));
+  for (const id of ["historyHp", "betHp", "narrowControls"]) {
+    const item = GLOBAL_RELEASE_SUMMARY.items.find(entry => entry.id === id);
+    expect(screen.getByText(translateUi(locale, item.title), { exact: true })).toBeVisible();
+    expect(screen.getByText(translateUi(locale, item.description), { exact: false })).toBeVisible();
+  }
+  expect(getMissingUiMessages()).toEqual([]);
 });

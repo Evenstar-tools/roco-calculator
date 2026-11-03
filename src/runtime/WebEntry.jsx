@@ -17,9 +17,9 @@ import { FeatureLoadingBoundary } from "./FeatureBoundary.jsx";
 
 const CalculatorRouter = recoverableLazy(() => import("../CalculatorRouter.jsx").then((module) => ({ default: module.CalculatorRouter })));
 const pageText = {
-  en: { title: "Roco Calculator · Global", description: "Roco Kingdom damage calculator using S3 midseason stats and rules.", loading: "Loading calculator…" },
-  "zh-CN": { title: "洛克计算器 · 国际服", description: "洛克王国国际服计算器，采用 S3 季中数值与规则。", loading: "正在加载计算器…" },
-  ja: { title: "ロコ計算機 · グローバル", description: "S3 シーズン中盤の能力値とルールに基づくダメージ計算機。", loading: "計算機を読み込み中…" },
+  en: { title: "Roco Calculator · Global", documentTitle: "Roco Kingdom World Damage Calculator | RocoCalc", description: "Roco Kingdom damage calculator using S3 midseason stats and rules.", loading: "Loading calculator…" },
+  "zh-CN": { title: "洛克计算器 · 国际服", documentTitle: "洛克王国：世界 国际服伤害计算器 | RocoCalc", description: "洛克王国国际服计算器，采用 S3 季中数值与规则。", loading: "正在加载计算器…" },
+  ja: { title: "ロコ計算機 · グローバル", documentTitle: "ロコ・キングダム ダメージ計算機 | RocoCalc", description: "S3 シーズン中盤の能力値とルールに基づくダメージ計算機。", loading: "計算機を読み込み中…" },
 };
 
 export function browserEntry() {
@@ -109,7 +109,7 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
       document.querySelector('meta[name="apple-mobile-web-app-title"]')?.setAttribute("content", global ? copy.title : "洛克计算器");
     }
     metrics.setServer(global ? "global" : "cn");
-    if (global) applyPageMetadata({ ...copy, canonical: `https://rococalc.top${routeFor("global", entry.locale)}` });
+    if (global) applyPageMetadata({ ...copy, title: copy.documentTitle, canonical: `https://rococalc.top${routeFor("global", entry.locale)}` });
     void metrics.start();
   }, [global, entry.locale, copy, isDesktop]);
 

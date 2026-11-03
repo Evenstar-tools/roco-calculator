@@ -4,6 +4,9 @@ export const GLOBAL_RELEASE_SUMMARY = Object.freeze({
   title: "国际服计算器",
   description: "采用 S3 季中数值与规则。",
   items: [
+    { id: "historyHp", title: "生命改动记录", description: "历史调整中的生命与精力统一显示为生命，同一条改动只保留一次。" },
+    { id: "betHp", title: "下注低血同步", description: "下注·暗的低血设置与伤害重算同步完成，保存与撤回保留完整操作。" },
+    { id: "narrowControls", title: "窄屏条件与说明", description: "最窄屏的技能与特性条件按钮收在卡片内，电鹿条件和伤害说明更易阅读。" },
     { id: "teamLayout", title: "队伍配置布局", description: "队伍配置合并精灵身份与选择入口，桌面并排查看六维、耐久和配招；保留原顶部工具栏。" },
     { id: "skillDescriptions", title: "配招说明开关", description: "配招旁新增小眼睛，可隐藏技能说明，保留属性、能耗、威力和血脉提示。" },
     { id: "teamPortrait", title: "队伍竖屏浏览", description: "竖屏队伍改为整体内容滚动，六个槽位随内容移走，成员页签吸顶；切换页签保留键盘焦点。" },

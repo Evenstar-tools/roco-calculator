@@ -230,6 +230,22 @@ export const S4_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.1",
+    date: "2026.11.03",
+    title: "国际服历史记录与窄屏修复",
+    whatsNew: S4_FEATURE_INTRO,
+    summaryHighlights: [
+      "生命改动记录合并重复条目，独立更新与技能差异继续保留。",
+      "窄屏条件按钮收进卡片，电鹿说明字号更清楚。",
+    ],
+    fixes: [
+      "历史调整中的生命与精力统一显示为生命，同一条改动只保留一次。",
+      "下注·暗的低血设置与伤害重算同步完成，保存与撤回保留完整操作。",
+      "最窄屏的技能与特性条件按钮收在卡片内，电鹿条件和伤害说明更易阅读。",
+      "国际服维持S3季中数据与规则，本轮修复不引入国服专属赛季内容。",
+    ],
+  }),
+  createRelease({
     version: "v2.3.0",
     date: "2026.11.03",
     title: "国际服技能检索与工具更新",

@@ -1,5 +1,15 @@
 // Product UI copy; entity names and descriptions come from the official client catalog.
 export const globalFeaturesMessages = Object.fromEntries([
+  ["国际服历史记录与窄屏修复", "Global history and narrow-screen fixes", "グローバル版の履歴・狭い画面の修正"],
+  ["生命改动记录合并重复条目，独立更新与技能差异继续保留。", "Duplicate HP change records are merged while separate updates and distinct skill changes are preserved.", "HPの変更履歴の重複をまとめ、別の更新やスキルごとの違いは維持します。"],
+  ["窄屏条件按钮收进卡片，电鹿说明字号更清楚。", "Condition buttons fit within cards on narrow screens, and KO threshold notes are easier to read.", "狭い画面でも条件ボタンがカード内に収まり、撃破ラインの説明も読みやすくなりました。"],
+  ["历史调整中的生命与精力统一显示为生命，同一条改动只保留一次。", "HP aliases in adjustment history use one HP label, and each identical change appears only once.", "調整履歴のHP表記を統一し、同じ変更は一度だけ表示します。"],
+  ["下注·暗的低血设置与伤害重算同步完成，保存与撤回保留完整操作。", "Bet's low-HP setting and damage recalculation now update together. Saving and undoing preserve the complete operation.", "「下注」の低HP設定とダメージの再計算を同時に反映します。保存や取り消しでも操作全体を維持します。"],
+  ["最窄屏的技能与特性条件按钮收在卡片内，电鹿条件和伤害说明更易阅读。", "Skill and Trait condition buttons fit within cards on the narrowest screens. KO threshold conditions and damage notes are easier to read.", "最も狭い画面でもスキル・特性の条件ボタンがカード内に収まります。撃破ラインの条件やダメージの説明も読みやすくしました。"],
+  ["国际服维持S3季中数据与规则，本轮修复不引入国服专属赛季内容。", "Global retains its S3 mid-season data and rules. These fixes do not add CN-exclusive seasonal content.", "グローバル版は引き続きS3シーズン中盤のデータとルールを使用します。今回の修正では中国版限定のシーズン内容を追加しません。"],
+  ["生命改动记录", "HP change history", "HPの変更履歴"],
+  ["下注低血同步", "Bet low-HP synchronization", "「下注」の低HP設定の同期"],
+  ["窄屏条件与说明", "Narrow-screen conditions and notes", "狭い画面の条件・説明表示"],
   ["选择下注·暗后自动将自身生命设为49%并重算，保留已有低血；切回明不回血，也不自动执行攻击。", "Selecting the low-HP branch of Bet sets the user's HP to 49% and recalculates damage, keeping any lower HP. Switching back does not heal or execute an attack.", "「下注」の低HP分岐を選ぶと自身のHPを49%にしてダメージを再計算します。すでに低いHPは維持し、分岐を戻しても回復や攻撃の実行はしません。"],
   ["减少工具首次打开与再次打开的等待。", "Reduced waiting when opening tools for the first time and reopening them.", "ツールを初めて開くときや開き直すときの待ち時間を短縮しました。"],
   ["改善电鹿斩杀线重复打开和调整配置时的流畅度。", "Improved responsiveness when reopening the KO threshold tool or adjusting its setup.", "撃破ラインを開き直したり、設定を調整したりするときの動作を滑らかにしました。"],
