@@ -237,6 +237,15 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.2",
+    date: "2026.11.03",
+    seasonId: "S5",
+    title: "S5 平衡回顾易读性",
+    whatsNew: S5_FEATURE_INTRO,
+    features: ["改动行显示涉及的精灵，多只可展开名单；效果文字删减标红、新增标绿。"],
+    fixes: ["大屏弹窗放大，家族名用基础形态；国际服S3季中不变。"],
+  }),
+  createRelease({
     version: "v2.3.1",
     date: "2026.11.03",
     seasonId: "S5",
