@@ -134,3 +134,63 @@ html[data-theme="dark"] .rank-tone--resist { color: #70d6b5; }html[data-theme="d
 .speed-match-summary strong { font-weight:600; }
 
 .speed-locate-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px; }
+
+/* 速度线排行改版（2026-11-04）：视图切换进标题行，口径改彩色开关，控制区两行；头像版按 76px 方卡计算占位高度。 */
+.rank-dialog__heading { justify-content: flex-start; gap: 16px; }
+.rank-dialog__heading .rank-dialog__actions { margin-left: auto; }
+.rank-dialog__heading .speed-view-switch { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.rank-dialog__heading .speed-view-switch button { min-width: 0; min-height: 34px; padding: 0 14px; border: 0; border-radius: 7px; background: transparent; color: var(--text-muted); font-size: 14px; font-weight: 700; }
+.rank-dialog__heading .speed-view-switch button[aria-pressed="true"] { background: var(--selection-bg); color: var(--accent-strong); box-shadow: 0 1px 3px rgb(0 0 0 / 10%); }
+.rank-speed-standalone .ability-speed-overview__controls { padding: 12px 12px 10px; }
+.rank-speed-standalone .speed-query-guide { padding: 0 12px 10px; }
+.rank-speed-standalone .rank-summary { padding: 6px 12px; gap: 12px; color: var(--text-muted); font-size: 13px; }
+.rank-speed-standalone .rank-summary > span { white-space: nowrap; }
+.rank-speed-standalone .rank-summary > button { flex: none; font-size: 13px; }
+.speed-profile-pills { display: flex; flex: 1; min-width: 0; flex-wrap: wrap; gap: 6px; }
+.speed-profile-pill { position: relative; display: inline-flex; height: 32px; align-items: center; gap: 6px; padding: 0 12px 0 5px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); color: var(--text-muted); font-size: 13px; font-weight: 650; white-space: nowrap; cursor: pointer; }
+.speed-profile-pill input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; pointer-events: none; }
+.speed-profile-pill i { display: grid; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 11px; place-items: center; background: var(--surface-muted); color: var(--text-faint); font-size: 12px; font-style: normal; font-weight: 800; }
+.speed-profile-pill:has(input:checked) { border-color: color-mix(in srgb, var(--speed-tone) 40%, var(--border)); background: color-mix(in srgb, var(--speed-tone) 8%, var(--surface)); color: var(--text); }
+.speed-profile-pill:has(input:checked) i { background: color-mix(in srgb, var(--speed-tone) 16%, var(--surface)); color: var(--speed-tone); }
+.speed-profile-pill:has(input:disabled) { cursor: default; }
+.speed-profile-pill:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 1px; }
+html[data-theme="dark"] .speed-profile-pill:has(input:checked) i { background: color-mix(in srgb, var(--speed-tone) 30%, var(--surface)); color: color-mix(in srgb, var(--speed-tone) 45%, #fff); }
+.rank-speed-standalone .speed-navigable .ability-speed__table-value { width: 72px; }
+.rank-speed-standalone .ability-speed__table tbody td { padding: 7px 8px; }
+.rank-speed-standalone .ability-speed__table thead th { font-size: 12px; }
+.rank-speed-standalone .ability-speed-overview__tier-value > small { font-size: 12px; }
+.rank-speed-standalone.is-icon-only .ability-speed__tier-spirits button { width: 76px; min-width: 76px; max-width: 76px; }
+.rank-speed-standalone.is-icon-only .ability-speed__tier-spirits img,
+.rank-speed-standalone.is-icon-only .ability-speed__tier-spirits .speed-portrait-placeholder { width: 68px; height: 68px; }
+@supports (contain-intrinsic-block-size: calc(round(up, 1 / max(1, round(down, (100cqi - 82px) / 82px, 1)), 1) * 82px - 6px)) {
+  .rank-speed-standalone.is-icon-only .ability-speed__tier-spirits.is-contained {
+    --speed-tier-columns: max(1, round(down, (100cqi - 82px) / 82px, 1));
+    --speed-tier-height: calc(round(up, var(--speed-target-count) / var(--speed-tier-columns), 1) * 82px - 6px);
+  }
+}
+@media (max-width: 600px) {
+  .rank-dialog__heading { gap: 10px; }
+  .rank-dialog__heading .speed-view-switch button { min-height: 32px; padding: 0 9px; font-size: 13px; }
+  .rank-speed-standalone .rank-summary { flex-wrap: nowrap; padding: 6px 8px 6px 12px; }
+  .rank-speed-standalone .rank-summary > span { display: none; }
+  .speed-profile-pills { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .speed-profile-pill { height: 34px; }
+  .rank-speed-standalone .ability-speed__table-wrap { margin: 0 8px 0 4px; }
+  .rank-speed-standalone .ability-speed__table tbody td { padding: 6px 0 10px; }
+  .rank-speed-standalone .ability-speed-overview__tier-value { top: auto; }
+  @supports (contain-intrinsic-block-size: calc(round(up, 1 / max(1, round(down, (100cqi + 6px) / 82px, 1)), 1) * 82px - 6px)) {
+    .rank-speed-standalone.is-icon-only .ability-speed__tier-spirits.is-contained { --speed-tier-columns: max(1, round(down, (100cqi + 6px) / 82px, 1)); }
+  }
+}
+.base-speed-band-label { display: none; }
+@media (max-width: 650px) {
+  .base-speed-note { display: none; }
+  .base-speed table, .base-speed tbody { display: block; }
+  .base-speed thead { display: none; }
+  .base-speed tbody tr { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: stretch; }
+  .base-speed tbody tr > th:first-child, .base-speed tbody tr > td.is-mobile-selected { position: sticky; z-index: 2; top: 0; display: flex; width: auto; align-items: baseline; gap: 6px; padding: 6px 10px; border-bottom: 0; background: var(--surface-soft); font-size: 15px; font-weight: 700; white-space: nowrap; }
+  .base-speed tbody tr > td.is-mobile-selected { padding-left: 4px; }
+  .base-speed .base-speed-band-label { display: inline; color: var(--text-muted); font-size: 12px; font-weight: 500; }
+  .base-speed .base-speed-value { padding: 0; font-size: 15px; font-weight: 700; }
+  .base-speed tbody tr > td:last-child { grid-column: 1 / -1; padding: 6px 0 10px; }
+}
