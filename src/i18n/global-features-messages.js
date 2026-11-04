@@ -683,4 +683,5 @@ export const globalFeaturesMessages = Object.fromEntries([
   ["修正单技能防御解除、水泡盾增益与窄屏技能名，补齐增益摘要译文。", "Fixed defense toggles in single-skill mode, Bubble Shield bonuses, narrow-screen skill names and bonus translations.", "単一スキルの防御解除、バブルシールドの強化、狭い画面のスキル名、強化効果の翻訳を修正。"],
   ["种族", "Base", "種族資質"], ["{count} 个", "{count}", "{count}件"],
   ["搜索名字、图鉴号，或输入速度（如 137）", "Search name or index, or enter SPD (e.g. 137)", "名前・図鑑番号、または速さ（例：137）"],
+  ["队伍按设备改版；速度线默认只看极速并记住口径，头像放大。", "Teams are redesigned for each device. The speed list now shows max speed by default, remembers your profile choices and uses larger portraits.", "チーム画面を端末ごとに改善。速度ラインは最速のみを初期表示し、選んだ条件を記憶して画像も大きくしました。"],
 ].map(([source, en, ja]) => [source, { en, ja }]));
