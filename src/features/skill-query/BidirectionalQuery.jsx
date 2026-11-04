@@ -64,12 +64,13 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
   const [detailCategory, setDetailCategory] = useState("");
   const [expanded, setExpanded] = useState(null);
   const [returnState, setReturnState] = useState(null);
+  // The full learners page belongs to the skill direction; changing direction closes it.
+  const [learners, setLearners] = useState(false);
   const [libraryBatch, setLibraryBatch] = useState({ key: "", count: LIBRARY_BATCH_SIZE });
   const results = useRef(null);
   const rail = useRef(null);
   const library = useRef(null);
   const effectAnchor = useRef(null);
-  const mobileLibraryScroll = useRef(0);
   const workspace = useRef(null);
   const resultScroll = useRef({ results: 0, workspace: 0 });
   const restoreScroll = useRef(null);
@@ -136,11 +137,7 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
     if (onHideEffectsChange) onHideEffectsChange(!hideEffects);
     else setHideEffects(!hideEffects);
   };
-  const showResults = () => {
-    if (results.current.getBoundingClientRect().top > workspace.current.getBoundingClientRect().top + 60) mobileLibraryScroll.current = workspace.current.scrollTop;
-    results.current.scrollIntoView({ block: "start", behavior: "smooth" });
-  };
-  const returnToLibrary = () => workspace.current?.scrollTo({ top: mobileLibraryScroll.current, behavior: "smooth" });
+  const returnToLibrary = () => { setLearners(false); workspace.current?.scrollTo({ top: 0, behavior: "smooth" }); };
   const openSpirit = (id) => {
     if (!spiritId) { resultScroll.current = readScroll(); returnFamily.current = id; }
     setSpiritId(id); setSource(""); setDetailQuery(""); setDetailType(""); setDetailCategory(""); setExpanded(null);
@@ -158,7 +155,7 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
     setSelected([...selected, id]);
   };
   const changeDirection = (value) => {
-    setDirection(value); setQuery(""); setSpiritId(null); setReturnState(null); resetLibraryBatch();
+    setDirection(value); setQuery(""); setSpiritId(null); setReturnState(null); setLearners(false); resetLibraryBatch();
   };
   const reverse = (id) => {
     setReturnState({ spiritId, direction, selected, query, type, category, introduced, source, detailQuery, detailType, detailCategory, expanded, learnerQuery, learnerSource, libraryBatch, resultScroll: resultScroll.current, returnFamily: returnFamily.current, scroll: readScroll() });
@@ -181,9 +178,14 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
   const types = [...new Set(season.skills.map((skill) => skill.type))].filter(Boolean);
   const typeSelect = (value, update, label, options = types) => <select aria-label={t(label)} value={value} onChange={(event) => update(event.target.value)}><option value="">{t("全部属性")}</option>{options.filter(Boolean).map((item) => <option key={item} value={item}>{typeName(item)}</option>)}</select>;
   const categorySelect = (value, update, label) => <select aria-label={t(label)} value={value} onChange={(event) => update(event.target.value)}><option value="">{t("全部种类")}</option>{Object.entries(categoryNames).map(([id, name]) => <option key={id} value={id}>{t(name)}</option>)}</select>;
+  const skillCard = (skill, index) => <button key={skill.id} data-skill-id={skill.id} aria-label={t(selected.includes(skill.id) ? "取消{name}" : "添加{name}", { name: skill.name })} aria-pressed={selected.includes(skill.id)} aria-disabled={!selected.includes(skill.id) && selected.length === 4} onClick={() => add(skill.id)}>
+    <span className="sq-card-heading"><SkillIcon skill={iconSkill(skill)} size={48} loading={index < 12 ? "eager" : "lazy"} /><span><strong>{skill.name}</strong><small><ElementIcon type={skill.type} size={16} />{typeName(skill.type)} · {t(categoryNames[skill.category] ?? skill.category)}</small></span>{selected.includes(skill.id) && <CheckCircle className="sq-card-check" size={18} weight="fill" />}</span>
+    {!placeholder && <span className="sq-card-values"><span>{t("威力")} <b>{skill.basePower ?? "—"}</b></span><span>{t("能耗")} <b>{skill.cost ?? "—"}</b></span></span>}
+    {!hideEffects && <span className="sq-card-description">{skill.description || t("技能效果待补充")}</span>}
+  </button>;
   const effectToggle = <button className="sq-effect-toggle" aria-label={t(hideEffects ? "显示效果说明" : "隐藏效果说明")} title={t(hideEffects ? "显示效果说明" : "隐藏效果说明")} aria-pressed={hideEffects} onClick={toggleEffects}>{hideEffects ? <Eye size={20} /> : <EyeSlash size={20} />}</button>;
 
-  return <><div ref={workspace} data-placeholder={placeholder || undefined} className={`sq-workspace${placeholder ? " sq-workspace--reference" : ""}${spirit ? " sq-workspace--detail" : ""}${direction === "spirit" ? " sq-workspace--spirit" : ""}${hideEffects ? " sq-workspace--compact" : ""}`}>
+  return <><div ref={workspace} data-placeholder={placeholder || undefined} className={`sq-workspace${placeholder ? " sq-workspace--reference" : ""}${spirit || learners ? " sq-workspace--detail" : ""}${direction === "spirit" ? " sq-workspace--spirit" : ""}${hideEffects ? " sq-workspace--compact" : ""}`}>
     <aside className="sq-query">
       <div className="sq-directions" aria-label={t("查询方向")}>{[["skill", "找可学精灵"], ["spirit", "查精灵技能"]].map(([id, name]) => <button key={id} aria-pressed={direction === id} onClick={() => changeDirection(id)}>{t(name)}</button>)}</div>
       <div className="sq-query-editor">
@@ -196,21 +198,17 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
       </div>
     </aside>
     <div className="sq-body">
-    {direction === "skill" && !spirit && <section className="sq-library" ref={library} aria-label={t("技能库")}>
+    {direction === "skill" && !spirit && !learners && <section className="sq-library" ref={library} aria-label={t("技能库")}>
       <div className="sq-library-heading"><h3>{t("技能库")} <small>{filtered.length}</small></h3><span>{t("点击添加或取消")}</span>{!phone && effectToggle}</div>
       {returnState && <button className="sq-back" onClick={returnToSpirit}><ArrowLeft size={18} />{t("返回{name}技能", { name: season.spirits.find((item) => item.id === returnState.spiritId)?.fullName })}</button>}
-      <div className="sq-suggestions" aria-label={t("技能列表")}>{visibleSkills.map((skill, index) => <button key={skill.id} data-skill-id={skill.id} aria-label={t(selected.includes(skill.id) ? "取消{name}" : "添加{name}", { name: skill.name })} aria-pressed={selected.includes(skill.id)} aria-disabled={!selected.includes(skill.id) && selected.length === 4} onClick={() => add(skill.id)}>
-        <span className="sq-card-heading"><SkillIcon skill={iconSkill(skill)} size={48} loading={index < 12 ? "eager" : "lazy"} /><span><strong>{skill.name}</strong><small><ElementIcon type={skill.type} size={16} />{typeName(skill.type)} · {t(categoryNames[skill.category] ?? skill.category)}</small></span>{selected.includes(skill.id) && <CheckCircle className="sq-card-check" size={18} weight="fill" />}</span>
-        {!placeholder && <span className="sq-card-values"><span>{t("威力")} <b>{skill.basePower ?? "—"}</b></span><span>{t("能耗")} <b>{skill.cost ?? "—"}</b></span></span>}
-        {!hideEffects && <span className="sq-card-description">{skill.description || t("技能效果待补充")}</span>}
-      </button>)}</div>{visibleCount < filtered.length && <button ref={loadMore} className="sq-load-more" onClick={showMoreSkills}>{t("显示更多技能 · {count} / {total}", { count: Math.min(visibleCount, filtered.length), total: filtered.length })}</button>}{!filtered.length && <p className="sq-empty">{t("没有找到符合条件的技能。")}</p>}
+      <div className="sq-suggestions" aria-label={t("技能列表")}>{visibleSkills.map(skillCard)}</div>{visibleCount < filtered.length && <button ref={loadMore} className="sq-load-more" onClick={showMoreSkills}>{t("显示更多技能 · {count} / {total}", { count: Math.min(visibleCount, filtered.length), total: filtered.length })}</button>}{!filtered.length && <p className="sq-empty">{t("没有找到符合条件的技能。")}</p>}
     </section>}
     <div className="sq-rail" ref={rail}>
-    <aside className={`sq-selection${selected.length === 0 ? " sq-selection--empty" : ""}`} hidden={direction !== "skill" || Boolean(spirit)} aria-label={t("已选技能")}>
+    <aside className={`sq-selection${selected.length === 0 ? " sq-selection--empty" : ""}`} hidden={direction !== "skill" || Boolean(spirit) || learners} aria-label={t("已选技能")}>
       <div className="sq-selected-heading"><strong>{t("已选 {count} / 4", { count: selected.length })}</strong>{selected.length > 0 && <button onClick={() => setSelected([])}>{t("清空")}</button>}</div>
-      <div className="sq-selected">{chosen.map(skill => <div key={skill.id}><SkillIcon skill={iconSkill(skill)} size={32} /><span><strong title={skill.name}>{skill.name}</strong>{!placeholder && <small>{t("威力 {power} · 能耗 {cost}", { power: skill.basePower ?? "—", cost: skill.cost ?? "—" })}</small>}</span>{!placeholder && <EntityChangeHint className="sq-change-hint" changeInfo={skill.changeInfo} />}<button aria-label={t("移除{name}", { name: skill.name })} onClick={() => setSelected(selected.filter(id => id !== skill.id))}><X size={18} /></button></div>)}</div>
+      <div className="sq-selected">{chosen.map(skill => <div key={skill.id}><SkillIcon skill={iconSkill(skill)} size={32} /><span><strong title={skill.name}>{skill.name}</strong>{!placeholder && <small>{t("威力 {power} · 能耗 {cost}", { power: skill.basePower ?? "—", cost: skill.cost ?? "—" })}</small>}</span>{!placeholder && <EntityChangeHint className="sq-change-hint" changeInfo={skill.changeInfo} />}<button aria-label={t("移除{name}", { name: skill.name })} onClick={() => add(skill.id)}><X size={18} /></button></div>)}</div>
       {selected.length === 4 && <p className="sq-limit" role="status">{t("已选满 4 个技能，请先移除一个。")}</p>}
-      {!phone && selected.length > 0 && <button className="sq-show-results" onClick={showResults}>{t("查看匹配家族（{count}）", { count: families.length })}</button>}
+      {!phone && selected.length > 0 && <button className="sq-show-results sq-open-learners" onClick={() => setLearners(true)}>{t("查看匹配家族（{count}）", { count: families.length })}</button>}
     </aside>
     <main className="sq-results" ref={results}>
       {spirit ? <>
@@ -227,15 +225,18 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
           <div className="sq-card-footer">{!placeholder && <span className="sq-method">{expanded !== skill.id && localizeAcquisitionMethods(skill.methods, locale, { summary: true })}</span>}<button className="sq-reverse" aria-label={t("查{name}的可学精灵", { name: skill.name })} onClick={() => reverse(skill.id)}>{t("可学精灵")}<CaretRight size={14} /></button></div>
         </article>)}</div>{!rows.length && <p className="sq-empty">{t(placeholder ? "没有符合筛选条件的技能，可清除筛选。" : "没有符合筛选条件的技能；可切回全部来源或清除筛选。")}</p>}
       </> : <>
+        {learners && <><button className="sq-back" onClick={returnToLibrary}><ArrowLeft size={18} />{t("返回选技能 · {count}/4", { count: selected.length })}</button>
+          <div className="sq-suggestions sq-learner-skills">{chosen.map(skillCard)}</div></>}
         {direction === "skill" && selected.length === 0 ? <p className="sq-empty">{t("添加技能，查找全部可学的精灵。")}</p> : direction === "spirit" && !query.trim() ? <p className="sq-empty">{t("搜索精灵，查看当前形态的完整技能表。")}</p> : <>
           <h3 className="sq-result-title" aria-live="polite">{t("{count} 个匹配家族", { count: families.length })}{pools.length > families.length && t(" · {count} 个技能池", { count: pools.length })}</h3>
           {direction === "skill" && <div className="sq-learner-filters"><input aria-label={t("筛选学习精灵")} placeholder={t("搜索家族")} value={learnerQuery} onChange={(event) => setLearnerQuery(event.target.value)} />{!placeholder && <select aria-label={t("学习途径")} value={learnerSource} onChange={(event) => setLearnerSource(event.target.value)}>{SOURCES.map(([id, label]) => <option key={id} value={id}>{t(label)}</option>)}</select>}{(learnerQuery || learnerSource) && <button className="sq-clear-filters" aria-label={t("清除学习精灵筛选")} onClick={() => { setLearnerQuery(""); setLearnerSource(""); }}>{t("清除筛选")}</button>}</div>}
-          <div className="sq-families">{pools.map(({ representative }) => <article key={representative.id}><button className="sq-family-main" aria-label={t("{name} 查看技能", { name: representative.fullName })} data-spirit-id={representative.id} onClick={() => openSpirit(representative.id)}><Portrait key={representative.id} spirit={representative} /><strong>{representative.fullName}</strong><CaretRight size={16} /></button></article>)}</div>{!families.length && <p className="sq-empty">{t("没有符合条件的精灵，可减少技能条件或清除筛选。")}</p>}
-          {direction === "skill" && <button className="sq-show-results" onClick={returnToLibrary}>{t("返回技能库")}</button>}
+          <div className="sq-families">{pools.map(({ representative }) => <article key={representative.id}><button className="sq-family-main" aria-label={t("{name} 查看技能", { name: representative.fullName })} data-spirit-id={representative.id} onClick={() => openSpirit(representative.id)}><Portrait key={representative.id} spirit={representative} /><strong>{representative.fullName}</strong><CaretRight size={16} /></button>
+            {learners && <div className="sq-learner-ways">{/* Pool members share their acquisition text, so the representative speaks for the card. */}
+              {chosen.map(skill => <span key={skill.id}>{skill.name}<b>{localizeAcquisitionMethods(spiritSkills(season, representative.id).find(item => item.id === skill.id)?.methods, locale, { summary: true })}</b></span>)}</div>}</article>)}</div>{!families.length && <p className="sq-empty">{t("没有符合条件的精灵，可减少技能条件或清除筛选。")}</p>}
         </>}
       </>}
     </main>
     </div>
     </div>
-  </div>{direction === "skill" && !spirit && selected.length > 0 && <nav className="sq-mobile-nav" aria-label={t("查询快捷导航")}><button onClick={returnToLibrary}>{t("返回选技能 · {count}/4", { count: selected.length })}</button><button onClick={showResults}>{t("匹配家族 {count}", { count: families.length })}</button></nav>}</>;
+  </div>{direction === "skill" && !spirit && !learners && selected.length > 0 && <nav className="sq-mobile-nav" aria-label={t("查询快捷导航")}><button onClick={returnToLibrary}>{t("返回选技能 · {count}/4", { count: selected.length })}</button><button onClick={() => setLearners(true)}>{t("匹配家族 {count}", { count: families.length })}</button></nav>}</>;
 }
