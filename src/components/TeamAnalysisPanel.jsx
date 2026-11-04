@@ -11,8 +11,9 @@ import {
   analyzeTeamMatchups,
   analyzeTeamTypes,
 } from "../domain/team-type-analysis.js";
-import TeamWeaknessSummary from "./TeamWeaknessSummary.jsx";
+import TeamWeaknessSummary, { teamWeaknessRows } from "./TeamWeaknessSummary.jsx";
 import TypeCandidates from "./TypeCandidates.jsx";
+import { useMediaQuery } from "../hooks/useMediaQuery.js";
 import { ElementIcon } from "./ElementIcon.jsx";
 import { TeamMemberEditor } from "./TeamMemberEditor.jsx";
 import { SpiritImage } from "./SpiritImage.jsx";
@@ -44,6 +45,49 @@ function toneForMultiplier(value, mode) {
   return "neutral";
 }
 
+function cellButton(t, member, cell, mode, onCellSelect) {
+  return (
+    <button
+      aria-label={t("{v0} 对{v1}{v2}{v3}", { v0: member.name, v1: cell.type, v2: mode === "defense" ? "承伤" : "打击", v3: formatMultiplier(cell.multiplier) })}
+      className={`team-analysis__cell is-${toneForMultiplier(cell.multiplier, mode)}`}
+      onClick={() => onCellSelect({ ...cell, member, mode })}
+      type="button"
+    >
+      <MultiplierText value={cell.multiplier} />
+    </button>
+  );
+}
+
+// 手机竖屏把矩阵转置：属性做行、成员做列，6 列在 390px 内放得下，不再左右滑。
+function TransposedMatrix({ analysis, mode, onCellSelect }) {
+  const { t, typeName } = useLocale();
+  return (
+    <table aria-label={t("队伍防守与打击面矩阵")} className="team-analysis__matrix is-transposed">
+      <thead>
+        <tr>
+          <th scope="col">{t("属性")}</th>
+          {analysis.members.map((member) => (
+            <th key={member.slotIndex} scope="col" title={t(member.name)}>
+              {member.assetUrl ? <SpiritImage name={member.name} alt="" src={member.assetUrl} /> : <span>{member.slotIndex + 1}</span>}
+              <strong className="sr-only">{t(member.name)}</strong>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {analysis.types.map((type, typeIndex) => (
+          <tr key={type}>
+            <th scope="row"><ElementIcon size={18} type={type} />{typeName(type)}</th>
+            {analysis.members.map((member) => (
+              <td key={member.slotIndex}>{cellButton(t, member, member[mode][typeIndex], mode, onCellSelect)}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 function MatrixTable({ analysis, mode, onCellSelect }) {
   const { t } = useLocale();
   return (
@@ -71,19 +115,10 @@ function MatrixTable({ analysis, mode, onCellSelect }) {
                 <th scope="row" title={t(member.name)}>
                   <span>{member.slotIndex + 1}</span>
                   {member.assetUrl ? <SpiritImage name={member.name} alt="" src={member.assetUrl} /> : null}
-                  <strong className="sr-only">{t(member.name)}</strong>
+                  <strong>{t(member.name)}</strong>
                 </th>
                 {member[mode].map((cell) => (
-                  <td key={cell.type}>
-                    <button
-                      aria-label={t("{v0} 对{v1}{v2}{v3}", { v0: member.name, v1: cell.type, v2: mode === "defense" ? "承伤" : "打击", v3: formatMultiplier(cell.multiplier) })}
-                      className={`team-analysis__cell is-${toneForMultiplier(cell.multiplier, mode)}`}
-                      onClick={() => onCellSelect({ ...cell, member, mode })}
-                      type="button"
-                    >
-                      <MultiplierText value={cell.multiplier} />
-                    </button>
-                  </td>
+                  <td key={cell.type}>{cellButton(t, member, cell, mode, onCellSelect)}</td>
                 ))}
               </tr>
             ))}
@@ -132,6 +167,10 @@ function ManualOpponentEditor({
   );
   return (
     <section aria-label={t("现场队伍编辑")} className="team-analysis__manual-editor">
+      <h3 className="team-analysis__side-title">
+        <span>{t("对手 · 现场队伍")}</span>
+        <small>{t("只在本页使用，不改动已存队伍")}</small>
+      </h3>
       <div className="team-analysis__manual-import">
         <select
           aria-label={t("导入现有队伍")}
@@ -148,8 +187,8 @@ function ManualOpponentEditor({
             <option value="">{t("暂无可导入队伍")}</option>
           )}
         </select>
-        <button disabled={!importTeamId} onClick={onImport} type="button">{t("导入队伍")}</button>
-        <small>{t("导入后仅修改现场副本")}</small>
+        <button disabled={!importTeamId} onClick={onImport} type="button">{t("导入为对手")}</button>
+        <small>{t("或点空位逐个添加")}</small>
       </div>
       <ol aria-label={t("现场队伍成员")} className="team-analysis__manual-roster">
         {members.map((member, index) => {
@@ -260,13 +299,14 @@ export function TeamAnalysisPanel({
   team,
   teams,
 }) {
-  const { t } = useLocale();
+  const { t, typeName } = useLocale();
+  const transposed = useMediaQuery("(max-width: 719px)");
   const [candidateType, setCandidateType] = useState(null);
   const [includeWishPower, setIncludeWishPower] = useState(false);
   const [isDirectionReversed, setIsDirectionReversed] = useState(false);
   const [matrixMode, setMatrixMode] = useState("defense");
   const [manualImportTeamId, setManualImportTeamId] = useState(
-    teams?.[0]?.id ?? "",
+    (teams?.find((candidate) => candidate.id !== team?.id) ?? teams?.[0])?.id ?? "",
   );
   const [manualMembers, setManualMembers] = useState(() => Array(6).fill(null));
   const [manualSelectedIndex, setManualSelectedIndex] = useState(0);
@@ -326,6 +366,7 @@ export function TeamAnalysisPanel({
       team?.members,
     ],
   );
+  const uncovered = view === "analysis" ? teamWeaknessRows(analysis).filter((row) => !row.resistant.length) : [];
   if (candidateType) return <TypeCandidates key={candidateType} type={candidateType} snapshot={snapshot} onClose={() => setCandidateType(null)} onApply={onApplyCandidate} />;
   return (
     <section aria-label={t("队伍分析")} className={`team-analysis is-${view}${view === "analysis" && matrixMode === "defense" ? " is-defense-summary" : ""}`}>
@@ -363,12 +404,22 @@ export function TeamAnalysisPanel({
           </div>
           {analysis.members.length ? (
             <>
+            {matrixMode === "defense" && uncovered.length ? (
+              <p className="team-analysis__uncovered">
+                <strong>{t("无人抵抗")}</strong>
+                {uncovered.map((row) => <span key={row.type}><ElementIcon size={16} type={row.type} />{typeName(row.type)}</span>)}
+              </p>
+            ) : null}
             <div className="team-analysis__matrix-layout">
-              <MatrixTable
-                analysis={analysis}
-                mode={matrixMode}
-                onCellSelect={setSelectedCell}
-              />
+              {transposed ? (
+                <TransposedMatrix analysis={analysis} mode={matrixMode} onCellSelect={setSelectedCell} />
+              ) : (
+                <MatrixTable
+                  analysis={analysis}
+                  mode={matrixMode}
+                  onCellSelect={setSelectedCell}
+                />
+              )}
             </div>
             {matrixMode === "defense" ? <TeamWeaknessSummary analysis={analysis} onCandidates={setCandidateType} /> : null}
             </>
@@ -378,6 +429,16 @@ export function TeamAnalysisPanel({
         </>
       ) : (
         <>
+          <section aria-label={t("我方")} className="team-analysis__own-side">
+            <h3 className="team-analysis__side-title"><span>{t("我方 · {name}", { name: team?.name ?? "" })}</span></h3>
+            <ol>
+              {analysis.members.map((member) => (
+                <li key={member.slotIndex} title={t(member.name)}>
+                  {member.assetUrl ? <SpiritImage name={member.name} alt="" src={member.assetUrl} /> : <span>{member.slotIndex + 1}</span>}
+                </li>
+              ))}
+            </ol>
+          </section>
           <ManualOpponentEditor
             getSpiritConfiguration={getSpiritConfiguration}
             importTeamId={manualImportTeamId}
