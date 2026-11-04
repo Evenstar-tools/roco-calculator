@@ -49,7 +49,7 @@ for (const width of [320, 390, 1440]) {
   test(`队伍矩阵按容器提供可读点击区域 ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await openAbility(page);
-    await page.getByRole("button", { name: "队伍分析", exact: true }).click();
+    await page.getByRole("button", { name: "属性覆盖", exact: true }).click();
     const scroll = page.getByRole("region", { name: "队伍属性矩阵横向滚动" });
     const matrix = scroll.getByRole("table");
     const firstMember = matrix.locator("tbody th").first();

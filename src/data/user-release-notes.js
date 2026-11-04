@@ -237,6 +237,21 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.4",
+    date: "2026.11.04",
+    seasonId: "S5",
+    title: "S5 队伍工作台与速度线",
+    whatsNew: S5_FEATURE_INTRO,
+    features: [
+      "队伍按设备调整布局，成员卡片可直接设为攻守双方，编辑与导入操作集中显示。",
+      "速度排行默认显示头像和极速，口径开关集中成行，重新打开保留已选口径。",
+    ],
+    fixes: [
+      "当前速度跟随速度轴滑块，浅色口径圆标与放大头像更易辨认，手机也保留速度轴。",
+      "国际服同步队伍与速度界面，继续使用独立S3季中数据与规则。",
+    ],
+  }),
+  createRelease({
     version: "v2.3.3",
     date: "2026.11.03",
     seasonId: "S5",

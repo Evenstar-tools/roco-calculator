@@ -9,9 +9,9 @@
 | 项目 | 版本 | 你可以做什么 |
 | --- | --- | --- |
 | 最新可下载版本 | [Latest 发布页](https://github.com/Evenstar-tools/roco-calculator/releases/latest) | 下载带版本号的 `洛克计算器-版本号.exe`；可下载版本以发布页为准。 |
-| 当前源码版本 | `v2.3.3` | 见 [v2.3.3 更新内容](../../CHANGELOG.md#v233)；源码版本与可下载安装包分别维护。 |
-| 当前国际服网页 | `S3 季中` | [English](https://rococalc.top/en/) · [日本語](https://rococalc.top/jp/) · [简体中文](https://rococalc.top/global/zh-CN/)，已接通三语计算与 S1–S5 装扮。此次网页更新不替换 Windows Release。 |
-| 小程序开发版本 | `v1.2.0 · S5` | 2026-11-01 官方 CLI 上传成功；S5 数据、规则与原生交互验收见 [发布记录](../maintenance/miniapp-s5-release-20261101.md)。平台审核与公开发布尚未进行。 |
+| 当前源码版本 | `v2.3.4` | 见 [v2.3.4 更新内容](../../CHANGELOG.md#v234)；源码版本与可下载安装包分别维护。 |
+| 当前国际服网页 | `S3 季中` | [English](https://rococalc.top/en/) · [日本語](https://rococalc.top/jp/) · [简体中文](https://rococalc.top/global/zh-CN/)，已接通三语计算与 S1–S5 装扮。网页使用独立地区资料；Windows安装包版本以Release为准。 |
+| 小程序开发版本 | `v1.2.2 · S5` | 2026-11-04 官方 CLI 上传成功；速度榜原生验收与AI宿主联调边界见[发布记录](../maintenance/miniapp-ux44-release-20261104.md)。未提审或公开发布。 |
 
 ## 这三类记录分别代表什么
 

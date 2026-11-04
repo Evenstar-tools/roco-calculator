@@ -54,13 +54,13 @@ test("shows all six members in the compact team analysis matrix", async ({ page 
   await expect(async () => {
     await page.getByRole("button", { name: "打开队伍" }).click();
       await expect(
-        page.getByRole("button", { name: "队伍分析", exact: true }),
+        page.getByRole("button", { name: "属性覆盖", exact: true }),
       ).toBeVisible({
       timeout: 3000,
     });
   }).toPass({ timeout: 15000 });
   await page
-    .getByRole("button", { name: "队伍分析", exact: true })
+    .getByRole("button", { name: "属性覆盖", exact: true })
     .click();
 
   const analysis = page.getByRole("region", { name: "队伍分析" });
@@ -414,9 +414,9 @@ test("completes the ability workbench flow at 390px without horizontal overflow"
     discardPrompts += 1;
     await dialog.dismiss();
   });
-  await drawer.getByRole("button", { name: "队伍分析" }).click();
+  await drawer.getByRole("button", { name: "属性覆盖" }).click();
   expect(discardPrompts).toBe(0);
-  await expect(drawer.getByRole("button", { name: "队伍分析" })).toHaveAttribute(
+  await expect(drawer.getByRole("button", { name: "属性覆盖" })).toHaveAttribute(
     "aria-pressed",
     "true",
   );
