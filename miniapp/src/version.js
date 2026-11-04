@@ -1,5 +1,5 @@
-export const MINIAPP_VERSION = "1.2.2";
-export const MINIAPP_UPDATE_DATE = "2026-11-03";
+export const MINIAPP_VERSION = "1.2.3";
+export const MINIAPP_UPDATE_DATE = "2026-11-04";
 export const WEB_CORE_VERSION = "2.2.8";
 export const WEB_CORE_REVISION = "a7c9f951b0560cd1fe5bc7dcd2695c2051076c3f";
 export const MINIAPP_RELEASE_LABEL =
