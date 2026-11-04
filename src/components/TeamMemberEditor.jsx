@@ -154,6 +154,7 @@ export function TeamMemberEditor({
 
   const picker = (
     <SpiritPicker
+      caretLabel={t("更换")}
       clearOnOpen
       compactIdentity
       identityLabel={t("{index}号位", { index: index + 1 })}
