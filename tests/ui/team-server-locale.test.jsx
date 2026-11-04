@@ -45,14 +45,16 @@ test.each(["en", "ja"])("%s preserves custom team names in selectors and matchup
   const { container } = render(<TeamDrawer open teamsState={state} snapshot={globalSnapshot} onClose={vi.fn()} spiritChoices={[]}
     onCreateTeam={onCreateTeam} onDuplicateTeam={onDuplicateTeam} onRenameTeam={onRenameTeam} />, { wrapper: wrapper(locale) });
   expect(screen.getByRole("combobox", { name: text("选择队伍") }).selectedOptions[0].textContent).toBe(team.name);
+  fireEvent.click(screen.getByRole("button", { name: text("重命名队伍") }));
   expect(screen.getByRole("textbox", { name: text("队伍名称") })).toHaveValue(team.name);
+  fireEvent.keyDown(screen.getByRole("textbox", { name: text("队伍名称") }), { key: "Escape" });
   fireEvent.click(screen.getByRole("button", { name: text("复制队伍") }));
   expect(onDuplicateTeam).toHaveBeenCalledWith(team.id);
   fireEvent.click(screen.getByRole("button", { name: text("新建队伍") }));
   expect(onCreateTeam).toHaveBeenCalledWith(text("队伍 {count}", { count: 2 }));
   fireEvent.click(screen.getByRole("button", { name: text("对位"), exact: true }));
   expect(screen.getByRole("combobox", { name: text("导入现有队伍") }).selectedOptions[0].textContent).toBe(team.name);
-  fireEvent.click(screen.getByRole("button", { name: text("导入队伍"), exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: text("导入为对手"), exact: true }));
   expect(container.querySelector(".team-analysis__matchup-controls > span").textContent).toBe(team.name);
   expect(onRenameTeam).not.toHaveBeenCalled();
 });
