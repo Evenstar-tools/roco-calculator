@@ -468,6 +468,8 @@ export const globalFeaturesMessages = Object.fromEntries([
   ["无个体", "No IVs", "個体値0"],
   ["满个体", "Max IVs", "個体値60"],
   ["极速", "Max SPD", "最速"],
+  ["极限速度", "Max SPD", "最速"],
+  ["仅60个体", "60 IV only", "個体値60のみ"],
   ["速度线榜单", "SPD ranking", "速さランキング"],
   ["速度榜视图", "SPD ranking view", "速さランキングの表示"],
   ["实速排行", "Actual SPD", "実数値順"],

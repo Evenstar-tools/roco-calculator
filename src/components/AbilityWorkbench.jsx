@@ -365,6 +365,7 @@ function SpeedProfilePills({ onProfilesChange, profileIds }) {
     <div aria-label={t("速度口径")} className="speed-profile-pills" role="group">
       {SPEED_PROFILE_OPTIONS.map((entry) => {
         const checked = profileIds.includes(entry.id);
+        const label = entry.id === "positive-max" ? "极限速度" : entry.id === "neutral-max" ? "仅60个体" : entry.label;
         return (
           <label className={`speed-profile-pill is-${entry.id}`} key={entry.id}>
             <input
@@ -374,7 +375,7 @@ function SpeedProfilePills({ onProfilesChange, profileIds }) {
               type="checkbox"
             />
             <i aria-hidden="true">{t(SPEED_PROFILE_LETTERS[entry.id])}</i>
-            {t(entry.label)}
+            {t(label)}
           </label>
         );
       })}

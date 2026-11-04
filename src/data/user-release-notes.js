@@ -243,7 +243,7 @@ export const USER_RELEASE_NOTES = Object.freeze([
     title: "S5 平衡回顾改版",
     whatsNew: S5_FEATURE_INTRO,
     features: ["平衡回顾改为按类速览，技能写明谁会用。"],
-    fixes: ["国际服S3季中不变。"],
+    fixes: ["速度口径写明“极限速度”和“仅60个体”。", "国际服S3季中不变。"],
   }),
   createRelease({
     version: "v2.3.4",

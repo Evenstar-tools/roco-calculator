@@ -587,28 +587,28 @@ test("速度线排行默认只开极速，玩家改过的口径关闭重开后�
   for (const key of SPEED_PROFILE_KEYS) localStorage.removeItem(key);
   const { unmount } = render(<RankingsPanel kind="speed" snapshot={snapshot} onClose={vi.fn()} />);
   const pills = within(screen.getByRole("group", { name: "速度口径" }));
-  expect(pills.getByRole("checkbox", { name: "极速" })).toBeChecked();
-  expect(pills.getByRole("checkbox", { name: "极速" })).toBeDisabled();
-  expect(pills.getByRole("checkbox", { name: "满速" })).not.toBeChecked();
+  expect(pills.getByRole("checkbox", { name: "极限速度" })).toBeChecked();
+  expect(pills.getByRole("checkbox", { name: "极限速度" })).toBeDisabled();
+  expect(pills.getByRole("checkbox", { name: "仅60个体" })).not.toBeChecked();
   expect(screen.getAllByRole("button", { name: /在速度表选择水测试/ })).toHaveLength(1);
   expect(screen.queryByText(/极 \/ 满 \/ 性/)).not.toBeInTheDocument();
-  fireEvent.click(pills.getByRole("checkbox", { name: "满速" }));
+  fireEvent.click(pills.getByRole("checkbox", { name: "仅60个体" }));
   expect(screen.getAllByRole("button", { name: /在速度表选择水测试/ })).toHaveLength(2);
   expect(JSON.parse(localStorage.getItem(SPEED_PROFILE_KEYS[0]))).toEqual(["positive-max", "neutral-max"]);
   unmount();
   render(<RankingsPanel kind="speed" snapshot={snapshot} onClose={vi.fn()} />);
-  expect(screen.getByRole("checkbox", { name: "满速" })).toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "仅60个体" })).toBeChecked();
   expect(screen.getAllByRole("button", { name: /在速度表选择水测试/ })).toHaveLength(2);
   fireEvent.click(screen.getByRole("button", { name: "重置", exact: true }));
-  expect(screen.getByRole("checkbox", { name: "满速" })).not.toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "仅60个体" })).not.toBeChecked();
   expect(JSON.parse(localStorage.getItem(SPEED_PROFILE_KEYS[0]))).toEqual(["positive-max"]);
 });
 
 test("损坏或未知的已存口径回到默认极速", () => {
   localStorage.setItem(SPEED_PROFILE_KEYS[0], JSON.stringify(["unknown"]));
   render(<RankingsPanel kind="speed" snapshot={snapshot} onClose={vi.fn()} />);
-  expect(screen.getByRole("checkbox", { name: "极速" })).toBeChecked();
-  expect(screen.getByRole("checkbox", { name: "满速" })).not.toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "极限速度" })).toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "仅60个体" })).not.toBeChecked();
 });
 
 test("视图切换在标题行，切换时收起详情", () => {
