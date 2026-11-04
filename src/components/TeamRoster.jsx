@@ -2,7 +2,7 @@ import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { createPortal } from "react-dom";
 import { useRosterDrag } from "../hooks/useRosterDrag.js";
-import { Shield, Sword, WarningCircle, Wrench } from "@phosphor-icons/react";
+import { Plus, Shield, Sword, WarningCircle, Wrench } from "@phosphor-icons/react";
 import { getNature, NATURES, STAT_LABELS } from "../domain/natures.js";
 import { getBossBloodlineConflicts } from "../domain/skill-loadout.js";
 import { ElementIcon } from "./ElementIcon.jsx";
@@ -66,10 +66,10 @@ export function TeamRoster({
             : referenceNature?.upStat
               ? `${t(STAT_LABELS[referenceNature.upStat])}↑ ${t(STAT_LABELS[referenceNature.downStat])}↓`
               : referenceNature ? t("普通") : String(member.natureId)
-          : t(getNature(member?.natureId).name);
+          : getNature(member?.natureId).upStat ? t(getNature(member.natureId).name) : null;
         return (
           <li
-            className={`team-slot${selectedIndex === index ? " is-selected" : ""}${member?.needsRepair ? " needs-repair" : ""}${conflicts.length ? " has-bloodline-conflict" : ""}${!preview && drag?.from === index ? " is-drag-source" : ""}${!preview && drag?.over === position ? " is-drop-target" : ""}`}
+            className={`team-slot${member ? "" : " is-empty"}${selectedIndex === index ? " is-selected" : ""}${member?.needsRepair ? " needs-repair" : ""}${conflicts.length ? " has-bloodline-conflict" : ""}${!preview && drag?.from === index ? " is-drag-source" : ""}${!preview && drag?.over === position ? " is-drop-target" : ""}`}
             data-slot-index={index}
             data-slot-position={preview ? undefined : position}
             key={index}
@@ -104,18 +104,14 @@ export function TeamRoster({
                 />
               ) : (
                 <span aria-hidden="true" className="team-slot__empty">
-                  {member ? <Wrench size={20} /> : index + 1}
+                  {member ? <Wrench size={20} /> : <Plus size={20} weight="bold" />}
                 </span>
               )}
               <span className="team-slot__identity">
-                <strong>{t(name)}</strong>
-                <small>
-                  {member
-                    ? member.needsRepair
-                      ? t("需要重新选择精灵，原配置已保留")
-                      : natureLabel
-                    : t("添加精灵")}
-                </small>
+                <strong>{member ? t(name) : t("添加精灵")}</strong>
+                {member && (member.needsRepair || natureLabel) ? (
+                  <small>{member.needsRepair ? t("需要重新选择精灵，原配置已保留") : natureLabel}</small>
+                ) : null}
                 {member?.ivsPending ? <small className="team-iv-pending">{t("个体待设置")}</small> : null}
                 {conflicts.length ? <small className="team-slot__bloodline-warning" title={t("首领与血脉技能冲突：{skills}", { skills: conflicts.map(skill => skill.name).join("、") })}>{t("血脉技能冲突")}</small> : null}
               </span>
@@ -125,7 +121,7 @@ export function TeamRoster({
                   return skill ? (
                     <ElementIcon
                       key={`${skill.id}-${skillIndex}`}
-                      size={16}
+                      size={18}
                       type={skill.type}
                     />
                   ) : (
@@ -155,16 +151,6 @@ export function TeamRoster({
           <ol className="team-roster">{renderSlot(drag.from, drag.over ?? drag.from, true)}</ol>
         </div>
       </div>, document.body,
-    ) : null}
-    {selectedIndex >= 0 ? (
-      <details className="team-roster__current-actions" key={selectedIndex}>
-        <summary>{t("当前成员操作")}</summary>
-        <MemberActions
-          member={members[selectedIndex]}
-          name={spirits.get(members[selectedIndex]?.spiritId)?.fullName ?? t("空位 {index}", { index: selectedIndex + 1 })}
-          onApply={onApply}
-        />
-      </details>
     ) : null}
     </>
   );
