@@ -208,7 +208,7 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
       <div className="sq-selected-heading"><strong>{t("已选 {count} / 4", { count: selected.length })}</strong>{selected.length > 0 && <button onClick={() => setSelected([])}>{t("清空")}</button>}</div>
       <div className="sq-selected">{chosen.map(skill => <div key={skill.id}><SkillIcon skill={iconSkill(skill)} size={32} /><span><strong title={skill.name}>{skill.name}</strong>{!placeholder && <small>{t("威力 {power} · 能耗 {cost}", { power: skill.basePower ?? "—", cost: skill.cost ?? "—" })}</small>}</span>{!placeholder && <EntityChangeHint className="sq-change-hint" changeInfo={skill.changeInfo} />}<button aria-label={t("移除{name}", { name: skill.name })} onClick={() => add(skill.id)}><X size={18} /></button></div>)}</div>
       {selected.length === 4 && <p className="sq-limit" role="status">{t("已选满 4 个技能，请先移除一个。")}</p>}
-      {!phone && selected.length > 0 && <button className="sq-show-results sq-open-learners" onClick={() => setLearners(true)}>{t("查看匹配家族（{count}）", { count: families.length })}</button>}
+      {!phone && selected.length > 0 && <button className="sq-show-results" onClick={() => setLearners(true)}>{t("查看匹配家族（{count}）", { count: families.length })}</button>}
     </aside>
     <main className="sq-results" ref={results}>
       {spirit ? <>
