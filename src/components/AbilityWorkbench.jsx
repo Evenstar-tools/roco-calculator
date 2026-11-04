@@ -876,7 +876,7 @@ export function SpeedOverview({
                           <strong>{t(target.name)}</strong>
                           <small>{speedTargetMeta(target, { withoutProfile: true }, t)}</small>
                         </span>}
-                        <small className={`speed-profile-badge is-${target.profileId}`}>{t(speedBadge(target))}</small>
+                        <small className={`speed-profile-badge is-${target.profileId}`}>{speedBadge(target).split("·").map((part) => t(part)).join("·")}</small>
                       </button>;
                     })}
                   </div>
