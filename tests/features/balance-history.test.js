@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { classifyHistoryItem, getBalanceHistoryIndex, summarizeBatchChanges } from "../../src/features/balance-history/history-index.js";
+import { classifyHistoryItem, getBalanceHistoryIndex, groupBatch } from "../../src/features/balance-history/history-index.js";
 
 const oldPatch = { id: "s4-2026-09-10", date: "2026.09.10", fetchedAt: "2028-01-01" };
 const newPatch = { id: "s5-2026-10-31", date: "2026.10.31", displayDate: "2026.11.05" };
@@ -255,60 +255,41 @@ test("家族内缺少patch ID的相同日期条目不跨成员拼成一次更新
 });
 
 
-test("更新概览跨家族合并完整相同内容，保留稳定顺序、签名和唯一原始所有者", () => {
-  const snapshot = familyFixture();
-  const [seed, , , outsider] = snapshot.spirits;
-  const reordered = Object.fromEntries(Object.entries(familyTrait).reverse());
+test("按更新分组：种族值按家族成组并按总和排序，技能合卡列出会用的精灵，相同特性与学习面合并名单", () => {
+  const [first, second, third] = [{ id: "a", fullName: "甲" }, { id: "b", fullName: "乙" }, { id: "c", fullName: "丙" }];
+  const family = { id: "family" };
+  const skill = { id: "skill-one", name: "四维降解" };
+  const learn = (skillName) => ({ kind: "learnset", label: "新增可学习技能", after: skillName });
   const entries = [
-    { entity: seed, record: { patch: oldPatch, items: [familyTrait, power, familyTrait] } },
-    { entity: outsider, record: { patch: { ...oldPatch, label: "补齐批次标题" }, items: [reordered] } },
-    { entity: seed, record: { patch: oldPatch, items: [reordered] } },
+    { entity: first, record: { items: [hp, { ...hp, field: "speed", label: "速度", before: 90, after: 80 }, power, learn("振翅")] } },
+    { entity: second, record: { items: [{ ...hp, before: 100, after: 130 }, { ...power }, familyTrait] } },
+    { entity: third, record: { items: [{ ...hp, before: 100, after: 90 }, familyTrait, { kind: "learnset", label: "移除可学习技能", before: "跺地" }, learn("振翅")] } },
+    { entity: skill, skill: true, record: { items: [{ ...power, label: "威力" }, { kind: "stat", field: "cost", label: "能耗", before: 2, after: 1 }] } },
   ];
   const original = structuredClone(entries);
-  const summary = summarizeBatchChanges(entries);
-  expect(summary.map(change => change.item)).toEqual([familyTrait, power]);
-  expect(summary[0].item).toBe(familyTrait);
-  expect(summary[0].entities).toEqual([seed, outsider]);
-  expect(summary[0].entities[0]).toBe(seed);
-  expect(summary[0].entities[1]).toBe(outsider);
-  expect(summary[1].entities).toEqual([seed]);
-  expect(summary.every(change => typeof change.id === "string" && change.id.length > 0)).toBe(true);
-  expect(summary[0].id).toBe(summarizeBatchChanges([entries[1], entries[0]])[0].id);
+  const grouped = groupBatch(entries, (entity) => entity === first || entity === second ? family : null);
+  expect(grouped.stats.map(({ owner }) => owner)).toEqual([family, third]);
+  expect(grouped.stats[0].members.map(({ entity, total }) => [entity.id, total])).toEqual([["a", 0], ["b", 30]]);
+  expect(grouped.stats[1].members[0].items).toEqual([{ ...hp, before: 100, after: 90 }]);
+  expect(grouped.skills).toHaveLength(1);
+  expect(grouped.skills[0].name).toBe("四维降解");
+  expect(grouped.skills[0].skill).toBe(skill);
+  expect(grouped.skills[0].users).toEqual([first, second]);
+  expect(grouped.skills[0].items.map(({ label }) => label)).toEqual(["威力", "能耗"]);
+  expect(grouped.traits).toEqual([{ items: [familyTrait], entities: [second, third] }]);
+  expect(grouped.learnset.map(({ removed, item, entities }) => [removed, item.after ?? item.before, entities.map(({ id }) => id)]))
+    .toEqual([[false, "振翅", ["a", "c"]], [true, "跺地", ["c"]]]);
+  expect(grouped.other).toEqual([]);
   expect(entries).toEqual(original);
-  expect(summarizeBatchChanges([])).toEqual([]);
+  expect(groupBatch([])).toEqual({ stats: [], skills: [], traits: [], learnset: [], other: [] });
 });
 
-test("更新概览不吞同名调整的前后值、说明或技能身份差异", () => {
-  const [seed, , , outsider] = familyFixture().spirits;
-  const differences = [
-    { ...power, before: 99 }, { ...power, after: 111 },
-    { ...power, note: "仅适用特殊形态" }, { ...power, notes: ["来源另有说明"] },
-    { ...power, skillId: "skill-one" }, { ...power, skillId: "skill-two" },
-    { ...power, skill: { id: "skill-one", name: "同名技能" } },
-    { ...power, skill: { id: "skill-two", name: "同名技能" } },
-  ];
-  const summary = summarizeBatchChanges([
-    { entity: seed, record: { patch: oldPatch, items: [power] } },
-    { entity: outsider, record: { patch: oldPatch, items: differences } },
-  ]);
-  expect(summary.map(change => change.item)).toEqual([power, ...differences]);
-  expect(new Set(summary.map(change => change.id)).size).toBe(differences.length + 1);
-  expect(summary[0].entities).toEqual([seed]);
-  for (const change of summary.slice(1)) expect(change.entities).toEqual([outsider]);
-});
-
-test("更新概览混入同日不同patch时仍隔离，缺ID来源不跨实体推定共同批次", () => {
-  const [seed, , , outsider] = familyFixture().spirits;
-  const first = { entity: seed, record: { patch: oldPatch, items: [power] } };
-  const second = { entity: outsider, record: { patch: { ...oldPatch, id: "s4-other" }, items: [power] } };
-  const unknown = { date: oldPatch.date };
-  const summary = summarizeBatchChanges([first, second,
-    { entity: seed, record: { patch: unknown, items: [power] } },
-    { entity: outsider, record: { patch: unknown, items: [power] } },
-  ]);
-  expect(summary).toHaveLength(4);
-  expect(new Set(summary.map(change => change.id)).size).toBe(4);
-  expect(summary.map(change => change.entities)).toEqual([[seed], [outsider], [seed], [outsider]]);
-  expect(summary[0].id).toBe(summarizeBatchChanges([first])[0].id);
-  expect(summary[1].id).toBe(summarizeBatchChanges([second])[0].id);
+test("技能合卡只去掉重复记录的同一改写，不同技能各自成卡，未写技能名的条目留在其他", () => {
+  const spirit = { id: "a", fullName: "甲" };
+  const effect = { kind: "mechanic", field: "description", label: "超导·技能效果", before: "能耗-1", after: "能耗-2" };
+  const orphan = { kind: "stat", field: "basePower", label: "威力", before: 1, after: 2 };
+  const grouped = groupBatch([{ entity: spirit, record: { items: [effect, { ...effect, label: "超导·机制" }, { ...power, label: "另一技能·威力" }, power, orphan] } }]);
+  expect(grouped.skills.map(({ name, items, users }) => [name, items.map(({ label }) => label), users]))
+    .toEqual([["超导", ["技能效果"], [spirit]], ["另一技能", ["威力"], [spirit]], ["四维降解", ["威力"], [spirit]]]);
+  expect(grouped.other).toEqual([{ items: [orphan], entities: [spirit] }]);
 });
