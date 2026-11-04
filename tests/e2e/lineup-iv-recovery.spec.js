@@ -30,7 +30,7 @@ for(const width of [1440,390]){
     return route.continue();
   });
   const importer=drawer.getByRole('button',{name:'导入阵容',exact:true});
-  if(await importer.count())await importer.click();else await drawer.getByRole('button',{name:'导入已有阵容',exact:true}).click();
+  if(await importer.isVisible())await importer.click();else await drawer.getByRole('button',{name:'导入已有阵容',exact:true}).click();
   await page.getByLabel('上传配队图',{exact:true}).setInputFiles(path.resolve('tests/fixtures/lineup-images/user-iv-20260918.png'));
   await expect(page.getByText('已解析 6 位精灵 · 24 个技能')).toBeVisible();
   await expect(page.locator('.team-exchange__iv-values')).toHaveCount(6);
@@ -49,6 +49,8 @@ for(const width of [1440,390]){
   await expect(drawer.locator('.team-slot__identity .team-iv-pending')).toHaveCount(0);
   await page.screenshot({path:`${out}/restored-team-${width}.png`});
   await page.reload();await page.getByRole('combobox',{name:'攻击方精灵',exact:true}).waitFor();await page.getByRole('button',{name:'打开队伍',exact:true}).click();
+  // 手机宽度下导出收在「⋯」菜单里。
+  if(!(await page.getByRole('button',{name:'导出阵容',exact:true}).isVisible()))await page.getByTitle('更多队伍操作',{exact:true}).click();
   await page.getByRole('button',{name:'导出阵容',exact:true}).click();
   await expect(page.getByLabel('阵容代码')).toHaveValue(fixture.code);
   // Some existing skill portraits use BWIKI URLs; they were blocked, not sent.
