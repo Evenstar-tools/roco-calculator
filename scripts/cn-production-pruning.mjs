@@ -42,6 +42,7 @@ const CN_ICON_WEIGHTS_BY_NAME = {
   ArrowsClockwise: ["bold"],
   CheckSquareOffset: ["bold"],
   List: ["bold"],
+  DotsThree: ["bold"],
   ArrowUp: ["bold"],
   Equals: ["bold"],
   UsersThree: ["regular", "fill"],

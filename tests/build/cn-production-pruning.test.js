@@ -44,6 +44,7 @@ test.each([
   ["ArrowSquareOut", ["regular"]],
   ["ArrowFatUp", ["fill"]],
   ["List", ["bold"]],
+  ["DotsThree", ["bold"]],
 ])("%s keeps its used SVG nodes unchanged, including favorite and dynamic states", (name, retained) => {
   const filename = `node_modules/@phosphor-icons/react/dist/defs/${name}.es.js`;
   const code = readFileSync(filename, "utf8");
