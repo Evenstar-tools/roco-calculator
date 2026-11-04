@@ -40,7 +40,8 @@ for (const width of [1440, 390, 320]) for (const theme of ["light", "dark"]) {
     await expect(dialog.getByRole("textbox", { name: "阵容码或分享链接" })).toBeVisible();
     await dialog.getByRole("button", { name: "返回队伍", exact: true }).click();
     await dialog.getByRole("button", { name: "新建六人队伍", exact: true }).click();
-    await expect(dialog.getByRole("button", { name: "复制队伍", exact: true })).toBeVisible();
+    // 复制、删除收在「⋯」菜单里，建队后变为可用。
+    await expect(dialog.getByRole("button", { name: "复制队伍", exact: true })).toBeEnabled();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("button", { name: "打开队伍", exact: true })).toBeFocused();
 
@@ -110,10 +111,11 @@ test("空态导入真实阵容后编辑、分析、对位与导出仍然可用",
   await dialog.getByRole("button", { name: "保存并调整个体", exact: true }).click();
   await expect(dialog).toHaveAttribute("data-empty", "false");
   await capture(page, dialog, "team-members-390-light");
-  for (const name of ["队伍分析", "对位"]) {
+  for (const name of ["属性覆盖", "对位"]) {
     await dialog.getByRole("button", { name, exact: true }).click();
     await capture(page, dialog, `${name}-390-light`);
   }
+  await dialog.getByTitle("更多队伍操作", { exact: true }).click();
   await dialog.getByRole("button", { name: "导出阵容", exact: true }).click();
   await expect(dialog.getByRole("button", { name: "复制阵容码", exact: true })).toBeVisible();
   await capture(page, dialog, "team-export-390-light");
