@@ -11,12 +11,27 @@ import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
 import { useModalFocus } from "../hooks/useModalFocus.js";
 import { SpiritImage } from "./SpiritImage.jsx";
+import { serverStorageKey } from "../state/server-storage.js";
 
 const portrait = (spirit) => spirit?.asset?.localUrl ?? spirit?.imageUrl;
 const number = (value) => value == null ? "—" : value.toLocaleString("zh-CN");
 const toggle = (values, value) => values.includes(value) ? values.filter((entry) => entry !== value) : [...values, value];
 const tableMetrics = ["physical", "magical", "combined"];
 const RANKING_BATCH_SIZE = 36;
+// 速度线排行默认只看极速；玩家改过口径后记住，下次打开沿用。
+const SPEED_RANK_DEFAULT_PROFILES = Object.freeze(["positive-max"]);
+const SPEED_RANK_PROFILE_IDS = new Set([...DEFAULT_RANKING_PROFILES, "positive-zero", "special"]);
+const speedProfilesKey = (serverId) => serverStorageKey(serverId, "rock-calculator.settings.speed-rank-profiles.v1");
+function readSpeedProfiles(serverId) {
+  try {
+    const stored = JSON.parse(globalThis.localStorage?.getItem(speedProfilesKey(serverId)) ?? "null");
+    if (Array.isArray(stored) && stored.length && stored.every((id) => SPEED_RANK_PROFILE_IDS.has(id))) return [...new Set(stored)];
+  } catch { /* 读不到就用默认口径 */ }
+  return [...SPEED_RANK_DEFAULT_PROFILES];
+}
+function saveSpeedProfiles(serverId, profiles) {
+  try { globalThis.localStorage?.setItem(speedProfilesKey(serverId), JSON.stringify(profiles)); } catch { /* 存不了不影响本次使用 */ }
+}
 
 function MultiplierControls({ bins, selected, onChange }) {
   const { t } = useLocale();
@@ -142,17 +157,24 @@ const StandaloneDurability = memo(function StandaloneDurability({ snapshot, onCl
   return <DurabilityRankingView {...{snapshot, metric, setMetric, query, setQuery, roleFilter, setRoleFilter, templateId, setTemplateId}} onBack={onClose} standalone />;
 });
 
-const StandaloneSpeed = memo(function StandaloneSpeed({ snapshot, onClose }) {
+const StandaloneSpeed = memo(function StandaloneSpeed({ snapshot, onClose, view, setView }) {
   const { t } = useLocale();
-  const [view, setView] = useState("actual");
-  const [baseVisited, setBaseVisited] = useState(false);
+  const { serverId } = useRuntime();
+  const [shownView, setShownView] = useState(view);
+  const [baseVisited, setBaseVisited] = useState(view === "base");
   const [location, setLocation] = useState(null);
   const [baseLocation, setBaseLocation] = useState(null);
   const [baseQuery, setBaseQuery] = useState("");
   const [query, setQuery] = useState("");
   const [queryMode, setQueryMode] = useState("auto");
-  const [profiles, setProfiles] = useState([...DEFAULT_RANKING_PROFILES]);
+  const [profiles, setProfiles] = useState(() => readSpeedProfiles(serverId));
+  const pickProfiles = (next) => { setProfiles(next); saveSpeedProfiles(serverId, next); };
   const [detail, setDetail] = useState(null);
+  if (shownView !== view) {
+    setShownView(view);
+    setDetail(null);
+    if (view === "base") setBaseVisited(true);
+  }
   const [selectedTargetId, setSelectedTargetId] = useState(null);
   const trigger = useRef(null);
   const catalog = useMemo(() => createSpeedTargetCatalog({ snapshot, profiles }), [snapshot, profiles]);
@@ -161,16 +183,14 @@ const StandaloneSpeed = memo(function StandaloneSpeed({ snapshot, onClose }) {
   const locateTargetId = location?.targetId ?? (locatedTarget ? `${locatedTarget.profileId}:${locatedTarget.id}` : undefined);
   const back = () => {setDetail(null); requestAnimationFrame(() => trigger.current?.focus({preventScroll:true}));};
   const locate = (profileId, speed, level = 60, spiritId) => { setDetail(null); setSelectedTargetId(null); setProfiles(level > 60 ? [profileId, "special"] : [profileId]); setQueryMode("auto"); setQuery(""); setLocation({ speed, profileId, level, spiritId }); setView("actual"); };
-  const showView = (next) => { if (next === "base") setBaseVisited(true); setView(next); };
+  const showView = (next) => { if (next === "base") setBaseVisited(true); setShownView(next); setView(next); };
   const detailPanel = detail ? <SpeedDetail entry={detail} snapshot={snapshot} reference={/^\d+$/.test(query) ? Number(query) : null} onClose={back} onLocate={locate} /> : null;
   return <section className="rank-view" aria-label={t("速度线榜单")} onKeyDown={(event) => {if (event.key === "Escape" && detail) {event.stopPropagation(); back();}}}>
     <div className="rank-view__content">
-      <div className="speed-view-switch" role="group" aria-label={t("速度榜视图")}>{[["actual", "实速排行"], ["base", "按种族速查"]].map(([id, label]) => <button type="button" key={id} aria-pressed={view === id} onClick={() => { setDetail(null); showView(id); }}>{t(label)}</button>)}</div>
       <div className="speed-view-body" hidden={view !== "base"}>{baseVisited && <BaseSpeedOverview location={baseLocation} detail={detail} detailPanel={detailPanel} snapshot={snapshot} query={baseQuery} onQueryChange={setBaseQuery} onDetail={(target) => { trigger.current = document.activeElement; setDetail(detail?.id === target.id ? null : target); }} onLocate={locate} />}</div>
       <div className="speed-view-body" hidden={view !== "actual"}>
-      <SpeedOverview onLocateBase={(base) => { setDetail(null); setQuery(""); setBaseQuery(""); setBaseLocation({ base }); showView("base"); }} location={location} locateTargetId={locateTargetId} targetId={selectedTargetId ?? locateTargetId} onLocateResult={(speed, targetId) => { setDetail(null); setSelectedTargetId(null); setQuery(""); setLocation({ speed, targetId }); }} detail={detail} detailPanel={detailPanel} standalone targets={targets} query={query} queryMode={queryMode} onQueryModeChange={setQueryMode} onQueryChange={(value) => { setDetail(null); setSelectedTargetId(null); setLocation(null); setQueryMode("auto"); setQuery(value); }} profileIds={profiles} onProfilesChange={setProfiles} onBack={onClose} onTargetChange={(id) => {trigger.current = document.activeElement; setSelectedTargetId(id); setDetail(detail?.id === id ? null : targets.find((target) => target.id === id));}} />
+      <SpeedOverview onLocateBase={(base) => { setDetail(null); setQuery(""); setBaseQuery(""); setBaseLocation({ base }); showView("base"); }} location={location} locateTargetId={locateTargetId} targetId={selectedTargetId ?? locateTargetId} onLocateResult={(speed, targetId) => { setDetail(null); setSelectedTargetId(null); setQuery(""); setLocation({ speed, targetId }); }} detail={detail} detailPanel={detailPanel} standalone targets={targets} query={query} queryMode={queryMode} onQueryModeChange={setQueryMode} onQueryChange={(value) => { setDetail(null); setSelectedTargetId(null); setLocation(null); setQueryMode("auto"); setQuery(value); }} profileIds={profiles} onProfilesChange={pickProfiles} defaultProfileIds={SPEED_RANK_DEFAULT_PROFILES} onBack={onClose} onTargetChange={(id) => {trigger.current = document.activeElement; setSelectedTargetId(id); setDetail(detail?.id === id ? null : targets.find((target) => target.id === id));}} />
       {!targets.length ? <p className="rank-empty">{t("没有符合当前口径或搜索条件的速度档位。")}</p> : null}
-      <footer className="rank-footer">{t("极 / 满 / 性 / 无 / 减：速度口径 · 特：特殊配置 · 点头像看详情")}</footer>
       </div>
     </div>
   </section>;
@@ -196,6 +216,7 @@ function VerifiedRankingsPanel({ kind, snapshot, onClose }) {
   const { t } = useLocale();
   const root = useRef(null);
   const [expanded, setExpanded] = useState(false);
+  const [speedView, setSpeedView] = useState("actual");
   if (kind !== "speed" && expanded) setExpanded(false);
   const expandedRef = useRef(false);
   const resizePanel = useCallback((next) => { expandedRef.current = next; setExpanded(next); }, []);
@@ -232,12 +253,14 @@ function VerifiedRankingsPanel({ kind, snapshot, onClose }) {
   }, [kind, closePanel]);
   return <div className={`rank-overlay${expanded && kind === "speed" ? " is-expanded" : ""}`} hidden={!kind} onMouseDown={(event) => {if(event.target === event.currentTarget) onClose();}}>
     <div className="rank-dialog" role="dialog" aria-modal="true" aria-label={kind === "speed" ? t("速度线排行") : t("耐久排行")} ref={root}>
-      <header className="rank-dialog__heading"><h2>{kind === "speed" ? t("速度线排行") : t("耐久排行")}</h2><div className="rank-dialog__actions">
+      <header className="rank-dialog__heading"><h2>{kind === "speed" ? t("速度线排行") : t("耐久排行")}</h2>
+        {kind === "speed" ? <div className="speed-view-switch" role="group" aria-label={t("速度榜视图")}>{[["actual", "实速排行"], ["base", "按种族速查"]].map(([id, label]) => <button type="button" key={id} aria-pressed={speedView === id} onClick={() => setSpeedView(id)}>{t(label)}</button>)}</div> : null}
+        <div className="rank-dialog__actions">
         {kind === "speed" ? <button className="rank-expand" type="button" aria-label={t(expanded ? "退出全屏" : "全屏展示")} title={t(expanded ? "退出全屏" : "全屏展示")} aria-pressed={expanded} onClick={() => resizePanel(!expanded)}>{expanded ? <ArrowsIn size={19} /> : <ArrowsOut size={19} />}<span>{t(expanded ? "退出全屏" : "全屏展示")}</span></button> : null}
         <button className="rank-dialog__close" aria-label={t("关闭排行榜")} onClick={onClose} type="button"><X size={20} /></button>
       </div></header>
       <div className="rank-tool-host" hidden={kind !== "durability"}>{visited.durability && <StandaloneDurability snapshot={snapshot} onClose={closePanel} />}</div>
-      <div className="rank-tool-host" hidden={kind !== "speed"}>{visited.speed && <StandaloneSpeed snapshot={snapshot} onClose={closePanel} />}</div>
+      <div className="rank-tool-host" hidden={kind !== "speed"}>{visited.speed && <StandaloneSpeed snapshot={snapshot} onClose={closePanel} view={speedView} setView={setSpeedView} />}</div>
     </div>
   </div>;
 }
