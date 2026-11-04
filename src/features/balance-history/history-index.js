@@ -101,24 +101,43 @@ function historyItemIdentity(item) {
     ? Object.fromEntries(Object.keys(value).sort().map((key) => [key, value[key]])) : value);
 }
 
-// Batch overviews group by adjustment content, independent of family membership.
-// Callers pass normalized records; the first item and original owners are retained.
-export function summarizeBatchChanges(entries = []) {
-  const changes = new Map();
-  for (const { entity, record } of entries) {
-    const patchId = record.patch?.id;
-    const patch = patchId != null && String(patchId).trim() !== ""
-      ? { id: patchId }
-      // An unknown batch cannot be inferred across owners from a shared date.
-      : { source: record, owner: entity.id };
+// Regroup one batch for reading: stats by spirit (families kept together), skill changes by
+// skill with the spirits that use it, learnset by learned skill; identical trait/other
+// changes are listed once with every spirit they apply to.
+export function groupBatch(entries = [], familyOf = () => null) {
+  const stats = new Map(), skills = new Map(), learnset = new Map(), traits = new Map(), other = new Map();
+  const take = (map, key, make) => map.get(key) ?? map.set(key, make()).get(key);
+  for (const { entity, record, skill } of entries) {
+    const own = { stats: [], traits: [], other: [] };
     for (const item of record.items ?? []) {
-      const id = historyItemIdentity({ patch, item });
-      if (!changes.has(id)) changes.set(id, { id, item, entities: [] });
-      const change = changes.get(id);
-      if (!change.entities.includes(entity)) change.entities.push(entity);
+      const group = classifyHistoryItem(item);
+      const [owner, ...rest] = String(item.label ?? "").split("·");
+      if (group === "skills" && (skill || rest.length)) {
+        const name = skill ? entity.name : owner;
+        const card = take(skills, name, () => ({ name, skill: null, items: [], users: [] }));
+        const label = skill ? item.label : rest.join("·");
+        if (skill) card.skill = entity;
+        else if (!card.users.includes(entity)) card.users.push(entity);
+        // The same rewrite is sometimes recorded twice (技能效果 and 机制); keep one.
+        if (!card.items.some((known) => known.label === label || known.before === item.before && known.after === item.after)) card.items.push({ ...item, label });
+      } else if (group === "learnset") {
+        const removed = item.after == null;
+        const row = take(learnset, `${removed ? "-" : "+"}${removed ? item.before : item.after}`, () => ({ item, removed, entities: [] }));
+        if (!row.entities.includes(entity)) row.entities.push(entity);
+      } else own[group === "stats" || group === "traits" ? group : "other"].push(item);
+    }
+    if (own.stats.length) take(stats, familyOf(entity) ?? entity, () => []).push({ entity, items: own.stats,
+      total: own.stats.reduce((sum, item) => sum + (item.after - item.before || 0), 0) });
+    for (const [map, items] of [[traits, own.traits], [other, own.other]]) {
+      if (items.length) take(map, historyItemIdentity(items), () => ({ items, entities: [] })).entities.push(entity);
     }
   }
-  return [...changes.values()];
+  const sum = (members) => members.reduce((total, member) => total + member.total, 0);
+  return {
+    stats: [...stats].map(([owner, members]) => ({ owner, members })).sort((left, right) => sum(right.members) - sum(left.members)),
+    skills: [...skills.values()], traits: [...traits.values()], other: [...other.values()],
+    learnset: [...learnset.values()].sort((left, right) => left.removed - right.removed || right.entities.length - left.entities.length),
+  };
 }
 
 function buildFamilyRecords(families, spiritRecords) {
@@ -184,8 +203,8 @@ function buildIndex(snapshot) {
       }
     }
   }
-  const patches = [...batches.values()].map(({ patch, spiritCount, skillCount }) => ({
-    ...normalizePatch(patch), spiritCount, skillCount,
+  const patches = [...batches.values()].map(({ patch, ...counts }) => ({
+    ...normalizePatch(patch), ...counts,
   })).sort(comparePatches);
   const patchById = new Map(patches.map((patch) => [patch.id, patch]));
   for (const records of [...spiritRecords.values(), ...skillRecords.values()]) {
