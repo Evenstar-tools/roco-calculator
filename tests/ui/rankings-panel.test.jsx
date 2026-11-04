@@ -1,8 +1,13 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import RankingsPanel from "../../src/components/RankingsPanel.jsx";
 import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
 import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
+
+// 原有用例按四种常用口径写成；新默认（只开极速）和记住口径另有用例。
+const SPEED_PROFILE_KEYS = ["rock-calculator.servers.cn.settings.speed-rank-profiles.v1", "rock-calculator.servers.global.settings.speed-rank-profiles.v1"];
+beforeEach(() => { for (const key of SPEED_PROFILE_KEYS) localStorage.setItem(key, JSON.stringify(["positive-max", "neutral-max", "neutral-zero", "negative-zero"])); });
+afterEach(() => { for (const key of SPEED_PROFILE_KEYS) localStorage.removeItem(key); });
 
 const snapshot = { meta: {}, spirits: [["water", "水测试", ["水"]], ["grass", "草测试", ["草"]], ["dragon", "龙测试", ["水", "龙"]]].map(([id, fullName, types], dexNo) => ({ id, fullName, types, dexNo, stage: "首领", sourceCategory: "首领形态", raceStats: { hp: 100, physicalAttack: 100, magicalAttack: 100, physicalDefense: 100, magicalDefense: 100, speed: 100 } })) };
 
@@ -104,7 +109,8 @@ test("数字基准、种族速度和去字模式保留可点击详情", () => {
   expect(screen.getByRole("status")).toHaveTextContent("比 0 快 4 · 同速 0 · 慢 0 个配置");
   fireEvent.change(input, { target: { value: "" } });
   expect(screen.queryByText("基准位置 · 没有同速配置")).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "试查 267" }));
+  expect(screen.queryByRole("button", { name: "试查 267" })).not.toBeInTheDocument();
+  fireEvent.change(input, { target: { value: "267" } });
   expect(screen.getByRole("status")).toHaveTextContent("比 267 快 0 · 同速 0 · 慢 12 个配置");
   expect(screen.getByText("基准位置 · 没有同速配置")).toBeInTheDocument();
   expect(screen.queryByLabelText("速度搜索方式")).not.toBeInTheDocument();
@@ -231,6 +237,8 @@ test("高等级速度只在特殊口径显示，详情定位保留开关，种�
 test("冥古龙高等级零个体档随特殊开关显示，切换培养与重置不会漏档", () => {
   render(<RankingsPanel kind="speed" snapshot={levelSnapshot} onClose={vi.fn()} />);
   for (const [level, neutral, negative] of [[99, 164, 153], [89, 157, 146]]) {
+    // 重置后回到默认极速，第二轮先重新打开零个体两档。
+    for (const name of ["无修正·0个体", "减速·0个体"]) if (!screen.getByRole("checkbox", { name }).checked) fireEvent.click(screen.getByRole("checkbox", { name }));
     fireEvent.click(screen.getByRole("checkbox", { name: "特殊口径" }));
     expect(screen.getByRole("checkbox", { name: "无修正·0个体" })).toBeChecked();
     expect(screen.getByRole("checkbox", { name: "减速·0个体" })).toBeChecked();
@@ -247,7 +255,8 @@ test("冥古龙高等级零个体档随特殊开关显示，切换培养与重�
     expect(screen.getByRole("checkbox", { name: "特殊口径" })).not.toBeChecked();
   }
   expect(screen.queryByRole("button", { name: /在速度表选择冥古龙 · \d+级/ })).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "在速度表选择冥古龙，速度170" })).toBeInTheDocument();
+  // 重置回到默认极速：只剩 60 级极速档，高等级档全部收起。
+  expect(screen.getByRole("button", { name: /^在速度表选择冥古龙，速度\d+$/ })).toBeInTheDocument();
 });
 
 test("冥古龙四档耐久保留独立行及正确等级详情，切模板与搜索不串行", () => {
@@ -552,4 +561,43 @@ test("speed table portraits remain available without IntersectionObserver", () =
       expect(image).toHaveAttribute("loading", "lazy");
     }
   } finally { vi.unstubAllGlobals(); }
+});
+
+test("速度线排行默认只开极速，玩家改过的口径关闭重开后沿用，重置回到极速", () => {
+  for (const key of SPEED_PROFILE_KEYS) localStorage.removeItem(key);
+  const { unmount } = render(<RankingsPanel kind="speed" snapshot={snapshot} onClose={vi.fn()} />);
+  const pills = within(screen.getByRole("group", { name: "速度口径" }));
+  expect(pills.getByRole("checkbox", { name: "极速" })).toBeChecked();
+  expect(pills.getByRole("checkbox", { name: "极速" })).toBeDisabled();
+  expect(pills.getByRole("checkbox", { name: "满速" })).not.toBeChecked();
+  expect(screen.getAllByRole("button", { name: /在速度表选择水测试/ })).toHaveLength(1);
+  expect(screen.queryByText(/极 \/ 满 \/ 性/)).not.toBeInTheDocument();
+  fireEvent.click(pills.getByRole("checkbox", { name: "满速" }));
+  expect(screen.getAllByRole("button", { name: /在速度表选择水测试/ })).toHaveLength(2);
+  expect(JSON.parse(localStorage.getItem(SPEED_PROFILE_KEYS[0]))).toEqual(["positive-max", "neutral-max"]);
+  unmount();
+  render(<RankingsPanel kind="speed" snapshot={snapshot} onClose={vi.fn()} />);
+  expect(screen.getByRole("checkbox", { name: "满速" })).toBeChecked();
+  expect(screen.getAllByRole("button", { name: /在速度表选择水测试/ })).toHaveLength(2);
+  fireEvent.click(screen.getByRole("button", { name: "重置", exact: true }));
+  expect(screen.getByRole("checkbox", { name: "满速" })).not.toBeChecked();
+  expect(JSON.parse(localStorage.getItem(SPEED_PROFILE_KEYS[0]))).toEqual(["positive-max"]);
+});
+
+test("损坏或未知的已存口径回到默认极速", () => {
+  localStorage.setItem(SPEED_PROFILE_KEYS[0], JSON.stringify(["unknown"]));
+  render(<RankingsPanel kind="speed" snapshot={snapshot} onClose={vi.fn()} />);
+  expect(screen.getByRole("checkbox", { name: "极速" })).toBeChecked();
+  expect(screen.getByRole("checkbox", { name: "满速" })).not.toBeChecked();
+});
+
+test("视图切换在标题行，切换时收起详情", () => {
+  render(<RankingsPanel kind="speed" snapshot={snapshot} onClose={vi.fn()} />);
+  const heading = screen.getByRole("dialog").querySelector(".rank-dialog__heading");
+  expect(within(heading).getByRole("group", { name: "速度榜视图" })).toBeInTheDocument();
+  fireEvent.click(screen.getAllByRole("button", { name: /在速度表选择水测试/ })[0]);
+  expect(screen.getByRole("region", { name: "速度配置详情" })).toBeInTheDocument();
+  fireEvent.click(within(heading).getByRole("button", { name: "按种族速查" }));
+  fireEvent.click(within(heading).getByRole("button", { name: "实速排行" }));
+  expect(screen.queryByRole("region", { name: "速度配置详情" })).toBeNull();
 });
