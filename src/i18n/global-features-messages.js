@@ -681,4 +681,6 @@ export const globalFeaturesMessages = Object.fromEntries([
   ["手调等级仍调整双攻；技能按S3文案只调整指定攻击。贪得无厌只加物攻，旧配置层数保留。", "Manual stages still affect both Attack stats. Skills now change only the Attack stat specified by their S3 description. Insatiable Greed only boosts Physical Attack; saved stages are preserved.", "手動の段階調整は従来どおり物攻・魔攻の両方に適用。スキルはS3の説明に従い、指定された攻撃能力だけを変更します。「欲深い」は物攻のみを上げ、保存済みの段階は維持します。"],
   ["单技能防御状态可再次点击解除，改善窄屏技能名称显示。", "Click again to remove defensive effects in single-skill mode; skill names fit better on narrow screens.", "単一スキルモードで防御状態を再クリックして解除できます。狭い画面でのスキル名表示も改善しました。"],
   ["修正单技能防御解除、水泡盾增益与窄屏技能名，补齐增益摘要译文。", "Fixed defense toggles in single-skill mode, Bubble Shield bonuses, narrow-screen skill names and bonus translations.", "単一スキルの防御解除、バブルシールドの強化、狭い画面のスキル名、強化効果の翻訳を修正。"],
+  ["种族", "Base", "種族資質"], ["{count} 个", "{count}", "{count}件"],
+  ["搜索名字、图鉴号，或输入速度（如 137）", "Search name or index, or enter SPD (e.g. 137)", "名前・図鑑番号、または速さ（例：137）"],
 ].map(([source, en, ja]) => [source, { en, ja }]));
