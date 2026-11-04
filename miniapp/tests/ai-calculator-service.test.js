@@ -1,4 +1,5 @@
 import { beforeAll, describe, expect, test } from "vitest";
+import { runInNewContext } from "node:vm";
 import { getReleaseData } from "./release-source.js";
 import { createAiCalculatorService } from "../src/ai/calculator-service.js";
 import { createInitialState } from "../src/shared/state/defaults.js";
@@ -54,6 +55,25 @@ describe("微信AI只读资料接口", () => {
     });
     expect(skill.controls.find(control => control.contextKey === "attackerHpPercent").parameter).toBe("attackerHpPercent");
     expect(data(ai.searchRocoData({ kind: "skill", query: "下注", spiritId: spiritNamed("黑猫密探").id })).total).toBe(0);
+  });
+
+  test("微信宿主跨运行环境的普通参数对象与本地查询和伤害结果一致", () => {
+    const crossRealm = value => runInNewContext("JSON.parse(input)", { input: JSON.stringify(value) });
+    const query = { query: "岚鸟", kind: "spirit", limit: 3 };
+    const foreignQuery = crossRealm(query);
+    expect(Object.getPrototypeOf(foreignQuery)).not.toBe(Object.prototype);
+    expect(data(ai.searchRocoData(foreignQuery)).status).toBe("ok");
+    expect(ai.searchRocoData(foreignQuery)).toEqual(ai.searchRocoData(query));
+
+    const damage = { attacker: "乌拉塔（极夜的样子）", defender: "龙鱼", skill: "下注",
+      skillValues: { betMode: "lowHp" } };
+    const foreignDamage = crossRealm(damage);
+    expect(Object.getPrototypeOf(foreignDamage.skillValues)).not.toBe(Object.prototype);
+    expect(data(ai.calculateRocoDamage(foreignDamage)).status).toBe("exact");
+    expect(ai.calculateRocoDamage(foreignDamage)).toEqual(ai.calculateRocoDamage(damage));
+    for (const invalid of [new Date(), new (class Query { query = "岚鸟"; })(), Object.create({ query: "岚鸟" })]) {
+      expect(data(ai.searchRocoData(invalid)).code).toBe("invalid_parameters");
+    }
   });
 
   test("限制返回量；未收录查询明确返回空列表，非法输入返回原子接口错误", () => {

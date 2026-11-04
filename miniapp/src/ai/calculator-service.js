@@ -26,8 +26,14 @@ function fail(code, message, details = {}) {
 }
 
 function record(value, label) {
-  if (!value || typeof value !== "object" || Array.isArray(value) ||
-      ![Object.prototype, null].includes(Object.getPrototypeOf(value))) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    fail("invalid_parameters", `${label}必须是对象`);
+  }
+  // WeChat passes JSON objects from another realm, with a distinct Object.prototype.
+  const prototype = Object.getPrototypeOf(value);
+  const constructor = prototype && Object.getOwnPropertyDescriptor(prototype, "constructor")?.value;
+  if (prototype !== null && (Object.getPrototypeOf(prototype) !== null ||
+      typeof constructor !== "function" || constructor.name !== "Object")) {
     fail("invalid_parameters", `${label}必须是对象`);
   }
   return value;
