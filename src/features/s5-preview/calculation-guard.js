@@ -25,7 +25,9 @@ export function withS5PreviewCalculationGuard(view, snapshot, state) {
         const opponentDirection = opponentKey === "attacker" ? "forward" : "reverse";
         context = { ...context, automaticEnemyTotalSkillCost: carriedSkillTotalCost(
           state.sides[opponentKey], state.mode, getSnapshotIndexes(snapshot).skills,
-          state.directions[opponentDirection]?.overrides, { requireKnown: true },
+          state.directions[opponentDirection]?.overrides,
+          { requireKnown: true, costIncrease: traits.some(item => item.name === "冰封") ? 1 : 0,
+            directionContext: state.directions[opponentDirection]?.context },
         ) };
       }
       return getS5PreviewTraitEvaluation(trait, "attacker", context);

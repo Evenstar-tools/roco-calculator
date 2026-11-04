@@ -390,7 +390,10 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       const target = owner === "attacker" ? "defender" : "attacker";
       const traitView = getTraitView(snapshot, spirit, role);
       const requireKnown = traitView?.previewTraitEntity?.previewIdentity?.mechanicKey === "boss-ice-bruce";
-      linked = linkEnemyCostTraitControls(linked, traitView?.inputs ?? [], carriedSkillTotalCost(state.sides[target], state.mode, getSnapshotIndexes(snapshot).skills, state.directions[target === "attacker" ? "forward" : "reverse"].overrides, { requireKnown }));
+      const ownerTraits = owner === "attacker" ? attackerTraits : defenderTraits;
+      linked = linkEnemyCostTraitControls(linked, traitView?.inputs ?? [], carriedSkillTotalCost(state.sides[target], state.mode, getSnapshotIndexes(snapshot).skills, state.directions[target === "attacker" ? "forward" : "reverse"].overrides,
+        { requireKnown, costIncrease: ownerTraits.some(trait => trait.name === "冰封") ? 1 : 0,
+          directionContext: state.directions[target === "attacker" ? "forward" : "reverse"].context }));
     }
     return linked;
   }

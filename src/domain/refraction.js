@@ -158,9 +158,9 @@ export function refractionEnergyReduction(overrides = {}) {
   }, 0);
 }
 
-export function reducedSkillCost(cost, overrides) {
+export function reducedSkillCost(cost, overrides, costIncrease = 0) {
   if (cost === undefined || cost === null || cost === "" || !Number.isFinite(Number(cost))) return undefined;
-  return Math.max(0, Number(cost) - refractionEnergyReduction(overrides));
+  return Math.max(0, Number(cost) + costIncrease - refractionEnergyReduction(overrides));
 }
 
 

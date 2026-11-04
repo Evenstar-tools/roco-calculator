@@ -5,7 +5,7 @@ import {
   selectedAttackForCounter,
   withListenBridgeCounters,
 } from "./skill-result/direction.js";
-import { resolveCombatant } from "./skill-result/loadout.js";
+import { carriedSkillTotalCost, resolveCombatant } from "./skill-result/loadout.js";
 import { finiteNumber } from "./skill-result/numeric.js";
 import { attachSkillGainSummaries } from "./skill-gain-summary.js";
 import { assertCalculationEnvironment } from "./server-environment.js";
@@ -28,6 +28,7 @@ export function calculateMatchup(snapshot, battleInput) {
     mode,
     indexes,
     directions.forward?.overrides,
+    directions.forward?.context,
   );
   const defender = resolveCombatant(
     snapshot,
@@ -35,7 +36,20 @@ export function calculateMatchup(snapshot, battleInput) {
     mode,
     indexes,
     directions.reverse?.overrides,
+    directions.reverse?.context,
   );
+  for (const [owner, opponent, side, direction] of [
+    [attacker, defender, sides.attacker, directions.forward],
+    [defender, attacker, sides.defender, directions.reverse],
+  ]) {
+    // An on-field Ice Seal applies to the opponent, including zero-cost skills.
+    // Recompute per slot before reductions so empty slots and unknown costs stay intact.
+    owner.skillCostIncrease = opponent.traits.some(trait => trait.name === "冰封") ? 1 : 0;
+    if (!owner.skillCostIncrease) continue;
+    const options = { costIncrease: owner.skillCostIncrease, directionContext: direction?.context };
+    owner.totalSkillCost = carriedSkillTotalCost(side, mode, indexes.skills, direction?.overrides, options);
+    owner.confirmedTotalSkillCost = carriedSkillTotalCost(side, mode, indexes.skills, direction?.overrides, { ...options, requireKnown: true });
+  }
   // A legacy global level changes the damage coefficient only. Explicit owner
   // levels also generate that owner's panel in resolveCombatant.
   const legacyLevel = finiteNumber(battleInput.level) ?? 60;

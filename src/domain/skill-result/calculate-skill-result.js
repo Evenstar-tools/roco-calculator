@@ -270,7 +270,7 @@ export function calculateSkillResult({
     defenderSpeed,
     attackerPhysicalDefense: attacker.panelStats.physicalDefense,
     defenderPhysicalDefense: defender.panelStats.physicalDefense,
-    enemyTotalSkillCost: defender.totalSkillCost,
+    enemyTotalSkillCost: defender.confirmedTotalSkillCost === null ? undefined : defender.totalSkillCost,
     skillPosition,
     ...rawContext,
     automaticEnemyTotalSkillCost: defender.totalSkillCost,
@@ -430,9 +430,10 @@ export function calculateSkillResult({
   const traitCostReduction = crabCostReduction + diceModifiers.costReduction;
   const totalCostReduction = refractionEnergyReduction(directionOverrides) + traitCostReduction;
   const sandstormCostApplies = context.weatherSandstorm === true && skill.type === "地";
-  const hasCostReduction = totalCostReduction > 0 || sandstormCostApplies;
+  const costIncrease = attacker.skillCostIncrease ?? 0;
+  const hasCostAdjustment = totalCostReduction > 0 || sandstormCostApplies || costIncrease > 0;
   const fixedReducedCost = (cost) => {
-    const reduced = reducedSkillCost(cost, directionOverrides);
+    const reduced = reducedSkillCost(cost, directionOverrides, costIncrease);
     return reduced === undefined ? undefined : Math.max(0, reduced - traitCostReduction);
   };
   // Resolve a skill's own dynamic cost and fixed reductions first. Sandstorm
@@ -444,13 +445,14 @@ export function calculateSkillResult({
   const sandstormReduction = (cost) => sandstormCostApplies && fixedReducedCost(cost) !== undefined
     ? fixedReducedCost(cost) - reducedCost(cost) : 0;
   const costFormulaSteps = (cost, manualCost) => {
-    if (!hasCostReduction || reducedCost(cost) === undefined) return [];
     if (manualCost !== undefined) return [formulaStep("实际能耗（手动）", { reduction: 0 }, cost, manualCost, "manual-cost")];
+    if (!hasCostAdjustment || reducedCost(cost) === undefined) return [];
     return [
+      ...(costIncrease > 0 ? [formulaStep("冰封·能耗+1", { increase: costIncrease }, cost, cost + costIncrease, "trait:ice-seal")] : []),
       ...(totalCostReduction > 0 ? [formulaStep(
         `能耗减免（${[refractionEnergyReduction(directionOverrides) > 0 ? "折射·水" : null,
           crabCostReduction > 0 ? "蟹蟹椰" : null, diceModifiers.costReduction > 0 ? "游戏的本质" : null].filter(Boolean).join("、")}）`,
-        { reduction: totalCostReduction }, cost, fixedReducedCost(cost),
+        { reduction: totalCostReduction }, cost + costIncrease, fixedReducedCost(cost),
         traitCostReduction > 0 ? "s5-trait-cost" : "refraction-energy",
       )] : []),
       ...(sandstormCostApplies ? [formulaStep("沙暴·地系能耗减半", { multiplier: 0.5, method: "floor" },
@@ -538,7 +540,7 @@ export function calculateSkillResult({
   const costInput = getSkillEffectInputs(skill).find((input) => input.contextKey === "actualSkillCost");
   const manualCostInput = costInput ? finiteNumber(rawContext[costInput.id], rawContext.actualSkillCost) : undefined;
   let effectiveCostInput;
-  if (costInput && hasCostReduction) {
+  if (costInput && (hasCostAdjustment || manualCostInput !== undefined)) {
     effectiveCostInput = manualCostInput === undefined ? reducedCost(skill.cost)
       : Math.min(costInput.max ?? Infinity, Math.max(0, manualCostInput));
     context.actualSkillCost = effectiveCostInput;

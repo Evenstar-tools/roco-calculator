@@ -3,6 +3,8 @@ import { resolveBattleSpirit } from "../battle-form.js";
 import { reducedSkillCost } from "../refraction.js";
 import { getEffectiveTraits } from "../effective-traits.js";
 import { pressureValveUseCount } from "../skill-status-effects.js";
+import { getSkillEffectInputs } from "../skill-effects.js";
+import { finiteNumber } from "./numeric.js";
 
 function resolveNatureMultipliers(side, snapshot) {
   if (side.natureMultipliers) return side.natureMultipliers;
@@ -95,16 +97,21 @@ function collectCarriedSkills(side, mode, skillsById) {
     .filter(Boolean);
 }
 
-export function carriedSkillTotalCost(side, mode, skillsById, costOverrides, { requireKnown = false } = {}) {
-  const skills = collectCarriedSkills(side, mode, skillsById);
-  if (requireKnown) {
-    const entries = carriedSkillEntries(side, mode).filter(entry => typeof entry === "string"
-      ? Boolean(entry) : Boolean(entry?.skill || entry?.skillId || entry?.id || entry?.category));
-    if (skills.length !== entries.length || skills.some(skill => !Number.isSafeInteger(skill.cost) || skill.cost < 0)) return null;
-  }
-  return skills.reduce(
-    (total, skill) => total + (reducedSkillCost(skill.cost, costOverrides) ?? 0), 0,
-  );
+export function carriedSkillTotalCost(side, mode, skillsById, costOverrides, { requireKnown = false, costIncrease = 0, directionContext } = {}) {
+  const costs = carriedSkillEntries(side, mode).filter(entry => typeof entry === "string"
+    ? Boolean(entry) : Boolean(entry?.skill || entry?.skillId || entry?.id || entry?.category)).map(entry => {
+    const skill = resolveSkillEntity(entry, skillsById);
+    if (!skill) return null;
+    const input = getSkillEffectInputs(skill).find(control => control.contextKey === "actualSkillCost");
+    const details = entryDetails(entry);
+    const context = { ...directionContext, ...details.context, ...costOverrides?.context, ...details.overrides?.context };
+    const manualCost = input ? finiteNumber(context[input.id], context.actualSkillCost) : undefined;
+    if (manualCost !== undefined) return Math.min(input.max ?? Infinity, Math.max(0, manualCost));
+    if (requireKnown && (!Number.isSafeInteger(skill.cost) || skill.cost < 0)) return null;
+    return reducedSkillCost(skill.cost, costOverrides, costIncrease) ?? null;
+  });
+  if (requireKnown && costs.includes(null)) return null;
+  return costs.reduce((total, cost) => total + (cost ?? 0), 0);
 }
 
 export function resolveCombatant(
@@ -113,6 +120,7 @@ export function resolveCombatant(
   mode,
   indexes,
   costOverrides,
+  directionContext,
 ) {
   const spirit =
     resolveBattleSpirit(snapshot, side) ??
@@ -145,8 +153,8 @@ export function resolveCombatant(
     panelStats,
     traits,
     skillTypes: carriedSkills.map((skill) => skill.type).filter(Boolean),
-    totalSkillCost: carriedSkillTotalCost(side, mode, indexes.skills, costOverrides),
-    confirmedTotalSkillCost: carriedSkillTotalCost(side, mode, indexes.skills, costOverrides, { requireKnown: true }),
+    totalSkillCost: carriedSkillTotalCost(side, mode, indexes.skills, costOverrides, { directionContext }),
+    confirmedTotalSkillCost: carriedSkillTotalCost(side, mode, indexes.skills, costOverrides, { requireKnown: true, directionContext }),
   };
 }
 
