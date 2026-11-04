@@ -41,7 +41,9 @@
 - schema修正后的正式生产构建再次通过，日志`output/miniapp-v1.2.3-ai-closeout/schema-followup/production-build.log`，主包仍为1,747,418字节，五组受限API启动检查通过。
 - schema修正后的最终产物已在重新打开工程后的首次自然语言对话中完成查询、学习面确认、伤害计算与最终答复；所有调用显示成功，无outputSchema校验警告，仍为51伤害、13.46%、剩余328/379。真实界面已读回，证据`schema-followup/chat-final-native-ui.png`及`chat-final-native-ui-acceptance.json`，没有用CLI部分捕获当作最终答复。
 - 同一产物的官方六原子案例再次全部通过，完整structuredContent和传入参数与对照一致，记录`schema-followup/native-cases-report.json`及`native-cases-recovered.log`。先前直接CLI首调用超时保留为`cold-cli-cases-report.json`、`cold-cli-first-query.native.json`；本次首次聊天未先调用工具预热即已走通，不把后续暖工具验证写成冷CLI调用稳定性通过。
-- debug已恢复true，回执`schema-followup/debug-restored.log`。同1.2.3开发版重传、最终输入提交及主线CI按下段最终回执记录。
+- debug已恢复true，回执`schema-followup/debug-restored.log`。2026-11-04约16:24，最终源码提交`34759b043d1336314d2470b4bd9e28cfdbaf83da`对应产物已用同版本1.2.3重新上传开发版；官方回执为`schema-followup/wechat-upload.log`、`wechat-upload-result.json`，AppID仍为`wx82f11dfdd3d28bc8`，未提审或公开发布。
+- 微信处理后最终总包2,544,803字节、主包1,851,675字节、skills分包693,128字节；相比第一次1.2.3上传仅AI分包增加5,783字节，主包不变。公式、返回结果、预设与网页发布pin均未改。
+- 最终上传后普通页面首开和设置回读通过，记录`schema-followup/post-upload-readback.json`及PNG：环境develop、AppID正确、小程序v1.2.3/核心v2.2.8/S5一致。开发工具保留了AI编译模式，首次普通自动化请求因此超时；切回普通编译后实际页面及回读通过，初次诊断日志保留为`post-upload-readback-agent-mode-timeout.log`，没有据此修改产品代码。
 
 ## 本次生产门禁与接续
 
@@ -52,7 +54,7 @@
 - 生产产物为本树`miniapp/dist`，不复用旧1.2.2目录；主包1,747,418字节。机器可读门禁摘要为同目录`verification-summary.json`，最终产物原生证据与本地测试分别记录。
 - 2026-11-04约15:49，官方CLI以版本1.2.3和AppID`wx82f11dfdd3d28bc8`返回`√ upload`，这是第一次1.2.3开发版上传；输入提交`d5489afb690e237c4233e7d68b8c9c57b8fe389e`。首次回执`wechat-upload.log`、`wechat-upload-result.json`；微信处理后总包2,539,020字节、主包1,851,675字节、skills分包687,345字节。该历史回执不代表后续schema修正产物已重传。
 - 约15:50上传后普通原生回读通过，`post-upload-readback.json`为`passed: true`，AppID相符、环境develop，设置小程序v1.2.3/核心v2.2.8/S5快照一致。这是本地DevTools运行时回读，不是后台正式版本列表查询。
-- 源码主线同步沿用Git提交→推送origin/main；首次远端引用回读及CI结果记录在同目录`source-sync.json`和`verification-summary.json`，schema修正后的最终推送及CI由根任务继续。CI采用[项目Actions](https://github.com/Evenstar-tools/roco-calculator/actions/workflows/ci.yml)的实际运行结论。Web产物、发布pin与桌面版本不变，本轮没有手动部署Web、发布桌面、提交审核或公开上线。
+- 源码主线同步沿用Git提交→推送origin/main；最终远端引用回读及CI结果记录在同目录`source-sync.json`和`verification-summary.json`，CI采用[项目Actions](https://github.com/Evenstar-tools/roco-calculator/actions/workflows/ci.yml)的实际运行结论。Web产物、发布pin与桌面版本不变，本轮没有手动部署Web、发布桌面、提交审核或公开上线。
 
 ## 外部状态边界
 
