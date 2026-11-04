@@ -237,12 +237,32 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.4",
+    date: "2026.11.04",
+    seasonId: "S5",
+    title: "S5 队伍工作台与速度线",
+    whatsNew: S5_FEATURE_INTRO,
+    summaryHighlights: [
+      "队伍列表与成员编辑按屏幕宽度排布，常用操作集中到成员卡片。",
+      "速度排行默认头像视图与极速口径，支持切换名字并记住口径选择。",
+      "速度轴保留在各尺寸，当前速度随滑块显示，档位直接显示精灵数量。",
+    ],
+    features: [
+      "队伍按设备调整布局，成员卡片可直接设为攻守双方，编辑与导入操作集中显示。",
+      "速度排行默认显示头像和极速，口径开关集中成行，重新打开保留已选口径。",
+    ],
+    fixes: [
+      "当前速度跟随速度轴滑块，浅色口径圆标与放大头像更易辨认，手机也保留速度轴。",
+      "国际服同步队伍与速度界面，继续使用独立S3季中数据与规则。",
+    ],
+  }),
+  createRelease({
     version: "v2.3.3",
     date: "2026.11.03",
     seasonId: "S5",
     title: "S5 界面细节修复",
     whatsNew: S5_FEATURE_INTRO,
-    fixes: ["暗色无伤害技能不再显示满条，精简版序号与伤害字号调大。", "查询关闭改图标钮，耐久表居中；国际服S3季中不变。", "队伍按设备改版；速度线默认只看极速并记住口径，头像放大。"],
+    fixes: ["暗色无伤害技能不再显示满条，精简版序号与伤害字号调大。", "查询关闭改图标钮，耐久表居中；国际服S3季中不变。"],
   }),
   createRelease({
     version: "v2.3.2",
