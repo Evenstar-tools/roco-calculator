@@ -32,6 +32,9 @@ function familyFixture() {
     { id: "unrelated", fullName: "独立精灵", dexNo: "004", changeInfo: { patch: s4, items: [shared] } },
   ], skills: [] };
 }
+const overview = () => document.querySelector(".bh-overview");
+const kpis = () => screen.getByRole("group", { name: "调整类型" });
+const section = (name) => within(overview()).getByRole("region", { name });
 
 test("家族只列一行，共同、部分成员和单独调整保留明确适用范围", async () => {
   const user = userEvent.setup();
@@ -44,11 +47,11 @@ test("家族只列一行，共同、部分成员和单独调整保留明确适�
   expect(within(all).getByText("家族特性")).toBeVisible();
   const partial = screen.getByRole("region", { name: "喵喵、魔力猫的调整" });
   expect(within(partial).getByText("共同调整")).toBeVisible();
-  expect(within(partial).getByRole("region", { name: "技能调整" })).toHaveTextContent("四维降解·威力100 → 110+10");
+  expect(within(partial).getByRole("region", { name: "技能本身" })).toHaveTextContent("四维降解·威力 100→110 +10");
   const individual = screen.getByRole("region", { name: "魔力猫的调整" });
   expect(within(individual).getByText("仅魔力猫")).toBeVisible();
-  expect(within(individual).getByRole("region", { name: "种族值" })).toHaveTextContent("生命122 → 132+10");
-  expect(screen.getAllByText("四维降解·威力")).toHaveLength(1);
+  expect(within(individual).getByRole("region", { name: "种族值" })).toHaveTextContent("生命 122→132 +10");
+  expect(screen.getAllByText(/^四维降解·威力 100→110/)).toHaveLength(1);
   expect(screen.getAllByText("家族特性")).toHaveLength(1);
   await user.click(screen.getByRole("button", { name: "种族值", exact: true }));
   expect(screen.queryByText("家族共同调整")).not.toBeInTheDocument();
@@ -63,26 +66,18 @@ test("成员搜索定位家族，跳到更新概览后返回恢复筛选和滚�
   expect(document.querySelectorAll(".bh-entity")).toHaveLength(1);
   expect(screen.getByText("匹配：魔力猫")).toBeVisible();
   expect(screen.getByRole("heading", { name: /喵喵家族/ })).toBeVisible();
-  await user.click(screen.getByRole("button", { name: "技能调整", exact: true }));
+  await user.click(screen.getByRole("button", { name: "技能本身", exact: true }));
   document.querySelector(".bh-scroll").scrollTop = 93;
   await user.click(screen.getByRole("button", { name: "查看本次全部调整" }));
-  expect(screen.getByRole("textbox", { name: "在本次更新中查找精灵" })).toHaveValue("");
-  expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(0);
-  expect(document.querySelector(".bh-overview")).toBeVisible();
+  expect(screen.getByRole("textbox", { name: "在本次更新中查找精灵或技能" })).toHaveValue("");
+  expect(overview()).toBeVisible();
   await user.click(screen.getByRole("button", { name: "返回按精灵回查" }));
   expect(screen.getByRole("textbox", { name: "名称、别名或图鉴号" })).toHaveValue("猫王");
-  expect(screen.getByRole("button", { name: "技能调整", exact: true })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("button", { name: "技能本身", exact: true })).toHaveAttribute("aria-pressed", "true");
   expect(document.querySelector(".bh-scroll").scrollTop).toBe(93);
-  await user.click(screen.getByRole("tab", { name: "按更新浏览" }));
-  await user.type(screen.getByRole("textbox", { name: "在本次更新中查找精灵" }), "猫王");
-  expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(1);
-  await user.click(screen.getByRole("button", { name: "查看魔力猫历次调整" }));
-  expect(screen.getByRole("heading", { name: /喵喵家族/ })).toBeVisible();
-  expect(screen.getByRole("textbox", { name: "名称、别名或图鉴号" })).toHaveValue("魔力猫");
-  expect(screen.getByRole("region", { name: "魔力猫的调整" })).toHaveTextContent("仅魔力猫");
 });
 
-test("更新默认只列去重后的具体内容，数值直显，长文本折叠后可展开", async () => {
+test("按更新先给速览，再按类别列出：种族值成行、技能合卡写明会用的精灵、相同特性只列一次", async () => {
   const user = userEvent.setup();
   const snapshot = familyFixture();
   const long = { kind: "mechanic", field: "description", label: "薄纱环·技能效果",
@@ -91,40 +86,53 @@ test("更新默认只列去重后的具体内容，数值直显，长文本折�
   snapshot.spirits[1].changeInfo.items.push({ ...long });
   render(<BalanceHistoryPanel snapshot={snapshot} open onClose={vi.fn()} />);
   await user.click(screen.getByRole("tab", { name: "按更新浏览" }));
-  const overview = document.querySelector(".bh-overview");
-  expect(overview).toBeVisible();
-  expect(document.querySelectorAll(".bh-owner-head, .bh-entity")).toHaveLength(0);
-  expect(within(overview).getAllByText("家族特性")).toHaveLength(1);
-  expect(within(overview).getAllByText("四维降解·威力")).toHaveLength(1);
-  expect(within(overview).getByText("100 → 110")).toBeVisible();
-  expect(within(overview).getByText("122 → 132")).toBeVisible();
-  const details = within(overview).getByText("薄纱环·技能效果").closest("details");
-  expect(details).not.toBeNull();
-  const text = details.querySelectorAll(".bh-before-after p")[1];
-  expect(text).toHaveTextContent(`调整后${long.after}`, { normalizeWhitespace: false });
-  expect(details).not.toHaveAttribute("open");
-  expect(text).not.toBeVisible();
-  await user.click(details.querySelector("summary"));
-  expect(details).toHaveAttribute("open");
-  expect(text).toBeVisible();
+  expect([...kpis().querySelectorAll("button")].map(button => button.textContent)).toEqual(["种族值1 只↑1 ↓0", "技能本身2 项↑1 ↓0", "特性4 只"]);
+  expect(section("种族值").querySelector(".bh-stat-row")).toHaveTextContent("魔力猫生命 122→132 +10总和 +10");
+  const cards = section("技能本身").querySelectorAll(".bh-card");
+  expect(cards).toHaveLength(2);
+  expect(cards[0]).toHaveTextContent("四维降解威力 100→110 +10");
+  expect(cards[0].querySelector(".bh-verdict")).toHaveClass("is-up");
+  expect(cards[0].querySelector(".bh-users")).toHaveTextContent("2 只精灵会用喵喵魔力猫");
+  expect(cards[1].querySelector(".bh-verdict")).not.toHaveClass("is-up");
+  expect(cards[1].querySelectorAll(".bh-before-after p")[1]).toHaveTextContent(`调整后${long.after}`, { normalizeWhitespace: false });
+  expect(within(overview()).getAllByText("家族特性")).toHaveLength(1);
+  await user.click(within(kpis()).getByRole("button", { name: /^技能本身/ }));
+  expect(within(kpis()).getByRole("button", { name: /^技能本身/ })).toHaveAttribute("aria-pressed", "true");
+  expect(within(overview()).queryByRole("region", { name: "种族值" })).not.toBeInTheDocument();
+  await user.click(within(kpis()).getByRole("button", { name: /^技能本身/ }));
+  expect(section("种族值")).toBeVisible();
 });
 
-test("概览行写明涉及哪只精灵：少量直接列名，多只展开可见名单", async () => {
+test("名单写明是谁：同家族三只以上折成家族，点开看各形态，其余直接列名", async () => {
   const user = userEvent.setup();
   render(<BalanceHistoryPanel snapshot={familyFixture()} open onClose={vi.fn()} />);
   await user.click(screen.getByRole("tab", { name: "按更新浏览" }));
-  const overview = document.querySelector(".bh-overview");
-  const hpRow = within(overview).getByText("122 → 132").closest(".bh-overview-metric");
-  expect(hpRow).toHaveTextContent("魔力猫生命");
-  expect(hpRow).not.toHaveTextContent("只精灵");
-  expect(within(overview).getByText("四维降解·威力").closest(".bh-overview-metric")).toHaveTextContent("喵喵魔力猫四维降解·威力");
-  const shared = within(overview).getByText("家族特性").closest("details");
-  expect(shared.querySelector("summary")).toHaveTextContent("4 只精灵");
-  const list = shared.querySelector(".bh-owner-list");
-  expect(list).not.toBeVisible();
-  await user.click(shared.querySelector("summary"));
-  expect(list).toBeVisible();
-  expect(list).toHaveTextContent("涉及 4 只精灵喵喵、魔力猫、叶冕魔力猫、独立精灵");
+  const row = section("特性").querySelector(".bh-row");
+  const family = row.querySelector("details");
+  expect(family.querySelector("summary")).toHaveTextContent("喵喵家族 ×3");
+  expect(row).toHaveTextContent("独立精灵");
+  expect(family).not.toHaveAttribute("open");
+  await user.click(family.querySelector("summary"));
+  expect(family).toHaveAttribute("open");
+  expect(family).toHaveTextContent("喵喵、魔力猫、叶冕魔力猫");
+});
+
+test("能耗降低算增强，威力降低算削弱，总和按增减着色", async () => {
+  const user = userEvent.setup();
+  const cost = { kind: "stat", field: "cost", label: "破防·能耗", before: 2, after: 1 };
+  const snapshot = { meta: { serverId: "cn" }, skills: [], spirits: [
+    { id: "a", fullName: "甲", changeInfo: { patch: s4, items: [cost, { ...power, before: 110, after: 100 }, { ...hp, before: 132, after: 122 }] } },
+  ] };
+  render(<BalanceHistoryPanel snapshot={snapshot} open onClose={vi.fn()} />);
+  expect(screen.getByText(/^破防·能耗 2→1/)).toHaveClass("is-up");
+  expect(screen.getByText(/^四维降解·威力 110→100/)).toHaveClass("is-down");
+  await user.click(screen.getByRole("tab", { name: "按更新浏览" }));
+  const cards = section("技能本身").querySelectorAll(".bh-card");
+  expect(cards[0]).toHaveTextContent("破防能耗 2→1 -1");
+  expect(cards[0].querySelector(".bh-verdict")).toHaveClass("is-up");
+  expect(cards[1].querySelector(".bh-verdict")).toHaveClass("is-down");
+  expect(section("种族值").querySelector(".bh-stat-row > b")).toHaveClass("is-down");
+  expect(within(kpis()).getByRole("button", { name: /^技能本身/ })).toHaveTextContent("2 项↑1 ↓1");
 });
 
 test("改前改后只标出差异，家族用基础形态命名，标题已含赛季时不重复标签", async () => {
@@ -137,7 +145,7 @@ test("改前改后只标出差异，家族用基础形态命名，标题已含�
   expect(screen.getByRole("heading", { name: /^喵喵家族/ })).toBeVisible();
   expect(screen.queryByText(/喵喵（春天的样子）家族/)).not.toBeInTheDocument();
   expect(document.querySelector(".bh-season-tag")).toBeNull();
-  const detail = screen.getByText("特性·鼓气").closest(".bh-detail");
+  const detail = screen.getByText("特性·鼓气").closest(".bh-line");
   expect([...detail.querySelectorAll("mark.is-removed")].map(mark => mark.textContent)).toEqual(["防+20%"]);
   expect([...detail.querySelectorAll("mark.is-added")].map(mark => mark.textContent)).toEqual(["双", "+30%"]);
   expect(detail.querySelectorAll(".bh-before-after p")[0]).toHaveTextContent("调整前使用技能后获得攻防+20%。");
@@ -145,7 +153,7 @@ test("改前改后只标出差异，家族用基础形态命名，标题已含�
   expect(screen.getByRole("heading", { name: "S4 月涌狂想" })).toBeVisible();
 });
 
-test("更新搜索仅返回实际成员，类型筛选不借用兄弟改动，清空恢复概览", async () => {
+test("更新搜索只保留命中的精灵自己的改动，不借用兄弟改动，未命中提示，清空恢复概览", async () => {
   const user = userEvent.setup();
   const snapshot = familyFixture();
   snapshot.spirits.push({ id: "quiet", fullName: "静静", evolutionChainIds: ["bud"] },
@@ -153,30 +161,24 @@ test("更新搜索仅返回实际成员，类型筛选不借用兄弟改动，�
   render(<BalanceHistoryPanel snapshot={snapshot} open onClose={vi.fn()} />);
   await user.click(screen.getByRole("tab", { name: "按更新浏览" }));
   await user.click(screen.getByRole("button", { name: /2026.09.10.*S4 月涌狂想/ }));
-  const search = screen.getByRole("textbox", { name: "在本次更新中查找精灵" });
+  await user.click(within(kpis()).getByRole("button", { name: /^特性/ }));
+  const search = screen.getByRole("textbox", { name: "在本次更新中查找精灵或技能" });
   await user.type(search, "喵喵");
-  expect(document.querySelector(".bh-overview")).not.toBeInTheDocument();
-  expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(1);
-  expect(screen.getByRole("button", { name: /喵喵.*收起/ })).toBeVisible();
-  expect(screen.getByText("四维降解·威力")).toBeVisible();
-  expect(screen.queryByText("122 → 132")).not.toBeInTheDocument();
-  expect(screen.queryByText("仅魔力猫")).not.toBeInTheDocument();
-  await user.click(within(screen.getByRole("group", { name: "调整类型" })).getByRole("button", { name: "种族值", exact: true }));
-  expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(0);
-  expect(screen.getByRole("status")).toHaveTextContent("本次更新没有符合条件的精灵调整记录");
-  await user.click(within(screen.getByRole("group", { name: "调整类型" })).getByRole("button", { name: "全部", exact: true }));
-  expect(screen.getByText("四维降解·威力")).toBeVisible();
+  expect(within(kpis()).queryByRole("button", { name: /^种族值/ })).not.toBeInTheDocument();
+  expect(within(kpis()).getByRole("button", { name: /^特性/ })).toHaveAttribute("aria-pressed", "false");
+  expect(section("技能本身").querySelector(".bh-users")).toHaveTextContent("1 只精灵会用喵喵");
+  expect(section("特性")).toHaveTextContent("喵喵");
+  expect(section("特性")).not.toHaveTextContent("魔力猫");
+  expect(screen.queryByText(/^生命 122→132/)).not.toBeInTheDocument();
   for (const query of ["静静", "后续精灵", "不存在"]) {
     await user.clear(search);
     await user.type(search, query);
-    expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(0);
-    expect(screen.getByRole("status")).toHaveTextContent("本次更新没有符合条件的精灵调整记录");
-    expect(screen.queryByText("四维降解·威力")).not.toBeInTheDocument();
+    expect(overview()).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("本次更新没有符合条件的调整记录");
   }
-  await user.click(screen.getByRole("button", { name: "清空在本次更新中查找精灵" }));
-  expect(document.querySelector(".bh-overview")).toBeVisible();
-  expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(0);
-  expect(within(document.querySelector(".bh-overview")).getAllByText("四维降解·威力")).toHaveLength(1);
+  await user.click(screen.getByRole("button", { name: "清空在本次更新中查找精灵或技能" }));
+  expect(overview()).toBeVisible();
+  expect(section("种族值")).toHaveTextContent("魔力猫");
 });
 
 test("四维降解的威力归技能段，精灵六维、学习面与特性分别展示和筛选", async () => {
@@ -186,15 +188,15 @@ test("四维降解的威力归技能段，精灵六维、学习面与特性分�
   const stats = within(panel).getAllByRole("region", { name: "种族值" });
   expect(stats).toHaveLength(2);
   for (const region of stats) expect(region).not.toHaveTextContent("四维降解");
-  expect(within(panel).getByRole("region", { name: "技能调整" })).toHaveTextContent("四维降解·威力100 → 110+10");
-  expect(within(panel).getByRole("region", { name: "学习面调整" })).toHaveTextContent("振翅");
-  expect(within(panel).getByRole("region", { name: "特性调整" })).toHaveTextContent("旧特性");
+  expect(within(panel).getByRole("region", { name: "技能本身" })).toHaveTextContent("四维降解·威力 100→110 +10");
+  expect(within(panel).getByRole("region", { name: "学习面" })).toHaveTextContent("振翅");
+  expect(within(panel).getByRole("region", { name: "特性" })).toHaveTextContent("旧特性");
   await user.click(within(panel).getByRole("button", { name: "种族值", exact: true }));
-  expect(within(panel).queryByRole("region", { name: "技能调整" })).not.toBeInTheDocument();
-  expect(within(panel).getByText("122 → 132")).toBeVisible();
-  await user.click(within(panel).getByRole("button", { name: "技能调整", exact: true }));
+  expect(within(panel).queryByRole("region", { name: "技能本身" })).not.toBeInTheDocument();
+  expect(within(panel).getByText(/^生命 122→132/)).toBeVisible();
+  await user.click(within(panel).getByRole("button", { name: "技能本身", exact: true }));
   expect(within(panel).queryByRole("region", { name: "种族值" })).not.toBeInTheDocument();
-  expect(within(panel).getByText("四维降解·威力")).toBeVisible();
+  expect(within(panel).getByText(/^四维降解·威力/)).toBeVisible();
 });
 
 test("搜索支持别名与无历史实体，未命中时清空旧详情，清除后可恢复", async () => {
@@ -214,7 +216,7 @@ test("搜索支持别名与无历史实体，未命中时清空旧详情，清�
   expect(screen.getByRole("heading", { name: /花衣蝶/ })).toBeVisible();
 });
 
-test("互跳定位同一批次和精灵，返回恢复之前筛选与滚动位置", async () => {
+test("从精灵跳到同一批次，返回恢复之前筛选与滚动位置", async () => {
   const user = userEvent.setup();
   const { container } = render(<BalanceHistoryPanel snapshot={fixture()} open onClose={vi.fn()} />);
   const search = screen.getByRole("textbox", { name: "名称、别名或图鉴号" });
@@ -225,18 +227,11 @@ test("互跳定位同一批次和精灵，返回恢复之前筛选与滚动位�
   await user.click(screen.getByRole("button", { name: "查看本次全部调整" }));
   expect(screen.getByRole("tab", { name: "按更新浏览" })).toHaveAttribute("aria-selected", "true");
   expect(screen.getByRole("heading", { name: "S4 月涌狂想" })).toBeVisible();
-  expect(document.querySelector(".bh-overview")).toBeVisible();
-  expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(0);
+  expect(overview()).toBeVisible();
   await user.click(screen.getByRole("button", { name: "返回按精灵回查" }));
   expect(screen.getByRole("combobox", { name: "筛选赛季" })).toHaveValue("S4");
   expect(screen.getByRole("textbox", { name: "名称、别名或图鉴号" })).toHaveValue("蝴蝶");
   expect(document.querySelector(".bh-scroll").scrollTop).toBe(127);
-  await user.click(screen.getByRole("tab", { name: "按更新浏览" }));
-  await user.type(screen.getByRole("textbox", { name: "在本次更新中查找精灵" }), "花衣蝶");
-  await user.click(screen.getByRole("button", { name: "查看花衣蝶历次调整" }));
-  expect(screen.getByRole("tab", { name: "按精灵回查" })).toHaveAttribute("aria-selected", "true");
-  expect(screen.getByRole("heading", { name: /花衣蝶/ })).toBeVisible();
-  expect(screen.getByRole("textbox", { name: "名称、别名或图鉴号" })).toHaveValue("花衣蝶");
   expect(container).toBeEmptyDOMElement();
 });
 
@@ -246,33 +241,24 @@ test("按更新的技能搜索使用技能名，保留独立技能身份和安�
   snapshot.skills.push({ id: "second-power", name: "另一技能", changeInfo: { patch: s4, items: [{ ...power, label: "威力" }] } });
   const original = structuredClone(snapshot);
   render(<BalanceHistoryPanel snapshot={snapshot} open onClose={vi.fn()} />);
-  expect(screen.getByText("资料展示日期 · 历史记录日期 2026.10.31")).toBeVisible();
+  expect(screen.getByText("2026.11.05 资料 · 10.31 记录")).toBeVisible();
   expect(screen.getByRole("link", { name: "资料来源" })).toHaveAttribute("href", "https://example.com/s4");
   expect(screen.getByText("资料来源未提供在线链接")).toBeVisible();
   await user.click(screen.getByRole("tab", { name: "按更新浏览" }));
+  expect(screen.getByText("2026.11.05 资料 · 10.31 记录")).toBeVisible();
   await user.click(screen.getByRole("button", { name: /2026.09.10.*S4 月涌狂想/ }));
-  await user.click(screen.getByRole("button", { name: "种族值", exact: true }));
-  await user.click(within(screen.getByRole("group", { name: "更新对象" })).getByRole("button", { name: "技能", exact: true }));
-  const search = screen.getByRole("textbox", { name: "在本次更新中查找技能" });
-  expect(document.querySelector(".bh-overview")).toBeVisible();
-  expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(0);
-  expect(screen.queryByRole("group", { name: "调整类型" })).not.toBeInTheDocument();
-  expect(within(document.querySelector(".bh-overview")).getByText("四维降解·威力")).toBeVisible();
-  expect(within(document.querySelector(".bh-overview")).getByText("另一技能·威力")).toBeVisible();
-  expect(document.querySelectorAll(".bh-overview-metric")).toHaveLength(2);
+  const names = () => [...section("技能本身").querySelectorAll(".bh-card > .bh-who strong")].map(name => name.textContent);
+  expect(names()).toEqual(["四维降解", "另一技能"]);
+  expect(section("技能本身").querySelector(".bh-users")).toHaveTextContent("1 只精灵会用花衣蝶");
+  const search = screen.getByRole("textbox", { name: "在本次更新中查找精灵或技能" });
   await user.type(search, "四维降解");
-  expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(1);
-  expect(document.querySelector(".bh-overview")).not.toBeInTheDocument();
-  expect(screen.getByText("四维降解·威力")).toBeVisible();
-  expect(screen.queryByText("另一技能·威力")).not.toBeInTheDocument();
+  expect(names()).toEqual(["四维降解"]);
+  expect(within(overview()).queryByRole("region", { name: "种族值" })).not.toBeInTheDocument();
   await user.clear(search);
   await user.type(search, "不存在");
-  expect(screen.getByRole("status")).toHaveTextContent("本次更新没有符合条件的技能调整记录");
-  expect(screen.queryByText("四维降解·威力")).not.toBeInTheDocument();
+  expect(screen.getByRole("status")).toHaveTextContent("本次更新没有符合条件的调整记录");
   await user.clear(search);
-  expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(0);
-  expect(within(document.querySelector(".bh-overview")).getByText("四维降解·威力")).toBeVisible();
-  expect(within(document.querySelector(".bh-overview")).getByText("另一技能·威力")).toBeVisible();
+  expect(names()).toEqual(["四维降解", "另一技能"]);
   expect(snapshot).toEqual(original);
 });
 
@@ -314,13 +300,12 @@ test("候选与批次概览分批渲染，搜索能命中首批外的实际精�
   fireEvent.change(screen.getByRole("textbox", { name: "名称、别名或图鉴号" }), { target: { value: "候补69" } });
   expect(screen.getByRole("heading", { name: /候补69/ })).toBeVisible();
   await user.click(screen.getByRole("button", { name: "查看本次全部调整" }));
-  expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(0);
-  expect(within(document.querySelector(".bh-overview")).getAllByText(/^候补\d+·生命$/)).toHaveLength(24);
+  expect(overview().querySelectorAll(".bh-stat-row")).toHaveLength(24);
   document.querySelector(".bh-scroll").scrollTop = 145;
-  await user.click(screen.getByRole("button", { name: /显示更多调整/ }));
-  expect(within(document.querySelector(".bh-overview")).getAllByText(/^候补\d+·生命$/)).toHaveLength(48);
+  await user.click(screen.getByRole("button", { name: "显示更多种族值（还有 46 项）" }));
+  expect(overview().querySelectorAll(".bh-stat-row")).toHaveLength(48);
   expect(document.querySelector(".bh-scroll").scrollTop).toBe(145);
-  fireEvent.change(screen.getByRole("textbox", { name: "在本次更新中查找精灵" }), { target: { value: "候补68" } });
-  expect(document.querySelectorAll(".bh-owner-head")).toHaveLength(1);
-  expect(screen.getByRole("button", { name: /^候补68.*收起$/ })).toHaveAttribute("aria-expanded", "true");
+  fireEvent.change(screen.getByRole("textbox", { name: "在本次更新中查找精灵或技能" }), { target: { value: "候补68" } });
+  expect(overview().querySelectorAll(".bh-stat-row")).toHaveLength(1);
+  expect(overview()).toHaveTextContent("候补68·生命 122→132 +10");
 });
