@@ -13,7 +13,8 @@ import {
 } from "./SingleSkillEditor.jsx";
 import { SkillPicker } from "./SkillPicker.jsx";
 import { getSkillSlotConditions } from "./skill-condition-inputs.js";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useMediaQuery } from "../hooks/useMediaQuery.js";
 import { damageTone } from "./damageTone.js";
 import { damagePresentation, DamageSegments } from "./damagePresentation.jsx";
 import { HealthInput } from "./HealthInput.jsx";
@@ -35,22 +36,6 @@ const CATEGORY_LABELS = {
   physical: "物理",
   status: "变化",
 };
-
-function useMediaQuery(query) {
-  const [matches, setMatches] = useState(
-    () => globalThis.matchMedia?.(query)?.matches ?? false,
-  );
-
-  useEffect(() => {
-    const media = globalThis.matchMedia?.(query);
-    if (!media) return undefined;
-    const update = (event) => setMatches(event.matches);
-    media.addEventListener?.("change", update);
-    return () => media.removeEventListener?.("change", update);
-  }, [query]);
-
-  return matches;
-}
 
 function isInteractiveSkillTarget(target) {
   return target instanceof Element &&
