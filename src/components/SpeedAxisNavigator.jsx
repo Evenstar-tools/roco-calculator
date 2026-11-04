@@ -132,9 +132,10 @@ export default function SpeedAxisNavigator({ scrollRef, items, label }) {
     event.preventDefault();
     locate(event.key === "Home" ? 0 : event.key === "End" ? maximum : index + delta);
   };
+  // 当前速度跟着滑块走，拖动时不用来回看顶部的数字。
   return <aside className="speed-axis-nav" aria-label={label}>
-    <output className="speed-axis-nav__value" aria-hidden="true">{items[index].value}</output>
     <div className="speed-axis-nav__track">
+      <output className="speed-axis-nav__value" aria-hidden="true" style={{ "--speed-axis-ratio": maximum ? index / maximum : 0 }}>{items[index].value}</output>
       <div className="speed-axis-nav__ticks" aria-hidden="true">
         {ticks.map((tick) => <span key={items[tick].key} style={{ top: `${maximum ? tick / maximum * 100 : 0}%` }}>{items[tick].value}</span>)}
       </div>
