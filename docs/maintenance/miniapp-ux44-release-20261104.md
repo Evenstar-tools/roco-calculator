@@ -26,7 +26,7 @@
 - 官方回执：`output/miniapp-v1.2.2-ux44/wechat-upload-result.json`；完整命令输出：同目录`wechat-upload.log`。微信处理后总包2,538,820字节，主包1,851,675字节，`/skills/`分包687,145字节。
 - 上传后原生回读：`post-upload-readback.json`与`post-upload-version.png`。AppID相符、环境`develop`、设置显示小程序v1.2.2/网页核心v2.2.8，数据快照S5 `s5-2026-10-31`。
 - 该回读属于上传后的本地开发工具运行时，并非微信后台版本列表查询；上传成功以官方CLI响应及回执为依据。
-- 所有源码只保存在本地独立分支；没有推送主线、创建GitHub Release、操作网页或发送飞书/他人消息。
+- 源码通过既有`Evenstar-tools/roco-calculator`仓库的同名独立分支交付；没有推送主线、创建标签或GitHub Release、操作网页或发送飞书/他人消息。上传产物对应源码提交`d0a5779`，后续提交仅维护交付记录。
 
 ## AI宿主联调边界
 
