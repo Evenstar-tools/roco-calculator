@@ -242,7 +242,7 @@ export const USER_RELEASE_NOTES = Object.freeze([
     seasonId: "S5",
     title: "S5 界面细节修复",
     whatsNew: S5_FEATURE_INTRO,
-    fixes: ["暗色无伤害技能不再显示满条，精简版序号与伤害字号调大。", "查询关闭改图标钮，耐久表居中；国际服S3季中不变。"],
+    fixes: ["暗色无伤害技能不再显示满条，精简版序号与伤害字号调大。", "查询关闭改图标钮，耐久表居中；国际服S3季中不变。", "队伍按设备改版；速度线默认只看极速并记住口径，头像放大。"],
   }),
   createRelease({
     version: "v2.3.2",
