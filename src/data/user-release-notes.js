@@ -230,6 +230,21 @@ export const S4_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.4",
+    date: "2026.11.04",
+    title: "国际服队伍与速度排行",
+    whatsNew: S4_FEATURE_INTRO,
+    summaryHighlights: [
+      "队伍按设备改版；速度线默认只看极速并记住口径，头像放大。",
+      "速度轴当前值跟随滑块，速度一览标明各档数量。",
+    ],
+    fixes: [
+      "队伍按设备改版；速度线默认只看极速并记住口径，头像放大。",
+      "速度轴当前值跟随滑块，速度一览标明各档数量。",
+      "国际服仍按独立S3季中数据与规则计算。",
+    ],
+  }),
+  createRelease({
     version: "v2.3.1",
     date: "2026.11.03",
     title: "国际服历史记录与窄屏修复",
@@ -243,7 +258,6 @@ export const USER_RELEASE_NOTES = Object.freeze([
       "下注·暗的低血设置与伤害重算同步完成，保存与撤回保留完整操作。",
       "最窄屏的技能与特性条件按钮收在卡片内，电鹿条件和伤害说明更易阅读。",
       "国际服维持S3季中数据与规则，本轮修复不引入国服专属赛季内容。",
-      "队伍按设备改版；速度线默认只看极速并记住口径，头像放大。",
     ],
   }),
   createRelease({

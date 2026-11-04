@@ -1,5 +1,8 @@
 // Product UI copy; entity names and descriptions come from the official client catalog.
 export const globalFeaturesMessages = Object.fromEntries([
+  ["国际服仍按独立S3季中数据与规则计算。", "Global calculations continue to use independent S3 midseason data and rules.", "グローバル版は引き続き独立したS3シーズン中盤のデータ・ルールで計算します。"],
+  ["国际服队伍与速度排行", "Global teams and speed rankings", "グローバル版のチーム・速度ランキング"],
+  ["速度轴当前值跟随滑块，速度一览标明各档数量。", "The speed navigator's current value follows the slider, and the speed overview shows the number of entries in each tier.", "速度軸の現在値がスライダーに追従し、速度一覧に各段階の件数を表示します。"],
   ["国际服历史记录与窄屏修复", "Global history and narrow-screen fixes", "グローバル版の履歴・狭い画面の修正"],
   ["生命改动记录合并重复条目，独立更新与技能差异继续保留。", "Duplicate HP change records are merged while separate updates and distinct skill changes are preserved.", "HPの変更履歴の重複をまとめ、別の更新やスキルごとの違いは維持します。"],
   ["窄屏条件按钮收进卡片，电鹿说明字号更清楚。", "Condition buttons fit within cards on narrow screens, and KO threshold notes are easier to read.", "狭い画面でも条件ボタンがカード内に収まり、撃破ラインの説明も読みやすくなりました。"],

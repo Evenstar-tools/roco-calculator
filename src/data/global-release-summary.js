@@ -1,9 +1,11 @@
 export const GLOBAL_RELEASE_SUMMARY = Object.freeze({
-  date: "2026.11.03",
+  date: "2026.11.04",
   eyebrow: "国际服",
   title: "国际服计算器",
   description: "采用 S3 季中数值与规则。",
   items: [
+    { id: "teamSpeed234", title: "国际服队伍与速度排行", description: "队伍按设备改版；速度线默认只看极速并记住口径，头像放大。" },
+    { id: "speedNavigator234", title: "速度轴", description: "速度轴当前值跟随滑块，速度一览标明各档数量。" },
     { id: "historyHp", title: "生命改动记录", description: "历史调整中的生命与精力统一显示为生命，同一条改动只保留一次。" },
     { id: "betHp", title: "下注低血同步", description: "下注·暗的低血设置与伤害重算同步完成，保存与撤回保留完整操作。" },
     { id: "narrowControls", title: "窄屏条件与说明", description: "最窄屏的技能与特性条件按钮收在卡片内，电鹿条件和伤害说明更易阅读。" },
