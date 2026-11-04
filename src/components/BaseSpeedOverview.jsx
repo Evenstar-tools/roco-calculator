@@ -33,8 +33,8 @@ export default function BaseSpeedOverview({ location, detail, detailPanel, snaps
     <div className="rank-table-scroll" ref={scrollRef}><table style={{ width: "100%", tableLayout: "fixed", borderCollapse: "collapse" }} aria-label={t("种族速度档位表")}>
       <thead><tr><th>{t("种族速度")}</th>{BASE_SPEED_PROFILES.map((id, index) => <th key={id} className={`base-speed-column${mobileProfile === id ? " is-mobile-selected" : ""}`}>{t(labels[index])}</th>)}<th>{t("精灵 · 最终形态与首领")}</th></tr></thead>
       <tbody>{groups.map(group => <tr key={group.key} data-speed-nav-key={String(group.key)} ref={group.base === location?.base ? locationRef : null} aria-current={group.base === location?.base ? "true" : undefined} style={group.base === location?.base ? { background: "var(--color-primary-soft, #f3f1ff)" } : undefined}>
-        <th scope="row">{group.base}</th>
-        {BASE_SPEED_PROFILES.map((id, index) => <td key={id} className={`base-speed-column${mobileProfile === id ? " is-mobile-selected" : ""}`}><button className="base-speed-value" type="button" aria-label={t("{v0}种族{v1}，定位实速{v2}", { v0: group.base, v1: labels[index], v2: group.values[index] })} onClick={() => onLocate(id, group.values[index])}>{group.values[index]}</button></td>)}
+        <th scope="row"><small className="base-speed-band-label">{t("种族")}</small>{group.base}</th>
+        {BASE_SPEED_PROFILES.map((id, index) => <td key={id} className={`base-speed-column${mobileProfile === id ? " is-mobile-selected" : ""}`}><small className="base-speed-band-label">{t(labels[index])}</small><button className="base-speed-value" type="button" aria-label={t("{v0}种族{v1}，定位实速{v2}", { v0: group.base, v1: labels[index], v2: group.values[index] })} onClick={() => onLocate(id, group.values[index])}>{group.values[index]}</button></td>)}
         <td><div className="base-speed-portraits" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{group.members.map(({ id, name, level, spirit, targets }) => {
           const source = spirit.asset?.localUrl ?? spirit.imageUrl;
           const deferred = isPortraitDeferred(source);
