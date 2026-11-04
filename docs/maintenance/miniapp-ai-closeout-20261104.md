@@ -6,6 +6,7 @@
 - 从`origin/main@e3d34e7`正常合并已上传小程序分支`0bbaf78`，合并提交`c6529f8`保留完整历史；1.2.1生命输入/下注暗修复、1.2.2只读AI接口及UX44均完整进入。
 - 根因修复来源`d4a0aa0`，本树接续为`5973754`。小程序独立版本由1.2.2升为1.2.3，更新日期2026-11-04。
 - Web保持2.3.4、独立网页核心保持2.2.8，`config/miniapp-release.json`保持`a7c9f951b0560cd1fe5bc7dcd2695c2051076c3f`，249项内置预设及数据不变。没有改两服网页发布pin、缓存、E2E、桌面或公式。
+- 桌面增加国际服按用户要求暂缓，本轮没有新增桌面任务。
 
 ## 已定位并修复的宿主问题
 
@@ -21,7 +22,15 @@
 - 歧义形态和不可学技能分别返回`ambiguous_entity`、`unlearnable_skill`，没有伪造伤害。
 - 各案例完整MCP structuredContent、content文本与传入参数均与编译AI API的`local_reference`对照一致；不是仅凭CLI退出码或本地API测试判为原生通过。
 - 暖调用每例约1.4秒；该结果不替代冷宿主所需等待，也不把之前诊断等待不足与真实跨realm校验bug混为同一故障。
-- 对照案例与逐项官方回包均在旧树同一`ai-closeout`目录。本证据验证根因修复后的宿主调用；1.2.3最终生产产物仍需单独原生回查，不直接沿用旧产物结论。
+- 对照案例与旧工程逐项官方回包均在旧树同一`ai-closeout`目录；旧工程完整自然语言查询也返回岚鸟4种形态，记录为该目录`chat-query-acceptance.json`。
+
+## 最终1.2.3产物的原生回查
+
+- 最终工程`D:/codex/rock-mini-ai-closeout/miniapp`已单独完成官方原子接口复验：`output/miniapp-v1.2.3-ai-closeout/ai/native-cases-report.json`为`passed: true`，六项完整MCP结果与对照一致。最终工程直接资料查询返回岚鸟4种形态，不沿用旧产物结论。
+- 最终工程单工具自然语言伤害对话已取得真实`tool_result`和完整`finalText`，同一toolCallId配对成功；答复为51伤害、13.46%、剩余328/379，与工具结果一致。证据`ai/chat-single-damage-native.log`及`ai/chat-single-damage-acceptance.json`，后者断言通过。
+- 首次查询的`tools/result`超时与后续断连记录保留在同一`ai`目录，包括首次`native-cases-final.log`；恢复后原样六案例全部通过，记录为`native-cases-final-recovered.log`。这些现象不用于猜测平台根因，也不据此修改产品协议。
+- 另一次多工具聊天捕获虽返回`completed/finished`，捕获内容没有全部工具结果、伤害调用或最终答复，因此不记为完整多工具聊天通过；也不据此断言捕获结束后的普通UI行为。边界及官方捕获器只读依据见`ai/host-capture-boundaries.md`。
+- 已恢复debug为true，回执`ai/chat-debug-restored.log`。
 
 ## 本次生产门禁与接续
 
@@ -29,10 +38,13 @@
 - `npm run miniapp:test`全量通过，含新增跨realm回归；日志同目录`miniapp-tests.log`。
 - root定向AI独立构建、发布门禁与平台日志隔离测试通过，命令`npx vitest run --config config/vite.config.mjs tests/miniapp/ai-skills-build.test.js tests/miniapp/release-gate.test.js tests/docs/release-notes.test.js`；日志`root-ai-release-tests.log`。
 - 受影响AI服务、测试、版本入口及root构建/门禁脚本以`eslint --no-ignore`定向检查通过，退出码0；日志`lint.log`。根ESLint原配置忽略miniapp，因此显式取消该忽略后检查本轮相关文件。
-- 生产产物为本树`miniapp/dist`，不复用旧1.2.2目录；主包1,747,418字节。机器可读门禁摘要为同目录`verification-summary.json`，不将这些本地结果代替下一步最终产物原生验收。
-- 本阶段仅本地提交，未推送、未上传、未部署Web或发布桌面。根任务随后在最终产物上完成官方AI调用与普通首开回读，再上传1.2.3开发版并按授权同步主线；没有提交审核授权。
+- 生产产物为本树`miniapp/dist`，不复用旧1.2.2目录；主包1,747,418字节。机器可读门禁摘要为同目录`verification-summary.json`，最终产物原生证据与本地测试分别记录。
+- 2026-11-04约15:49，官方CLI以版本1.2.3和AppID`wx82f11dfdd3d28bc8`返回`√ upload`，开发版已上传；上传输入提交`d5489afb690e237c4233e7d68b8c9c57b8fe389e`。回执`wechat-upload.log`、`wechat-upload-result.json`；微信处理后总包2,539,020字节、主包1,851,675字节、skills分包687,345字节。
+- 约15:50上传后普通原生回读通过，`post-upload-readback.json`为`passed: true`，AppID相符、环境develop，设置小程序v1.2.3/核心v2.2.8/S5快照一致。这是本地DevTools运行时回读，不是后台正式版本列表查询。
+- 源码主线同步沿用Git提交→推送origin/main；远端引用回读及本轮CI结果记录在同目录`source-sync.json`和`verification-summary.json`。CI采用[项目Actions](https://github.com/Evenstar-tools/roco-calculator/actions/workflows/ci.yml)的实际运行结论。Web产物、发布pin与桌面版本不变，本轮没有手动部署Web、发布桌面、提交审核或公开上线。
 
 ## 外部状态边界
 
 - 微信AI平台评测官方目前暂未开放，记录平台现状，不把本地或宿主联调成功写成平台评测通过。
-- 本轮不提交审核或公开上线；实体手机、后台正式线上版本AI代码提示与平台评测分别记录，不影响已经取得的官方开发工具AI调用证据。
+- 普通DevTools截图已实际读回；149×321缩略图不足以支持精细视觉结论，也不代替实体手机证据。该事实限定本次证据范围，不新增持续质量待办。
+- 未提审、未公开上线符合本轮开发版授权；后台正式线上版本AI代码提示与平台评测分别记录，不影响已经取得的官方开发工具AI调用证据。
