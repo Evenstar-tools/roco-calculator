@@ -6,30 +6,311 @@
       "inputSchema": {
         "type": "object",
         "properties": {
-          "query": { "type": "string", "minLength": 1, "description": "精灵、技能或特性的名字、关键词或ID。" },
-          "kind": { "type": "string", "enum": ["spirit", "skill", "trait"], "default": "spirit", "description": "查询类别，默认精灵。" },
-          "spiritId": { "type": "string", "description": "查询技能时可选，使用已查询到的精灵ID限定学习面。" },
-          "limit": { "type": "integer", "minimum": 1, "maximum": 12, "default": 8 }
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "description": "精灵、技能或特性的名字、关键词或ID。"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "spirit",
+              "skill",
+              "trait"
+            ],
+            "default": "spirit",
+            "description": "查询类别，默认精灵。"
+          },
+          "spiritId": {
+            "type": "string",
+            "description": "查询技能时可选，使用已查询到的精灵ID限定学习面。"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12,
+            "default": 8
+          }
         },
-        "required": ["query"],
+        "required": [
+          "query"
+        ],
         "additionalProperties": false
       },
       "outputSchema": {
         "type": "object",
         "properties": {
-          "status": { "type": "string", "enum": ["ok", "error"] },
-          "kind": { "type": "string" },
-          "query": { "type": "string" },
-          "total": { "type": "integer" },
-          "truncated": { "type": "boolean" },
-          "results": { "type": "array", "items": { "type": "object", "properties": {
-            "id": { "type": "string" }, "name": { "type": "string" },
-            "description": { "type": "string" }, "controls": { "type": "array", "items": { "type": "object" } }
-          }, "required": ["id", "name"] } },
-          "code": { "type": "string" },
-          "message": { "type": "string" }
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "error"
+            ]
+          },
+          "kind": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/searchResult"
+            }
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
         },
-        "required": ["status"]
+        "required": [
+          "status"
+        ],
+        "definitions": {
+          "scalar": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "identity": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "hp": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "speed": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "physicalAttack": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "magicalAttack": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "physicalDefense": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "magicalDefense": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          },
+          "option": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/scalar"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "$ref": "#/definitions/scalar"
+                  }
+                },
+                "required": [
+                  "label",
+                  "value"
+                ]
+              }
+            ]
+          },
+          "visibleWhen": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "contextKey": {
+                "type": "string"
+              },
+              "defaultValue": {
+                "$ref": "#/definitions/scalar"
+              },
+              "equals": {
+                "$ref": "#/definitions/scalar"
+              }
+            }
+          },
+          "control": {
+            "type": "object",
+            "properties": {
+              "parameter": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "contextKey": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              },
+              "step": {
+                "type": "number"
+              },
+              "defaultValue": {
+                "$ref": "#/definitions/scalar"
+              },
+              "options": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/option"
+                }
+              },
+              "visibleWhen": {
+                "$ref": "#/definitions/visibleWhen"
+              }
+            }
+          },
+          "trait": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          },
+          "searchResult": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "types": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "raceStats": {
+                "$ref": "#/definitions/stats"
+              },
+              "calculationStatus": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "traits": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/trait"
+                }
+              },
+              "defaultLevel": {
+                "type": "integer"
+              },
+              "type": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "category": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "basePower": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "cost": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "controls": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/control"
+                }
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          }
+        }
       }
     },
     {
@@ -38,36 +319,530 @@
       "inputSchema": {
         "type": "object",
         "properties": {
-          "attacker": { "type": "string", "description": "攻击方精灵ID或完整唯一形态名称。" },
-          "defender": { "type": "string", "description": "防御方精灵ID或完整唯一形态名称。" },
-          "skill": { "type": "string", "description": "攻击方可学技能的ID或完整唯一名称。" },
-          "attackerNature": { "type": "string", "description": "可选，攻击方性格名称或ID；未填沿用普通性格并说明假设。" },
-          "defenderNature": { "type": "string", "description": "可选，防御方性格名称或ID。" },
-          "attackerLevel": { "type": "integer", "minimum": 1, "maximum": 99, "description": "普通精灵固定60级，支持等级调整的特殊精灵默认99级。" },
-          "defenderLevel": { "type": "integer", "minimum": 1, "maximum": 99 },
-          "attackerHpPercent": { "type": "number", "minimum": 0, "maximum": 100, "default": 100, "description": "攻击方自身当前生命百分比。" },
-          "defenderHpPercent": { "type": "number", "minimum": 0, "maximum": 100, "default": 100, "description": "目标当前生命百分比。" },
-          "attackStage": { "type": "integer", "minimum": -99, "maximum": 99, "default": 0, "description": "攻击方当前攻击能力等级，与首页等级范围一致。" },
-          "defenseStage": { "type": "integer", "minimum": -99, "maximum": 99, "default": 0, "description": "防御方当前防御能力等级，与首页等级范围一致。" },
-          "skillValues": { "type": "object", "description": "仅填写searchRocoData返回的当前技能真实控件key与合法值；无依据时不擅自触发。" }
+          "attacker": {
+            "type": "string",
+            "description": "攻击方精灵ID或完整唯一形态名称。"
+          },
+          "defender": {
+            "type": "string",
+            "description": "防御方精灵ID或完整唯一形态名称。"
+          },
+          "skill": {
+            "type": "string",
+            "description": "攻击方可学技能的ID或完整唯一名称。"
+          },
+          "attackerNature": {
+            "type": "string",
+            "description": "可选，攻击方性格名称或ID；未填沿用普通性格并说明假设。"
+          },
+          "defenderNature": {
+            "type": "string",
+            "description": "可选，防御方性格名称或ID。"
+          },
+          "attackerLevel": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 99,
+            "description": "普通精灵固定60级，支持等级调整的特殊精灵默认99级。"
+          },
+          "defenderLevel": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 99
+          },
+          "attackerHpPercent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "default": 100,
+            "description": "攻击方自身当前生命百分比。"
+          },
+          "defenderHpPercent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "default": 100,
+            "description": "目标当前生命百分比。"
+          },
+          "attackStage": {
+            "type": "integer",
+            "minimum": -99,
+            "maximum": 99,
+            "default": 0,
+            "description": "攻击方当前攻击能力等级，与首页等级范围一致。"
+          },
+          "defenseStage": {
+            "type": "integer",
+            "minimum": -99,
+            "maximum": 99,
+            "default": 0,
+            "description": "防御方当前防御能力等级，与首页等级范围一致。"
+          },
+          "skillValues": {
+            "type": "object",
+            "description": "仅填写searchRocoData返回的当前技能真实控件key与合法值；无依据时不擅自触发。"
+          }
         },
-        "required": ["attacker", "defender", "skill"],
+        "required": [
+          "attacker",
+          "defender",
+          "skill"
+        ],
         "additionalProperties": false
       },
       "outputSchema": {
         "type": "object",
         "properties": {
-          "status": { "type": "string", "enum": ["exact", "error"] },
-          "attacker": { "type": "object" }, "defender": { "type": "object" }, "skill": { "type": "object" },
-          "damage": { "type": "number", "description": "一次技能使用的合计伤害。" },
-          "hpPercent": { "type": "number", "description": "伤害占目标最大生命的百分比。" },
-          "hitCount": { "type": "integer" }, "hitDamages": { "type": "array" },
-          "remainingHp": { "type": "number" }, "resolvedPower": { "type": "number" },
-          "formulaSteps": { "type": "array" }, "assumptions": { "type": "object" },
-          "attackerHealth": { "type": "object" }, "defenderHealth": { "type": "object" },
-          "meta": { "type": "object" }, "code": { "type": "string" }, "message": { "type": "string" }
+          "status": {
+            "type": "string",
+            "enum": [
+              "exact",
+              "error"
+            ]
+          },
+          "attacker": {
+            "$ref": "#/definitions/identity"
+          },
+          "defender": {
+            "$ref": "#/definitions/identity"
+          },
+          "skill": {
+            "$ref": "#/definitions/identity"
+          },
+          "damage": {
+            "type": "number"
+          },
+          "hpPercent": {
+            "type": "number"
+          },
+          "hitCount": {
+            "type": "integer"
+          },
+          "hitDamages": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "remainingHp": {
+            "type": "number"
+          },
+          "resolvedPower": {
+            "type": "number"
+          },
+          "formulaSteps": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/formulaStep"
+            }
+          },
+          "attackerHealth": {
+            "$ref": "#/definitions/health"
+          },
+          "defenderHealth": {
+            "$ref": "#/definitions/health"
+          },
+          "assumptions": {
+            "$ref": "#/definitions/assumptions"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "dataVersion": {
+                "type": "string"
+              },
+              "rulesVersion": {
+                "type": "string"
+              },
+              "seasonId": {
+                "type": "string"
+              }
+            }
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/identity"
+            }
+          },
+          "natures": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/identity"
+            }
+          },
+          "controls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/control"
+            }
+          },
+          "control": {
+            "$ref": "#/definitions/control"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/requiredInput"
+            }
+          }
         },
-        "required": ["status"]
+        "required": [
+          "status"
+        ],
+        "definitions": {
+          "scalar": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          },
+          "identity": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "hp": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "speed": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "physicalAttack": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "magicalAttack": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "physicalDefense": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "magicalDefense": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          },
+          "option": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/scalar"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "$ref": "#/definitions/scalar"
+                  }
+                },
+                "required": [
+                  "label",
+                  "value"
+                ]
+              }
+            ]
+          },
+          "visibleWhen": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "contextKey": {
+                "type": "string"
+              },
+              "defaultValue": {
+                "$ref": "#/definitions/scalar"
+              },
+              "equals": {
+                "$ref": "#/definitions/scalar"
+              }
+            }
+          },
+          "control": {
+            "type": "object",
+            "properties": {
+              "parameter": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              },
+              "contextKey": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              },
+              "step": {
+                "type": "number"
+              },
+              "defaultValue": {
+                "$ref": "#/definitions/scalar"
+              },
+              "options": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/option"
+                }
+              },
+              "visibleWhen": {
+                "$ref": "#/definitions/visibleWhen"
+              }
+            }
+          },
+          "health": {
+            "type": "object",
+            "properties": {
+              "current": {
+                "type": "number"
+              },
+              "maximum": {
+                "type": "number"
+              },
+              "requestedPercent": {
+                "type": "number"
+              },
+              "actualPercent": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "current",
+              "maximum",
+              "requestedPercent",
+              "actualPercent"
+            ]
+          },
+          "traceValue": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/scalar"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/traceValue"
+                }
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "method": {
+                    "type": "string"
+                  },
+                  "level": {
+                    "type": "number"
+                  },
+                  "coefficient": {
+                    "type": "number"
+                  },
+                  "attackerStat": {
+                    "type": "number"
+                  },
+                  "calculationPower": {
+                    "type": "number"
+                  },
+                  "damageReductionMultiplier": {
+                    "type": "number"
+                  },
+                  "defenderDefense": {
+                    "type": "number"
+                  },
+                  "displayedPower": {
+                    "type": "number"
+                  },
+                  "roundedNumerator": {
+                    "type": "number"
+                  },
+                  "unroundedNumerator": {
+                    "type": "number"
+                  },
+                  "unroundedOneHit": {
+                    "type": "number"
+                  },
+                  "hitCount": {
+                    "type": "number"
+                  },
+                  "finalDamageMultiplier": {
+                    "type": "number"
+                  },
+                  "oneHitAfterFinal": {
+                    "type": "number"
+                  },
+                  "stacks": {
+                    "type": "number"
+                  },
+                  "power": {
+                    "type": "number"
+                  },
+                  "effect": {
+                    "type": "number"
+                  },
+                  "triggered": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            ]
+          },
+          "formulaStep": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "input": {
+                "$ref": "#/definitions/traceValue"
+              },
+              "before": {
+                "$ref": "#/definitions/traceValue"
+              },
+              "after": {
+                "$ref": "#/definitions/traceValue"
+              },
+              "value": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string"
+              }
+            }
+          },
+          "skillValues": {
+            "type": "object",
+            "properties": {
+              "betMode": {
+                "type": "string"
+              },
+              "skillPosition": {
+                "type": "number"
+              }
+            },
+            "patternProperties": {
+              "^.+$": {
+                "$ref": "#/definitions/scalar"
+              }
+            }
+          },
+          "assumptions": {
+            "type": "object",
+            "properties": {
+              "attackerNature": {
+                "$ref": "#/definitions/identity"
+              },
+              "defenderNature": {
+                "$ref": "#/definitions/identity"
+              },
+              "attackerLevel": {
+                "type": "integer"
+              },
+              "defenderLevel": {
+                "type": "integer"
+              },
+              "displayIvs": {
+                "$ref": "#/definitions/stats"
+              },
+              "attackStage": {
+                "type": "number"
+              },
+              "defenseStage": {
+                "type": "number"
+              },
+              "skillValues": {
+                "$ref": "#/definitions/skillValues"
+              },
+              "darkBetHpApplied": {
+                "type": "boolean"
+              },
+              "conditions": {
+                "type": "string"
+              }
+            }
+          },
+          "requiredInput": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              },
+              "step": {
+                "type": "number"
+              },
+              "defaultValue": {
+                "$ref": "#/definitions/scalar"
+              },
+              "options": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/option"
+                }
+              }
+            }
+          }
+        }
       }
     }
   ]

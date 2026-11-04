@@ -29,8 +29,19 @@
 - 最终工程`D:/codex/rock-mini-ai-closeout/miniapp`已单独完成官方原子接口复验：`output/miniapp-v1.2.3-ai-closeout/ai/native-cases-report.json`为`passed: true`，六项完整MCP结果与对照一致。最终工程直接资料查询返回岚鸟4种形态，不沿用旧产物结论。
 - 最终工程单工具自然语言伤害对话已取得真实`tool_result`和完整`finalText`，同一toolCallId配对成功；答复为51伤害、13.46%、剩余328/379，与工具结果一致。证据`ai/chat-single-damage-native.log`及`ai/chat-single-damage-acceptance.json`，后者断言通过。
 - 首次查询的`tools/result`超时与后续断连记录保留在同一`ai`目录，包括首次`native-cases-final.log`；恢复后原样六案例全部通过，记录为`native-cases-final-recovered.log`。这些现象不用于猜测平台根因，也不据此修改产品协议。
-- 另一次多工具聊天捕获虽返回`completed/finished`，捕获内容没有全部工具结果、伤害调用或最终答复，因此不记为完整多工具聊天通过；也不据此断言捕获结束后的普通UI行为。边界及官方捕获器只读依据见`ai/host-capture-boundaries.md`。
+- 另一次多工具聊天CLI捕获虽返回`completed/finished`，捕获内容没有全部工具结果、伤害调用或最终答复，因此该次捕获记录单独不足以证明业务完成；也不据此断言捕获结束后的普通UI行为。历史边界及官方捕获器只读依据见`ai/host-capture-boundaries.md`。
+- 随后的实际原生多工具聊天UI已完整完成四次`searchRocoData`和一次`calculateRocoDamage`，最终答复51伤害、13.46%、剩余328/379，真实界面读回为`ai/chat-multitool-ui-readback.txt`。完整多工具查加算链路已有实际UI通过证据，CLI捕获局限不能再被写成该链路尚未完成。
 - 已恢复debug为true，回执`ai/chat-debug-restored.log`。
+
+## outputSchema实测修复接续
+
+- 上述完整多工具UI当时仍显示工具结果的`outputSchema`校验警告；查询龙鱼的实测记录见`ai/query-schema-warning-ui.txt`。实际计算与答复已完成，响应声明遗漏是本轮随后修复的具体问题。
+- 只补齐`mcp.json`两接口的真实响应字段：精灵/技能/特性、控件及visibleWhen、formulaSteps、assumptions、health、meta与错误candidates/natures/controls/inputs等；共享definitions与本地引用为所有对象声明properties、所有数组声明items。MCP envelope、接口实际结果、公式与协议不变，不用additionalProperties:true吞告警；完整compact元数据为9,790字节。
+- `tests/miniapp/ai-skills-build.test.js`新增静态结构完整性与编译公共API实际查询、技能、特性、伤害和已知负例的递归字段校验；目标测试、定向ESLint及diff检查通过。独立校验对现有六份真实原生structuredContent运行AJV和逐字段检查，全部有效且无漏声明告警；这属于schema与既有结果对照，不冒充最新生产产物的实际UI消警复验。
+- schema修正后的正式生产构建再次通过，日志`output/miniapp-v1.2.3-ai-closeout/schema-followup/production-build.log`，主包仍为1,747,418字节，五组受限API启动检查通过。
+- schema修正后的最终产物已在重新打开工程后的首次自然语言对话中完成查询、学习面确认、伤害计算与最终答复；所有调用显示成功，无outputSchema校验警告，仍为51伤害、13.46%、剩余328/379。真实界面已读回，证据`schema-followup/chat-final-native-ui.png`及`chat-final-native-ui-acceptance.json`，没有用CLI部分捕获当作最终答复。
+- 同一产物的官方六原子案例再次全部通过，完整structuredContent和传入参数与对照一致，记录`schema-followup/native-cases-report.json`及`native-cases-recovered.log`。先前直接CLI首调用超时保留为`cold-cli-cases-report.json`、`cold-cli-first-query.native.json`；本次首次聊天未先调用工具预热即已走通，不把后续暖工具验证写成冷CLI调用稳定性通过。
+- debug已恢复true，回执`schema-followup/debug-restored.log`。同1.2.3开发版重传、最终输入提交及主线CI按下段最终回执记录。
 
 ## 本次生产门禁与接续
 
@@ -39,9 +50,9 @@
 - root定向AI独立构建、发布门禁与平台日志隔离测试通过，命令`npx vitest run --config config/vite.config.mjs tests/miniapp/ai-skills-build.test.js tests/miniapp/release-gate.test.js tests/docs/release-notes.test.js`；日志`root-ai-release-tests.log`。
 - 受影响AI服务、测试、版本入口及root构建/门禁脚本以`eslint --no-ignore`定向检查通过，退出码0；日志`lint.log`。根ESLint原配置忽略miniapp，因此显式取消该忽略后检查本轮相关文件。
 - 生产产物为本树`miniapp/dist`，不复用旧1.2.2目录；主包1,747,418字节。机器可读门禁摘要为同目录`verification-summary.json`，最终产物原生证据与本地测试分别记录。
-- 2026-11-04约15:49，官方CLI以版本1.2.3和AppID`wx82f11dfdd3d28bc8`返回`√ upload`，开发版已上传；上传输入提交`d5489afb690e237c4233e7d68b8c9c57b8fe389e`。回执`wechat-upload.log`、`wechat-upload-result.json`；微信处理后总包2,539,020字节、主包1,851,675字节、skills分包687,345字节。
+- 2026-11-04约15:49，官方CLI以版本1.2.3和AppID`wx82f11dfdd3d28bc8`返回`√ upload`，这是第一次1.2.3开发版上传；输入提交`d5489afb690e237c4233e7d68b8c9c57b8fe389e`。首次回执`wechat-upload.log`、`wechat-upload-result.json`；微信处理后总包2,539,020字节、主包1,851,675字节、skills分包687,345字节。该历史回执不代表后续schema修正产物已重传。
 - 约15:50上传后普通原生回读通过，`post-upload-readback.json`为`passed: true`，AppID相符、环境develop，设置小程序v1.2.3/核心v2.2.8/S5快照一致。这是本地DevTools运行时回读，不是后台正式版本列表查询。
-- 源码主线同步沿用Git提交→推送origin/main；远端引用回读及本轮CI结果记录在同目录`source-sync.json`和`verification-summary.json`。CI采用[项目Actions](https://github.com/Evenstar-tools/roco-calculator/actions/workflows/ci.yml)的实际运行结论。Web产物、发布pin与桌面版本不变，本轮没有手动部署Web、发布桌面、提交审核或公开上线。
+- 源码主线同步沿用Git提交→推送origin/main；首次远端引用回读及CI结果记录在同目录`source-sync.json`和`verification-summary.json`，schema修正后的最终推送及CI由根任务继续。CI采用[项目Actions](https://github.com/Evenstar-tools/roco-calculator/actions/workflows/ci.yml)的实际运行结论。Web产物、发布pin与桌面版本不变，本轮没有手动部署Web、发布桌面、提交审核或公开上线。
 
 ## 外部状态边界
 
