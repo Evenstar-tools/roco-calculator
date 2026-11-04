@@ -68,6 +68,23 @@ export function pruneCnProductionModule(code, id, { reviewedS5 = false } = {}) {
     // CN renders the source Chinese text; this table contains only EN/JA translations.
     return "export const calculatorMessages = {};";
   }
+  if (reviewedS5 && filename.endsWith("/src/features/s5-preview/mechanics.js")) {
+    // The reviewed browser reducer enumerates keys only; event adapters keep their code.
+    const declaration = parse(code, { sourceType: "module" }).program.body
+      .find(node => node.type === "ExportNamedDeclaration" &&
+        node.declaration?.declarations?.[0]?.id?.name === "S5_PREVIEW_MECHANICS")?.declaration.declarations[0];
+    const initializer = declaration?.init;
+    const metadata = initializer?.arguments?.[0];
+    if (initializer?.type !== "CallExpression" || initializer.callee.type !== "MemberExpression" ||
+        initializer.callee.object.name !== "Object" || initializer.callee.property.name !== "freeze" ||
+        metadata?.type !== "ObjectExpression" || metadata.properties.some(property =>
+          property.type !== "ObjectProperty" || property.computed ||
+          !["Identifier", "StringLiteral"].includes(property.key.type) || property.value.type !== "ObjectExpression")) {
+      throw new Error("Unexpected S5 mechanics metadata: " + id);
+    }
+    const keysOnly = "{" + metadata.properties.map(property => code.slice(property.key.start, property.key.end) + ":{}").join(",") + "}";
+    return code.slice(0, metadata.start) + keysOnly + code.slice(metadata.end);
+  }
   if (reviewedS5 && filename.endsWith("/src/features/s5-preview/with-web-preview.js")) {
     // The build emits a complete reviewed snapshot. Do not ship the older fallback
     // catalog again in JS or let it overwrite current data after a release.

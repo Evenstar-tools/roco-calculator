@@ -165,3 +165,80 @@ test("reviewed S5 production consumes the complete transport without the old pre
   expect(events).toEqual(["restore", "extras", "urls"]);
   expect(() => apply({ meta: {} })).toThrow("S5资料尚未完整加载");
 });
+
+const MECHANICS_MODULE = "src/features/s5-preview/mechanics.js";
+
+function expectKeysOnlyMechanicsConsumer(code, filename) {
+  const ast = parse(code, { sourceType: "module", plugins: ["jsx"] });
+  const target = path.resolve(MECHANICS_MODULE);
+  const isMechanics = source => typeof source === "string" &&
+    (path.resolve(path.dirname(filename), source) === target || /\/s5-preview\/mechanics(?:\.js)?$/u.test(source));
+  const imported = new Set();
+  for (const node of ast.program.body) {
+    if (node.type !== "ImportDeclaration" || !isMechanics(node.source.value)) continue;
+    expect(node.specifiers.length, filename).toBeGreaterThan(0);
+    for (const specifier of node.specifiers) {
+      expect(specifier.type, filename).toBe("ImportSpecifier");
+      expect(specifier.imported.name, filename).toBe("S5_PREVIEW_MECHANICS");
+      imported.add(specifier.local.name);
+    }
+  }
+  function visit(node, parent) {
+    if (!node || typeof node !== "object") return;
+    if ((node.type === "ExportNamedDeclaration" || node.type === "ExportAllDeclaration" || node.type === "ImportExpression") &&
+        isMechanics(node.source?.value)) throw new Error("Review S5 mechanics consumer before pruning: " + filename);
+    if (node.type === "CallExpression" && node.callee.type === "Import" && isMechanics(node.arguments[0]?.value)) {
+      throw new Error("Review dynamic S5 mechanics consumer before pruning: " + filename);
+    }
+    if (node.type === "Identifier" && imported.has(node.name)) {
+      expect(parent?.type, filename).toBe("CallExpression");
+      expect(parent.arguments, filename).toEqual([node]);
+      expect(parent.callee.type, filename).toBe("MemberExpression");
+      expect(parent.callee.computed, filename).toBe(false);
+      expect(parent.callee.object.name, filename).toBe("Object");
+      expect(parent.callee.property.name, filename).toBe("keys");
+    }
+    for (const child of Object.values(node)) {
+      if (Array.isArray(child)) child.forEach(entry => visit(entry, node));
+      else if (child && typeof child === "object") visit(child, node);
+    }
+  }
+  ast.program.body.filter(node => node.type !== "ImportDeclaration").forEach(node => visit(node, null));
+}
+
+test("reviewed S5 removes unused mechanics metadata while keeping frozen keys and other exports unchanged", () => {
+  const code = readFileSync(MECHANICS_MODULE, "utf8");
+  expect(pruneCnProductionModule(code, `D:/project/${MECHANICS_MODULE}`)).toBeNull();
+  const result = pruneCnProductionModule(code, `D:/project/${MECHANICS_MODULE}`, { reviewedS5: true });
+  const declaration = source => parse(source, { sourceType: "module" }).program.body[0];
+  const original = declaration(code);
+  const pruned = declaration(result);
+  const metadata = (source, node) => new Function("return " + source.slice(node.declaration.declarations[0].init.start, node.declaration.declarations[0].init.end))();
+  const values = metadata(result, pruned);
+  expect(Object.isFrozen(values)).toBe(true);
+  expect(Object.keys(values)).toEqual(Object.keys(metadata(code, original)));
+  expect(Object.values(values).every(value => value && Object.keys(value).length === 0)).toBe(true);
+  expect(result.slice(pruned.end)).toBe(code.slice(original.end));
+});
+
+test("all browser mechanics consumers use only Object.keys before reviewed S5 metadata pruning", () => {
+  const files = directory => readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+    const filename = path.join(directory, entry.name);
+    return entry.isDirectory() ? files(filename) : /\.[cm]?[jt]sx?$/u.test(filename) ? [filename] : [];
+  });
+  for (const filename of files("src")) expectKeysOnlyMechanicsConsumer(readFileSync(filename, "utf8"), filename);
+});
+
+test("mechanics source coverage rejects metadata reads and new adapter imports before pruning", () => {
+  const source = body => `import { S5_PREVIEW_MECHANICS as mechanics } from "../features/s5-preview/mechanics.js"; ${body}`;
+  expect(() => expectKeysOnlyMechanicsConsumer(source("Object.keys(mechanics);"), "src/state/fixture.js")).not.toThrow();
+  for (const body of ["mechanics.abu.name;", "Object.values(mechanics);", "const alias = mechanics;"]) {
+    expect(() => expectKeysOnlyMechanicsConsumer(source(body), "src/state/fixture.js")).toThrow();
+  }
+  for (const code of [
+    'import { reduceS5Preview } from "../features/s5-preview/mechanics.js";',
+    'import * as mechanics from "../features/s5-preview/mechanics.js";',
+    'export * from "../features/s5-preview/mechanics.js";',
+    'import("../features/s5-preview/mechanics.js");',
+  ]) expect(() => expectKeysOnlyMechanicsConsumer(code, "src/state/fixture.js")).toThrow();
+});
