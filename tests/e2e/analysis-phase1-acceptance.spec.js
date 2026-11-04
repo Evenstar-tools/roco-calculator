@@ -44,7 +44,8 @@ for (const [width, theme] of [[1424, "light"], [390, "light"], [390, "dark"]]) {
     await drawer.getByRole("button", { name: "能力分析", exact: true }).click();
     expect((await roster.boundingBox()).height).toBeCloseTo(configuredHeight, 0);
     await expect(roster.locator(".team-slot__select:visible")).toHaveCount(6);
-    await expect(roster.locator(".team-roster .team-slot__actions button:visible")).toHaveCount(width < 1024 ? 0 : 12);
+    // 电脑上只有已配置成员带悬停攻/防按钮（本队 1 只），空位只显示「添加精灵」；平板和手机改用头部/底栏操作。
+    await expect(roster.locator(".team-roster .team-slot__actions button:visible")).toHaveCount(width < 1024 ? 0 : 2);
     if (width < 1024) {
       expect(configuredHeight).toBeLessThan(220);
       expect(await roster.evaluate(el => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
