@@ -88,11 +88,8 @@ for (const width of [320, 390, 700, 1424]) {
         await expect(roster.getByRole("button", { name: `编辑${names[index]}`, exact: true })).toHaveAttribute("aria-pressed", "true");
       }
       expect(await page.evaluate(() => localStorage.getItem("rock-calculator.teams.v1"))).toBe(savedBefore);
-      if (width <= 1023) {
-        await drawer.locator(".team-roster__current-actions > summary").click();
-        await expect(drawer.locator(".team-roster__current-actions").getByRole("button", { name: "白发路路设为攻击方", exact: true })).toBeVisible();
-        await drawer.locator(".team-roster__current-actions > summary").click();
-      }
+      // 窄屏不再有「当前成员操作」折叠栏，攻/防直接在成员头部（手机为底栏）。
+      await expect(drawer.getByRole("button", { name: "设为攻击方", exact: true })).toBeVisible();
       await drawer.getByRole("button", { name: "成员配置", exact: true }).click();
       await expect(drawer).toHaveAttribute("data-compact-roster", "false");
       await expect(roster).not.toHaveClass(/team-roster--compact/);
@@ -111,7 +108,6 @@ test("empty slot number and long names fit at 320px without losing selection", a
   await expect(roster.getByRole("button", { name: `编辑${longest.fullName}`, exact: true })).toHaveAttribute("title", `2号位 · ${longest.fullName}`);
   await roster.getByRole("button", { name: "编辑空位 6", exact: true }).click();
   await expect(drawer.locator(".team-workbench__identity h3")).toHaveText("6号位 · 待选择精灵");
-  await drawer.locator(".team-roster__current-actions > summary").click();
-  await expect(drawer.locator(".team-roster__current-actions").getByRole("button", { name: "空位 6设为攻击方", exact: true })).toBeDisabled();
+  await expect(drawer.getByRole("button", { name: "设为攻击方", exact: true })).toBeDisabled();
   await page.screenshot({ path: `${output}/actual-320-empty-longname.png`, animations: "disabled" });
 });
