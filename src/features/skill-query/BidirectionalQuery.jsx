@@ -137,7 +137,7 @@ export default function BidirectionalQuery({ season, skills = [], spirits = [], 
     if (onHideEffectsChange) onHideEffectsChange(!hideEffects);
     else setHideEffects(!hideEffects);
   };
-  const returnToLibrary = () => { setLearners(false); workspace.current?.scrollTo({ top: 0, behavior: "smooth" }); };
+  const returnToLibrary = () => { setLearners(false); workspace.current?.scrollTo?.({ top: 0, behavior: "smooth" }); };
   const openSpirit = (id) => {
     if (!spiritId) { resultScroll.current = readScroll(); returnFamily.current = id; }
     setSpiritId(id); setSource(""); setDetailQuery(""); setDetailType(""); setDetailCategory(""); setExpanded(null);

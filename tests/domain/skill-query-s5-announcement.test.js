@@ -127,6 +127,29 @@ test("新家族按明确进化链收拢，精灵查技能及技能反查读取�
     .map(spirit => spirit.familyId)).size).toBe(1);
 });
 
+test("新增首领仅由自身提供进化 ID 也自动归入已有家族，技能反查保留首领与可学普通形态", () => {
+  const catalog = loadCatalog();
+  const full = withWebPreview(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
+  const silver = full.spirits.find(spirit => spirit.fullName === "地绡银龙");
+  const exchange = full.skills.find(skill => skill.name === "矿物置换");
+  const boss = { id: "test-one-way-boss", fullName: "新增测试首领", stage: "首领",
+    types: silver.types, evolutionChainIds: [silver.id] };
+  const previous = withS5AnnouncementCatalog(catalog, full).seasons.find(({ id }) => id === "S5");
+  const family = previous.spirits.filter(spirit => spirit.familyId ===
+    previous.spirits.find(spirit => spirit.id === silver.id).familyId);
+  const current = { ...full, spirits: [...full.spirits, boss], learnsets: [...full.learnsets,
+    { spiritId: boss.id, skillIds: [exchange.id], acquisitions: { [exchange.id]: ["默认学习"] } },
+  ] };
+  const s5 = withS5AnnouncementCatalog(catalog, current).seasons.find(({ id }) => id === "S5");
+  const projectedBoss = s5.spirits.find(spirit => spirit.id === boss.id);
+  expect(family.length).toBeGreaterThan(1);
+  expect(family.every(member => s5.spirits.find(spirit => spirit.id === member.id).familyId ===
+    projectedBoss.familyId)).toBe(true);
+  const families = querySpiritFamilies(s5, { query: boss.fullName, skillIds: [exchange.id] });
+  expect(families).toHaveLength(1);
+  expect(families[0].members.map(spirit => spirit.id)).toEqual(expect.arrayContaining([silver.id, boss.id]));
+});
+
 test("当前技能参数和学习面覆盖旧公告，缺失途径保留已知文本，明确新途径优先", () => {
   const catalog = loadCatalog();
   const full = withWebPreview(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
@@ -181,6 +204,14 @@ test("真实 BWIKI runtime 途径差量还原完整 S5 学习面，不回填撤�
   expect(runtime.learnsets.some(pool => pool.acquisitionsPartial)).toBe(true);
   const season = withS5AnnouncementCatalog(loadCatalog(), runtime).seasons.find(({ id }) => id === "S5");
   expect(season.label).toBe("S5");
+  const bruceNames = ["布鲁斯", "雪顶布鲁斯", "冰钻布鲁斯", "圣冠布鲁斯"];
+  const bruceMembers = season.spirits.filter(spirit => bruceNames.includes(spirit.fullName));
+  expect(bruceMembers).toHaveLength(4);
+  expect(bruceMembers[0].familyId).toBeTruthy();
+  expect(new Set(bruceMembers.map(spirit => spirit.familyId)).size).toBe(1);
+  const bruceFamilies = querySpiritFamilies(season, { query: "布鲁斯" });
+  expect(bruceFamilies).toHaveLength(1);
+  expect(bruceFamilies[0].members.map(spirit => spirit.fullName).sort()).toEqual([...bruceNames].sort());
   // Exercise the shipped runtime → query projection, not a hand-written trait fixture.
   const traits = new Map(season.traits.map(trait => [trait.id, trait]));
   for (const spirit of season.spirits.filter(canRecommendSpirit)) {

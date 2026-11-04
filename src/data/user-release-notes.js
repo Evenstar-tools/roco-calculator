@@ -237,6 +237,15 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.7",
+    date: "2026.11.04",
+    seasonId: "S5",
+    title: "S5 技能反查更新",
+    whatsNew: S5_FEATURE_INTRO,
+    features: ["可学精灵支持整页结果，列明学习方式。"],
+    fixes: ["保留家族修复；国际服S3季中沿用原版。"],
+  }),
+  createRelease({
     version: "v2.3.6",
     date: "2026.11.04",
     seasonId: "S5",
