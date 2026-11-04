@@ -18,6 +18,43 @@ async function openBalanceHistory(page) {
 test("balance history update overview keeps member changes separate", async ({ page }) => {
   const panel = await openBalanceHistory(page);
   await panel.getByRole("tab", { name: "按更新浏览", exact: true }).click();
+  {
+    const search = panel.getByRole("textbox", { name: "在本次更新中查找精灵或技能", exact: true });
+    const overview = panel.locator(".bh-overview");
+    const categories = panel.getByRole("group", { name: "调整类型", exact: true });
+    await expect(search).toHaveValue("");
+    await expect(categories.getByRole("button")).toHaveText([
+      "种族值40 只↑26 ↓14", "技能本身10 项↑5 ↓3", "特性8 只", "学习面205 只", "其他7 只",
+    ]);
+    // The default overview must say who changed alongside the numbers, without a search.
+    const stats = overview.getByRole("region", { name: "种族值", exact: true });
+    const seedling = stats.locator(".bh-stat-row").filter({ has: page.getByText("森豆丁", { exact: true }) });
+    await expect(seedling).toBeVisible();
+    await expect(seedling).toContainText("生命 87→98 +11");
+    await expect(seedling).toContainText("总和 +26");
+    await expect(seedling.locator("xpath=..")).toContainText("森豆丁家族");
+
+    const skillCategory = categories.getByRole("button", { name: /^技能本身/ });
+    await skillCategory.click();
+    await expect(skillCategory).toHaveAttribute("aria-pressed", "true");
+    await expect(stats).toHaveCount(0);
+    const skills = overview.getByRole("region", { name: "技能本身", exact: true });
+    await expect(skills.locator(".bh-card")).toHaveCount(10);
+    const trap = skills.locator(".bh-card").filter({ has: page.getByText("甜蜜陷阱", { exact: true }) });
+    await expect(trap).toContainText("威力 50→60 +10");
+    await expect(trap.locator(".bh-users").getByText("蒲公英", { exact: true })).toBeVisible();
+    await skillCategory.click();
+    await expect(stats).toBeVisible();
+    await categories.getByRole("button", { name: /^学习面/ }).click();
+    const learnset = overview.getByRole("region", { name: "学习面", exact: true });
+    await expect(learnset).toContainText("+ 外附传播");
+    const family = learnset.locator("details").first();
+    await expect(family).not.toHaveAttribute("open");
+    await family.locator("summary").click();
+    await expect(family).toHaveAttribute("open", "");
+    await expect(family).toContainText("蹦蹦种子（海神球形态）");
+  }
+
   await panel.getByRole("button", { name: /2026\.05\.21.*S2/ }).click();
   const search = panel.getByRole("textbox", { name: "在本次更新中查找精灵或技能", exact: true });
   const overview = panel.locator(".bh-overview");
