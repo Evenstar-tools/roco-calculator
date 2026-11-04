@@ -57,6 +57,12 @@
 - 约15:50上传后普通原生回读通过，`post-upload-readback.json`为`passed: true`，AppID相符、环境develop，设置小程序v1.2.3/核心v2.2.8/S5快照一致。这是本地DevTools运行时回读，不是后台正式版本列表查询。
 - 源码主线同步沿用Git提交→推送origin/main；最终远端引用回读及CI结果记录在同目录`source-sync.json`和`verification-summary.json`，CI采用[项目Actions](https://github.com/Evenstar-tools/roco-calculator/actions/workflows/ci.yml)的实际运行结论。并行网页2.3.5提交完整保留，桌面安装包不变；本轮没有手动部署Web、发布桌面、提交审核或公开上线。
 
+## 合并后的发布回归接续
+
+- 首次合并提交`3e4eb732`的CI `41800196611`中，小程序测试与构建、Web构建和单元集成测试通过；两条平衡回顾浏览器用例仍使用UX45改版前的搜索标签、分类名、详情展开和数值文本，最终浏览器门禁失败。
+- 仅更新`tests/e2e/balance-history.spec.js`到已发布界面，保留成员独有调整、家族展开、技能/种族值归类、切批次搜索重置、返回后筛选恢复等断言；没有跳过用例或修改产品功能。含RUM正式Web构建、这两条真实浏览器复验与定向lint通过；日志为`schema-followup/merged-web-build.log`、`balance-history-targeted-e2e.log`和`balance-history-lint.log`。
+- 上传输入提交以来的小程序源码与构建脚本保持一致，测试维护不需要重传小程序。最终远端引用与CI结论仍以`source-sync.json`和项目Actions实际结果为准。
+
 ## 外部状态边界
 
 - 微信AI平台评测官方目前暂未开放，记录平台现状，不把本地或宿主联调成功写成平台评测通过。
