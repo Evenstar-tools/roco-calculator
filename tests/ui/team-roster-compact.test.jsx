@@ -25,31 +25,36 @@ test("shared roster keeps six independent targets, full labels and the selected 
   expect(within(roster).getByRole("button", { name: "编辑测试精灵1" })).toHaveAttribute("aria-pressed", "false");
 });
 
-test("current member actions retain attack and defense behavior without applying on selection", () => {
+test("card attack and defense actions apply without selecting, and the folded duplicate is gone", () => {
   const onApply = vi.fn();
-  const { container, rerender } = render(<TeamRoster members={members} snapshot={snapshot} selectedIndex={0} onSelect={vi.fn()} onApply={onApply} />);
-  let details = container.querySelector(".team-roster__current-actions");
-  fireEvent.click(details.querySelector("summary"));
-  details.open = true;
-  expect(onApply).not.toHaveBeenCalled();
-  fireEvent.click(within(details).getByRole("button", { name: "测试精灵1设为攻击方" }));
+  const onSelect = vi.fn();
+  const { container } = render(<TeamRoster members={members} snapshot={snapshot} selectedIndex={0} onSelect={onSelect} onApply={onApply} />);
+  expect(container.querySelector(".team-roster__current-actions")).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "测试精灵1设为攻击方" }));
   expect(onApply).toHaveBeenLastCalledWith("attacker", members[0]);
-  rerender(<TeamRoster members={members} snapshot={snapshot} selectedIndex={5} onSelect={vi.fn()} onApply={onApply} />);
-  details = container.querySelector(".team-roster__current-actions");
-  expect(details.open).toBe(false);
-  details.open = true;
-  fireEvent.click(within(details).getByRole("button", { name: "测试精灵6设为防御方" }));
+  fireEvent.click(screen.getByRole("button", { name: "测试精灵6设为防御方" }));
   expect(onApply).toHaveBeenLastCalledWith("defender", members[5]);
+  expect(onSelect).not.toHaveBeenCalled();
 });
 
-test("empty slots remain selectable while applying an empty member is disabled", () => {
+test("empty slots read as add actions, stay selectable and cannot be applied", () => {
   const onSelect = vi.fn();
-  const { container } = render(<TeamRoster members={[members[0], null]} snapshot={snapshot} selectedIndex={5} onSelect={onSelect} onApply={vi.fn()} />);
-  fireEvent.click(screen.getByRole("button", { name: "编辑空位 6" }));
+  render(<TeamRoster members={[members[0], null]} snapshot={snapshot} selectedIndex={5} onSelect={onSelect} onApply={vi.fn()} />);
+  const empty = screen.getByRole("button", { name: "编辑空位 6" });
+  expect(empty).toHaveTextContent("添加精灵");
+  expect(empty).not.toHaveTextContent("空位");
+  expect(empty.closest("li")).toHaveClass("is-empty");
+  fireEvent.click(empty);
   expect(onSelect).toHaveBeenCalledWith(5);
-  const details = container.querySelector(".team-roster__current-actions");
-  details.open = true;
-  expect(within(details).getAllByRole("button").every(button => button.disabled)).toBe(true);
+  expect(screen.getByRole("button", { name: "空位 6设为攻击方" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "空位 6设为防御方" })).toBeDisabled();
+});
+
+test("cards hide the neutral nature label but keep real natures", () => {
+  const adamant = { ...members[1], natureId: "adamant" };
+  render(<TeamRoster members={[members[0], adamant]} snapshot={snapshot} selectedIndex={0} onSelect={vi.fn()} onApply={vi.fn()} />);
+  expect(screen.getByRole("button", { name: "编辑测试精灵1" })).not.toHaveTextContent("普通");
+  expect(screen.getByRole("button", { name: "编辑测试精灵2" })).toHaveTextContent("固执");
 });
 
 test("an unselected roster hides current-member actions", () => {
