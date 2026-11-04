@@ -403,10 +403,12 @@ test("速度一览独占展示全部档位并可选择目标返回", async () =>
   expect(within(overview).getByLabelText("速度目标口径")).toBeVisible();
   expect(within(overview).getByRole("combobox", { name: "速度目标精灵" })).toBeVisible();
   const table = within(overview).getByRole("table", { name: "速度档位表" });
-  const speeds = within(table).getAllByRole("rowheader").map((cell) => Number(cell.textContent));
+  const speeds = within(table).getAllByRole("rowheader").map((cell) => Number(cell.querySelector(".ability-speed-overview__tier-value").textContent));
   expect([...table.querySelectorAll("tbody th")].every((cell) =>
-    cell.querySelector(".ability-speed-overview__tier-value")?.textContent === cell.textContent,
+    cell.textContent === `${cell.querySelector(".ability-speed-overview__tier-value").textContent}${cell.querySelector(".ability-speed-overview__tier-count")?.textContent ?? ""}`,
   )).toBe(true);
+  // 速度一览和速度线排行一样默认头像版，眼睛按钮切回名字。
+  expect(within(overview).getByRole("button", { name: "显示精灵文字" })).toHaveAttribute("aria-pressed", "true");
   expect(speeds).toEqual([...speeds].sort((left, right) => right - left));
   expect(within(table).getAllByRole("button", { name: /在速度表选择音速犬/ })).not.toHaveLength(0);
   expect(within(table).getAllByRole("button", { name: /在速度表选择首领象/ })).not.toHaveLength(0);
@@ -452,7 +454,7 @@ test("速度一览自动定位目标并在返回后保留口径、目标、滚�
     await waitFor(() => expect(editor.scrollTop).toBe(0));
     await waitFor(() => expect(scrollIntoView).toHaveBeenCalledWith({ block: "center" }));
     expect(within(overview).getByRole("button", { name: "返回能力分析" })).toHaveFocus();
-    expect(within(overview).getByRole("button", { pressed: true })).toHaveAccessibleName(
+    expect(within(within(overview).getByRole("table", { name: "速度档位表" })).getByRole("button", { pressed: true })).toHaveAccessibleName(
       /在速度表选择首领象/,
     );
 
