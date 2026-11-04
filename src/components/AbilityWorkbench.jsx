@@ -123,12 +123,15 @@ function speedTargetLabel(target, t) {
     : "";
 }
 
-function speedTargetMeta(target, { compact = false } = {}, t) {
+function speedTargetMeta(target, { compact = false, withoutProfile = false } = {}, t) {
   const role = target.formRole === "boss" ? ` · ${t("首领")}` : "";
-  const context = target.specialLabel && compact
-    ? t(target.specialLabel)
-    : `${t(target.profileLabel)}${target.specialLabel ? ` · ${t(target.specialLabel)}` : ""}`;
-  return `${t("{value}族", { value: target.spirit.raceStats.speed })}${role} · ${context}`;
+  // 名字卡旁已有口径圆标，只补种族速度和特殊配置。
+  const context = withoutProfile
+    ? target.specialLabel ? t(target.specialLabel) : ""
+    : target.specialLabel && compact
+      ? t(target.specialLabel)
+      : `${t(target.profileLabel)}${target.specialLabel ? ` · ${t(target.specialLabel)}` : ""}`;
+  return `${t("{value}族", { value: target.spirit.raceStats.speed })}${role}${context ? ` · ${context}` : ""}`;
 }
 
 function cloneConfiguration(configuration) {
@@ -350,6 +353,31 @@ function SpeedProfilePicker({ onProfilesChange, profileIds }) {
           ))}
         </fieldset>
       </details>
+    </div>
+  );
+}
+
+const SPEED_PROFILE_LETTERS = Object.freeze({ "positive-max": "极", "neutral-max": "满", "positive-zero": "性", "neutral-zero": "无", "negative-zero": "减", [SPECIAL_SPEED_PROFILE_ID]: "特" });
+
+function SpeedProfilePills({ onProfilesChange, profileIds }) {
+  const { t } = useLocale();
+  return (
+    <div aria-label={t("速度口径")} className="speed-profile-pills" role="group">
+      {SPEED_PROFILE_OPTIONS.map((entry) => {
+        const checked = profileIds.includes(entry.id);
+        return (
+          <label className={`speed-profile-pill is-${entry.id}`} key={entry.id}>
+            <input
+              checked={checked}
+              disabled={checked && profileIds.length === 1}
+              onChange={() => onProfilesChange(checked ? profileIds.filter((id) => id !== entry.id) : [...profileIds, entry.id])}
+              type="checkbox"
+            />
+            <i aria-hidden="true">{t(SPEED_PROFILE_LETTERS[entry.id])}</i>
+            {t(entry.label)}
+          </label>
+        );
+      })}
     </div>
   );
 }
@@ -699,12 +727,13 @@ export function SpeedOverview({
   onQueryChange,
   queryMode = "auto",
   onQueryModeChange,
+  defaultProfileIds = DEFAULT_RANKING_PROFILES,
 }) {
   const { t } = useLocale();
   const locateTargetRef = useRef(null);
   const referenceRef = useRef(null);
   const scrollRef = useRef(null);
-  const [iconOnly, setIconOnly] = useState(standalone);
+  const [iconOnly, setIconOnly] = useState(true);
   const [jump, setJump] = useState(0);
   const selected = standalone ? null : targets.find((target) => target.id === targetId) ?? targets[0];
   const activeTargetId = standalone ? targetId : selected?.id;
@@ -776,23 +805,23 @@ export function SpeedOverview({
 
       <div className="ability-speed-overview__controls">
         <button type="button" className="speed-portrait-toggle" aria-label={iconOnly ? t("显示精灵文字") : t("隐藏精灵文字")} aria-pressed={iconOnly} title={iconOnly ? t("显示精灵文字") : t("隐藏精灵文字")} onClick={() => setIconOnly(!iconOnly)}>{iconOnly ? <Eye size={19} /> : <EyeSlash size={19} />}</button>
-        <SpeedProfilePicker
+        {standalone ? null : <SpeedProfilePicker
           onProfilesChange={onProfilesChange}
           profileIds={profileIds}
-        />
-        {standalone ? <label className="rank-search"><MagnifyingGlass size={16} /><input aria-label={t("搜索速度榜精灵")} placeholder={t("搜索名称、别名、图鉴号或速度")} value={query} onChange={(event) => onQueryChange(event.target.value)} /></label> : <SpeedTargetPicker
+        />}
+        {standalone ? <label className="rank-search"><MagnifyingGlass size={16} /><input aria-label={t("搜索速度榜精灵")} placeholder={t("搜索名字、图鉴号，或输入速度（如 137）")} value={query} onChange={(event) => onQueryChange(event.target.value)} /></label> : <SpeedTargetPicker
           onTargetChange={onTargetChange}
           selected={selected}
           targets={targets}
         />}
       </div>
 
-      {standalone ? <div className="speed-query-guide">
+      {standalone && query ? <div className="speed-query-guide">
 
-        <div className="speed-reference-summary" role="status">{search.invalid ? <span>{t("请输入非负整数速度值")}</span> : reference ? <><span>{matchSummary ? <span className="speed-match-summary">{matchSummary.split("；").map(item => { const [label, ...value] = item.split("："); return <span key={label}>{t(label)}：<strong>{t(value.join("："))}</strong></span>; })}</span> : null}{t("当前结果比")}{" "}<b>{reference.value}</b>{" "}{t("快")}{" "}<b>{reference.faster}</b>{" "}{t("· 同速")}{" "}<b>{reference.equal}</b>{" "}{t("· 慢")}{" "}<b>{reference.slower}</b>{" "}{t("个配置")}</span><span className="speed-locate-actions">{namedLocations}{hasBaseMatch ? <button type="button" onClick={() => onLocateBase?.(reference.value)}>{t("定位种族")}{" "}{reference.value}</button> : null}{!baseOnlyMatch ? <button type="button" onClick={() => { if (onLocateResult) onLocateResult(reference.value); setJump(jump + 1); }}>{t("定位")}{" "}{reference.value}</button> : null}</span></> : <><span>{search.kind === "base" && search.value !== null ? t("种族速度 {v0} · 按实际速度排列", { v0: search.value }) : t("输入名称找精灵，输入速度看快慢")}</span><span className="speed-locate-actions">{namedLocations}</span>{!query ? <button type="button" onClick={() => { onQueryModeChange("auto"); onQueryChange("267"); }}>{t("试查 267")}</button> : null}</>}</div>
+        <div className="speed-reference-summary" role="status">{search.invalid ? <span>{t("请输入非负整数速度值")}</span> : reference ? <><span>{matchSummary ? <span className="speed-match-summary">{matchSummary.split("；").map(item => { const [label, ...value] = item.split("："); return <span key={label}>{t(label)}：<strong>{t(value.join("："))}</strong></span>; })}</span> : null}{t("当前结果比")}{" "}<b>{reference.value}</b>{" "}{t("快")}{" "}<b>{reference.faster}</b>{" "}{t("· 同速")}{" "}<b>{reference.equal}</b>{" "}{t("· 慢")}{" "}<b>{reference.slower}</b>{" "}{t("个配置")}</span><span className="speed-locate-actions">{namedLocations}{hasBaseMatch ? <button type="button" onClick={() => onLocateBase?.(reference.value)}>{t("定位种族")}{" "}{reference.value}</button> : null}{!baseOnlyMatch ? <button type="button" onClick={() => { if (onLocateResult) onLocateResult(reference.value); setJump(jump + 1); }}>{t("定位")}{" "}{reference.value}</button> : null}</span></> : <><span>{search.kind === "base" && search.value !== null ? t("种族速度 {v0} · 按实际速度排列", { v0: search.value }) : t("输入名称找精灵，输入速度看快慢")}</span><span className="speed-locate-actions">{namedLocations}</span></>}</div>
       </div> : null}
 
-      {standalone ? <div className="rank-summary"><span>{t("共")}{" "}{targetGroups.length}{" "}{t("档 · 同速聚合")}</span><button type="button" onClick={() => {onQueryChange(""); onQueryModeChange("auto"); onProfilesChange([...DEFAULT_RANKING_PROFILES]);}}>{t("重置")}</button></div> : <div className="ability-speed-overview__selection" role="status">
+      {standalone ? <div className="rank-summary"><SpeedProfilePills onProfilesChange={onProfilesChange} profileIds={profileIds} /><span>{t("共")}{" "}{targetGroups.length}{" "}{t("档 · 同速聚合")}</span><button type="button" onClick={() => {onQueryChange(""); onQueryModeChange("auto"); onProfilesChange([...defaultProfileIds]);}}>{t("重置")}</button></div> : <div className="ability-speed-overview__selection" role="status">
         <span>{isDraft ? t("试算配置") : t("当前配置")} <b>{formatNumber(currentSpeed)}</b></span>
         {selected ? (
           <span>{t("已选目标")}{" "}<b>{t(selected.name)} · {formatNumber(selected.speed)}</b></span>
@@ -823,6 +852,7 @@ export function SpeedOverview({
               >
                 <th scope="row">
                   <span className="ability-speed-overview__tier-value">{group.speed}{reference ? <small>{group.speed === reference.value ? t("基准") : `${group.speed > reference.value ? "+" : ""}${group.speed - reference.value}`}</small> : null}</span>
+                  {group.targets.length ? <small className="ability-speed-overview__tier-count">{t("{count} 个", { count: group.targets.length })}</small> : null}
                 </th>
                 <td>
                   <div className={`ability-speed__tier-spirits${standalone && iconOnly && group.targets.length ? " is-contained" : ""}`}
@@ -842,10 +872,11 @@ export function SpeedOverview({
                         type="button"
                       >
                         {source ? deferred ? <span aria-hidden="true" className="speed-portrait-placeholder" /> : <SpiritImage name={target.name} showLoadingName className="speed-portrait-placeholder" alt="" loading={portraitLoading} decoding="async" src={source} /> : null}
-                        {iconOnly ? <small className="speed-profile-badge">{t(speedBadge(target))}</small> : <span>
+                        {iconOnly ? null : <span>
                           <strong>{t(target.name)}</strong>
-                          <small>{speedTargetMeta(target, {}, t)}</small>
+                          <small>{speedTargetMeta(target, { withoutProfile: true }, t)}</small>
                         </span>}
+                        <small className={`speed-profile-badge is-${target.profileId}`}>{t(speedBadge(target))}</small>
                       </button>;
                     })}
                   </div>
