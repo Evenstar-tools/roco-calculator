@@ -3430,3 +3430,65 @@
 /* 暗色主题：倍率格的绿色字在深绿底上看不清，单独提亮。 */
 html[data-theme="dark"] .team-workbench .team-analysis button.team-analysis__cell.is-safe { color: #6fdc9b; }
 html[data-theme="dark"] .team-workbench .team-analysis button.team-analysis__cell.is-danger { color: #ff8f84; }
+
+/* 速度一览（能力分析与速度线排行共用，2026-11-04）：口径圆标浅色，头像版放大，名字版改名字卡，手机档位改整行横条。 */
+.speed-profile-badge, .speed-profile-pill { --speed-tone: #5c677d; }
+:is(.speed-profile-badge, .speed-profile-pill).is-positive-max { --speed-tone: #c2410c; }
+:is(.speed-profile-badge, .speed-profile-pill).is-neutral-max { --speed-tone: #a16207; }
+:is(.speed-profile-badge, .speed-profile-pill).is-positive-zero { --speed-tone: #6d28d9; }
+:is(.speed-profile-badge, .speed-profile-pill).is-neutral-zero { --speed-tone: #475569; }
+:is(.speed-profile-badge, .speed-profile-pill).is-negative-zero { --speed-tone: #0e7490; }
+:is(.speed-profile-badge, .speed-profile-pill).is-special { --speed-tone: #be185d; }
+.ability-speed-overview .ability-speed__tier-spirits .speed-profile-badge {
+  display: inline-block;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 5px;
+  overflow: visible;
+  border: 1px solid color-mix(in srgb, var(--speed-tone) 22%, transparent);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--speed-tone) 12%, var(--surface));
+  color: var(--speed-tone);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  white-space: nowrap;
+}
+html[data-theme="dark"] .ability-speed-overview .ability-speed__tier-spirits .speed-profile-badge { border-color: color-mix(in srgb, var(--speed-tone) 45%, transparent); background: color-mix(in srgb, var(--speed-tone) 26%, var(--surface)); color: color-mix(in srgb, var(--speed-tone) 45%, #fff); }
+.ability-speed-overview__tier-count { display: block; margin-top: 2px; color: var(--text-muted); font-size: 12px; font-weight: 500; }
+
+/* 头像版：76px 方卡，头像 68px，口径圆标压在右下角。 */
+.ability-speed-overview.is-icon-only .ability-speed__tier-spirits { gap: 6px; }
+.ability-speed-overview.is-icon-only .ability-speed__tier-spirits button { position: relative; display: grid; width: 76px; min-width: 76px; max-width: 76px; height: 76px; min-height: 0; padding: 3px; place-items: center; border-color: var(--border); }
+.ability-speed-overview.is-icon-only .ability-speed__tier-spirits img,
+.ability-speed-overview.is-icon-only .ability-speed__tier-spirits .speed-portrait-placeholder { width: 68px; height: 68px; object-fit: contain; }
+.ability-speed-overview.is-icon-only .ability-speed__tier-spirits .speed-profile-badge { position: absolute; right: 3px; bottom: 3px; }
+
+/* 名字版：头像 36px + 名字 + 圆标。 */
+.ability-speed-overview:not(.is-icon-only) .ability-speed__tier-spirits { display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 6px; }
+.ability-speed-overview:not(.is-icon-only) .ability-speed__tier-spirits button { width: auto; min-width: 0; max-width: none; min-height: 48px; padding: 4px 8px 4px 4px; border-color: var(--border); grid-template-columns: 36px minmax(0, 1fr) auto; gap: 8px; }
+.ability-speed-overview:not(.is-icon-only) .ability-speed__tier-spirits img,
+.ability-speed-overview:not(.is-icon-only) .ability-speed__tier-spirits .speed-portrait-placeholder { width: 36px; height: 36px; }
+.ability-speed-overview .ability-speed__tier-spirits strong { font-size: 13px; }
+.ability-speed-overview .ability-speed__tier-spirits small:not(.speed-profile-badge) { font-size: 12px; }
+
+@media (max-width: 600px) {
+  .ability-speed-overview .ability-speed__table,
+  .ability-speed-overview .ability-speed__table tbody,
+  .ability-speed-overview .ability-speed__table tr,
+  .ability-speed-overview .ability-speed__table td { display: block; width: auto; }
+  .ability-speed-overview .ability-speed__table thead,
+  .ability-speed-overview .ability-speed__table colgroup { display: none; }
+  .ability-speed-overview .ability-speed__table tbody th { position: sticky; z-index: 2; top: 0; display: flex; align-items: baseline; gap: 8px; padding: 6px 10px; border-bottom: 0; }
+  .ability-speed-overview .ability-speed__table tbody th .ability-speed-overview__tier-value { position: static; display: flex; align-items: baseline; gap: 6px; font-size: 15px; font-weight: 700; }
+  .ability-speed-overview .ability-speed__table tbody th .ability-speed-overview__tier-value > small { display: inline; font-size: 12px; }
+  .ability-speed-overview .ability-speed-overview__tier-count { display: inline; margin: 0; }
+  .ability-speed-overview .ability-speed__table td { padding: 6px 0 10px; }
+  .ability-speed-overview:not(.is-icon-only) .ability-speed__tier-spirits { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ability-speed-overview:not(.is-icon-only) .ability-speed__tier-spirits button { grid-template-columns: 30px minmax(0, 1fr) auto; gap: 6px; }
+  .ability-speed-overview:not(.is-icon-only) .ability-speed__tier-spirits img,
+  .ability-speed-overview:not(.is-icon-only) .ability-speed__tier-spirits .speed-portrait-placeholder { width: 30px; height: 30px; }
+  .ability-speed-overview .ability-speed__tier-spirits strong,
+  .ability-speed-overview .ability-speed__tier-spirits small:not(.speed-profile-badge) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
