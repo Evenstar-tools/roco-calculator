@@ -641,4 +641,6 @@ export const globalFeaturesMessages = Object.fromEntries([
   ["不适用", "Not applicable", "対象外"],
   ["命中{value}", "Matched: {value}", "一致：{value}"],
   ["{value}族", "Base {value}", "種族値{value}"],
+  ["种族", "Base", "種族値"], ["{count} 个", "{count}", "{count}件"],
+  ["搜索名字、图鉴号，或输入速度（如 137）", "Search name or index, or enter SPD (e.g. 137)", "名前・図鑑番号、または速さ（例：137）"],
 ].map(([source, en, ja]) => [source, { en, ja }]));
