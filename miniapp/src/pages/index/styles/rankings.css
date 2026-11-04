@@ -70,3 +70,26 @@
 .ranking-sheet .ranking-done { min-height: 44px; margin: 0; border: 0; border-radius: var(--radius-control); background: var(--result); color: #fff; font-weight: var(--weight-section); line-height: 44px; }
 .ranking-sheet .ranking-done::after { border: 0; }
 @media (prefers-color-scheme: dark) { .ranking-sheet .ranking-done { color: var(--season-selected-ink, #fff); } }
+/* 速度线排行改版（2026-11-04，与网页一致）：默认头像版放大、浅色口径圆标、口径开关行、档位写数量、去掉图例。WebView 不保证支持 color-mix，色调直接写 rgba。 */
+.ranking-speed-badge, .ranking-profile-pill { --speed-tone: #5c677d; --speed-tint: rgba(92, 103, 125, .12); }
+.is-positive-max { --speed-tone: #c2410c; --speed-tint: rgba(194, 65, 12, .12); }
+.is-neutral-max { --speed-tone: #a16207; --speed-tint: rgba(161, 98, 7, .12); }
+.is-positive-zero { --speed-tone: #6d28d9; --speed-tint: rgba(109, 40, 217, .12); }
+.is-neutral-zero { --speed-tone: #475569; --speed-tint: rgba(71, 85, 105, .12); }
+.is-negative-zero { --speed-tone: #0e7490; --speed-tint: rgba(14, 116, 144, .12); }
+.is-special { --speed-tone: #be185d; --speed-tint: rgba(190, 24, 93, .12); }
+.ranking-speed-badge { display: inline-flex; min-width: 20px; height: 18px; padding: 0 5px; align-items: center; justify-content: center; border-radius: 9px; background: var(--speed-tint); color: var(--speed-tone); font-size: 12px; font-weight: 700; line-height: 18px; white-space: nowrap; }
+.ranking-sheet .is-icon-only .ranking-speed-target { position: relative; width: 76px; height: 76px; padding: 3px; justify-content: center; }
+.is-icon-only .ranking-speed-target image,.is-icon-only .ranking-speed-target img,.is-icon-only .ranking-speed-target taro-image-core { width: 68px; height: 68px; }
+.is-icon-only .ranking-speed-badge { position: absolute; right: 3px; bottom: 3px; }
+.ranking-speed-count { display: block; margin-top: 2px; color: var(--text-secondary); font-size: 12px; font-weight: 500; }
+.ranking-speed-group { grid-template-columns: 48px 1fr; }
+.ranking-sheet .ranking-summary { padding: 6px 8px 6px 12px; }
+.ranking-profile-pills { flex: 1; min-width: 0; white-space: nowrap; }
+.ranking-sheet .ranking-profile-pill { display: inline-flex; height: 32px; margin-right: 6px; padding: 0 10px 0 4px; align-items: center; gap: 5px; border-radius: 16px; color: var(--text-secondary); font-size: 12px; }
+.ranking-profile-pill__letter { display: inline-flex; min-width: 20px; height: 20px; padding: 0 4px; align-items: center; justify-content: center; border-radius: 10px; background: var(--surface-muted); font-size: 12px; font-weight: 800; }
+.ranking-sheet .ranking-profile-pill.is-checked { border-color: var(--speed-tone); background: var(--speed-tint); color: var(--text-primary); }
+.ranking-profile-pill.is-checked .ranking-profile-pill__letter { background: var(--surface-card); color: var(--speed-tone); }
+@media (prefers-color-scheme: dark) {
+  .ranking-speed-badge, .ranking-profile-pill.is-checked .ranking-profile-pill__letter { filter: brightness(1.6); }
+}

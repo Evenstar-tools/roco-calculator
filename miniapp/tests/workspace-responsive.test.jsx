@@ -3,6 +3,8 @@ import { describe, expect, test } from "vitest";
 import BattleWorkspace from "../src/components/BattleWorkspace.jsx";
 import { getNature } from "../src/shared/domain/natures.js";
 import { createCalculatorStore } from "../src/state/calculator-store.js";
+import { createCalculationView } from "../src/view-models/calculation.js";
+import { getSkillEffectInputs } from "../src/shared/domain/skill-effects.js";
 
 function createSnapshot() {
   return {
@@ -65,6 +67,90 @@ function createSnapshot() {
 }
 
 describe("responsive battle workspace", () => {
+  test.each([['single', 'forward'], ['four', 'forward'], ['single', 'reverse'], ['four', 'reverse']])(
+    "%s/%s 下注暗一键设自身49%%并复算，不执行攻击且可一步撤回",
+    (mode, direction) => {
+      const snapshot = createSnapshot();
+      snapshot.skills[0].name = "下注";
+      const store = createCalculatorStore(snapshot);
+      store.dispatch({ type: "mode/set", value: mode });
+      for (const side of ['attacker', 'defender']) {
+        store.dispatch({ type: "side/set-single-skill", side, value: "skill-a" });
+        store.dispatch({ type: "side/set-four-skill", side, index: 0, value: "skill-a" });
+      }
+      render(<BattleWorkspace quickUndoEnabled snapshot={snapshot} store={store} />);
+      if (direction === 'reverse') fireEvent.click(screen.getByRole('button', { name: '切换计算方向' }));
+      if (mode === 'four') fireEvent.click(screen.getByRole('button', { name: '展开伤害结果' }));
+      const before = store.getState();
+      const healthDirection = direction === 'forward' ? 'reverse' : 'forward';
+      const maxHp = createCalculationView(snapshot, before, healthDirection).defenderMaxHp;
+      const damageBefore = createCalculationView(snapshot, before, direction).selectedResult.totalDamage;
+      fireEvent.click(screen.getByRole('button', { name: '低血加威' }));
+      expect(store.getState().directions[healthDirection].context.currentHpPercent).toBe(49);
+      expect(screen.getByLabelText('自身生命百分比')).toHaveValue(49);
+      expect(store.getState().directions[healthDirection].currentHp).toBe(Math.round(maxHp * 0.49));
+      expect(store.getState().directions[direction].currentHp).toBe(before.directions[direction].currentHp);
+      expect(createCalculationView(snapshot, store.getState(), direction).selectedResult.totalDamage).toBeGreaterThan(damageBefore);
+      if (mode === 'four') fireEvent.click(screen.getByRole('button', { name: '关闭伤害结果' }));
+      fireEvent.click(screen.getByRole('button', { name: '撤回上一步' }));
+      expect(store.getState()).toEqual(before);
+    },
+  );
+
+  test.each(['single', 'four'])('%s下注暗后从反向恢复自身满血，不保留旧低血加威', mode => {
+    const snapshot = createSnapshot();
+    snapshot.skills[0].name = '下注';
+    const store = createCalculatorStore(snapshot);
+    store.dispatch({ type: 'mode/set', value: mode });
+    store.dispatch({ type: 'side/set-single-skill', side: 'attacker', value: 'skill-a' });
+    store.dispatch({ type: 'side/set-four-skill', side: 'attacker', index: 0, value: 'skill-a' });
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+    if (mode === 'four') fireEvent.click(screen.getByRole('button', { name: '展开伤害结果' }));
+    fireEvent.click(screen.getByRole('button', { name: '低血加威' }));
+    const lowPower = createCalculationView(snapshot, store.getState(), 'forward').selectedResult.staticPower;
+    if (mode === 'four') fireEvent.click(screen.getByRole('button', { name: '关闭伤害结果' }));
+    fireEvent.click(screen.getByRole('button', { name: '切换计算方向' }));
+    const hp = screen.getByLabelText('目标当前生命');
+    fireEvent.input(hp, { target: { value: hp.max } });
+    fireEvent.click(screen.getByRole('button', { name: '切换计算方向' }));
+    if (mode === 'four') fireEvent.click(screen.getByRole('button', { name: '展开伤害结果' }));
+    expect(screen.getByLabelText('自身生命百分比')).toHaveValue(100);
+    expect(createCalculationView(snapshot, store.getState(), 'forward').selectedResult.staticPower).toBeLessThan(lowPower);
+  });
+
+  test('下注自身生命百分比可以清空重填，50%边界和真实HP同步', () => {
+    const snapshot = createSnapshot();
+    snapshot.skills[0].name = '下注';
+    const store = createCalculatorStore(snapshot);
+    const betInput = getSkillEffectInputs(snapshot.skills[0]).find(input => input.contextKey === 'betMode');
+    store.dispatch({ type: 'direction/update', direction: 'forward', value: { context: { betMode: 'lowHp', [betInput.id]: 'lowHp' } } });
+    render(<BattleWorkspace snapshot={snapshot} store={store} />);
+    const input = screen.getByLabelText('自身生命百分比');
+    const fullDamage = createCalculationView(snapshot, store.getState(), 'forward').selectedResult.totalDamage;
+    fireEvent.input(input, { target: { value: '' } });
+    expect(input.value).toBe('');
+    expect(store.getState().directions.reverse.currentHp).toBeNull();
+    fireEvent.input(input, { target: { value: '49' } });
+    expect(input).toHaveValue(49);
+    expect(store.getState().directions.reverse.context.currentHpPercent).toBe(49);
+    expect(createCalculationView(snapshot, store.getState(), 'forward').selectedResult.totalDamage).toBeGreaterThan(fullDamage);
+    fireEvent.input(input, { target: { value: '' } });
+    fireEvent.blur(input);
+    expect(input).toHaveValue(49);
+    fireEvent.input(input, { target: { value: '50' } });
+    expect(createCalculationView(snapshot, store.getState(), 'forward').selectedResult.totalDamage).toBe(fullDamage);
+    fireEvent.click(screen.getByRole('button', { name: '低血加威' }));
+    expect(input).toHaveValue(49);
+    fireEvent.input(input, { target: { value: '20' } });
+    fireEvent.click(screen.getByRole('button', { name: '固定加威' }));
+    fireEvent.click(screen.getByRole('button', { name: '低血加威' }));
+    expect(screen.getByLabelText('自身生命百分比')).toHaveValue(20);
+    fireEvent.input(screen.getByLabelText('自身生命百分比'), { target: { value: '999' } });
+    fireEvent.keyDown(screen.getByLabelText('自身生命百分比'), { key: 'Enter' });
+    expect(screen.getByLabelText('自身生命百分比')).toHaveValue(100);
+    expect(store.getState().directions.reverse.context.currentHpPercent).toBe(100);
+  });
+
   test("HP允许清空重填，空白失焦恢复，越界确认收敛且切方向清除草稿", () => {
     const snapshot = createSnapshot();
     const store = createCalculatorStore(snapshot);
@@ -94,6 +180,12 @@ describe("responsive battle workspace", () => {
     expect(input.value).not.toBe("");
     expect(store.getState().directions.reverse.currentHp).toBeNull();
     expect(screen.getByRole("button", { name: "展开伤害结果" })).toHaveTextContent("伤害详情");
+    fireEvent.click(screen.getByRole('button', { name: '编辑战斗条件' }));
+    const conditionHp = within(screen.getByRole('dialog', { name: '战斗条件' })).getByLabelText('目标当前生命');
+    fireEvent.input(conditionHp, { target: { value: '' } });
+    expect(conditionHp.value).toBe('');
+    fireEvent.input(conditionHp, { target: { value: '123' } });
+    expect(conditionHp).toHaveValue(123);
   });
 
   test("技能天气勾选联动环境与特性，并且切换雨天后同时取消", () => {

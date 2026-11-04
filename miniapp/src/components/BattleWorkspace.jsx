@@ -16,6 +16,7 @@ import { isPureStatusSkill } from "../shared/domain/skill-status-effects.js";
 import { getSkillEffectInputs } from "../shared/domain/skill-effects.js";
 import { starfallStacksFromMarkSlot } from "../shared/domain/marks.js";
 import { createInitialState } from "../shared/state/defaults.js";
+import { calculatorReducer } from "../shared/state/reducer.js";
 import {
   selectSpirit,
   switchBattleForm,
@@ -246,14 +247,26 @@ export default function BattleWorkspace({
     ? selectedSlotDetails.context ?? {}
     : activeDirectionState.context;
   const targetSide = activeSide === "attacker" ? "defender" : "attacker";
+  const ownerHealthDirection = direction === "forward" ? "reverse" : "forward";
+  const ownerHealth = calculations[ownerHealthDirection];
+  const ownerHpPercent = state.directions[ownerHealthDirection].context?.currentHpPercent ?? ownerHealth.defenderHpPercent ?? 100;
+  const ownerHpInput = getSkillEffectInputs(selectedSkill).find(input => input.contextKey === "attackerHpPercent");
+  const healthLinkedContext = ownerHpInput
+    ? { ...rawConditionContext, attackerHpPercent: ownerHpPercent }
+    : rawConditionContext;
+  // HP belongs to the combatant, not a saved skill-slot trigger snapshot.
+  if (ownerHpInput) {
+    delete healthLinkedContext[ownerHpInput.id];
+    delete healthLinkedContext["skill.attackerHpPercent"];
+  }
   const starfallLinkedConditionContext = selectedSkill?.name === "多维击打"
     ? {
-        ...rawConditionContext,
+        ...healthLinkedContext,
         enemyStarfallMarks: starfallStacksFromMarkSlot(
           state.marks?.[targetSide]?.negative,
         ),
       }
-    : rawConditionContext;
+    : healthLinkedContext;
   const hasChargeBurstSource = getSkillEffectInputs(selectedSkill).some(
     (input) => input.contextKey === "burstSourceChargeMark",
   );
@@ -714,7 +727,35 @@ export default function BattleWorkspace({
     return true;
   }
 
-  function updateSkillContext(context) {
+  function updateSkillContext(context, changedKey) {
+    const darkBetSelected = selectedSkill?.name === "下注" &&
+      changedKey === "betMode" && context.betMode === "lowHp";
+    const hpChanged = ownerHpInput && context.attackerHpPercent !== conditionContext.attackerHpPercent;
+    const requestedHpPercent = darkBetSelected && ownerHpPercent >= 50 ? 49 : hpChanged ? Number(context.attackerHpPercent) : null;
+    if (ownerHpInput) {
+      const percent = requestedHpPercent !== null && Number.isFinite(requestedHpPercent)
+        ? Math.min(100, Math.max(0, requestedHpPercent))
+        : ownerHpPercent;
+      const nextContext = { ...context, attackerHpPercent: percent };
+      delete nextContext[ownerHpInput.id];
+      delete nextContext["skill.attackerHpPercent"];
+      const action = state.mode === "four"
+        ? { type: "side/set-four-skill", side: activeSide, index: activeDirectionState.selectedSkillIndex,
+            value: { ...selectedSlotDetails, skillId: selectedSkill.id, context: nextContext } }
+        : { type: "direction/set-context", direction, value: nextContext };
+      const next = calculatorReducer(store.getState(), action);
+      const nextWithHealth = requestedHpPercent !== null ? calculatorReducer(next, {
+        type: "direction/update", direction: ownerHealthDirection,
+        value: {
+          currentHp: Number.isFinite(ownerHealth.defenderMaxHp) && ownerHealth.defenderMaxHp > 0
+            ? Math.round(ownerHealth.defenderMaxHp * percent / 100)
+            : next.directions[ownerHealthDirection].currentHp,
+          context: { currentHpPercent: percent },
+        },
+      }) : next;
+      dispatchWithUndo({ type: "state/replace", value: nextWithHealth });
+      return;
+    }
     if (reapplyActiveStatusContext(selectedStatusAction, context)) return;
     if (
       selectedSkill?.name === "多维击打" &&

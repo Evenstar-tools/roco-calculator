@@ -75,6 +75,6 @@ export function getVisibleSkillInputs(skill, context = {}, extraInputs = []) {
     const condition = input.visibleWhen ?? input.when;
     if (!condition) return true;
     const key = condition.id ?? condition.contextKey ?? condition.key;
-    return (context[key] ?? condition.defaultValue) === condition.equals;
+    return (context[key] ?? context[condition.contextKey ?? condition.key] ?? condition.defaultValue) === condition.equals;
   });
 }
