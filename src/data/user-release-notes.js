@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.6",
+    date: "2026.11.04",
+    seasonId: "S5",
+    title: "S5 学习更新修复",
+    whatsNew: S5_FEATURE_INTRO,
+    fixes: ["学习更新合并同族相同调整，列出适用成员。", "国际服继续沿用S3季中。"],
+  }),
+  createRelease({
     version: "v2.3.5",
     date: "2026.11.04",
     seasonId: "S5",
