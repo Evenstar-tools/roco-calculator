@@ -9,7 +9,7 @@
 | 项目 | 版本 | 你可以做什么 |
 | --- | --- | --- |
 | 最新可下载版本 | [Latest 发布页](https://github.com/Evenstar-tools/roco-calculator/releases/latest) | 下载带版本号的 `洛克计算器-版本号.exe`；可下载版本以发布页为准。 |
-| 当前源码版本 | `v2.3.4` | 见 [v2.3.4 更新内容](../../CHANGELOG.md#v234)；源码版本与可下载安装包分别维护。 |
+| 当前源码版本 | `v2.3.5` | 见 [v2.3.5 更新内容](../../CHANGELOG.md#v235)；2.3.5 只更新网页，最新Windows安装包仍为2.3.4。源码版本与可下载安装包分别维护。 |
 | 当前国际服网页 | `S3 季中` | [English](https://rococalc.top/en/) · [日本語](https://rococalc.top/jp/) · [简体中文](https://rococalc.top/global/zh-CN/)，已接通三语计算与 S1–S5 装扮。网页使用独立地区资料；Windows安装包版本以Release为准。 |
 | 小程序开发版本 | `v1.2.3 · S5` | 2026-11-04官方CLI已重传最终开发版，完整多工具查询与伤害对话、原子接口及上传后普通原生回读通过，结构校验警告已消除；当前状态和证据边界见[AI收口记录](../maintenance/miniapp-ai-closeout-20261104.md)。未提审或公开发布。 |
 
