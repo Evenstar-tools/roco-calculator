@@ -139,6 +139,7 @@ function uniqueSpirits(spirits) {
 }
 
 export function SpiritPicker({
+  caretLabel,
   clearOnOpen = false,
   compactIdentity = false,
   identityLabel,
@@ -474,6 +475,7 @@ export function SpiritPicker({
           type="button"
         >
           <CaretDown aria-hidden="true" size={14} weight="bold" />
+          {caretLabel ? <span aria-hidden="true">{caretLabel}</span> : null}
         </button>
         {open ? (
           <ul
