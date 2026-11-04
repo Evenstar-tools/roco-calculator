@@ -5,8 +5,9 @@
 - 工作树`D:/codex/rock-mini-ai-closeout`，分支`codex/miniapp-ai-closeout-20261104`。
 - 从`origin/main@e3d34e7`正常合并已上传小程序分支`0bbaf78`，合并提交`c6529f8`保留完整历史；1.2.1生命输入/下注暗修复、1.2.2只读AI接口及UX44均完整进入。
 - 根因修复来源`d4a0aa0`，本树接续为`5973754`。小程序独立版本由1.2.2升为1.2.3，更新日期2026-11-04。
-- Web保持2.3.4、独立网页核心保持2.2.8，`config/miniapp-release.json`保持`a7c9f951b0560cd1fe5bc7dcd2695c2051076c3f`，249项内置预设及数据不变。没有改两服网页发布pin、缓存、E2E、桌面或公式。
+- 本轮AI改动从Web2.3.4基线接续，小程序独立核心保持2.2.8，`config/miniapp-release.json`保持`a7c9f951b0560cd1fe5bc7dcd2695c2051076c3f`，249项内置预设及数据不变。本轮AI修复没有修改两服网页发布pin、缓存、E2E、桌面或公式。
 - 桌面增加国际服按用户要求暂缓，本轮没有新增桌面任务。
+- 收尾同步时`origin/main@f31f6f65`已包含另一轮网页2.3.5更新，采用正常合并保留其发布pin、版本与说明；Windows安装包仍为2.3.4。上传输入`34759b04`与合并后源码的`miniapp/`、`scripts/miniapp/`、`tests/miniapp/`及`config/miniapp-release.json`无差异，已验收上传的小程序产物保持有效，不用网页更新覆盖小程序核心。
 
 ## 已定位并修复的宿主问题
 
@@ -54,7 +55,7 @@
 - 生产产物为本树`miniapp/dist`，不复用旧1.2.2目录；主包1,747,418字节。机器可读门禁摘要为同目录`verification-summary.json`，最终产物原生证据与本地测试分别记录。
 - 2026-11-04约15:49，官方CLI以版本1.2.3和AppID`wx82f11dfdd3d28bc8`返回`√ upload`，这是第一次1.2.3开发版上传；输入提交`d5489afb690e237c4233e7d68b8c9c57b8fe389e`。首次回执`wechat-upload.log`、`wechat-upload-result.json`；微信处理后总包2,539,020字节、主包1,851,675字节、skills分包687,345字节。该历史回执不代表后续schema修正产物已重传。
 - 约15:50上传后普通原生回读通过，`post-upload-readback.json`为`passed: true`，AppID相符、环境develop，设置小程序v1.2.3/核心v2.2.8/S5快照一致。这是本地DevTools运行时回读，不是后台正式版本列表查询。
-- 源码主线同步沿用Git提交→推送origin/main；最终远端引用回读及CI结果记录在同目录`source-sync.json`和`verification-summary.json`，CI采用[项目Actions](https://github.com/Evenstar-tools/roco-calculator/actions/workflows/ci.yml)的实际运行结论。Web产物、发布pin与桌面版本不变，本轮没有手动部署Web、发布桌面、提交审核或公开上线。
+- 源码主线同步沿用Git提交→推送origin/main；最终远端引用回读及CI结果记录在同目录`source-sync.json`和`verification-summary.json`，CI采用[项目Actions](https://github.com/Evenstar-tools/roco-calculator/actions/workflows/ci.yml)的实际运行结论。并行网页2.3.5提交完整保留，桌面安装包不变；本轮没有手动部署Web、发布桌面、提交审核或公开上线。
 
 ## 外部状态边界
 
