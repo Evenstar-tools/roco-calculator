@@ -3014,3 +3014,417 @@
   .team-workbench .ability-speed__target-input input[type="search"],
   .ability-manual > summary { min-height: 44px; }
 }
+
+/* 队伍系统多设备改版（2026-11-04）：顶栏一行、标签一层、整队页收起成员列；平板成员改顶部一排，手机攻防放底栏、矩阵转置。 */
+.team-workbench > .team-drawer__header {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  min-height: 68px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  pointer-events: auto;
+}
+.team-workbench .team-drawer__header .team-drawer__title { display: flex; flex: none; align-items: center; gap: 8px; }
+.team-workbench .team-drawer__header .team-drawer__toolbar {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.team-workbench .team-drawer__header span { min-width: 0; height: auto; padding: 0; border-radius: 0; background: none; color: inherit; font-size: inherit; font-weight: inherit; }
+.team-workbench .team-drawer__header .team-drawer__switcher {
+  display: flex;
+  height: 44px;
+  min-width: 0;
+  flex: 0 1 280px;
+  align-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.team-workbench .team-drawer__switcher:focus-within { border-color: var(--accent); }
+.team-workbench .team-drawer__header .team-drawer__switcher :is(select, input) {
+  min-width: 0;
+  height: 42px;
+  flex: 1;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 750;
+}
+.team-workbench .team-drawer__header .team-drawer__switcher :is(select, input):focus-visible { outline: none; }
+.team-workbench .team-drawer__header .team-drawer__switcher .team-drawer__empty-label { padding: 0 10px; color: var(--text-muted); font-size: 12px; }
+.team-workbench .team-drawer__header .team-drawer__toolbar .team-drawer__rename {
+  width: 38px;
+  height: 42px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--border);
+  border-radius: 0 8px 8px 0;
+  background: transparent;
+}
+.team-workbench .team-drawer__header .team-drawer__meta { flex: none; color: var(--text-muted); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.team-workbench .team-drawer__header .team-workbench__saved { flex: none; margin: 0 auto 0 4px; font-size: 12px; white-space: nowrap; }
+.team-workbench .team-drawer__header .team-drawer__toolbar > button { height: 44px; flex: none; padding: 0 12px; border-radius: 8px; font-size: 13px; white-space: nowrap; }
+.team-workbench .team-drawer__header .team-drawer__switcher { min-width: 150px; }
+
+.team-drawer__menu { position: relative; flex: none; }
+.team-drawer__menu > summary {
+  display: inline-flex;
+  height: 44px;
+  min-width: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 750;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+.team-drawer__menu > summary::-webkit-details-marker { display: none; }
+.team-drawer__menu > summary:hover,
+.team-drawer__menu[open] > summary { border-color: var(--accent); color: var(--accent-strong); }
+.team-drawer__menu > div {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  right: 0;
+  display: grid;
+  min-width: 176px;
+  padding: 6px;
+  gap: 2px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(20 25 40 / 18%);
+}
+.team-workbench .team-drawer__menu > div > button {
+  display: flex;
+  width: 100%;
+  height: 40px;
+  min-height: 40px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.team-workbench .team-drawer__menu > div > button:not(:disabled):hover { background: var(--surface-soft); color: var(--accent-strong); }
+.team-workbench .team-drawer__menu > div > button:disabled { opacity: .4; cursor: not-allowed; }
+.team-workbench .team-drawer__menu > div > button.is-danger:not(:disabled) { color: var(--attack); }
+.team-workbench .team-drawer__menu .team-drawer__toolbar-label { display: inline; }
+
+.team-workbench > .team-drawer__pane-tabs {
+  display: flex;
+  min-height: 52px;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 4px 20px 0;
+  grid-template-columns: none;
+}
+.team-workbench > .team-drawer__pane-tabs button {
+  min-width: 108px;
+  min-height: 46px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 750;
+}
+.team-workbench > .team-drawer__pane-tabs button:disabled { opacity: .42; cursor: not-allowed; }
+.team-drawer__tab-divider { align-self: center; width: 1px; height: 20px; margin: 0 10px; background: var(--border-strong); }
+.team-drawer__scope {
+  min-width: 0;
+  margin-left: auto;
+  align-self: center;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 成员头部：两个分页同一套；「更换」替代看不懂的展开箭头和 NEW。 */
+.team-workbench .spirit-picker--identity .spirit-card__title [data-new] { display: none; }
+.team-workbench .spirit-picker--identity .spirit-picker__caret {
+  display: inline-flex;
+  width: auto;
+  min-width: 0;
+  height: 30px;
+  min-height: 30px;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-soft);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+/* 名字按内容宽度显示，「更换」紧跟在名字后面；展开搜索时输入框再占满整行。 */
+.team-workbench .spirit-picker--identity[data-has-selection="true"] .spirit-picker__search > input:not([aria-expanded="true"]) { width: auto; max-width: 100%; flex: 0 1 auto; field-sizing: content; min-width: 3em; }
+.team-workbench .spirit-picker--identity .spirit-picker__selected-name { flex: 0 1 auto; }
+.team-workbench__identity > img { width: 64px; height: 64px; flex-basis: 64px; }
+.team-workbench__identity > div { grid-template-columns: auto auto minmax(0, 1fr); gap: 4px 10px; }
+.team-workbench__identity h3 { grid-column: auto; font-size: 20px; font-weight: 750; }
+.team-workbench__identity > div > button { height: 30px; min-height: 30px; gap: 4px; padding: 0 10px; font-size: 12px; cursor: pointer; }
+.team-workbench__identity p { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; grid-column: 1 / -1; }
+.team-workbench__identity p > span { min-height: 24px; padding: 0 8px; font-size: 12px; font-weight: 650; }
+.team-workbench .team-drawer__capture-actions { display: flex; align-items: center; gap: 8px; }
+.team-workbench .team-drawer__capture-actions > button { min-height: 40px; font-size: 13px; font-weight: 750; }
+.team-workbench .team-drawer__copy-menu > summary { height: 40px; }
+.team-workbench .team-drawer__copy-menu > div > button[data-side="attacker"] { color: var(--attack); }
+.team-workbench .team-drawer__copy-menu > div > button[data-side="defender"] { color: var(--defense); }
+
+/* 成员卡：圆形序号、技能属性 18px、空位只写「＋ 添加精灵」；电脑上攻/防悬停才出现。 */
+.team-workbench .team-roster .team-slot { position: relative; }
+.team-workbench .team-slot__types { gap: 4px; }
+.team-workbench .team-slot__types .element-icon,
+.team-workbench .team-slot__types .team-slot__empty-skill { width: 18px; height: 18px; }
+.team-workbench .team-slot.is-empty { border-style: dashed; background: var(--surface-soft); }
+.team-workbench .team-slot.is-empty .team-slot__identity strong { color: var(--text-muted); font-weight: 650; }
+.team-workbench .team-slot__identity small { font-size: 12px; }
+@media (min-width: 1280px) {
+  .team-workbench .team-roster .team-slot { min-height: 78px; grid-template-columns: minmax(0, 1fr); }
+  .team-workbench .team-roster .team-slot__select { position: relative; min-height: 76px; padding: 8px 10px 8px 30px; grid-template-columns: 44px minmax(0, 1fr); gap: 4px 10px; }
+  .team-workbench .team-roster .team-slot__select > img,
+  .team-workbench .team-roster .team-slot__empty { width: 44px; height: 44px; }
+  .team-workbench .team-roster .team-slot__identity strong { font-size: 14px; }
+  .team-workbench .team-roster .team-slot__number {
+    display: grid;
+    position: absolute;
+    top: 8px;
+    left: 7px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    place-items: center;
+    background: var(--surface-muted);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .team-workbench .team-roster .team-slot.is-selected .team-slot__number { background: var(--accent); color: #fff; }
+  .team-workbench .team-roster .team-slot__actions {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    bottom: 6px;
+    display: flex;
+    width: 40px;
+    padding: 0;
+    flex-direction: column;
+    gap: 4px;
+    border: 0;
+    background: transparent;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 120ms ease;
+  }
+  .team-workbench .team-roster .team-slot__actions button { flex: 1; min-height: 0; padding: 0; font-size: 12px; }
+  .team-workbench .team-roster .team-slot:is(:hover, :focus-within) .team-slot__actions { opacity: 1; pointer-events: auto; }
+  .team-workbench .team-roster .team-slot.is-empty .team-slot__actions { display: none; }
+  .team-drawer__overview { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .team-drawer__overview h3 { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 6px; font-size: 14px; }
+  .team-drawer__overview h3 small { color: var(--text-muted); font-size: 12px; font-weight: 400; }
+  .team-workbench .team-drawer__overview > button {
+    display: grid;
+    width: 100%;
+    padding: 4px;
+    gap: 2px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+  }
+  .team-workbench .team-drawer__overview > button:hover { border-color: var(--border); background: var(--surface-soft); }
+  .team-drawer__overview > button > span { display: grid; min-height: 28px; align-items: center; grid-template-columns: 18px minmax(0, 1fr) auto 64px; gap: 8px; font-size: 13px; }
+  .team-drawer__overview > button > span small { color: var(--text-muted); font-size: 12px; }
+  .team-drawer__overview > button > span em { color: var(--text-muted); font-size: 12px; font-style: normal; text-align: right; }
+  .team-drawer__overview > button > span.is-uncovered em { color: var(--attack); font-weight: 750; }
+}
+@media (hover: none) {
+  .team-workbench .team-roster .team-slot__actions { display: none; }
+}
+
+/* 属性覆盖、对位是整队页面：收起成员列，内容拿到全宽，去掉内嵌滚动条。 */
+.team-workbench > .team-drawer__content[data-pane="team"] { grid-template-columns: minmax(0, 1fr); }
+.team-workbench > .team-drawer__content[data-pane="team"] > .team-drawer__roster-pane { display: none; }
+.team-workbench > .team-drawer__content[data-pane="team"] > .team-drawer__editor-pane { padding-left: 0; border-left: 0; }
+.team-workbench .team-analysis.is-analysis.is-defense-summary { flex: none; grid-template-rows: none; overflow: visible; }
+.team-workbench .team-analysis.is-defense-summary > .team-weakness-summary { overflow: visible; }
+.team-workbench .team-weakness-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.team-workbench .team-weakness-summary > :is(h3, p) { grid-column: 1 / -1; margin: 6px 0 0; }
+.team-workbench .team-weakness-summary h3 small { display: inline; margin-left: 8px; }
+.team-workbench .team-analysis .team-weakness-row { min-width: 0; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; }
+.team-workbench .team-weakness-row strong { min-width: 0; flex: none; font-size: 13px; white-space: nowrap; }
+.team-workbench .team-weakness-row .weakness-members { min-width: 0; flex: 1 1 auto; }
+.team-workbench .team-weakness-row img { width: 34px; height: 34px; }
+.team-workbench .team-weakness-row .weakness-resistance { flex: none; }
+.team-workbench .team-analysis .team-weakness-row.is-uncovered { border-color: color-mix(in srgb, var(--attack) 45%, var(--border)); background: color-mix(in srgb, var(--attack) 6%, var(--surface)); }
+.team-workbench .team-weakness-row.is-uncovered .weakness-resistance small { color: var(--attack); font-weight: 750; }
+.team-analysis__uncovered { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; font-size: 13px; }
+.team-analysis__uncovered strong { color: var(--attack); }
+.team-analysis__uncovered span { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--attack) 10%, var(--surface)); color: var(--attack); font-weight: 700; }
+.team-workbench .team-analysis__matrix thead th:first-child,
+.team-workbench .team-analysis__matrix tbody th { width: 140px; }
+.team-workbench .team-analysis__matrix tbody th { grid-template-columns: 18px 28px minmax(0, 1fr); gap: 6px; padding: 0 6px; }
+.team-workbench .team-analysis__matrix tbody th > span { width: 18px; height: 18px; font-size: 11px; }
+.team-workbench .team-analysis__matrix tbody th > strong { min-width: 0; overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.team-workbench .team-analysis__matrix th,
+.team-workbench .team-analysis__matrix td { height: 34px; }
+.team-workbench .team-analysis button.team-analysis__cell { max-width: 52px; height: 28px; font-size: 12px; }
+.team-workbench .team-member-editor__section-heading > span,
+.team-workbench .team-member-editor__nature .nature-effect,
+.team-workbench .team-analysis__manual-import small,
+.team-workbench .team-analysis__manual-roster strong { font-size: 12px; }
+.team-workbench .team-analysis__manual-roster button > span { font-size: 11px; }
+.team-analysis__side-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 0; font-size: 15px; }
+.team-analysis__side-title small { color: var(--text-muted); font-size: 12px; font-weight: 400; }
+.team-analysis__own-side { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-soft); }
+.team-analysis__own-side ol { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.team-analysis__own-side li { display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text-faint); font-size: 12px; }
+.team-analysis__own-side img { width: 38px; height: 38px; object-fit: contain; }
+.team-workbench .team-analysis__manual-editor { padding: 12px; border: 1px solid var(--border); border-radius: 10px; }
+.team-workbench .team-analysis__manual-editor > .team-analysis__side-title { margin-bottom: 8px; }
+.team-workbench .team-analysis__matchup-table th > span,
+.team-workbench .team-analysis__matchup-table thead th:first-child { font-size: 12px; }
+.team-workbench .team-analysis__matchup-table tbody th > span { max-width: 72px; }
+@media (min-width: 1280px) {
+  .team-workbench .team-analysis.is-matchup { grid-template-columns: minmax(200px, 268px) minmax(0, 1fr); align-items: start; }
+  .team-workbench .team-analysis.is-matchup > * { grid-column: 1 / -1; }
+  .team-workbench .team-analysis.is-matchup > .team-analysis__own-side { grid-column: 1; align-self: stretch; align-content: start; }
+  .team-workbench .team-analysis.is-matchup > .team-analysis__manual-editor { grid-column: 2; }
+  .team-analysis__own-side ol { display: grid; grid-template-columns: repeat(3, 56px); }
+  .team-analysis__own-side li { width: 56px; height: 56px; }
+  .team-analysis__own-side img { width: 48px; height: 48px; }
+}
+@container (max-width: 560px) {
+  .team-analysis__matrix.is-transposed { min-width: 0; }
+  .team-analysis__matrix.is-transposed th,
+  .team-analysis__matrix.is-transposed td { height: 36px; }
+}
+.team-workbench .team-analysis__matrix.is-transposed thead th:first-child,
+.team-workbench .team-analysis__matrix.is-transposed tbody th { width: 64px; }
+.team-workbench .team-analysis__matrix.is-transposed tbody th { display: table-cell; padding: 0 4px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.team-workbench .team-analysis__matrix.is-transposed tbody th .element-icon { margin-right: 3px; vertical-align: -4px; }
+.team-workbench .team-analysis__matrix.is-transposed thead th img { width: 30px; height: 30px; object-fit: contain; }
+.team-workbench .team-analysis .is-transposed button.team-analysis__cell { width: 100%; min-width: 0; max-width: 46px; height: 30px; min-height: 0; font-size: 13px; }
+
+/* 平板（720–1279）：抽屉铺满，成员改顶部一排 6 个；宽度够时能力值和配招并排。 */
+@media (max-width: 1279px) {
+  .team-drawer.team-workbench { width: 100vw; }
+  .team-workbench > .team-drawer__content { display: block; padding: 0 16px 16px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
+  .team-workbench .team-drawer__roster-pane { position: sticky; z-index: 6; top: 0; display: block; max-height: none; margin: 0 0 8px; padding: 8px 0; overflow: visible; border-bottom: 1px solid var(--border); background: var(--surface); scrollbar-gutter: auto; }
+  .team-workbench .team-roster { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; padding: 0; }
+  .team-workbench .team-roster .team-slot { display: block; min-height: 60px; }
+  .team-workbench .team-roster .team-slot__select { position: relative; display: flex; width: 100%; height: 100%; min-height: 58px; padding: 6px 6px 6px 10px; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; }
+  .team-workbench .team-roster .team-slot__select > img,
+  .team-workbench .team-roster .team-slot__empty { width: 38px; height: 38px; flex: none; }
+  .team-workbench .team-roster .team-slot__identity { width: auto; min-width: 0; text-align: left; }
+  .team-workbench .team-roster .team-slot__identity strong { font-size: 13px; line-height: 18px; }
+  .team-workbench .team-roster .team-slot__identity small,
+  .team-workbench .team-roster .team-slot__types,
+  .team-workbench .team-roster .team-slot__actions { display: none; }
+  .team-workbench .team-roster .team-slot__number { display: grid; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; place-items: center; background: var(--surface-muted); color: var(--text-muted); font-size: 11px; font-weight: 800; line-height: 1; }
+  .team-workbench .team-roster .team-slot.is-selected .team-slot__number { background: var(--accent); color: #fff; }
+  .team-workbench .team-drawer__editor-pane { display: block; overflow: visible; padding: 4px 0 0; border: 0; scrollbar-gutter: auto; }
+  .team-workbench .team-member-editor { padding: 0 2px 20px; }
+}
+@media (min-width: 900px) {
+  .team-member-editor__columns { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+  .team-member-editor__loadout { border-left: 1px solid var(--border); padding-left: 24px; }
+}
+@media (max-width: 1023px) {
+  .team-workbench .team-drawer__header .team-workbench__saved { display: none; }
+  .team-workbench .team-drawer__header .team-drawer__meta { margin-right: auto; }
+  .team-workbench .team-drawer__scope { display: none; }
+  .team-workbench__member-header { flex-wrap: wrap; gap: 10px; }
+  .team-workbench .team-drawer__capture-actions { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+  .team-workbench .team-drawer__capture-actions > button { min-height: 44px; }
+  .team-workbench .team-drawer__copy-menu > summary { height: 44px; }
+  .team-workbench .team-roster .team-slot__identity strong { font-size: 12px; }
+  .team-workbench .spirit-picker--identity .spirit-picker__caret,
+  .team-workbench__identity > div > button { height: 40px; min-height: 40px; }
+}
+
+/* 手机（<720）：顶栏一行，标签 14px，成员一排只放头像并停在顶部，攻/防放进底部操作栏。 */
+@media (max-width: 719px) {
+  .team-workbench > .team-drawer__header { min-height: 56px; gap: 6px; padding: max(6px, env(safe-area-inset-top)) 8px 6px; }
+  .team-workbench .team-drawer__header .team-drawer__title,
+  .team-workbench .team-drawer__header .team-drawer__meta { display: none; }
+  .team-workbench .team-drawer__header .team-drawer__toolbar { gap: 6px; }
+  .team-workbench .team-drawer__header .team-drawer__switcher { flex: 1 1 auto; }
+  .team-workbench > .team-drawer__pane-tabs { display: grid; min-height: 48px; padding: 2px 4px 0; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+  .team-workbench > .team-drawer__pane-tabs button { min-width: 0; min-height: 46px; padding: 0 2px; font-size: 14px; }
+  .team-workbench .team-drawer__tab-divider { display: none; }
+  .team-workbench > .team-drawer__content { padding: 0 8px max(12px, env(safe-area-inset-bottom)); }
+  .team-workbench > .team-drawer__content[data-pane="member"] { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+  .team-workbench .team-drawer__roster-pane { padding: 6px 0; }
+  .team-workbench .team-roster { gap: 4px; }
+  .team-workbench .team-roster .team-slot { min-height: 56px; }
+  .team-workbench .team-roster .team-slot__select { min-height: 54px; padding: 4px; justify-content: center; }
+  .team-workbench .team-roster .team-slot__select > img,
+  .team-workbench .team-roster .team-slot__empty { width: 40px; height: 40px; }
+  .team-workbench .team-roster .team-slot__identity { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .team-workbench .team-roster .team-slot__bloodline-flag { position: absolute; right: 2px; bottom: 2px; }
+  .team-workbench__member-header { flex-direction: row; align-items: center; padding: 4px 2px 8px; }
+  .team-workbench__identity > img { width: 52px; height: 52px; flex-basis: 52px; }
+  .team-workbench__identity h3 { font-size: 17px; }
+  .team-workbench .team-drawer__capture-actions {
+    position: fixed;
+    z-index: 15;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    padding: 8px 8px max(8px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 -6px 18px rgb(20 25 40 / 8%);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 52px;
+  }
+  .team-workbench .team-drawer__capture-actions > button { min-width: 0; min-height: 48px; padding: 0 6px; font-size: 14px; }
+  .team-workbench .team-drawer__copy-menu > summary { width: 52px; height: 48px; padding: 0; }
+  .team-workbench .team-drawer__copy-menu > summary > span,
+  .team-workbench .team-drawer__copy-menu > summary > svg:last-child { display: none; }
+  .team-workbench .team-drawer__copy-menu > div { top: auto; bottom: calc(100% + 8px); }
+  .team-workbench .team-analysis__toolbar { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .team-workbench .team-analysis__mode-tabs { flex: 1 1 220px; }
+  .team-workbench .team-analysis__mode-tabs button { padding: 0 8px; gap: 4px; white-space: nowrap; }
+  .team-workbench .team-weakness-summary { grid-template-columns: minmax(0, 1fr); }
+  .team-workbench .team-analysis .team-weakness-row { padding: 8px 10px; }
+  .team-workbench .team-analysis__matchup-table thead th:first-child { white-space: normal; line-height: 1.3; }
+}
+
+/* 暗色主题：倍率格的绿色字在深绿底上看不清，单独提亮。 */
+html[data-theme="dark"] .team-workbench .team-analysis button.team-analysis__cell.is-safe { color: #6fdc9b; }
+html[data-theme="dark"] .team-workbench .team-analysis button.team-analysis__cell.is-danger { color: #ff8f84; }
