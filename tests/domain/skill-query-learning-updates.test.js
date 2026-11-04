@@ -16,7 +16,8 @@ function familyFixture() {
   const variants = ["海神球", "彩玉球", "短毛球", "象牙球"];
   const spirits = stages.flatMap((stage, index) => variants.map((variant, form) => ({
     id: `ball-${index}-${form}`, familyId: "ball", stage,
-    fullName: `${names[index]}（${variant}形态）`, dexNo: String(63 + Math.min(index, 2)),
+    fullName: `${names[index]}（${variant}形态）`, baseName: names[index], variantName: `${variant}形态`,
+    dexNo: String(63 + Math.min(index, 2)),
     types: ["草", "毒"], changeInfo: { patch, items: skills.map(addition) },
   })));
   const season = { id: "S5", spirits, skills,
@@ -29,12 +30,12 @@ function familyFixture() {
   return { season, changes };
 }
 
-test("海神球等四形态的完整十六成员同更新才合为家族，代表采用最终普通形态", () => {
+test("海神球等四形态的完整十六成员同更新合为家族，名称取初阶基础名、代表采用最终普通形态", () => {
   const { season, changes } = familyFixture();
   const before = JSON.stringify({ season, changes });
   const rows = buildLearningUpdates(season, changes);
   expect(rows).toHaveLength(1);
-  expect(rows[0]).toMatchObject({ isFamily: true, familyId: "ball", spiritId: "ball-2-0",
+  expect(rows[0]).toMatchObject({ isFamily: true, familyId: "ball", familyName: "蹦蹦种子家族", spiritId: "ball-2-0",
     hasNewSkills: true, hasLearningChanges: false });
   expect(rows[0].spirit.fullName).toBe("蹦蹦花（海神球形态）");
   expect(rows[0].members).toHaveLength(16);
@@ -43,23 +44,59 @@ test("海神球等四形态的完整十六成员同更新才合为家族，代�
   expect(JSON.stringify({ season, changes })).toBe(before);
 });
 
-test.each([1, 15])("完整家族仅有 %i 个成员更新时，不能先过滤未更新成员再冒充家族", (count) => {
+test.each([1, 2, 15])("显式家族仅有 %i 个成员同更新时，只合并实际适用成员，一名仍单列", (count) => {
   const { season, changes } = familyFixture();
   season.spirits.slice(count).forEach(spirit => { delete spirit.changeInfo; });
   changes.gains = changes.gains.slice(0, count);
   const rows = buildLearningUpdates(season, changes);
-  expect(rows).toHaveLength(count);
-  expect(rows.every(row => !row.isFamily && row.members.length === 1)).toBe(true);
+  expect(rows).toHaveLength(1);
+  expect(rows[0].isFamily).toBe(count > 1);
+  expect(rows[0].members.map(member => member.id)).toEqual(season.spirits.slice(0, count).map(member => member.id));
+  if (count > 1) expect(rows[0].familyName).toBe("蹦蹦种子家族");
 });
 
-test.each(["skills", "changes", "acquisitions"])("家族成员的 %s 不同时不合并，其他相同分支也独立", (difference) => {
+test.each(["skills", "changes", "acquisitions"])("家族成员的 %s 不同时独立，其余相同成员合并并保留准确范围", (difference) => {
   const { season, changes } = familyFixture();
   if (difference === "skills") changes.gains[0].skillIds = ["spread"];
   if (difference === "changes") season.spirits[0].changeInfo.items[0].note = "血脉";
   if (difference === "acquisitions") season.learnsets[0].acquisitions.spread = ["默认学习"];
   const rows = buildLearningUpdates(season, changes);
-  expect(rows).toHaveLength(16);
-  expect(rows.every(row => !row.isFamily)).toBe(true);
+  expect(rows).toHaveLength(2);
+  const individual = rows.find(row => !row.isFamily);
+  const shared = rows.find(row => row.isFamily);
+  expect(individual.members.map(member => member.id)).toEqual(["ball-0-0"]);
+  expect(shared).toMatchObject({ familyName: "蹦蹦种子家族", spiritId: "ball-2-0" });
+  expect(shared.members.map(member => member.id)).toEqual(season.spirits.slice(1).map(member => member.id));
+});
+
+test("布鲁斯普通三阶段共享扬沙与跺地血脉调整时合为布鲁斯家族，不包含无学习调整的圣冠首领", () => {
+  const sand = { id: "skill_fb7a382355deaebc", name: "扬沙", type: "地", category: "physical" };
+  const stomp = { id: "skill_d88cc9f8513c5b7f", name: "跺地", type: "地", category: "physical" };
+  const changed = [
+    { ...addition(sand), note: "血脉技能 · 地血脉 Lv.15" },
+    { kind: "learnset", field: "skillIds", skillId: stomp.id, label: "移除可学习技能",
+      before: stomp.name, note: "血脉技能 · 地血脉 Lv.15" },
+  ];
+  const spirits = ["布鲁斯", "雪顶布鲁斯", "冰钻布鲁斯", "圣冠布鲁斯"].map((name, index) => ({
+    id: `bruce-${index}`, familyId: "bruce", fullName: name, baseName: name,
+    dexNo: String(252 + Math.min(index, 2)), stage: ["一阶", "二阶", "三阶", "首领"][index],
+    changeInfo: { patch, items: index < 3 ? changed : [{ kind: "new", label: "新增精灵", after: name }] },
+  }));
+  const season = { id: "S5", spirits, skills: [sand, stomp],
+    seasonAnnouncement: { id: S5_SEASON_ANNOUNCEMENT.patch.id },
+    learnsets: spirits.map(spirit => ({ spiritId: spirit.id, skillIds: [sand.id],
+      acquisitions: { [sand.id]: ["地系血脉 Lv.15"] } })),
+  };
+  const changes = { gains: spirits.slice(0, 3).map(spirit => ({ spiritId: spirit.id, skillIds: [sand.id] })) };
+  const before = JSON.stringify({ season, changes });
+  const [row, ...others] = buildLearningUpdates(season, changes);
+  expect(others).toEqual([]);
+  expect(row).toMatchObject({ isFamily: true, familyName: "布鲁斯家族", spiritId: "bruce-2" });
+  expect(row.spirit.fullName).toBe("冰钻布鲁斯");
+  expect(row.members.map(member => member.fullName)).toEqual(["布鲁斯", "雪顶布鲁斯", "冰钻布鲁斯"]);
+  expect(row.skills).toEqual([sand]);
+  expect(row.changeInfo.items).toEqual(changed);
+  expect(JSON.stringify({ season, changes })).toBe(before);
 });
 
 test("技能和条目顺序不影响同更新判定，但相似名称没有明确家族身份仍保持独立", () => {

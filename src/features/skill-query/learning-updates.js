@@ -49,7 +49,7 @@ function hasLearningChanges(changeInfo, skillIds) {
     !(item.label === "新增可学习技能" && (item.before == null || item.before === "") && added.has(item.skillId))));
 }
 
-/** Build complete learning updates before UI filters; partial families stay individual. */
+/** Group identical updates within each explicit family, retaining their exact member scope. */
 export function buildLearningUpdates(season, changes, spiritsMetadata = []) {
   if (!season) return [];
   const metadata = new Map(spiritsMetadata.map(spirit => [spirit.id, spirit]));
@@ -99,17 +99,24 @@ export function buildLearningUpdates(season, changes, spiritsMetadata = []) {
     return (Number.isFinite(first.dex) ? first.stage - second.stage : 0) || first.index - second.index;
   };
   const rows = [];
-  for (const [familyKey, family] of families) {
-    const members = [...family].sort(compare);
-    const entries = members.map(member => updates.get(member.id));
-    const complete = entries.length > 1 && entries.every(Boolean) &&
-      entries[0].familyId && entries.every(row =>
-        signatures.get(row.spiritId) === signatures.get(entries[0].spiritId));
-    if (!complete) { rows.push(...entries.filter(Boolean)); continue; }
-    const ordinary = members.filter(member => member.stage !== "首领");
-    const representative = (ordinary.length ? ordinary : members).reduce((best, member) =>
-      (STAGES[member.stage] ?? 0) > (STAGES[best.stage] ?? 0) ? member : best);
-    rows.push({ ...updates.get(representative.id), id: familyKey, key: familyKey, members, isFamily: true });
+  for (const family of families.values()) {
+    const relatives = [...family].sort(compare);
+    const base = relatives[0];
+    const groups = new Map();
+    for (const member of relatives) {
+      if (!updates.has(member.id)) continue;
+      const key = signatures.get(member.id);
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(member);
+    }
+    for (const members of groups.values()) {
+      if (members.length < 2) { rows.push(updates.get(members[0].id)); continue; }
+      const ordinary = members.filter(member => member.stage !== "首领");
+      const representative = (ordinary.length ? ordinary : members).reduce((best, member) =>
+        (STAGES[member.stage] ?? 0) > (STAGES[best.stage] ?? 0) ? member : best);
+      rows.push({ ...updates.get(representative.id), members, isFamily: true,
+        familyName: `${base.baseName || base.fullName}家族` });
+    }
   }
   return rows.sort((a, b) => compare(a.members[0], b.members[0]));
 }

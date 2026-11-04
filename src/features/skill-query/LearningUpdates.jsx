@@ -64,13 +64,16 @@ export default function LearningUpdates({ season, previous, changes, spirits = E
     <div className="skill-query__gains learning-updates" aria-label={t("赛季学习更新列表")}>
       {filtered.slice(0, visibleCount).map((entry, index) => {
         const spirit = entry.spirit;
+        const name = entry.familyName ?? spirit.fullName;
         const portrait = publicResourceUrl(spirit.assetUrl ?? spirit.asset?.localUrl ?? `/assets/spirits/${spirit.id}.png`);
         return <article key={entry.key}>
-          <h3><button type="button" aria-label={spirit.fullName} onClick={() => onOpen({ spiritId: entry.spiritId })}>
+          <h3><button type="button" aria-label={name} onClick={() => onOpen({ spiritId: entry.spiritId })}>
             <SpiritImage className="learning-update__portrait" src={portrait} name={spirit.fullName} alt="" width={40} height={40} loading={index < 6 ? "eager" : "lazy"} decoding="async" />
-            <span>{spirit.fullName}</span>
-          </button>{entry.isFamily && <small className="learning-update__family" title={entry.members.map(member => member.fullName).join(" / ")}>{t("家族")}</small>}
-          <EntityChangeHint changeInfo={entry.changeInfo} /></h3>
+            <span>{name}</span>
+          </button><EntityChangeHint changeInfo={entry.changeInfo} /></h3>
+          {entry.isFamily && <details className="learning-update__members" open={entry.members.length <= 3}>
+            <summary>{t("适用成员")} · {entry.members.length}</summary>{entry.members.map(member => member.fullName).join("、")}
+          </details>}
           <div>{entry.skills.map(item => <button type="button" key={item.id} onClick={() => onOpen({ skillId: item.id })}>
             <SkillIcon skill={{ ...item, iconUrl: skillMap.get(item.id)?.iconUrl ?? item.iconUrl }} size={32} loading={index < 3 ? "eager" : "lazy"} />
             <span>{t(item.name)} <small>{typeName(item.type)} · {t(categoryNames[item.category])}</small>

@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import SkillQueryPanel from "../../src/features/skill-query/SkillQueryPanel.jsx";
+import LearningUpdates from "../../src/features/skill-query/LearningUpdates.jsx";
 
 const fixture = vi.hoisted(() => {
   const common = { id: "common", name: "防御", type: "普通", category: "defense" };
@@ -9,6 +10,7 @@ const fixture = vi.hoisted(() => {
   const poison = { id: "poison", name: "投毒", type: "毒", category: "physical", introducedSeason: "S4" };
   const spirits = [
     ...["种子", "草", "花", "果"].map((name, index) => ({ id: `sea-${index}`, fullName: `蹦蹦${name}（海神球形态）`,
+      baseName: `蹦蹦${name}`, variantName: "海神球形态",
       familyId: "sea", types: ["草"], dexNo: 20 + index, stage: ["一阶", "二阶", "三阶", "首领"][index],
       asset: { localUrl: "/assets/spirits/spirit_0123456789abcdef.png" } })),
     { id: "fire-one", fullName: "火花", familyId: "fire-family", types: ["火"], dexNo: 1, stage: "一阶",
@@ -38,17 +40,63 @@ test("learning updates show portraits, one family row and a separate branch in d
   expect(rows).toHaveLength(2);
   expect(rows[0]).toHaveTextContent("火花");
   expect(rows[0]).not.toHaveTextContent("家族");
-  expect(rows[1]).toHaveTextContent("家族");
-  expect(rows[1]).toHaveTextContent("蹦蹦花（海神球形态）");
+  expect(rows[1]).toHaveTextContent("蹦蹦种子家族");
+  expect(rows[1].querySelector(".learning-update__family")).toBeNull();
+  const members = rows[1].querySelector("details");
+  expect(within(members).getByText("适用成员 · 4", { exact: true })).toBeInTheDocument();
+  for (const member of fixture.spirits.filter(spirit => spirit.id.startsWith("sea-"))) {
+    expect(members).toHaveTextContent(member.fullName);
+  }
   expect(rows[1].querySelector(".learning-update__portrait")).toHaveAttribute("src", fixture.spirits[0].asset.localUrl);
   fireEvent.change(screen.getByLabelText("搜索技能或精灵"), { target: { value: "蹦蹦果" } });
   expect(container.querySelectorAll(".skill-query__gains article")).toHaveLength(1);
-  expect(screen.getByText("家族", { exact: true })).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "蹦蹦花（海神球形态）", exact: true }));
+  expect(screen.getByRole("button", { name: "蹦蹦种子家族", exact: true })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "蹦蹦种子家族", exact: true }));
   expect(screen.getByRole("heading", { name: "蹦蹦花（海神球形态）" })).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "返回赛季查询" }));
   expect(screen.getByLabelText("搜索技能或精灵")).toHaveValue("蹦蹦果");
   expect(container.querySelectorAll(".skill-query__gains article")).toHaveLength(1);
+});
+
+test("布鲁斯家族只显示三只适用成员，家族标题仍打开最终普通形态", () => {
+  const sand = { id: "sand", name: "扬沙", type: "地", category: "physical" };
+  const stomp = { id: "stomp", name: "跺地", type: "地", category: "physical" };
+  const patch = { id: "s5-update", seasonId: "S5" };
+  const items = [
+    { kind: "learnset", field: "skillIds", skillId: sand.id, label: "新增可学习技能",
+      after: sand.name, note: "血脉技能 · 地血脉 Lv.15" },
+    { kind: "learnset", field: "skillIds", skillId: stomp.id, label: "移除可学习技能",
+      before: stomp.name, note: "血脉技能 · 地血脉 Lv.15" },
+  ];
+  const spirits = ["布鲁斯", "雪顶布鲁斯", "冰钻布鲁斯", "圣冠布鲁斯"].map((name, index) => ({
+    id: `bruce-${index}`, familyId: "bruce", fullName: name, baseName: name,
+    dexNo: String(252 + Math.min(index, 2)), stage: ["一阶", "二阶", "三阶", "首领"][index],
+    changeInfo: { patch, items: index < 3 ? items : [{ kind: "new", label: "新增精灵", after: name }] },
+  }));
+  const season = { id: "S5", spirits, skills: [sand, stomp],
+    learnsets: spirits.map(spirit => ({ spiritId: spirit.id, skillIds: [sand.id],
+      acquisitions: { [sand.id]: ["地系血脉 Lv.15"] } })),
+  };
+  const changes = { gains: spirits.slice(0, 3).map(spirit => ({ spiritId: spirit.id, skillIds: [sand.id] })) };
+  const onOpen = vi.fn();
+  const { container } = render(<LearningUpdates season={season} previous={{ id: "S4" }} changes={changes}
+    spirits={spirits} skills={[sand, stomp]} onOpen={onOpen} filters={{}} onFiltersChange={vi.fn()} />);
+  const rows = container.querySelectorAll(".learning-updates article");
+  expect(rows).toHaveLength(1);
+  const row = rows[0];
+  const title = within(row).getByRole("button", { name: "布鲁斯家族", exact: true });
+  expect(row.querySelector(".learning-update__family")).toBeNull();
+  expect(row).toHaveTextContent("扬沙");
+  expect(row).toHaveTextContent("移除可学习技能调整前：跺地");
+  const members = row.querySelector("details");
+  expect(within(members).getByText("适用成员 · 3", { exact: true })).toBeInTheDocument();
+  for (const name of ["布鲁斯", "雪顶布鲁斯", "冰钻布鲁斯"]) expect(members).toHaveTextContent(name);
+  expect(members).not.toHaveTextContent("圣冠布鲁斯");
+  expect(members).toHaveAttribute("open");
+  fireEvent.click(members.querySelector("summary"));
+  expect(members).not.toHaveAttribute("open");
+  fireEvent.click(title);
+  expect(onOpen).toHaveBeenCalledWith({ spiritId: "bruce-2" });
 });
 
 test("learning update filters and reset preserve the complete family scope", () => {
