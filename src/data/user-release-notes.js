@@ -237,6 +237,15 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.5",
+    date: "2026.11.04",
+    seasonId: "S5",
+    title: "S5 平衡回顾改版",
+    whatsNew: S5_FEATURE_INTRO,
+    features: ["平衡回顾改为按类速览，技能写明谁会用。"],
+    fixes: ["国际服S3季中不变。"],
+  }),
+  createRelease({
     version: "v2.3.4",
     date: "2026.11.04",
     seasonId: "S5",
