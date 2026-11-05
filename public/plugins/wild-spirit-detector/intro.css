@@ -8,52 +8,34 @@
   --border: #d9deea;
   --muted: #57627a;
   --accent: #805b16;
-  --accent-bg: #f8f1e2;
 }
 * { box-sizing: border-box; }
-body { margin: 0; font-size: 15px; line-height: 1.75; }
+body { margin: 0; font-size: 15px; line-height: 1.7; }
 a { color: var(--accent); text-underline-offset: 4px; }
 a:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
-.page { max-width: 980px; min-height: 100dvh; margin: 0 auto; padding: 0 42px 38px; background: var(--surface); border-top: 4px solid var(--accent); }
-.page-nav { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.page { width: calc(100% - 32px); max-width: 640px; margin: 40px auto; padding: 0 28px 24px; background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--accent); border-radius: 8px; }
+.page-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 15px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
 .page-nav a { text-decoration: none; }
 .page-nav span { color: var(--muted); }
-.intro { padding: 38px 0 28px; }
-.eyebrow { margin: 0 0 7px; color: var(--muted); font-size: 14px; }
-h1 { margin: 0; font-size: 34px; line-height: 1.4; letter-spacing: -.02em; }
-.lead { margin: 13px 0 22px; font-size: 18px; }
-.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 24px; }
-.actions a { min-height: 44px; display: inline-flex; align-items: center; gap: 12px; }
-.actions .primary { padding: 8px 20px; border-radius: 6px; background: var(--accent); color: #fff; font-weight: 600; text-decoration: none; }
+main { padding-top: 24px; }
+.eyebrow { margin: 0 0 6px; color: var(--accent); font-size: 14px; }
+h1 { margin: 0; font-size: 28px; line-height: 1.4; }
+.lead { margin: 11px 0 20px; font-size: 16px; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 22px; }
+.actions a { min-height: 44px; display: inline-flex; align-items: center; gap: 10px; }
+.actions .primary { padding: 8px 18px; border-radius: 6px; background: var(--accent); color: #fff; font-weight: 600; text-decoration: none; }
 .actions .primary:hover { filter: brightness(1.1); }
-.availability { margin: 14px 0 0; color: var(--muted); font-size: 14px; }
-.section { padding: 27px 0 0; border-top: 1px solid var(--border); }
-.section + .section { margin-top: 28px; }
-h2 { margin: 0 0 19px; font-size: 20px; line-height: 1.5; }
-.features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 0; }
-.features dt { margin-bottom: 5px; font-size: 16px; font-weight: 650; }
-.features dd { margin: 0; color: var(--muted); }
-.steps { display: grid; gap: 16px; margin: 0; padding-left: 24px; }
-.steps li { padding-left: 5px; }
-.steps li::marker { color: var(--accent); font-weight: 650; }
-.steps strong { display: block; font-size: 16px; }
-.steps span { color: var(--muted); }
-.limits { margin-top: 27px; padding: 15px 18px; border-left: 3px solid var(--accent); background: var(--accent-bg); font-size: 14px; }
-.limits strong { font-size: 15px; }
-.limits p { margin: 4px 0 0; }
+.availability { margin: 13px 0 0; color: var(--muted); font-size: 14px; }
+.disclaimer { margin-top: 23px; padding-top: 17px; border-top: 1px solid var(--border); }
+.disclaimer h2 { margin: 0 0 6px; font-size: 15px; }
+.disclaimer p { margin: 0; color: var(--muted); font-size: 14px; }
 @media (max-width: 600px) {
-  .page { padding: 0 20px 28px; }
-  .page-nav { padding: 16px 0; }
-  .intro { padding: 28px 0 23px; }
-  h1 { font-size: 28px; }
-  .lead { font-size: 17px; }
-  .features { grid-template-columns: 1fr; gap: 18px; }
-  .section { padding-top: 23px; }
-  .section + .section { margin-top: 23px; }
-  .actions { gap: 7px 20px; }
-  .limits { padding: 13px 15px; }
+  .page { width: calc(100% - 24px); margin: 16px auto; padding: 0 20px 22px; }
+  .page-nav { gap: 10px; }
+  main { padding-top: 21px; }
+  h1 { font-size: 26px; }
 }
 @media (prefers-color-scheme: dark) {
-  :root { color: #e8ebf3; background: #101622; --surface: #171f2e; --border: #364158; --muted: #b0bbcf; --accent: #dfbf7b; --accent-bg: #29271f; }
+  :root { color: #e8ebf3; background: #101622; --surface: #171f2e; --border: #364158; --muted: #b0bbcf; --accent: #dfbf7b; }
   .actions .primary { color: #241d10; }
 }
