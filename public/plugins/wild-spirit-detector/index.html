@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>野生精灵检测器 · 插件工具</title>
+    <link rel="stylesheet" href="./intro.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="page-nav">
+        <a href="/cn/">← 返回国服计算器</a>
+        <span>插件工具</span>
+      </header>
+      <main>
+        <section class="intro" aria-labelledby="tool-title">
+          <p class="eyebrow">独立工具 · Windows 64 位</p>
+          <h1 id="tool-title">野生精灵检测器</h1>
+          <p class="lead">在本地小窗查看野生精灵的声音、体重比例、性格与佩戴奖章。</p>
+          <div class="actions">
+            <a class="primary" href="https://github.com/Evenstar-tools/roco-pve-viewer" target="_blank" rel="noopener noreferrer">查看工具项目 <span aria-hidden="true">↗</span></a>
+            <a href="https://github.com/Evenstar-tools/roco-pve-viewer/releases" target="_blank" rel="noopener noreferrer">版本与发布说明 ↗</a>
+          </div>
+          <p class="availability">源码预览版：目前公开源码与文档，尚未提供可直接安装的完整程序包。</p>
+        </section>
+
+        <section class="section" aria-labelledby="features-title">
+          <h2 id="features-title">能查看什么</h2>
+          <dl class="features">
+            <div>
+              <dt>声音</dt>
+              <dd>查看声音属性在范围内的位置，以及粗嗓门、婉转声等标识。</dd>
+            </div>
+            <div>
+              <dt>体重比例</dt>
+              <dd>查看该精灵体重范围内的位置和大小端标识。百分比不是稀有概率。</dd>
+            </div>
+            <div>
+              <dt>性格与奖章</dt>
+              <dd>查看已下发的性格效果和佩戴奖章，缺失信息保留为未知。</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="section" aria-labelledby="usage-title">
+          <h2 id="usage-title">使用前了解</h2>
+          <ol class="steps">
+            <li><strong>先看项目说明</strong><span>运行前需按文档准备所需资源，公开源码压缩包不包含完整游戏资源。</span></li>
+            <li><strong>准备 Windows 环境</strong><span>源码运行需要 Python 3.12 和官方 Npcap。具体安装、资源准备和构建步骤见项目文档。</span></li>
+            <li><strong>进入野生 PVE 遭遇</strong><span>开启读取后重新进入游戏世界，小窗在确认野生遭遇后显示信息；PVP 和未知模式不显示。</span></li>
+          </ol>
+          <div class="limits">
+            <strong>当前验证范围</strong>
+            <p>本地启动、离线合成回放和界面已验证；当前游戏版本的真实采集兼容性、属性下发时机仍待实测。</p>
+            <p>只读使用不代表获得游戏方许可或账号安全保障，使用前请阅读项目说明。</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

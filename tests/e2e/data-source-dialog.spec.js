@@ -1,7 +1,56 @@
 import { expect, test } from "@playwright/test";
 import { USER_RELEASE_NOTES } from "../../src/data/user-release-notes.js";
+import { resetUiuxStorage, selectSpirit, waitForAppReady } from "./helpers/uiux-helpers.js";
 
 const [latestRelease] = USER_RELEASE_NOTES;
+
+test("CN web plugin opens source preview in a new tab and preserves calculator at 320px", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await resetUiuxStorage(page);
+  await page.goto("/cn/");
+  await waitForAppReady(page);
+  await selectSpirit(page, "攻击方", "音速犬");
+  await selectSpirit(page, "防御方", "水灵");
+  await page.getByRole("button", { name: "工具箱", exact: true }).click();
+  const menu = page.getByRole("navigation", { name: "工具箱", exact: true });
+  const plugin = menu.getByRole("region", { name: "插件工具", exact: true })
+    .getByRole("link", { name: "野生精灵检测器", exact: true });
+  await expect(plugin).toBeInViewport();
+  await expect(plugin).toHaveAttribute("href", "/plugins/wild-spirit-detector/");
+  await expect(plugin).toHaveAttribute("target", "_blank");
+  await expect(plugin).toHaveAttribute("rel", "noopener noreferrer");
+  const [intro] = await Promise.all([page.waitForEvent("popup"), plugin.click()]);
+  await intro.waitForLoadState("domcontentloaded");
+  await expect(intro).toHaveURL(/\/plugins\/wild-spirit-detector\/$/);
+  await expect(intro.getByRole("heading", { name: "野生精灵检测器", exact: true })).toBeVisible();
+  await expect(intro.locator(".availability")).toContainText("源码预览版");
+  await expect(intro.locator(".availability")).toContainText("尚未提供可直接安装的完整程序包");
+  await expect(intro.getByRole("link", { name: /查看工具项目/ }))
+    .toHaveAttribute("href", "https://github.com/Evenstar-tools/roco-pve-viewer");
+  await expect(intro.getByRole("link", { name: /返回国服计算器/ })).toHaveAttribute("href", "/cn/");
+  expect(await intro.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await expect(menu).not.toBeVisible();
+  await expect(page).toHaveURL(/\/cn\/$/);
+  await expect(page.getByRole("combobox", { name: "攻击方精灵", exact: true })).toHaveValue("音速犬");
+  await expect(page.getByRole("combobox", { name: "防御方精灵", exact: true })).toHaveValue("水灵");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await intro.close();
+});
+
+for (const path of ["/global/zh-CN/", "/en/"]) {
+  test(`CN web plugin stays absent from Global toolbox ${path}`, async ({ page }) => {
+    await resetUiuxStorage(page);
+    await page.goto(path);
+    await expect(page.locator(".loading-state")).toHaveCount(0);
+    const toolbox = page.locator(".toolbox-trigger");
+    await expect(toolbox).toBeEnabled();
+    await toolbox.click();
+    const menu = page.locator("#toolbox-panel");
+    await expect(menu).toBeVisible();
+    await expect(menu.getByRole("region", { name: "插件工具", exact: true })).toHaveCount(0);
+    await expect(menu.locator('a[href="/plugins/wild-spirit-detector/"]')).toHaveCount(0);
+  });
+}
 
 test("utility dialogs keep keyboard focus 320", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });

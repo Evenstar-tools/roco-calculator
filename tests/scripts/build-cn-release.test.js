@@ -55,6 +55,8 @@ describe("pinned CN root release assembly", () => {
     put(root, "dist/client/pre/stale.html", "old preview");
     put(root, "dist/client/assets/stale.js", "old asset");
     put(root, "dist/keep.txt", "unrelated output");
+    put(root, "public/plugins/wild-spirit-detector/index.html", "CN Web plugin page");
+    put(root, "public/plugins/wild-spirit-detector/style.css", "CN Web plugin styles");
     expect(copyCnRelease(root, source)).toBe(path.join(root, "dist/client"));
     expect(readFileSync(path.join(root, "dist/client/data/runtime.json"), "utf8")).toBe("S5");
     expect(readFileSync(path.join(root, "dist/client/sw.js"), "utf8")).toBe("current release SW");
@@ -62,6 +64,9 @@ describe("pinned CN root release assembly", () => {
     expect(readFileSync(path.join(root, "dist/client/sitemap.xml"), "utf8")).toBe("current CN and Global sitemap");
     expect(readFileSync(path.join(source, "dist/client/sitemap.xml"), "utf8")).toBe("old CN-only sitemap");
     expect(readFileSync(path.join(root, "dist/keep.txt"), "utf8")).toBe("unrelated output");
+    expect(readFileSync(path.join(root, "dist/client/plugins/wild-spirit-detector/index.html"), "utf8")).toBe("CN Web plugin page");
+    expect(readFileSync(path.join(root, "dist/client/plugins/wild-spirit-detector/style.css"), "utf8")).toBe("CN Web plugin styles");
+    expect(existsSync(path.join(source, "dist/client/plugins"))).toBe(false);
     expect(existsSync(path.join(root, "dist/client/pre"))).toBe(false);
     expect(existsSync(path.join(root, "dist/client/assets/stale.js"))).toBe(false);
   });
@@ -98,7 +103,7 @@ describe("pinned CN root release assembly", () => {
     expect(readFileSync(path.join(root, "dist/client/data/runtime.json"), "utf8")).toBe("old root");
   });
 
-  test.each(["source-parent", "artifact-child", "destination-parent", "destination"])("rejects %s junctions without following or deleting their target", (location) => {
+  test.each(["source-parent", "artifact-child", "destination-parent", "destination", "plugins-directory", "plugins-child"])("rejects %s junctions without following or deleting their target", (location) => {
     const root = fixture();
     const source = path.join(root, "output/cn-source-fixture");
     artifact(source);
@@ -112,6 +117,10 @@ describe("pinned CN root release assembly", () => {
       symlinkSync(path.join(external, "dist"), childDist, linkType);
     } else if (location === "artifact-child") {
       symlinkSync(path.join(external, "dist/client/assets"), path.join(source, "dist/client/linked-assets"), linkType);
+    } else if (location.startsWith("plugins-")) {
+      const target = path.join(root, "public/plugins", location === "plugins-child" ? "linked" : "");
+      mkdirSync(path.dirname(target), { recursive: true });
+      symlinkSync(path.join(external, "dist/client/assets"), target, linkType);
     } else {
       const relative = location === "destination" ? "dist/client" : "dist";
       const target = requireInside(root, path.join(root, relative));
@@ -138,6 +147,7 @@ describe("pinned CN root release assembly", () => {
 
   test("CN and /pre export the same pin and build data before their isolated Vite modes", () => {
     const root = fixture();
+    put(root, "public/plugins/wild-spirit-detector/index.html", "CN Web plugin page");
     const calls = [];
     const run = (command, args, options) => {
       calls.push({ command, args, cwd: options.cwd });
@@ -160,6 +170,8 @@ describe("pinned CN root release assembly", () => {
       ["build", "--config", "config/vite.preview.config.mjs", "--mode", "pre"],
     ]);
     expect(existsSync(path.join(root, "dist/client/pre/index.html"))).toBe(true);
+    expect(readFileSync(path.join(root, "dist/client/plugins/wild-spirit-detector/index.html"), "utf8")).toBe("CN Web plugin page");
+    expect(existsSync(path.join(root, "dist/client/pre/plugins"))).toBe(false);
     expect(readFileSync(path.join(root, "dist/client/sw.js"), "utf8")).toBe("current release SW");
   });
 

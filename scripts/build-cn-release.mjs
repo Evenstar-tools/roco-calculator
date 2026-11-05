@@ -67,6 +67,10 @@ export function copyCnRelease(root, sourceDirectory) {
   // The sitemap describes the assembled CN + Global site, not the CN source pin.
   const sitemap = requirePlainPath(root, path.join(root, "public/sitemap.xml"));
   if (!lstatSync(sitemap, { throwIfNoEntry: false })?.isFile()) throw new Error("Release sitemap is missing");
+  // Plugin introductions belong only to the formal CN Web assembly.
+  const plugins = requirePlainPath(root, path.join(root, "public/plugins"));
+  const hasPlugins = existsSync(plugins);
+  if (hasPlugins) requirePlainTree(plugins);
   const target = requirePlainPath(root, path.join(root, "dist/client"));
   if (existsSync(target)) {
     requirePlainTree(target);
@@ -80,6 +84,9 @@ export function copyCnRelease(root, sourceDirectory) {
   cpSync(childDist, target, { recursive: true, force: false, errorOnExist: true });
   cpSync(serviceWorker, path.join(target, "sw.js"));
   cpSync(sitemap, path.join(target, "sitemap.xml"));
+  if (hasPlugins) {
+    cpSync(plugins, requirePlainPath(root, path.join(target, "plugins")), { recursive: true, force: false, errorOnExist: true });
+  }
   return target;
 }
 
