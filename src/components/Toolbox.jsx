@@ -1,7 +1,7 @@
 import { IS_PREVIEW_BUILD } from "../runtime/preview-channel.js";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
-import { Toolbox as ToolboxIcon, Shapes, MagnifyingGlass, Lightning, Gear, Speedometer, Shield, Table, ClockCounterClockwise } from "@phosphor-icons/react";
+import { Toolbox as ToolboxIcon, Shapes, MagnifyingGlass, Lightning, Gear, Speedometer, Shield, Table, ClockCounterClockwise, PuzzlePiece } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -16,6 +16,7 @@ export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
   const showReturnEntry = serverId === "cn" && IS_PREVIEW_BUILD;
+  const showPluginTools = serverId === "cn" && !IS_PREVIEW_BUILD && window.location.protocol !== "app:";
   const toolGroups = groups.map(([label, entries]) => [label, label !== "查询" ? entries
     : serverId === "cn" ? [...entries, ["balanceHistory", "平衡调整回顾", <ClockCounterClockwise size={18} aria-hidden="true" />]]
       : [...entries, ["typeChart", "18 系克制图", <Table size={18} aria-hidden="true" />]]]);
@@ -66,6 +67,17 @@ export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
             onClick={() => { setOpen(false); trigger.current?.focus(); actions[id](); }}>{icon}{t(title)}</button>)}
         </div>
       </section>)}
+      {showPluginTools && <>
+        <div className="app-menu__separator" role="separator" />
+        <section aria-label="插件工具">
+          <div className="app-menu__group-label">插件工具</div>
+          <a href="/plugins/wild-spirit-detector/" target="_blank" rel="noopener noreferrer"
+            style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44 }}
+            onClick={() => { setOpen(false); trigger.current?.focus(); }}>
+            <PuzzlePiece size={18} aria-hidden="true" />野生精灵检测器
+          </a>
+        </section>
+      </>}
       {showReturnEntry && <a href={window.location.protocol === "app:" ? "/" : "/cn/"} style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44 }}
         onClick={() => setOpen(false)}><Lightning size={18} aria-hidden="true" />返回正式版</a>}
     </nav>, document.body)}

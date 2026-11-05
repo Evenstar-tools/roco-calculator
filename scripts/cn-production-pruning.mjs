@@ -14,6 +14,7 @@ const CN_ICON_WEIGHTS_BY_NAME = {
   Eye: ["regular"],
   Wrench: ["regular"],
   Toolbox: ["regular"],
+  PuzzlePiece: ["regular"],
   Question: ["regular"],
   BookOpen: ["regular"],
   Trash: ["regular"],

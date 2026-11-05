@@ -3,7 +3,8 @@ import { afterEach, expect, test, vi } from "vitest";
 import { Toolbox } from "../../src/components/Toolbox.jsx";
 import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
 
-afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); });
+const testUrl = window.location.href;
+afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); globalThis.jsdom.reconfigure({ url: testUrl }); });
 
 test("加载阶段不开放会在就绪时消失的工具菜单", () => {
   const { rerender } = render(<Toolbox />);
@@ -46,23 +47,52 @@ test("Global 工具箱保留克制图，不显示国服平衡调整回顾入口"
   render(<RuntimeProvider serverId="global"><Toolbox actions={{ types: vi.fn(), typeChart: openChart, balanceHistory: openBalanceHistory }} /></RuntimeProvider>);
   fireEvent.click(screen.getByRole("button", { name: "工具箱" }));
   expect(screen.queryByRole("link", { name: "S5 抢先体验" })).toBeNull();
+  expect(screen.queryByRole("region", { name: "插件工具" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: "野生精灵检测器" })).not.toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "平衡调整回顾" })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "18 系克制图" }));
   expect(openChart).toHaveBeenCalledOnce();
   expect(openBalanceHistory).not.toHaveBeenCalled();
 });
 
-test("正式版隐藏抢先入口，重复点击、外部点击、Esc 关闭，键盘焦点只在工具间循环", () => {
+test("国服正式版插件链接新开介绍页并收起菜单，保留当前计算器状态", () => {
+  const actions = { types: vi.fn(), skills: vi.fn() };
+  render(<Toolbox actions={actions} />);
+  const trigger = screen.getByRole("button", { name: "工具箱" });
+  fireEvent.click(trigger);
+  const plugins = screen.getByRole("region", { name: "插件工具" });
+  const link = within(plugins).getByRole("link", { name: "野生精灵检测器" });
+  expect(link).toHaveAttribute("href", "/plugins/wild-spirit-detector/");
+  expect(link).toHaveAttribute("target", "_blank");
+  expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  expect(link).toHaveStyle({ minHeight: "44px" });
+  fireEvent.click(link);
+  expect(screen.queryByRole("navigation", { name: "工具箱" })).not.toBeInTheDocument();
+  expect(trigger).toHaveFocus();
+  expect(actions.types).not.toHaveBeenCalled();
+  expect(actions.skills).not.toHaveBeenCalled();
+});
+
+test("桌面 app 协议不显示插件工具", () => {
+  globalThis.jsdom.reconfigure({ url: "app://calculator/cn/" });
+  render(<Toolbox actions={{ types: vi.fn() }} />);
+  fireEvent.click(screen.getByRole("button", { name: "工具箱" }));
+  expect(screen.queryByRole("region", { name: "插件工具" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: "野生精灵检测器" })).not.toBeInTheDocument();
+});
+
+test("正式版隐藏抢先入口，重复点击、外部点击、Esc 关闭，键盘焦点在工具与插件链接间循环", () => {
   const actions=Object.fromEntries(["types","skills","balanceHistory","deer","transmission","speed","durability"].map(id=>[id,vi.fn()]));
   render(<Toolbox actions={actions} />);
   const trigger=screen.getByRole("button",{name:"工具箱"});
   fireEvent.click(trigger);
   const buttons=within(screen.getByRole("navigation")).getAllByRole("button");
+  const plugin=screen.getByRole("link", { name: "野生精灵检测器" });
   expect(screen.queryByRole("link", { name: "S5 抢先体验" })).toBeNull();
   expect(screen.queryByRole("link", { name: "返回正式版" })).toBeNull();
   expect(buttons[0]).toHaveFocus();
   fireEvent.keyDown(document,{key:"Tab",shiftKey:true});
-  expect(buttons.at(-1)).toHaveFocus();
+  expect(plugin).toHaveFocus();
   fireEvent.keyDown(document,{key:"Tab"});
   expect(buttons[0]).toHaveFocus();
   fireEvent.keyDown(document,{key:"Escape"});
@@ -87,6 +117,8 @@ test("抢先版工具箱返回正式版，链接参与键盘焦点循环", async
   const back = within(panel).getByRole("link", { name: "返回正式版" });
   expect(back).toHaveAttribute("href", "/cn/");
   expect(within(panel).queryByRole("link", { name: "S5 抢先体验" })).toBeNull();
+  expect(within(panel).queryByRole("region", { name: "插件工具" })).not.toBeInTheDocument();
+  expect(within(panel).queryByRole("link", { name: "野生精灵检测器" })).not.toBeInTheDocument();
   expect(first).toHaveFocus();
   fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
   expect(back).toHaveFocus();
