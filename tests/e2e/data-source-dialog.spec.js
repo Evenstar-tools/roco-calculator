@@ -4,7 +4,7 @@ import { resetUiuxStorage, selectSpirit, waitForAppReady } from "./helpers/uiux-
 
 const [latestRelease] = USER_RELEASE_NOTES;
 
-test("CN web plugin opens source preview in a new tab and preserves calculator at 320px", async ({ page }) => {
+test("CN web plugin opens releases download in a new tab and preserves calculator at 320px", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 720 });
   await resetUiuxStorage(page);
   await page.goto("/cn/");
@@ -23,10 +23,18 @@ test("CN web plugin opens source preview in a new tab and preserves calculator a
   await intro.waitForLoadState("domcontentloaded");
   await expect(intro).toHaveURL(/\/plugins\/wild-spirit-detector\/$/);
   await expect(intro.getByRole("heading", { name: "野生精灵检测器", exact: true })).toBeVisible();
-  await expect(intro.locator(".availability")).toContainText("源码预览版");
-  await expect(intro.locator(".availability")).toContainText("尚未提供可直接安装的完整程序包");
-  await expect(intro.getByRole("link", { name: /查看工具项目/ }))
-    .toHaveAttribute("href", "https://github.com/Evenstar-tools/roco-pve-viewer");
+  await expect(intro.locator(".actions").getByRole("link")).toHaveCount(1);
+  const download = intro.locator(".actions").getByRole("link", { name: "下载工具", exact: true });
+  await expect(download).toBeVisible();
+  await expect(download).toHaveAttribute("href", "https://github.com/Evenstar-tools/roco-pve-viewer/releases");
+  await expect(download).toHaveAttribute("target", "_blank");
+  await expect(download).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(intro.locator(".availability")).toHaveCount(0);
+  await expect(intro.locator("body")).not.toContainText("源码预览版");
+  await expect(intro.locator("body")).not.toContainText("尚未提供可直接安装的完整程序包");
+  await expect(intro.getByText("无偿分享", { exact: false })).toBeVisible();
+  await expect(intro.getByRole("heading", { name: "免责声明", exact: true })).toBeVisible();
+  await expect(intro.locator(".disclaimer")).toContainText("使用风险由使用者自行承担");
   await expect(intro.getByRole("link", { name: /返回国服计算器/ })).toHaveAttribute("href", "/cn/");
   expect(await intro.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await expect(menu).not.toBeVisible();

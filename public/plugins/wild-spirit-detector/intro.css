@@ -25,7 +25,6 @@ h1 { margin: 0; font-size: 28px; line-height: 1.4; }
 .actions a { min-height: 44px; display: inline-flex; align-items: center; gap: 10px; }
 .actions .primary { padding: 8px 18px; border-radius: 6px; background: var(--accent); color: #fff; font-weight: 600; text-decoration: none; }
 .actions .primary:hover { filter: brightness(1.1); }
-.availability { margin: 13px 0 0; color: var(--muted); font-size: 14px; }
 .disclaimer { margin-top: 23px; padding-top: 17px; border-top: 1px solid var(--border); }
 .disclaimer h2 { margin: 0 0 6px; font-size: 15px; }
 .disclaimer p { margin: 0; color: var(--muted); font-size: 14px; }
