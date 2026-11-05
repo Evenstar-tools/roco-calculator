@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.9",
+    date: "2026.11.05",
+    seasonId: "S5",
+    title: "S5 国服网页插件工具",
+    whatsNew: S5_FEATURE_INTRO,
+    features: ["国服网页工具箱新增野生精灵检测器介绍与项目入口。", "插件入口仅国服网页显示，国际服S3季中保持现状。"],
+  }),
+  createRelease({
     version: "v2.3.8",
     date: "2026.11.04",
     seasonId: "S5",
