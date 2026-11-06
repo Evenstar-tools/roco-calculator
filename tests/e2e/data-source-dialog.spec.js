@@ -13,6 +13,14 @@ test("CN web plugin opens releases download in a new tab and preserves calculato
   await selectSpirit(page, "防御方", "水灵");
   await page.getByRole("button", { name: "工具箱", exact: true }).click();
   const menu = page.getByRole("navigation", { name: "工具箱", exact: true });
+  await expect(menu.getByRole("region", { name: "插件工具", exact: true })).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  const search = page.getByRole("combobox", { name: "攻击方精灵", exact: true });
+  await search.fill("龙骑士");
+  await expect(page.getByText("某处的大门已开启", { exact: true })).toHaveCount(0);
+  await search.press("Enter");
+  await expect(page.getByRole("status").filter({ hasText: "某处的大门已开启" })).toBeVisible();
+  await page.getByRole("button", { name: "工具箱", exact: true }).click();
   const plugin = menu.getByRole("region", { name: "插件工具", exact: true })
     .getByRole("link", { name: "野生精灵检测器", exact: true });
   await expect(plugin).toBeInViewport();
@@ -37,12 +45,34 @@ test("CN web plugin opens releases download in a new tab and preserves calculato
   await expect(intro.locator(".disclaimer")).toContainText("使用风险由使用者自行承担");
   await expect(intro.getByRole("link", { name: /返回国服计算器/ })).toHaveAttribute("href", "/cn/");
   expect(await intro.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  const copied = await page.context().newPage();
+  await copied.goto(intro.url());
+  await expect(copied).toHaveURL(/\/cn\/$/);
+  await expect(copied.getByRole("heading", { name: "野生精灵检测器", exact: true })).toHaveCount(0);
+  await copied.close();
   await expect(menu).not.toBeVisible();
   await expect(page).toHaveURL(/\/cn\/$/);
   await expect(page.getByRole("combobox", { name: "攻击方精灵", exact: true })).toHaveValue("音速犬");
   await expect(page.getByRole("combobox", { name: "防御方精灵", exact: true })).toHaveValue("水灵");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await intro.reload();
+  await expect(intro).toHaveURL(/\/cn\/$/);
   await intro.close();
+  await page.reload();
+  await waitForAppReady(page);
+  await page.getByRole("button", { name: "工具箱", exact: true }).click();
+  await expect(menu.getByRole("region", { name: "插件工具", exact: true })).toHaveCount(0);
+});
+
+test("CN web plugin rejects independent URLs including index and query variants", async ({ page }) => {
+  for (const suffix of ["", "/", "/index.html", "/?unlocked=1#龙骑士"]) {
+    await page.goto(`/plugins/wild-spirit-detector${suffix}`);
+    // Vite serves the calculator fallback for extensionless paths without a slash.
+    // EdgeOne may normalize the slash first; both must land on the calculator.
+    if (suffix === "") await waitForAppReady(page);
+    else await expect(page).toHaveURL(/\/cn\/$/);
+    await expect(page.getByRole("heading", { name: "野生精灵检测器", exact: true })).toHaveCount(0);
+  }
 });
 
 for (const path of ["/global/zh-CN/", "/en/"]) {

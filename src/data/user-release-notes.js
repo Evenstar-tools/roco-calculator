@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.10",
+    date: "2026.11.06",
+    seasonId: "S5",
+    title: "S5 插件入口调整",
+    whatsNew: S5_FEATURE_INTRO,
+    fixes: ["插件入口改为按条件显示，独立网址访问返回计算器；国际服S3季中不变。"],
+  }),
+  createRelease({
     version: "v2.3.9",
     date: "2026.11.05",
     seasonId: "S5",

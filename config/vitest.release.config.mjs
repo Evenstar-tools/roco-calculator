@@ -22,6 +22,7 @@ export default defineConfig({
             "tests/data/{validate,runtime-snapshot,parsers,current-patch-changes}.test.js",
             "tests/service-worker/*.test.js",
             "tests/docs/release-notes.test.js",
+            "tests/runtime/plugin-entry-gate.test.js",
             "tests/build/{performance-budget,build-attribution,global-release,cn-production-pruning,stamp-image-cache,web-artifact}.test.js",
             "tests/scripts/{build-preview-release,build-cn-release,verify-deployed-web}.test.js",
             "tests/miniapp/shared-core.test.js",

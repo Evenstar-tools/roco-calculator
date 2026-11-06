@@ -4,6 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
+    <style>html:not([data-plugin-entry]) body { display: none !important; }</style>
+    <script data-plugin-gate>
+      (() => {
+        const deny = () => {
+          document.documentElement.removeAttribute("data-plugin-entry");
+          location.replace("/cn/");
+        };
+        let granted = false;
+        try {
+          granted = document.cookie.split(";").some(value => value.trim() === "roco-cn-plugin-entry=1");
+          document.cookie = "roco-cn-plugin-entry=; Max-Age=0; Path=/; SameSite=Strict";
+        } catch { /* Cookies unavailable: keep this page closed. */ }
+        if (!granted) { deny(); return; }
+        document.documentElement.setAttribute("data-plugin-entry", "open");
+        window.addEventListener("pageshow", event => { if (event.persisted) deny(); });
+      })();
+    </script>
     <title>野生精灵检测器 · 插件工具</title>
     <link rel="stylesheet" href="./intro.css?v=20261105-release-button" />
   </head>
