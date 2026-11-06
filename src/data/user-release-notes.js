@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.14",
+    date: "2026.11.06",
+    seasonId: "S5",
+    title: "S5 奇遇等级精确对照",
+    whatsNew: S5_FEATURE_INTRO,
+    fixes: ["性格检测单选41、42、43级显示对应伤害与余血百分比；新增41–43级全部，按等级差显示范围。", "减防、减攻性格单列精确数值；切等级保留异色、骰子和配招，多条实测按同一等级匹配，国际服S3季中保持现状。"],
+  }),
+  createRelease({
     version: "v2.3.13",
     date: "2026.11.06",
     seasonId: "S5",
