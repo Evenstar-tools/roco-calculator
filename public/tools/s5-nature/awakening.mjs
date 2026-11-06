@@ -62,12 +62,17 @@ export function resolveAwakeningType(baseMultiplier, attackerAwakening, defender
   const defender = getAwakeningBonuses(defenderAwakening);
   const ratio = (100 + attacker.polarizationPercent) / (100 + defender.dullingPercent);
   const modeled = (attackerAwakening > 0 || defenderAwakening > 0) && (mixedRelation || (baseMultiplier !== 0 && baseMultiplier !== 1));
-  const correctionMultiplier = baseMultiplier === 0 || baseMultiplier === 1 ? 1 : Math.max(.6, Math.min(1.8, ratio));
+  // Handoff 2026-11-06: own 8/10-star outgoing samples converge at ×1.8.
+  // Incoming dulling is a measured approximation, not an exact solved rule.
+  const dullingFit = attackerAwakening === 0 && defenderAwakening >= 3 && baseMultiplier !== 0 && baseMultiplier !== 1;
+  const correctionMultiplier = baseMultiplier === 0 || baseMultiplier === 1 ? 1
+    : dullingFit ? (baseMultiplier > 1 ? .72 : .59) : Math.max(.6, Math.min(1.8, ratio));
   const multiplier = baseMultiplier * correctionMultiplier;
   return {
     multiplier, baseMultiplier, correctionMultiplier,
     polarizationPercent: attacker.polarizationPercent, dullingPercent: defender.dullingPercent,
-    model: modeled ? TYPE_INTERACTION_MODEL.id : 'calculator-type-chart',
+    model: dullingFit ? 's5-dulling-sample-fit' : modeled ? TYPE_INTERACTION_MODEL.id : 'calculator-type-chart',
+    approximate: dullingFit,
     formulaVerified: !modeled,
   };
 }

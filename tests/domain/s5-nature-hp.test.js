@@ -48,7 +48,7 @@ test('HP and shiny status preserve current attacks, defenses, direct damage, and
   const input=inputFor('可爱猿',42);
   const base=previewMatchup(input,catalog,dice);
   const up=base.outgoing[0].predictions.find(row=>row.natureId===hpNatures.up.id);
-  assert.equal(up.damage,316);
+  assert.equal(up.damage,102);
   assert.equal(up.hpMax,454);
   assert.equal(base.ownPanel.hp,403);
   const attackRaceStats=species('可爱猿').wildAttackRaceStats;
@@ -56,7 +56,7 @@ test('HP and shiny status preserve current attacks, defenses, direct damage, and
   assert.deepEqual({...normal,hp:undefined},{hp:undefined,physicalAttack:372,magicalAttack:158,physicalDefense:89,magicalDefense:72,speed:43});
   const shiny=wildPanel(species('可爱猿').raceStats,42,hpNatures.neutral,{shiny:true,attackRaceStats});
   assert.deepEqual({...shiny,hp:undefined},{...normal,hp:undefined});
-  assert.equal(previewMatchup({...input,targetShiny:true},catalog,dice).outgoing[0].predictions.find(row=>row.natureId===hpNatures.up.id).damage,316);
+  assert.equal(previewMatchup({...input,targetShiny:true},catalog,dice).outgoing[0].predictions.find(row=>row.natureId===hpNatures.up.id).damage,102);
 });
 
 test('record solver and health matching share calibrated HP and all existing target shiny flags',()=>{

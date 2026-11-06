@@ -2,6 +2,7 @@ import { calculateDamage } from './vendor/damage.mjs';
 import { getAwakeningBonuses } from './awakening.mjs';
 import { calculateWildHp, wildTargetShiny } from './wild-hp.mjs';
 import { calculateWildAttack } from './wild-attack.mjs';
+import { calculateWildDefense } from './wild-defense.mjs';
 
 const STATS = ['hp', 'physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense', 'speed'];
 const STAT_NAMES = { hp: '生命', physicalAttack: '物攻', magicalAttack: '魔攻', physicalDefense: '物防', magicalDefense: '魔防', speed: '速度' };
@@ -38,6 +39,11 @@ export function wildPanel(raceStats, level, nature, options = {}) {
     if (stat === 'physicalAttack' || stat === 'magicalAttack') {
       panel[stat] = options.attackRaceStats === null ? null
         : calculateWildAttack(options.attackRaceStats === undefined ? race : options.attackRaceStats[stat], level, nature, stat);
+      continue;
+    }
+    if (['physicalDefense', 'magicalDefense'].includes(stat) && options.defenseRaceStats !== undefined) {
+      panel[stat] = options.defenseRaceStats === null ? null
+        : calculateWildDefense(options.defenseRaceStats[stat], level, nature, stat, options.strengthStage);
       continue;
     }
     const numerator = 1000 + race * (level + 50);
@@ -130,6 +136,7 @@ function damageContext(prepared, obs) {
   if (!skill || skill.supported !== true || !['physical', 'magical'].includes(skill.category) || !isNumber(skill.basePower) || skill.basePower <= 0 || skill.basePower > 10000) {
     return { error: '该技能尚未纳入简单单击白名单，暂不参与反推。' };
   }
+  if (obs.direction === 'outgoing' && target.wildDefenseRaceStats === null) return { error: '该精灵的三阶段双防资料缺失。' };
   if (obs.direction === 'incoming' && target.wildAttackRaceStats === null) return { error: '该精灵的三阶段双攻资料缺失。' };
   const requiredStat = obs.direction === 'incoming'
     ? skill.category === 'physical' ? 'physicalDefense' : 'magicalDefense'
@@ -179,7 +186,7 @@ function hpRange(states) {
 }
 
 function calculatePrediction(prepared, obs, nature, context, beforeStates) {
-  const panel = wildPanel(prepared.target.raceStats, prepared.session.level, nature, { shiny: wildTargetShiny(prepared.session), attackRaceStats: prepared.target.wildAttackRaceStats });
+  const panel = wildPanel(prepared.target.raceStats, prepared.session.level, nature, { shiny: wildTargetShiny(prepared.session), attackRaceStats: prepared.target.wildAttackRaceStats, defenseRaceStats: prepared.target.wildDefenseRaceStats, strengthStage: prepared.target.wildStrengthStage });
   let damage = null;
   if (obs.direction !== 'hp') {
     const physical = context.skill.category === 'physical';
@@ -241,7 +248,7 @@ export function predictObservation(session, obs, nature, catalog) {
     const error = observationError(obs);
     const context = error ? {} : damageContext(prepared, obs);
     if (error || context.error) return { status: 'blocked', reason: error || context.error, natureId: nature?.id, compatible: false, calibrationStatus };
-    const maxHp = wildPanel(prepared.target.raceStats, session.level, nature, { shiny: wildTargetShiny(session), attackRaceStats: prepared.target.wildAttackRaceStats }).hp;
+    const maxHp = wildPanel(prepared.target.raceStats, session.level, nature, { shiny: wildTargetShiny(session), attackRaceStats: prepared.target.wildAttackRaceStats, defenseRaceStats: prepared.target.wildDefenseRaceStats, strengthStage: prepared.target.wildStrengthStage }).hp;
     return { status: 'used', reason: context.traitWarnings?.length ? context.traitWarnings.join(' ') : '按当前模型及条件核算。', ...calculatePrediction(prepared, obs, nature, context, possibleHp(maxHp)).prediction, calibrationStatus };
   } catch (error) {
     return { status: 'blocked', reason: error.message, natureId: nature?.id, compatible: false, calibrationStatus };
@@ -259,7 +266,7 @@ export function solve(session, catalog) {
   let all;
   try {
     prepared = prepare(session, catalog);
-    all = catalog.natures.map(nature => ({ nature, panel: wildPanel(prepared.target.raceStats, session.level, nature, { shiny: wildTargetShiny(session), attackRaceStats: prepared.target.wildAttackRaceStats }) }));
+    all = catalog.natures.map(nature => ({ nature, panel: wildPanel(prepared.target.raceStats, session.level, nature, { shiny: wildTargetShiny(session), attackRaceStats: prepared.target.wildAttackRaceStats, defenseRaceStats: prepared.target.wildDefenseRaceStats, strengthStage: prepared.target.wildStrengthStage }) }));
     if (!Array.isArray(session.observations)) throw new RangeError('观测记录必须是数组。');
   } catch (error) {
     return {

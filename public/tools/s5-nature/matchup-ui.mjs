@@ -1,7 +1,6 @@
 import { createPicker } from './picker.mjs';
 import { previewMatchup } from './matchup-preview.mjs';
 import { traitControls, traitPanelPercents } from './own-trait.mjs';
-import { getAwakeningBonuses } from './awakening.mjs';
 import { formatGamePercent } from './hp-inverse.mjs';
 
 const $ = id => document.getElementById(id);
@@ -21,13 +20,15 @@ const IN_COLUMNS = [['physicalAttack','物攻'],['magicalAttack','魔攻']];
 export const INCOMING_SLOTS = 2;
 const number = input => input.value.trim() === '' ? null : Number(input.value);
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+const powerNumber = value => Number.isFinite(value) ? String(Number(value.toFixed(6))) : '—';
 
 export function validatePreviewSettings(session) {
   const fail = () => { throw new Error('配招判断的配置或实测格式无效，请核对导入文件。'); };
   const overrides = value => {
     if (!object(value)) fail();
+    if (Object.hasOwn(value, 'displayedPower') && Object.hasOwn(value, 'effectivePower')) fail();
     for (const [key,v] of Object.entries(value)) {
-      if (!['effectivePower','powerMultiplier','hitCount'].includes(key) || !Number.isFinite(v) || v < 0 || v > 100000) fail();
+      if (!['displayedPower','effectivePower','powerMultiplier','hitCount'].includes(key) || !Number.isFinite(v) || v < 0 || v > 100000) fail();
       if (key === 'hitCount' && (!Number.isInteger(v) || v < 1 || v > 100)) fail();
     }
   };
@@ -107,7 +108,7 @@ const levelLabel = level => level === 'all' ? '41–43' : level;
 const caseId = prediction => `${prediction.targetLevel}:${prediction.natureId}`;
 
 function shortReason(reason='') {
-  if (/条件、状态或多段/.test(reason)) return '条件技能 · 在「条件」填有效威力';
+  if (/条件、状态或多段/.test(reason)) return '条件技能 · 在「条件」填显示威力';
   if (/没有明确的物理／魔法/.test(reason)) return '变化技能，无直接伤害';
   if (/骰子/.test(reason)) return '该骰子效果未接入，请改用自填数值';
   if (/种族|资料/.test(reason)) return '该精灵资料不足';
@@ -210,7 +211,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     return `<div class="pskill"><span class="pskill-slot">${slotLabel}</span><div class="pskill-body"><div class="picker-anchor" id="${pickerId}"><input id="${id}-input" autocomplete="off" placeholder="选择技能"/><span class="picker-caret" aria-hidden="true">⌄</span></div><select id="${id}" class="compat-hidden" tabindex="-1" aria-hidden="true"></select><div id="${metaId}" class="pskill-meta"></div>${conditionControl(prefix)}</div></div>`;
   }
   function conditionControl(prefix) {
-    return `<details class="preview-condition"><summary>条件</summary><div class="preview-conditions-grid"><label>威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>最终有效威力<input id="${prefix}-effectivePower" type="number" min="0.01" max="100000" step="0.01" placeholder="自动"/></label></div><p>填最终有效威力后，不再叠加本系、克制与威力骰。</p></details>`;
+    return `<div id="${prefix}-legacyPower" class="preview-legacy-power" hidden><span id="${prefix}-legacyPower-label"></span><button id="${prefix}-resetPower" type="button">恢复自动</button></div><details class="preview-condition"><summary>条件</summary><div class="preview-conditions-grid"><label>威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>显示威力<input id="${prefix}-displayedPower" type="number" min="0" max="100000" step="any" placeholder="自动"/></label></div><p>留空按已选特性、骰子自动计算；手填已含这些加成，极化／钝化另算。支持小数。</p></details>`;
   }
   const heading = (columns, last) => `<div class="pth pth-skill">技能</div>${columns.map(([key,label])=>`<div class="pth">${catalog.assets?.stats?.[key]?`<img src="${html(catalog.assets.stats[key])}" alt=""/>`:''}${label}<span class="up-arrow">↑</span></div>`).join('')}<div class="pth">${last}</div>`;
   $('preview-outgoing').innerHTML = heading(OUT_COLUMNS,'实测') + Array.from({length:4},(_,i) =>
@@ -243,10 +244,16 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       else {own.skillIds[index]=$(id).value;delete own.observed[index];delete own.picked[index];}
     }));
     const prefix=incoming?`preview-incoming-condition-${index}`:`preview-condition-${index}`;
-    for (const key of ['powerMultiplier','hitCount','effectivePower']) $(`${prefix}-${key}`).addEventListener('change',()=>commit(()=>{
+    for (const key of ['powerMultiplier','hitCount','displayedPower']) $(`${prefix}-${key}`).addEventListener('change',()=>commit(()=>{
       const {own,encounter}=state();
       const holder=incoming?encounter.incomingOverridesList[index]:(own.skillOverrides[own.skillIds[index]]??={});
+      if (key === 'displayedPower') delete holder.effectivePower;
       const value=number($(`${prefix}-${key}`)); if(value===null) delete holder[key]; else holder[key]=value;
+    }));
+    $(`${prefix}-resetPower`).addEventListener('click',()=>commit(()=>{
+      const {own,encounter}=state();
+      const holder=incoming?encounter.incomingOverridesList[index]:own.skillOverrides[own.skillIds[index]];
+      if (holder) { delete holder.effectivePower; delete holder.displayedPower; }
     }));
   }
   for(let i=0;i<4;i++) configureSkill(i,false);
@@ -299,16 +306,25 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     if(event.target.id==='own-trait-active') commit(()=>{state().own.trait.active=event.target.checked;});
   });
 
-  function renderSkillControl(id, metaId, prefix, rows, skillId, overrides, ownSpirit, awakening) {
+  function renderSkillControl(id, metaId, prefix, rows, skillId, overrides) {
     if (!object(overrides)) overrides={};
     $(id).innerHTML=skillOptions(rows); $(id).value=skillId ?? '';
-    for(const key of ['powerMultiplier','hitCount','effectivePower']) $(`${prefix}-${key}`).value=overrides[key] ?? '';
+    for(const key of ['powerMultiplier','hitCount','displayedPower']) $(`${prefix}-${key}`).value=overrides[key] ?? '';
+    const legacy = Object.hasOwn(overrides, 'effectivePower');
+    $(`${prefix}-legacyPower`).hidden = !legacy;
+    $(`${prefix}-legacyPower-label`).textContent = legacy ? `旧记录：最终威力 ${powerNumber(overrides.effectivePower)}` : '';
+    $(`${prefix}-displayedPower`).placeholder = legacy ? '旧记录生效中' : '自动';
     const skill=skills.get(skillId);
     if(!skill) { $(metaId).innerHTML='<span class="muted">未选技能</span>'; $(metaId).title=''; return; }
-    const stab = ownSpirit?.types?.includes(skill.type) ? getAwakeningBonuses(awakening).sameTypeMultiplier : 1;
-    const power = skill.basePower ?? '—';
-    $(metaId).innerHTML=`${html(skill.type)} · ${category(skill)} · ${html(power)}${stab>1?`×${stab.toFixed(2)}<span class="stab-tag">本系</span>`:''}`;
+    $(metaId).innerHTML=`${html(skill.type)} · ${category(skill)} · 显示威力 —`;
     $(metaId).title=skill.description ?? '';
+  }
+  function renderDisplayedPower(metaId, row) {
+    const skill = skills.get(row?.skillId);
+    if (!skill) return;
+    const mode = row.powerMode === 'displayed' ? '（手填）' : '';
+    const dulling = row.typeInteraction?.formulaVerified === false && row.typeInteraction?.model?.includes('dulling');
+    $(metaId).innerHTML = `${html(skill.type)} · ${category(skill)} · 显示威力 ${powerNumber(row.displayedPower)}${mode}${dulling ? '<span class="power-model-note">钝化按实测折扣计算</span>' : ''}`;
   }
   // 某列包含的性格：该属性增益；“同其他”列另含不在三列中的其余性格。
   const inColumn = (p, key, columns, same) => p.upStat === key || (key === same && !columns.some(([stat]) => stat === p.upStat));
@@ -470,14 +486,14 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const ownRows=learnset(profile.spiritId),enemyRows=learnset(session.targetId);
     const format = encounter.percentFormat ?? 'game0';
     for(let i=0;i<4;i++) {
-      renderSkillControl(`preview-skill-${i}`,`preview-skill-meta-${i}`,`preview-condition-${i}`,ownRows,own.skillIds[i],own.skillOverrides[own.skillIds[i]],ownSpirit,profile.awakening ?? 0);
+      renderSkillControl(`preview-skill-${i}`,`preview-skill-meta-${i}`,`preview-condition-${i}`,ownRows,own.skillIds[i],own.skillOverrides[own.skillIds[i]]);
       const obs=own.observed[i], unit=own.observedUnits[i]==='percent'?'percent':'damage';
       $(`preview-observed-${i}`).value=(unit==='percent'?obs?.remainingPercent:obs?.damage) ?? '';
       $(`preview-observed-${i}`).placeholder='';
       $(`preview-observed-unit-${i}`).textContent=unit==='percent'?'%':'伤害';
     }
     for(let k=0;k<INCOMING_SLOTS;k++) {
-      renderSkillControl(`preview-incoming-skill-${k}`,`preview-incoming-meta-${k}`,`preview-incoming-condition-${k}`,enemyRows,encounter.incomingSkillIds[k],encounter.incomingOverridesList[k],target,0);
+      renderSkillControl(`preview-incoming-skill-${k}`,`preview-incoming-meta-${k}`,`preview-incoming-condition-${k}`,enemyRows,encounter.incomingSkillIds[k],encounter.incomingOverridesList[k]);
       $(`preview-incoming-damage-${k}`).value=encounter.incomingDamages[k] ?? '';
       $(`preview-incoming-damage-${k}`).placeholder='';
       $(`preview-incoming-damage-${k}`).classList.toggle('picked-elsewhere', Boolean(encounter.incomingPicks[k]));
@@ -499,12 +515,14 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const { observed } = readObserved(own, format);
     for(let i=0;i<4;i++) {
       const obs = observed[i]?.invalid ? null : observed[i];
+      renderDisplayedPower(`preview-skill-meta-${i}`, currentPreview.outgoing?.[i]);
       $(`preview-cells-${i}`).innerHTML=cellsMarkup(own.skillIds[i]?currentPreview.outgoing?.[i]:null,OUT_COLUMNS,false,obs,format);
       $(`preview-observed-${i}`).classList.toggle('filled',Boolean(obs) && obs.unit!=='pick');
       $(`preview-observed-${i}`).classList.toggle('invalid',Boolean(observed[i]?.invalid));
     }
     for(let k=0;k<INCOMING_SLOTS;k++) {
       const obs = incomingObservation(encounter, k);
+      renderDisplayedPower(`preview-incoming-meta-${k}`, currentPreview.incomingList?.[k]);
       $(`preview-incoming-cells-${k}`).innerHTML=cellsMarkup(encounter.incomingSkillIds[k]?currentPreview.incomingList?.[k]:null,IN_COLUMNS,true,obs,format);
       $(`preview-incoming-damage-${k}`).classList.toggle('filled',obs?.unit==='damage');
     }

@@ -128,7 +128,7 @@ test('changing target attack races leaves outgoing damage, selected-form HP, def
   const input = inputFor('可爱猿', 42), target = species('可爱猿');
   const plain = previewMatchup(input, catalog, dice);
   const hpUp = plain.outgoing[0].predictions.find(row => row.upStat === 'hp' && row.downStat === 'magicalDefense');
-  assert.equal(hpUp.damage, 316);
+  assert.equal(hpUp.damage, 102);
   assert.equal(hpUp.hpMax, 454);
   assert.deepEqual(plain.ownPanel, input.profile.panel);
   const panel = wildPanel(target.raceStats, 42, natureFor('physicalAttack', 'up'), { attackRaceStats: target.wildAttackRaceStats });

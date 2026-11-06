@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.16",
+    date: "2026.11.06",
+    seasonId: "S5",
+    title: "S5 性格计算与显示威力",
+    whatsNew: S5_FEATURE_INTRO,
+    fixes: ["S5奇异性格计算接入奇遇双防；显示威力随特性、骰子更新，手填不重复叠加。", "威力支持小数，旧记录可恢复自动；钝化使用实测折扣，国际服S3季中保持现状。"],
+  }),
+  createRelease({
     version: "v2.3.15",
     date: "2026.11.06",
     seasonId: "S5",

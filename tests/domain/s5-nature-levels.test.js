@@ -22,14 +22,14 @@ test('single level keeps exact nature conditions instead of treating the penalty
   const preview = previewMatchup(previewInput(41), catalog);
   const [base, down] = splitNatureConditions(lifeRows(preview), fire);
   assert.equal(base.condition, 'base');
-  assert.deepEqual(values(base.predictions, 'damage'), [204]);
+  assert.deepEqual(values(base.predictions, 'damage'), [135]);
   assert.deepEqual(values(base.predictions, 'hpMax'), [554]);
-  assert.deepEqual([...new Set(base.predictions.map(row => formatGamePercent(row.remainingPercent)))], [64]);
+  assert.deepEqual([...new Set(base.predictions.map(row => formatGamePercent(row.remainingPercent)))], [76]);
   assert.equal(down.condition, 'down');
   assert.equal(down.label, '物防↓');
-  assert.deepEqual(values(down.predictions, 'damage'), [226]);
+  assert.deepEqual(values(down.predictions, 'damage'), [149]);
   assert.deepEqual(down.predictions.map(row => row.natureName), ['忧郁']);
-  assert.deepEqual(down.predictions.map(row => formatGamePercent(row.remainingPercent)), [60]);
+  assert.deepEqual(down.predictions.map(row => formatGamePercent(row.remainingPercent)), [74]);
   assert(preview.outgoing[0].predictions.every(row => row.targetLevel === 41));
 });
 
@@ -50,7 +50,7 @@ test('all levels is the exact union of three independent previews, preserving di
 });
 
 test('only the all-level selection aggregates differences within the same nature condition', () => {
-  const expected = [[41, 204, 226], [42, 202, 224], [43, 201, 224]];
+  const expected = [[41, 135, 149], [42, 134, 148], [43, 133, 146]];
   for (const [level, normal, reduced] of expected) {
     const preview = previewMatchup(previewInput(level), catalog);
     const groups = splitNatureConditions(lifeRows(preview), fire);
@@ -68,8 +68,8 @@ test('only the all-level selection aggregates differences within the same nature
     }
   }
   const groups = splitNatureConditions(lifeRows(previewMatchup(previewInput('all'), catalog)), fire);
-  assert.deepEqual(values(groups[0].predictions, 'damage'), [204, 202, 201]);
-  assert.deepEqual(values(groups[1].predictions, 'damage'), [226, 224]);
+  assert.deepEqual(values(groups[0].predictions, 'damage'), [135, 134, 133]);
+  assert.deepEqual(values(groups[1].predictions, 'damage'), [149, 148, 146]);
 });
 
 // Neutral single-hit fixtures use explicitly supplied stage-3 attacks to isolate

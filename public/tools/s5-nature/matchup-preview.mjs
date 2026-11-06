@@ -13,7 +13,7 @@ const EFFECT_DEFAULTS = {
   powerMultiplier: 1, skillPowerAdd: 0, damageMultiplier: 1,
   damageReductionMultiplier: 1, critMultiplier: 1,
 };
-const OVERRIDE_KEYS = new Set(['effectivePower', 'hitCount', 'powerMultiplier', 'note']);
+const OVERRIDE_KEYS = new Set(['effectivePower', 'displayedPower', 'hitCount', 'powerMultiplier', 'note']);
 const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const finite = value => typeof value === 'number' && Number.isFinite(value);
 const integer = (value, low, high) => Number.isSafeInteger(value) && value >= low && value <= high;
@@ -65,15 +65,16 @@ function diceForSide(ids, manualEffects, diceCatalog, label) {
   return { ids: selectedIds, effects, warnings };
 }
 
-function withDicePanel(panel, dice, { wildAttacks = false } = {}) {
+function withDicePanel(panel, dice, { wildStats = false } = {}) {
   if (!isObject(panel)) throw new RangeError('请填写我方实际面板。');
   const result = {};
   for (const stat of STATS) {
     if (!has(panel, stat) || panel[stat] === null || panel[stat] === undefined) continue;
-    const preserve = wildAttacks && ['physicalAttack', 'magicalAttack'].includes(stat);
+    const preserve = wildStats && ['physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense'].includes(stat);
     if (preserve ? !finite(panel[stat]) || panel[stat] < 1 || panel[stat] > 100000 : !integer(panel[stat], 1, 100000)) throw new RangeError(`${STAT_LABELS[stat]}面板须为正整数。`);
     const value = panel[stat] * dice.effects[`${stat}Multiplier`];
-    result[stat] = Math.max(1, preserve ? value : Math.round(value));
+    // Combat boosts retain fractions; HP remains an integer pool.
+    result[stat] = Math.max(1, stat === 'hp' ? Math.round(value) : value);
   }
   return result;
 }
@@ -98,41 +99,54 @@ function readOverride(value) {
   if (!isObject(value)) throw new RangeError('本次技能覆盖值须为对象。');
   if (Object.keys(value).some(key => !OVERRIDE_KEYS.has(key))) throw new RangeError('本次技能包含未支持的覆盖字段。');
   if (has(value, 'effectivePower') && (!finite(value.effectivePower) || value.effectivePower < 0 || value.effectivePower > 100000)) throw new RangeError('有效威力须为0至100000的有限数字。');
+  if (has(value, 'displayedPower') && (!finite(value.displayedPower) || value.displayedPower < 0 || value.displayedPower > 100000)) throw new RangeError('显示威力须为0至100000的有限数字。');
+  if (has(value, 'displayedPower') && has(value, 'effectivePower')) throw new RangeError('显示威力与旧最终威力不可同时填写。');
   if (has(value, 'hitCount') && !integer(value.hitCount, 1, 100)) throw new RangeError('本次连击数须为1至100的整数。');
   if (has(value, 'powerMultiplier') && (!finite(value.powerMultiplier) || value.powerMultiplier < 0 || value.powerMultiplier > 100)) throw new RangeError('本次额外威力倍率须为0至100的有限数字。');
   return value;
 }
 
 function resolvePower(skill, override, attacker, defender, attackerAwakening, defenderAwakening, dice, catalog, trait = {}) {
-  const manual = has(override, 'effectivePower');
-  if (!['physical', 'magical'].includes(skill.category)) throw new RangeError('该技能没有明确的物理／魔法直接命中，暂不自动估计。');
-  if (!manual && skill.supported !== true) throw new RangeError('该技能含条件、状态或多段机制；请明确填写本次有效威力与连击后再估计直接命中。');
+  const powerMode = has(override, 'displayedPower') ? 'displayed' : has(override, 'effectivePower') ? 'final' : 'auto';
+  const manual = powerMode !== 'auto';
+  if (!['physical', 'magical'].includes(skill.category)) throw new RangeError('该技能没有明确的物理／魔法直接命中。');
+  if (!manual && skill.supported !== true) throw new RangeError('该技能含条件、状态或多段机制；请填写本次显示威力与命中次数。');
   if (!manual && (!finite(skill.basePower) || skill.basePower <= 0)) throw new RangeError('技能基础威力资料不足。');
-  let power;
-  let typeMultiplier = null;
-  let typeInteraction = null;
-  let stab = null;
-  if (manual) {
-    // This is the FINAL power used by the formula, as in the calculator's
-    // manual effective-power input. Do not apply STAB/type/power dice twice.
+  let displayedPower = null, typeInteraction = null, typeMultiplier = null, stab = null, power;
+  if (powerMode === 'final') {
+    // Preserve old saved overrides. Never reinterpret them as skill-bar power.
     power = override.effectivePower;
   } else {
-    if (!Array.isArray(attacker.types) || !attacker.types.length) throw new RangeError('攻击方属性资料不足。');
     const type = typeContext(skill, defender, catalog);
-    const mixedRelation = type.multiplier === 1 && type.factors.some(factor => factor !== 1);
-    typeInteraction = resolveAwakeningType(type.multiplier, attackerAwakening, defenderAwakening, mixedRelation);
+    const mixed = type.multiplier === 1 && type.factors.some(factor => factor !== 1);
+    typeInteraction = resolveAwakeningType(type.multiplier, attackerAwakening, defenderAwakening, mixed);
     typeMultiplier = typeInteraction.multiplier;
-    stab = attacker.types.includes(skill.type) ? getAwakeningBonuses(attackerAwakening).sameTypeMultiplier : 1;
-    power = Math.max(0, skill.basePower + dice.effects.skillPowerAdd + (trait.fixedPowerAdd ?? 0)) * dice.effects.powerMultiplier * (trait.powerMultiplier ?? 1) * stab * typeMultiplier;
+    if (powerMode === 'displayed') {
+      displayedPower = override.displayedPower;
+    } else {
+      if (!Array.isArray(attacker.types) || !attacker.types.length) throw new RangeError('攻击方属性资料不足。');
+      stab = attacker.types.includes(skill.type) ? getAwakeningBonuses(attackerAwakening).sameTypeMultiplier : 1;
+      displayedPower = Math.max(0, skill.basePower + dice.effects.skillPowerAdd + (trait.fixedPowerAdd ?? 0))
+        * dice.effects.powerMultiplier * (trait.powerMultiplier ?? 1) * stab * type.multiplier;
+    }
+    // Game/standard-calculator skill-bar power excludes the PVE correction.
+    power = displayedPower * typeInteraction.correctionMultiplier;
   }
-  power *= override.powerMultiplier ?? 1;
-  if (!finite(power) || power < 0 || power > 10000000) throw new RangeError('本次有效威力超出可核算范围。');
-  return { power, typeMultiplier, typeInteraction, stab, hitCount: override.hitCount ?? 1, manual, notes: [
-    ...(manual ? ['手填最终有效威力，已跳过自动本系、克制和威力骰乘区。'] : []),
-    ...(has(override, 'powerMultiplier') ? ['已追加本次明确填写的威力倍率。'] : []),
-    ...(has(override, 'hitCount') ? ['逐击向下取整后按手填连击数相加。'] : []),
-    ...(manual && !skill.supported ? ['仅估计本次直接命中，不包含回血、状态和其他追加结算。'] : []),
+  const extra = override.powerMultiplier ?? 1;
+  power *= extra;
+  if (displayedPower !== null) displayedPower *= extra;
+  if (!finite(power) || power < 0 || power > 10000000) throw new RangeError('本次威力超出可核算范围。');
+  return { power, displayedPower, powerMode, typeMultiplier, typeInteraction, stab, hitCount: override.hitCount ?? 1, manual, notes: [
+    ...(powerMode === 'displayed' ? ['按手填显示威力结算，已包含的特性及骰子攻防、威力加成不重复叠加。'] : []),
+    ...(powerMode === 'final' ? ['旧记录保留最终威力口径；恢复自动后使用显示威力。'] : []),
   ] };
+}
+
+// Same display convention as the calculator's abilityLevelMultiplier. The
+// auto damage path still uses actual adjusted stats, not a rounded UI number.
+function abilityPowerMultiplier(attackStage, defenseStage) {
+  return (1 + Math.max(attackStage, 0) / 10 + Math.max(-defenseStage, 0) / 10)
+    / (1 + Math.max(-attackStage, 0) / 10 + Math.max(defenseStage, 0) / 10);
 }
 
 function damageEntry(skillId, overrideValue, direction, context) {
@@ -142,6 +156,7 @@ function damageEntry(skillId, overrideValue, direction, context) {
     if (!skill) throw new RangeError('请选择已收录的技能。');
     const override = readOverride(overrideValue);
     const incoming = direction === 'incoming';
+    if (!incoming && target.wildDefenseRaceStats === null) throw new RangeError('该精灵的三阶段双防资料缺失。');
     if (incoming && target.wildAttackRaceStats === null) throw new RangeError('该精灵的三阶段双攻资料缺失。');
     const attacker = incoming ? target : ownSpirit;
     const defender = incoming ? ownSpirit : target;
@@ -153,13 +168,18 @@ function damageEntry(skillId, overrideValue, direction, context) {
     const attackStat = skill.category === 'physical' ? 'physicalAttack' : 'magicalAttack';
     const defenseStat = skill.category === 'physical' ? 'physicalDefense' : 'magicalDefense';
     const needed = incoming ? [defenseStat, 'hp'] : [attackStat];
-    if (!needed.every(stat => integer(ownPanel[stat], 1, 10000000))) throw new RangeError(`请补齐我方${needed.map(stat => STAT_LABELS[stat]).join('、')}实际面板。`);
+    if (!needed.every(stat => finite(ownPanel[stat]) && ownPanel[stat] >= 1 && ownPanel[stat] <= 10000000)) throw new RangeError(`请补齐我方${needed.map(stat => STAT_LABELS[stat]).join('、')}实际面板。`);
     const predictions = candidates.map(candidate => {
       const attackerPanel = incoming ? candidate.panel : ownPanel;
       const defenderPanel = incoming ? ownPanel : candidate.panel;
       const hpMax = defenderPanel.hp;
-      const attackerStat = incoming ? attackerPanel[attackStat] : applyAttackStage(attackerPanel[attackStat], trait);
-      const defenderDefense = incoming ? applyDefenseStage(defenderPanel[defenseStat], trait) : defenderPanel[defenseStat];
+      const manualDisplay = power.powerMode === 'displayed';
+      const attackerStat = manualDisplay
+        ? (incoming ? candidate.basePanel[attackStat] : input.profile.panel[attackStat])
+        : incoming ? attackerPanel[attackStat] : applyAttackStage(attackerPanel[attackStat], trait);
+      const defenderDefense = manualDisplay
+        ? (incoming ? input.profile.panel[defenseStat] : candidate.basePanel[defenseStat])
+        : incoming ? applyDefenseStage(defenderPanel[defenseStat], trait) : defenderPanel[defenseStat];
       const damage = calculateDamage({
         attackerStat, defenderDefense,
         displayedPower: power.power, level: incoming ? input.level : input.profile.level,
@@ -181,8 +201,13 @@ function damageEntry(skillId, overrideValue, direction, context) {
         attackerStat, defenderDefense,
       };
     });
+    const displayRatio = power.powerMode === 'auto'
+      ? attackerDice.effects[`${attackStat}Multiplier`] / defenderDice.effects[`${defenseStat}Multiplier`]
+        * abilityPowerMultiplier(incoming ? 0 : trait.attackStage, incoming ? trait.defenseStage : 0) : 1;
     return { skillId, skillName: skill.name, direction, status: 'estimated',
-      reason: ['按当前野怪假说预估，尚未通过伤害实战校准。', ...power.notes].join(' '),
+      reason: power.notes.join(' '),
+      displayedPower: power.displayedPower === null ? null : Number((power.displayedPower * displayRatio).toFixed(10)),
+      powerMode: power.powerMode,
       effectivePower: power.power, hitCount: power.hitCount, typeMultiplier: power.typeMultiplier,
       stab: power.stab, typeInteraction: power.typeInteraction, manualPower: power.manual, predictions };
   } catch (error) {
@@ -193,7 +218,8 @@ function damageEntry(skillId, overrideValue, direction, context) {
 /**
  * Pure preview; never promotes the experimental wild-stat model to verified.
  * targetId denotes the EXACT selected form. The UI owns family/initial-form
- * selection. effectivePower is final, while powerMultiplier is an additional
+ * selection. displayedPower includes battle boosts but excludes PVE polarization;
+ * legacy effectivePower remains final. powerMultiplier is an additional
  * explicit multiplier. Duplicate dice IDs on one side are applied only once.
  */
 export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
@@ -229,8 +255,8 @@ export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
     const targetDice = diceForSide(input.targetDiceIds, input.targetDiceEffects, diceCatalog, '敌方');
     const ownPanel = withDicePanel(input.profile.panel, ownDice);
     const candidates = catalog.natures.map(nature => {
-      const panel = wildPanel(target.raceStats, input.level, nature, { shiny: wildTargetShiny(input), attackRaceStats: target.wildAttackRaceStats });
-      return { nature, panel: withDicePanel(panel, targetDice, { wildAttacks: true }),
+      const panel = wildPanel(target.raceStats, input.level, nature, { shiny: wildTargetShiny(input), attackRaceStats: target.wildAttackRaceStats, defenseRaceStats: target.wildDefenseRaceStats, strengthStage: target.wildStrengthStage });
+      return { nature, basePanel: panel, panel: withDicePanel(panel, targetDice, { wildStats: true }),
         hpModelName: WILD_HP_MODEL.confirmedSpecies.includes(target.name) ? '深蓝鲸实测生命曲线' : '生命曲线（统一公式外推）' };
     });
     const targetHpByNature = { neutral: null, up: null, down: null };
