@@ -43,7 +43,8 @@ export function wildPanel(raceStats, level, nature, options = {}) {
     }
     if (['physicalDefense', 'magicalDefense'].includes(stat) && options.defenseRaceStats !== undefined) {
       panel[stat] = options.defenseRaceStats === null ? null
-        : calculateWildDefense(options.defenseRaceStats[stat], level, nature, stat, options.strengthStage);
+        : calculateWildDefense(options.defenseRaceStats[stat], level, nature, stat, options.strengthStage,
+          options.defenseRaceStats.sourcePetbaseId);
       continue;
     }
     const numerator = 1000 + race * (level + 50);

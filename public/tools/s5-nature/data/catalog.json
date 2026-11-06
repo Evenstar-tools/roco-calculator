@@ -5,8 +5,8 @@
     "sourceRevision": "ee68d4a020225614a679b180050ba54c78177a01",
     "scope": "all-calculator-species-selectable; wild-level-41-43-basic-formula-preview",
     "calibrationStatus": "unverified",
-    "verification": "HP and 30 whale incoming samples retained. Stage-3 defense uses strength-stage empirical coefficients; 25 defense readings match, four discrepancies remain. Incoming dulling uses approximate field discounts. Display power is separate from final PVE power.",
-    "calibrationNote": "生命和双攻沿用已核公式；双防按第三阶段种族与目标强度阶段拟合，保留样本差异；钝化使用实测折扣。",
+    "verification": "HP and 30 whale incoming samples retained. Stage-3 defense uses empirical coefficients with source-form calibrations. Wing-dragon level 42 matches neutral 684/540/99 and defense-up 207; three other defense discrepancies remain. Incoming dulling uses approximate field discounts. Display power is separate from final PVE power.",
+    "calibrationNote": "生命和双攻沿用已核公式；双防优先按源物种实测校准，其余按目标强度阶段拟合；小翼龙42级中性与加物防实测已接入，其他等级沿用成长式；钝化使用实测折扣。",
     "sources": [
       {
         "title": "国服固定源码与S5运行数据",
@@ -41,7 +41,7 @@
       "originalGameFormulaRecovered": false
     },
     "wildDefenseModel": {
-      "id": "s5-stage3-defense-v1",
+      "id": "s5-stage3-defense-v2",
       "source": "user-authorized-encounter-formula-handoff-20261106",
       "kind": "empirical-formula",
       "raceStrengthStage": 3,
@@ -62,6 +62,18 @@
         "3": {
           "physicalDefense": 1.38531,
           "magicalDefense": 1.335
+        }
+      },
+      "sourceFormCalibrations": {
+        "3209": {
+          "physicalDefense": 1.643,
+          "measuredLevels": [
+            42
+          ],
+          "measuredPhysicalDefenseNatures": [
+            "neutral",
+            "up"
+          ]
         }
       }
     }

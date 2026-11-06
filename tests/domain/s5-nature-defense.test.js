@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { calculateWildDefense, WILD_DEFENSE_MODEL } from '../../public/tools/s5-nature/wild-defense.mjs';
 import { calculateDamage } from '../../public/tools/s5-nature/vendor/damage.mjs';
+import { previewMatchup } from '../../public/tools/s5-nature/matchup-preview.mjs';
 import { buildWildDefenseRaceData } from '../../scripts/prepare-s5-wild-defense.mjs';
 
 const read = name => JSON.parse(readFileSync(`public/tools/s5-nature/data/${name}.json`, 'utf8'));
@@ -15,7 +16,7 @@ const natureFor = (stat, direction) => catalog.natures.find(row => direction ===
 function replay([name, level, stat, direction, attack, power]) {
   const target = species(name);
   const defense = calculateWildDefense(target.wildDefenseRaceStats[stat], level,
-    natureFor(stat, direction), stat, target.wildStrengthStage);
+    natureFor(stat, direction), stat, target.wildStrengthStage, target.wildDefenseRaceStats.sourcePetbaseId);
   return calculateDamage({ attackerStat: attack, defenderDefense: defense, displayedPower: power, level: 60 }).total;
 }
 const PD = 'physicalDefense', MD = 'magicalDefense';
@@ -50,6 +51,7 @@ test('stage coefficients reproduce the unrounded defense handoff across levels, 
     ['锤头鹳', 43, MD, 'neutral', 176, 128, 158],
     // Keep the fractional value behind the displayed 123, rather than flooring.
     ['小翼龙', 42, MD, 'down', 176, 160 / 1.3, 142],
+    ['小翼龙', 42, PD, 'up', 312, 180 / 1.3, 207],
   ];
   for (const sample of samples) assert.equal(replay(sample), sample[6], sample.join('/'));
   assert.deepEqual(catalog.meta.wildDefenseModel, WILD_DEFENSE_MODEL);
@@ -60,7 +62,6 @@ test('handoff discrepancies stay visible instead of changing coefficients for ea
   const samples = [
     // The old fire cut contradicts the same dragon's ground-spike observation.
     ['伊雷龙', 41, PD, 'up', 312, 40 * 1.8, 157, 134],
-    ['小翼龙', 42, PD, 'up', 312, 180 / 1.3, 207, 206],
     ['锤头鹳', 43, MD, 'neutral', 176, 90 * 3 * 1.8 / 1.25, 481, 480],
     ['深蓝鲸', 41, PD, 'neutral', 192, 272 * 1.8, 456, 454],
   ];
@@ -68,6 +69,44 @@ test('handoff discrepancies stay visible instead of changing coefficients for ea
     assert.equal(replay(sample), sample[7], sample.join('/'));
     assert.notEqual(sample[6], sample[7]);
   }
+});
+
+test('42-level calm wing-dragon matches the observed three moves without changing level or HP', () => {
+  const skills = ['地震', '彼岸之手', '先发制人'].map(name => catalog.skills.find(row => row.name === name));
+  const target = species('小翼龙');
+  const input = { targetId: target.id, level: 42,
+    profile: { spiritId: species('罗隐').id, level: 60, awakening: 5,
+      panel: { hp: 403, physicalAttack: 312, magicalAttack: 136, physicalDefense: 183, magicalDefense: 137, speed: 176 } },
+    skillIds: skills.map(row => row.id), ownDiceEffects: { physicalAttackMultiplier: 1.1 } };
+  const calm = entry => entry.predictions.find(row => row.natureId === 'calm');
+  const neutralHp = [324, 486];
+  for (const [index, targetShiny] of [false, true].entries()) {
+    const result = previewMatchup({ ...input, targetShiny }, catalog);
+    assert.deepEqual(result.outgoing.map(row => row.displayedPower), [418, 330, 60.5]);
+    assert.deepEqual(result.outgoing.map(row => calm(row).damage), [684, 540, 99]);
+    assert(result.outgoing.every(row => calm(row).targetLevel === 42));
+    assert(result.outgoing.every(row => calm(row).hpMax === neutralHp[index]));
+    assert.equal(calm(result.outgoing[2]).remainingHp, neutralHp[index] - 99);
+    const manual = previewMatchup({ ...input, targetShiny,
+      skillOverrides: Object.fromEntries(skills.map((row, i) => [row.id, { displayedPower: [418, 330, 60.5][i] }])) }, catalog);
+    assert.deepEqual(manual.outgoing.map(row => calm(row).damage), [684, 540, 99]);
+  }
+  const spike = catalog.skills.find(row => row.name === '地刺');
+  const previous = previewMatchup({ ...input, skillIds: [spike.id], ownDiceEffects: {},
+    targetDiceEffects: { physicalDefenseMultiplier: 1.3 } }, catalog);
+  assert.equal(previous.outgoing[0].predictions.find(row => row.upStat === PD && row.downStat === MD).damage, 207);
+  const all = previewMatchup({ ...input, level: 'all' }, catalog);
+  const singles = [41, 42, 43].map(level => previewMatchup({ ...input, level }, catalog));
+  assert.deepEqual(all.outgoing[0].predictions, singles.flatMap(row => row.outgoing[0].predictions));
+  assert(calm(singles[0].outgoing[0]).damage > calm(singles[1].outgoing[0]).damage);
+  assert(calm(singles[1].outgoing[0]).damage > calm(singles[2].outgoing[0]).damage);
+});
+
+test('wing-dragon calibration does not leak to another source form or magical defense', () => {
+  const nature = natureFor(PD, 'neutral');
+  assert.equal(calculateWildDefense(91, 42, nature, PD, 2, 9999), calculateWildDefense(91, 42, nature, PD, 2));
+  assert.equal(calculateWildDefense(79, 42, nature, MD, 2, 3209), calculateWildDefense(79, 42, nature, MD, 2));
+  assert.notEqual(calculateWildDefense(91, 42, nature, PD, 2, 3209), calculateWildDefense(91, 42, nature, PD, 2));
 });
 
 test('defense retains level and nature fractions and rejects missing mappings', () => {
