@@ -1,0 +1,5589 @@
+{
+  "meta": {
+    "schemaVersion": 1,
+    "source": "PETBASE_CONF",
+    "strengthField": "stength_stage",
+    "strengthStage": 3,
+    "catalogSourceRevision": "ee68d4a020225614a679b180050ba54c78177a01",
+    "matching": "name/baseName plus six exact race stats; legal_petbase preferred; explicit ordinary evolution edges, inverse degenerate edges only when no explicit list",
+    "counts": {
+      "spirits": 694,
+      "completeSpecies": 667,
+      "mapped": 636,
+      "missing": 58,
+      "missingByReason": {
+        "ambiguous-attack-races": 26,
+        "strength-stage-3-not-found": 4,
+        "package-record-not-matched": 1,
+        "incomplete-race-stats": 27
+      }
+    },
+    "packageDataPath": "D:/codex/worktrees/roco-pve-nature-20261106/output/pve-encounter-pak-audit-20261106/latest/decoded/PETBASE_CONF.json"
+  },
+  "bySpiritId": {
+    "spirit_db5a2cb398dc0385": {
+      "sourcePetbaseId": 3004,
+      "attackPetbaseId": 3004,
+      "attackFormName": "迪莫",
+      "physicalAttack": 80,
+      "magicalAttack": 80
+    },
+    "spirit_f60e2755ae42cf41": {
+      "sourcePetbaseId": 5025,
+      "attackPetbaseId": 5025,
+      "attackFormName": "圣光迪莫",
+      "physicalAttack": 84,
+      "magicalAttack": 84
+    },
+    "spirit_ec2230c14154bb52": {
+      "sourcePetbaseId": 5026,
+      "attackPetbaseId": 5026,
+      "attackFormName": "圣草迪莫",
+      "physicalAttack": 80,
+      "magicalAttack": 80
+    },
+    "spirit_dd14e867313fad1d": {
+      "sourcePetbaseId": 5027,
+      "attackPetbaseId": 5027,
+      "attackFormName": "圣火迪莫",
+      "physicalAttack": 88,
+      "magicalAttack": 88
+    },
+    "spirit_32aed655cbbf0db6": {
+      "sourcePetbaseId": 5028,
+      "attackPetbaseId": 5028,
+      "attackFormName": "圣水迪莫",
+      "physicalAttack": 80,
+      "magicalAttack": 80
+    },
+    "spirit_d345729d1593bff7": {
+      "sourcePetbaseId": 3001,
+      "attackPetbaseId": 3007,
+      "attackFormName": "魔力猫",
+      "physicalAttack": 109,
+      "magicalAttack": 109
+    },
+    "spirit_cb8c0ff92ae64653": {
+      "sourcePetbaseId": 3025,
+      "attackPetbaseId": 3007,
+      "attackFormName": "魔力猫",
+      "physicalAttack": 109,
+      "magicalAttack": 109
+    },
+    "spirit_d7a201531161488e": {
+      "sourcePetbaseId": 3007,
+      "attackPetbaseId": 3007,
+      "attackFormName": "魔力猫",
+      "physicalAttack": 109,
+      "magicalAttack": 109
+    },
+    "spirit_dc6dbc4055d0d9dd": {
+      "sourcePetbaseId": 5003,
+      "attackPetbaseId": 5003,
+      "attackFormName": "叶冕魔力猫",
+      "physicalAttack": 127,
+      "magicalAttack": 127
+    },
+    "spirit_a62b9a9c4ae00665": {
+      "sourcePetbaseId": 5061,
+      "attackPetbaseId": 5061,
+      "attackFormName": "武斗酷猫",
+      "physicalAttack": 134,
+      "magicalAttack": 57,
+      "sourcePetbaseIds": [
+        5061,
+        8201
+      ],
+      "attackPetbaseIds": [
+        5061,
+        8201
+      ],
+      "attackFormNames": [
+        "武斗酷猫"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_8b8175b97cd7e6a7": {
+      "sourcePetbaseId": 3003,
+      "attackPetbaseId": 3006,
+      "attackFormName": "火神",
+      "physicalAttack": 139,
+      "magicalAttack": 61
+    },
+    "spirit_e128d935f4ac4fb5": {
+      "sourcePetbaseId": 3032,
+      "attackPetbaseId": 3006,
+      "attackFormName": "火神",
+      "physicalAttack": 139,
+      "magicalAttack": 61
+    },
+    "spirit_537679016e3ec4bb": {
+      "sourcePetbaseId": 3006,
+      "attackPetbaseId": 3006,
+      "attackFormName": "火神",
+      "physicalAttack": 139,
+      "magicalAttack": 61
+    },
+    "spirit_4c280ecf82adb90e": {
+      "sourcePetbaseId": 5017,
+      "attackPetbaseId": 5017,
+      "attackFormName": "烈火战神",
+      "physicalAttack": 175,
+      "magicalAttack": 84
+    },
+    "spirit_77c2085d2f6e8e87": {
+      "sourcePetbaseId": 3002,
+      "attackPetbaseId": 3005,
+      "attackFormName": "水灵",
+      "physicalAttack": 58,
+      "magicalAttack": 127
+    },
+    "spirit_cb69e7131cce6f17": {
+      "sourcePetbaseId": 3033,
+      "attackPetbaseId": 3005,
+      "attackFormName": "水灵",
+      "physicalAttack": 58,
+      "magicalAttack": 127
+    },
+    "spirit_4ec76429db5748d4": {
+      "sourcePetbaseId": 3005,
+      "attackPetbaseId": 3005,
+      "attackFormName": "水灵",
+      "physicalAttack": 58,
+      "magicalAttack": 127
+    },
+    "spirit_30c62645090ee8af": {
+      "sourcePetbaseId": 5010,
+      "attackPetbaseId": 5010,
+      "attackFormName": "圣水守护",
+      "physicalAttack": 67,
+      "magicalAttack": 141
+    },
+    "spirit_6d78e04a6736155b": {
+      "sourcePetbaseId": 3012,
+      "attackPetbaseId": 3012,
+      "attackFormName": "鸭吉吉",
+      "physicalAttack": 95,
+      "magicalAttack": 35
+    },
+    "spirit_39d8b867216c267d": {
+      "sourcePetbaseId": 3036,
+      "attackPetbaseId": 3036,
+      "attackFormName": "鸭吉吉",
+      "physicalAttack": 35,
+      "magicalAttack": 95
+    },
+    "spirit_35643e306cb87bad": {
+      "sourcePetbaseId": 3452,
+      "attackPetbaseId": 3452,
+      "attackFormName": "鸭吉吉",
+      "physicalAttack": 95,
+      "magicalAttack": 35
+    },
+    "spirit_cf730244912ada6a": {
+      "sourcePetbaseId": 3453,
+      "attackPetbaseId": 3453,
+      "attackFormName": "鸭吉吉",
+      "physicalAttack": 35,
+      "magicalAttack": 94
+    },
+    "spirit_4b1d7354d6b9e310": {
+      "sourcePetbaseId": 3495,
+      "attackPetbaseId": 3495,
+      "attackFormName": "鸭吉吉",
+      "physicalAttack": 89,
+      "magicalAttack": 41
+    },
+    "spirit_946f5527d5bee7f4": {
+      "sourcePetbaseId": 3742,
+      "attackPetbaseId": 3742,
+      "attackFormName": "鸭吉吉",
+      "physicalAttack": 53,
+      "magicalAttack": 125
+    },
+    "spirit_94bd47e9b24b4bac": {
+      "sourcePetbaseId": 5006,
+      "attackPetbaseId": 5006,
+      "attackFormName": "鸭吉吉国王",
+      "physicalAttack": 159,
+      "magicalAttack": 64
+    },
+    "spirit_d307ebe71125e46b": {
+      "sourcePetbaseId": 5036,
+      "attackPetbaseId": 5036,
+      "attackFormName": "鸭吉吉国王",
+      "physicalAttack": 64,
+      "magicalAttack": 159
+    },
+    "spirit_6a800b542b03bd39": {
+      "sourcePetbaseId": 5037,
+      "attackPetbaseId": 5037,
+      "attackFormName": "鸭吉吉国王",
+      "physicalAttack": 160,
+      "magicalAttack": 64
+    },
+    "spirit_270232652eb15184": {
+      "sourcePetbaseId": 5038,
+      "attackPetbaseId": 5038,
+      "attackFormName": "鸭吉吉国王",
+      "physicalAttack": 64,
+      "magicalAttack": 157
+    },
+    "spirit_99c5805b2d1cedb3": {
+      "sourcePetbaseId": 5039,
+      "attackPetbaseId": 5039,
+      "attackFormName": "鸭吉吉国王",
+      "physicalAttack": 150,
+      "magicalAttack": 73
+    },
+    "spirit_14603e412a770707": {
+      "sourcePetbaseId": 5052,
+      "attackPetbaseId": 5052,
+      "attackFormName": "鸭吉吉国王",
+      "physicalAttack": 77,
+      "magicalAttack": 163
+    },
+    "spirit_4a0e048421bc230a": {
+      "sourcePetbaseId": 3055,
+      "attackPetbaseId": 3057,
+      "attackFormName": "水泡壳",
+      "physicalAttack": 46,
+      "magicalAttack": 120
+    },
+    "spirit_050d153e443fca0f": {
+      "sourcePetbaseId": 3516,
+      "attackPetbaseId": 3518,
+      "attackFormName": "水泡壳",
+      "physicalAttack": 39,
+      "magicalAttack": 121
+    },
+    "spirit_ccfd03dcf48a75c3": {
+      "sourcePetbaseId": 3056,
+      "attackPetbaseId": 3057,
+      "attackFormName": "水泡壳",
+      "physicalAttack": 46,
+      "magicalAttack": 120
+    },
+    "spirit_185f4b5d56551d14": {
+      "sourcePetbaseId": 3517,
+      "attackPetbaseId": 3518,
+      "attackFormName": "水泡壳",
+      "physicalAttack": 39,
+      "magicalAttack": 121
+    },
+    "spirit_2d9ea3b47bd52a54": {
+      "sourcePetbaseId": 3057,
+      "attackPetbaseId": 3057,
+      "attackFormName": "水泡壳",
+      "physicalAttack": 46,
+      "magicalAttack": 120
+    },
+    "spirit_fd0cadca98778205": {
+      "sourcePetbaseId": 3518,
+      "attackPetbaseId": 3518,
+      "attackFormName": "水泡壳",
+      "physicalAttack": 39,
+      "magicalAttack": 121
+    },
+    "spirit_e2a270484d0b90ea": {
+      "sourcePetbaseId": 3045,
+      "attackPetbaseId": 3047,
+      "attackFormName": "花影羚羊",
+      "physicalAttack": 111,
+      "magicalAttack": 48
+    },
+    "spirit_65f19c00f2d4117f": {
+      "sourcePetbaseId": 3046,
+      "attackPetbaseId": 3047,
+      "attackFormName": "花影羚羊",
+      "physicalAttack": 111,
+      "magicalAttack": 48
+    },
+    "spirit_5147f20d585e4b28": {
+      "sourcePetbaseId": 3047,
+      "attackPetbaseId": 3047,
+      "attackFormName": "花影羚羊",
+      "physicalAttack": 111,
+      "magicalAttack": 48
+    },
+    "spirit_7641c889b2ba4895": {
+      "sourcePetbaseId": 3279,
+      "attackPetbaseId": 3285,
+      "attackFormName": "岚鸟",
+      "physicalAttack": 128,
+      "magicalAttack": 44
+    },
+    "spirit_717a4c48527bea4f": {
+      "sourcePetbaseId": 3280,
+      "attackPetbaseId": 3286,
+      "attackFormName": "岚鸟",
+      "physicalAttack": 133,
+      "magicalAttack": 54
+    },
+    "spirit_d6a714a1fc23b030": {
+      "sourcePetbaseId": 3281,
+      "attackPetbaseId": 3287,
+      "attackFormName": "岚鸟",
+      "physicalAttack": 127,
+      "magicalAttack": 42
+    },
+    "spirit_7215049b23b5cdaf": {
+      "sourcePetbaseId": 3533,
+      "attackPetbaseId": 3037,
+      "attackFormName": "岚鸟",
+      "physicalAttack": 128,
+      "magicalAttack": 55
+    },
+    "spirit_2d02e8b66152b89b": {
+      "sourcePetbaseId": 3028,
+      "attackPetbaseId": 3037,
+      "attackFormName": "岚鸟",
+      "physicalAttack": 128,
+      "magicalAttack": 55
+    },
+    "spirit_ced3e29f598387b0": {
+      "sourcePetbaseId": 3282,
+      "attackPetbaseId": 3285,
+      "attackFormName": "岚鸟",
+      "physicalAttack": 128,
+      "magicalAttack": 44
+    },
+    "spirit_bf1d9907aaa7f83b": {
+      "sourcePetbaseId": 3283,
+      "attackPetbaseId": 3286,
+      "attackFormName": "岚鸟",
+      "physicalAttack": 133,
+      "magicalAttack": 54
+    },
+    "spirit_02ebf2dda5ea12ab": {
+      "sourcePetbaseId": 3284,
+      "attackPetbaseId": 3287,
+      "attackFormName": "岚鸟",
+      "physicalAttack": 127,
+      "magicalAttack": 42
+    },
+    "spirit_4bd15e249d6653b9": {
+      "sourcePetbaseId": 3037,
+      "attackPetbaseId": 3037,
+      "attackFormName": "岚鸟",
+      "physicalAttack": 128,
+      "magicalAttack": 55
+    },
+    "spirit_82158f2918351dd1": {
+      "sourcePetbaseId": 3285,
+      "attackPetbaseId": 3285,
+      "attackFormName": "岚鸟",
+      "physicalAttack": 128,
+      "magicalAttack": 44
+    },
+    "spirit_c0d3e1738a6ed392": {
+      "sourcePetbaseId": 3286,
+      "attackPetbaseId": 3286,
+      "attackFormName": "岚鸟",
+      "physicalAttack": 133,
+      "magicalAttack": 54
+    },
+    "spirit_ba1773a7b0d7f2cc": {
+      "sourcePetbaseId": 3287,
+      "attackPetbaseId": 3287,
+      "attackFormName": "岚鸟",
+      "physicalAttack": 127,
+      "magicalAttack": 42
+    },
+    "spirit_7eb586d6475d99d4": {
+      "sourcePetbaseId": 5014,
+      "attackPetbaseId": 5014,
+      "attackFormName": "霜翼领主",
+      "physicalAttack": 142,
+      "magicalAttack": 63
+    },
+    "spirit_dcd9dd30a0ad5c7f": {
+      "sourcePetbaseId": 5030,
+      "attackPetbaseId": 5030,
+      "attackFormName": "霜翼领主",
+      "physicalAttack": 142,
+      "magicalAttack": 52
+    },
+    "spirit_9f8c8d8139b244ab": {
+      "sourcePetbaseId": 5031,
+      "attackPetbaseId": 5031,
+      "attackFormName": "霜翼领主",
+      "physicalAttack": 147,
+      "magicalAttack": 62
+    },
+    "spirit_4509a6b87740551b": {
+      "sourcePetbaseId": 5032,
+      "attackPetbaseId": 5032,
+      "attackFormName": "霜翼领主",
+      "physicalAttack": 141,
+      "magicalAttack": 50
+    },
+    "spirit_5b7a55721521545f": {
+      "sourcePetbaseId": 3145,
+      "attackPetbaseId": 3147,
+      "attackFormName": "幻影灵菇",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_6a82dae2525231bb": {
+      "sourcePetbaseId": 3146,
+      "attackPetbaseId": 3147,
+      "attackFormName": "幻影灵菇",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_da28fd0a0beef1a6": {
+      "sourcePetbaseId": 3147,
+      "attackPetbaseId": 3147,
+      "attackFormName": "幻影灵菇",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_77fd5fcc0d4d85f0": {
+      "sourcePetbaseId": 3106,
+      "attackPetbaseId": 3108,
+      "attackFormName": "石冠王蜥",
+      "physicalAttack": 101,
+      "magicalAttack": 100
+    },
+    "spirit_1d98beac89d9de18": {
+      "sourcePetbaseId": 3500,
+      "attackPetbaseId": 3502,
+      "attackFormName": "石冠王蜥",
+      "physicalAttack": 102,
+      "magicalAttack": 100
+    },
+    "spirit_0f268324272b589e": {
+      "sourcePetbaseId": 3107,
+      "attackPetbaseId": 3108,
+      "attackFormName": "石冠王蜥",
+      "physicalAttack": 101,
+      "magicalAttack": 100
+    },
+    "spirit_125322df9fdba77e": {
+      "sourcePetbaseId": 3501,
+      "attackPetbaseId": 3502,
+      "attackFormName": "石冠王蜥",
+      "physicalAttack": 102,
+      "magicalAttack": 100
+    },
+    "spirit_10fa789e8a2d1a1d": {
+      "sourcePetbaseId": 3108,
+      "attackPetbaseId": 3108,
+      "attackFormName": "石冠王蜥",
+      "physicalAttack": 101,
+      "magicalAttack": 100
+    },
+    "spirit_4757c9c4bcaee886": {
+      "sourcePetbaseId": 3502,
+      "attackPetbaseId": 3502,
+      "attackFormName": "石冠王蜥",
+      "physicalAttack": 102,
+      "magicalAttack": 100
+    },
+    "spirit_d52594cbbf48906b": {
+      "sourcePetbaseId": 3103,
+      "attackPetbaseId": 3105,
+      "attackFormName": "布克棱岩",
+      "physicalAttack": 144,
+      "magicalAttack": 54
+    },
+    "spirit_07aa4349f64588ad": {
+      "sourcePetbaseId": 3104,
+      "attackPetbaseId": 3105,
+      "attackFormName": "布克棱岩",
+      "physicalAttack": 144,
+      "magicalAttack": 54
+    },
+    "spirit_0573dd499a17d300": {
+      "sourcePetbaseId": 3105,
+      "attackPetbaseId": 3105,
+      "attackFormName": "布克棱岩",
+      "physicalAttack": 144,
+      "magicalAttack": 54
+    },
+    "spirit_3fb98e0a461b35c8": {
+      "sourcePetbaseId": 5008,
+      "attackPetbaseId": 5008,
+      "attackFormName": "迷嶂布莱克",
+      "physicalAttack": 148,
+      "magicalAttack": 57
+    },
+    "spirit_2a9b7b8d99dba59e": {
+      "sourcePetbaseId": 3010,
+      "attackPetbaseId": 3039,
+      "attackFormName": "叮叮恶魔",
+      "physicalAttack": 125,
+      "magicalAttack": 53
+    },
+    "spirit_db847c8849145a7c": {
+      "sourcePetbaseId": 3039,
+      "attackPetbaseId": 3039,
+      "attackFormName": "叮叮恶魔",
+      "physicalAttack": 125,
+      "magicalAttack": 53
+    },
+    "spirit_67dcbe51f817669a": {
+      "sourcePetbaseId": 5055,
+      "attackPetbaseId": 5055,
+      "attackFormName": "恶魔男爵",
+      "physicalAttack": 128,
+      "magicalAttack": 55
+    },
+    "spirit_9dd866cafbbf24f3": {
+      "sourcePetbaseId": 3138,
+      "attackPetbaseId": 3138,
+      "attackFormName": "化蝶",
+      "physicalAttack": 46,
+      "magicalAttack": 46
+    },
+    "spirit_30c4c0a5620c04b2": {
+      "sourcePetbaseId": 3470,
+      "attackPetbaseId": 3470,
+      "attackFormName": "化蝶",
+      "physicalAttack": 42,
+      "magicalAttack": 42
+    },
+    "spirit_aab4cd6a788bef56": {
+      "sourcePetbaseId": 3471,
+      "attackPetbaseId": 3471,
+      "attackFormName": "化蝶",
+      "physicalAttack": 47,
+      "magicalAttack": 41
+    },
+    "spirit_7ec0b892b12a44fc": {
+      "sourcePetbaseId": 3472,
+      "attackPetbaseId": 3472,
+      "attackFormName": "化蝶",
+      "physicalAttack": 46,
+      "magicalAttack": 44
+    },
+    "spirit_7c92f75ee0e707ea": {
+      "sourcePetbaseId": 3064,
+      "attackPetbaseId": 3064,
+      "attackFormName": "幽影树",
+      "physicalAttack": 112,
+      "magicalAttack": 111
+    },
+    "spirit_95c8a0f91aec8a68": {
+      "sourcePetbaseId": 5019,
+      "attackPetbaseId": 5019,
+      "attackFormName": "幻影荆棘",
+      "physicalAttack": 117,
+      "magicalAttack": 116
+    },
+    "spirit_4dbadf64799c9e23": {
+      "sourcePetbaseId": 3315,
+      "attackPetbaseId": 3317,
+      "attackFormName": "卷胡巨獭",
+      "physicalAttack": 96,
+      "magicalAttack": 96
+    },
+    "spirit_750fb3fba9325823": {
+      "sourcePetbaseId": 3316,
+      "attackPetbaseId": 3317,
+      "attackFormName": "卷胡巨獭",
+      "physicalAttack": 96,
+      "magicalAttack": 96
+    },
+    "spirit_e3c66cd78f05665a": {
+      "sourcePetbaseId": 3317,
+      "attackPetbaseId": 3317,
+      "attackFormName": "卷胡巨獭",
+      "physicalAttack": 96,
+      "magicalAttack": 96
+    },
+    "spirit_8daefb99ffb3a3b8": {
+      "sourcePetbaseId": 3308,
+      "attackPetbaseId": 3308,
+      "attackFormName": "晶石蜗",
+      "physicalAttack": 96,
+      "magicalAttack": 101
+    },
+    "spirit_c3d7e5b349b3d691": {
+      "sourcePetbaseId": 3448,
+      "attackPetbaseId": 3448,
+      "attackFormName": "晶石蜗",
+      "physicalAttack": 97,
+      "magicalAttack": 101
+    },
+    "spirit_f23b2e2f30fda5ef": {
+      "sourcePetbaseId": 3449,
+      "attackPetbaseId": 3449,
+      "attackFormName": "晶石蜗",
+      "physicalAttack": 101,
+      "magicalAttack": 101
+    },
+    "spirit_39a66778bae3c0d2": {
+      "sourcePetbaseId": 3450,
+      "attackPetbaseId": 3450,
+      "attackFormName": "晶石蜗",
+      "physicalAttack": 97,
+      "magicalAttack": 101
+    },
+    "spirit_f79e08f3515b255d": {
+      "sourcePetbaseId": 3451,
+      "attackPetbaseId": 3451,
+      "attackFormName": "晶石蜗",
+      "physicalAttack": 97,
+      "magicalAttack": 107
+    },
+    "spirit_14755429d3be9ca8": {
+      "sourcePetbaseId": 3486,
+      "attackPetbaseId": 3486,
+      "attackFormName": "晶石蜗",
+      "physicalAttack": 97,
+      "magicalAttack": 102
+    },
+    "spirit_4c5b5c6c97c28e2e": {
+      "sourcePetbaseId": 5001,
+      "attackPetbaseId": 5001,
+      "attackFormName": "钻石蜗",
+      "physicalAttack": 96,
+      "magicalAttack": 101
+    },
+    "spirit_ee3cfe5d3b6216b0": {
+      "sourcePetbaseId": 5047,
+      "attackPetbaseId": 5047,
+      "attackFormName": "钻石蜗",
+      "physicalAttack": 97,
+      "magicalAttack": 101
+    },
+    "spirit_47ffaf8c6ef0b369": {
+      "sourcePetbaseId": 5048,
+      "attackPetbaseId": 5048,
+      "attackFormName": "钻石蜗",
+      "physicalAttack": 101,
+      "magicalAttack": 101
+    },
+    "spirit_f5b53954bf0bee7d": {
+      "sourcePetbaseId": 5049,
+      "attackPetbaseId": 5049,
+      "attackFormName": "钻石蜗",
+      "physicalAttack": 97,
+      "magicalAttack": 101
+    },
+    "spirit_4e4f2c59a5d34b72": {
+      "sourcePetbaseId": 5050,
+      "attackPetbaseId": 5050,
+      "attackFormName": "钻石蜗",
+      "physicalAttack": 97,
+      "magicalAttack": 107
+    },
+    "spirit_e1a54a70644c23a8": {
+      "sourcePetbaseId": 5051,
+      "attackPetbaseId": 5051,
+      "attackFormName": "钻石蜗",
+      "physicalAttack": 97,
+      "magicalAttack": 102
+    },
+    "spirit_170ef71f536a3f8e": {
+      "sourcePetbaseId": 3029,
+      "attackPetbaseId": 3031,
+      "attackFormName": "奇丽花",
+      "physicalAttack": 115,
+      "magicalAttack": 115
+    },
+    "spirit_4843bd1e3723d3f2": {
+      "sourcePetbaseId": 3030,
+      "attackPetbaseId": 3031,
+      "attackFormName": "奇丽花",
+      "physicalAttack": 115,
+      "magicalAttack": 115
+    },
+    "spirit_dcaca25adb2a9978": {
+      "sourcePetbaseId": 3031,
+      "attackPetbaseId": 3031,
+      "attackFormName": "奇丽花",
+      "physicalAttack": 115,
+      "magicalAttack": 115
+    },
+    "spirit_6ca793b3a062580e": {
+      "sourcePetbaseId": 5005,
+      "attackPetbaseId": 5005,
+      "attackFormName": "奇丽果",
+      "physicalAttack": 128,
+      "magicalAttack": 128
+    },
+    "spirit_e4ee051aa2a60ad3": {
+      "sourcePetbaseId": 3040,
+      "attackPetbaseId": 3042,
+      "attackFormName": "卡瓦重",
+      "physicalAttack": 75,
+      "magicalAttack": 20
+    },
+    "spirit_6a6a9e45ba10677d": {
+      "sourcePetbaseId": 3288,
+      "attackPetbaseId": 3294,
+      "attackFormName": "卡瓦重",
+      "physicalAttack": 86,
+      "magicalAttack": 19
+    },
+    "spirit_805d4adf8c5e0765": {
+      "sourcePetbaseId": 3289,
+      "attackPetbaseId": 3295,
+      "attackFormName": "卡瓦重",
+      "physicalAttack": 70,
+      "magicalAttack": 20
+    },
+    "spirit_abb342c097633cd1": {
+      "sourcePetbaseId": 3290,
+      "attackPetbaseId": 3296,
+      "attackFormName": "卡瓦重",
+      "physicalAttack": 68,
+      "magicalAttack": 14
+    },
+    "spirit_5e815e3cf519c95a": {
+      "sourcePetbaseId": 3041,
+      "attackPetbaseId": 3042,
+      "attackFormName": "卡瓦重",
+      "physicalAttack": 75,
+      "magicalAttack": 20
+    },
+    "spirit_4f29eeb58d7ac639": {
+      "sourcePetbaseId": 3291,
+      "attackPetbaseId": 3294,
+      "attackFormName": "卡瓦重",
+      "physicalAttack": 86,
+      "magicalAttack": 19
+    },
+    "spirit_5290b35904ac4423": {
+      "sourcePetbaseId": 3292,
+      "attackPetbaseId": 3295,
+      "attackFormName": "卡瓦重",
+      "physicalAttack": 70,
+      "magicalAttack": 20
+    },
+    "spirit_6b8c8facedcb5b11": {
+      "sourcePetbaseId": 3293,
+      "attackPetbaseId": 3296,
+      "attackFormName": "卡瓦重",
+      "physicalAttack": 68,
+      "magicalAttack": 14
+    },
+    "spirit_6ae23f7dd507f7a2": {
+      "sourcePetbaseId": 3042,
+      "attackPetbaseId": 3042,
+      "attackFormName": "卡瓦重",
+      "physicalAttack": 75,
+      "magicalAttack": 20
+    },
+    "spirit_22727fe2d2d93a69": {
+      "sourcePetbaseId": 3294,
+      "attackPetbaseId": 3294,
+      "attackFormName": "卡瓦重",
+      "physicalAttack": 86,
+      "magicalAttack": 19
+    },
+    "spirit_a5b9ac10091ca495": {
+      "sourcePetbaseId": 3295,
+      "attackPetbaseId": 3295,
+      "attackFormName": "卡瓦重",
+      "physicalAttack": 70,
+      "magicalAttack": 20
+    },
+    "spirit_0486d96ed0ca509b": {
+      "sourcePetbaseId": 3296,
+      "attackPetbaseId": 3296,
+      "attackFormName": "卡瓦重",
+      "physicalAttack": 68,
+      "magicalAttack": 14
+    },
+    "spirit_1b795d4da2571041": {
+      "sourcePetbaseId": 3070,
+      "attackPetbaseId": 3071,
+      "attackFormName": "音速犬",
+      "physicalAttack": 116,
+      "magicalAttack": 38
+    },
+    "spirit_3a0b383ca1a11675": {
+      "sourcePetbaseId": 3071,
+      "attackPetbaseId": 3071,
+      "attackFormName": "音速犬",
+      "physicalAttack": 116,
+      "magicalAttack": 38
+    },
+    "spirit_41a9a2fb4a1d89c0": {
+      "sourcePetbaseId": 5018,
+      "attackPetbaseId": 5018,
+      "attackFormName": "风暴战犬",
+      "physicalAttack": 116,
+      "magicalAttack": 38,
+      "sourcePetbaseIds": [
+        5018,
+        5075
+      ],
+      "attackPetbaseIds": [
+        5018,
+        5075
+      ],
+      "attackFormNames": [
+        "风暴战犬"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_356f9596b83c83c0": {
+      "sourcePetbaseId": 3098,
+      "attackPetbaseId": 3100,
+      "attackFormName": "蹦床松鼠",
+      "physicalAttack": 84,
+      "magicalAttack": 79
+    },
+    "spirit_a9403546de6b0a52": {
+      "sourcePetbaseId": 3099,
+      "attackPetbaseId": 3100,
+      "attackFormName": "蹦床松鼠",
+      "physicalAttack": 84,
+      "magicalAttack": 79
+    },
+    "spirit_f8063bcf10b237fc": {
+      "sourcePetbaseId": 3100,
+      "attackPetbaseId": 3100,
+      "attackFormName": "蹦床松鼠",
+      "physicalAttack": 84,
+      "magicalAttack": 79
+    },
+    "spirit_a23862842c04d6d4": {
+      "sourcePetbaseId": 3367,
+      "attackPetbaseId": 3368,
+      "attackFormName": "嘟嘟锅",
+      "physicalAttack": 36,
+      "magicalAttack": 102
+    },
+    "spirit_20c4fe45219cff2b": {
+      "sourcePetbaseId": 3368,
+      "attackPetbaseId": 3368,
+      "attackFormName": "嘟嘟锅",
+      "physicalAttack": 36,
+      "magicalAttack": 102
+    },
+    "spirit_95b3e83d81371f98": {
+      "sourcePetbaseId": 3061,
+      "attackPetbaseId": 3405,
+      "attackFormName": "幽冥眼",
+      "physicalAttack": 50,
+      "magicalAttack": 120
+    },
+    "spirit_6130490ca58b2fea": {
+      "sourcePetbaseId": 3481,
+      "attackPetbaseId": 3482,
+      "attackFormName": "幽冥眼",
+      "physicalAttack": 38,
+      "magicalAttack": 120
+    },
+    "spirit_354b3e674bd83fd2": {
+      "sourcePetbaseId": 3405,
+      "attackPetbaseId": 3405,
+      "attackFormName": "幽冥眼",
+      "physicalAttack": 50,
+      "magicalAttack": 120
+    },
+    "spirit_87cdf35a2f438123": {
+      "sourcePetbaseId": 3482,
+      "attackPetbaseId": 3482,
+      "attackFormName": "幽冥眼",
+      "physicalAttack": 38,
+      "magicalAttack": 120
+    },
+    "spirit_6f4e18332831b7a3": {
+      "sourcePetbaseId": 3438,
+      "attackPetbaseId": 3439,
+      "attackFormName": "梦悠悠",
+      "physicalAttack": 65,
+      "magicalAttack": 157
+    },
+    "spirit_ca0283d98055f876": {
+      "sourcePetbaseId": 3440,
+      "attackPetbaseId": 3441,
+      "attackFormName": "梦悠悠",
+      "physicalAttack": 78,
+      "magicalAttack": 150
+    },
+    "spirit_7d94980b59e9598d": {
+      "sourcePetbaseId": 3439,
+      "attackPetbaseId": 3439,
+      "attackFormName": "梦悠悠",
+      "physicalAttack": 65,
+      "magicalAttack": 157
+    },
+    "spirit_7650ed24af7eea6e": {
+      "sourcePetbaseId": 3441,
+      "attackPetbaseId": 3441,
+      "attackFormName": "梦悠悠",
+      "physicalAttack": 78,
+      "magicalAttack": 150
+    },
+    "spirit_646ad89ac7e8a7e9": {
+      "sourcePetbaseId": 3492,
+      "attackPetbaseId": 3492,
+      "attackFormName": "兽花蕾",
+      "physicalAttack": 79,
+      "magicalAttack": 82
+    },
+    "spirit_0c057dc540477080": {
+      "sourcePetbaseId": 3165,
+      "attackPetbaseId": 3167,
+      "attackFormName": "巨噬针鼹",
+      "physicalAttack": 93,
+      "magicalAttack": 41
+    },
+    "spirit_615e3788c66e51a7": {
+      "sourcePetbaseId": 3166,
+      "attackPetbaseId": 3167,
+      "attackFormName": "巨噬针鼹",
+      "physicalAttack": 93,
+      "magicalAttack": 41
+    },
+    "spirit_14a25ce7b8d65623": {
+      "sourcePetbaseId": 3167,
+      "attackPetbaseId": 3167,
+      "attackFormName": "巨噬针鼹",
+      "physicalAttack": 93,
+      "magicalAttack": 41
+    },
+    "spirit_69c93794ef06164c": {
+      "sourcePetbaseId": 3017,
+      "attackPetbaseId": 3019,
+      "attackFormName": "蹦蹦花",
+      "physicalAttack": 107,
+      "magicalAttack": 110
+    },
+    "spirit_03d529d7deb1ee47": {
+      "sourcePetbaseId": 3297,
+      "attackPetbaseId": 3303,
+      "attackFormName": "蹦蹦花",
+      "physicalAttack": 101,
+      "magicalAttack": 109
+    },
+    "spirit_0d0e95efbe74ee35": {
+      "sourcePetbaseId": 3298,
+      "attackPetbaseId": 3304,
+      "attackFormName": "蹦蹦花",
+      "physicalAttack": 103,
+      "magicalAttack": 109
+    },
+    "spirit_4cf8140b1acc6f10": {
+      "sourcePetbaseId": 3299,
+      "attackPetbaseId": 3305,
+      "attackFormName": "蹦蹦花",
+      "physicalAttack": 100,
+      "magicalAttack": 110
+    },
+    "spirit_57ffece4f3d6fca2": {
+      "sourcePetbaseId": 3018,
+      "attackPetbaseId": 3019,
+      "attackFormName": "蹦蹦花",
+      "physicalAttack": 107,
+      "magicalAttack": 110
+    },
+    "spirit_994843fd5002d6fc": {
+      "sourcePetbaseId": 3300,
+      "attackPetbaseId": 3303,
+      "attackFormName": "蹦蹦花",
+      "physicalAttack": 101,
+      "magicalAttack": 109
+    },
+    "spirit_d79de088f4eeeb6a": {
+      "sourcePetbaseId": 3301,
+      "attackPetbaseId": 3304,
+      "attackFormName": "蹦蹦花",
+      "physicalAttack": 103,
+      "magicalAttack": 109
+    },
+    "spirit_164ed0d2dce866ce": {
+      "sourcePetbaseId": 3302,
+      "attackPetbaseId": 3305,
+      "attackFormName": "蹦蹦花",
+      "physicalAttack": 100,
+      "magicalAttack": 110
+    },
+    "spirit_cc0a5cd3b0df0a05": {
+      "sourcePetbaseId": 3019,
+      "attackPetbaseId": 3019,
+      "attackFormName": "蹦蹦花",
+      "physicalAttack": 107,
+      "magicalAttack": 110
+    },
+    "spirit_50f1e9142e01d262": {
+      "sourcePetbaseId": 3303,
+      "attackPetbaseId": 3303,
+      "attackFormName": "蹦蹦花",
+      "physicalAttack": 101,
+      "magicalAttack": 109
+    },
+    "spirit_0706209a91c4d2dd": {
+      "sourcePetbaseId": 3304,
+      "attackPetbaseId": 3304,
+      "attackFormName": "蹦蹦花",
+      "physicalAttack": 103,
+      "magicalAttack": 109
+    },
+    "spirit_60c806c518c42d77": {
+      "sourcePetbaseId": 3305,
+      "attackPetbaseId": 3305,
+      "attackFormName": "蹦蹦花",
+      "physicalAttack": 100,
+      "magicalAttack": 110
+    },
+    "spirit_4318b532ca40c05f": {
+      "sourcePetbaseId": 3190,
+      "attackPetbaseId": 3192,
+      "attackFormName": "电球咩咩",
+      "physicalAttack": 82,
+      "magicalAttack": 82
+    },
+    "spirit_152583e8aed619c0": {
+      "sourcePetbaseId": 3191,
+      "attackPetbaseId": 3192,
+      "attackFormName": "电球咩咩",
+      "physicalAttack": 82,
+      "magicalAttack": 82
+    },
+    "spirit_17446a2b41bf4052": {
+      "sourcePetbaseId": 3192,
+      "attackPetbaseId": 3192,
+      "attackFormName": "电球咩咩",
+      "physicalAttack": 82,
+      "magicalAttack": 82
+    },
+    "spirit_b36b110dabf9563f": {
+      "sourcePetbaseId": 3034,
+      "attackPetbaseId": 3027,
+      "attackFormName": "蒲公英娃娃",
+      "physicalAttack": 123,
+      "magicalAttack": 117
+    },
+    "spirit_28ae7d1286fad58b": {
+      "sourcePetbaseId": 3027,
+      "attackPetbaseId": 3027,
+      "attackFormName": "蒲公英娃娃",
+      "physicalAttack": 123,
+      "magicalAttack": 117
+    },
+    "spirit_cbe29ac35310c7c6": {
+      "sourcePetbaseId": 3043,
+      "attackPetbaseId": 3044,
+      "attackFormName": "伊贝粉粉",
+      "physicalAttack": 91,
+      "magicalAttack": 89
+    },
+    "spirit_744bd48ae8d9568d": {
+      "sourcePetbaseId": 3044,
+      "attackPetbaseId": 3044,
+      "attackFormName": "伊贝粉粉",
+      "physicalAttack": 91,
+      "magicalAttack": 89
+    },
+    "spirit_f777820010f77600": {
+      "sourcePetbaseId": 3049,
+      "attackPetbaseId": 3102,
+      "attackFormName": "瞌睡王",
+      "physicalAttack": 167,
+      "magicalAttack": 70
+    },
+    "spirit_a727717ad00e7342": {
+      "sourcePetbaseId": 3101,
+      "attackPetbaseId": 3102,
+      "attackFormName": "瞌睡王",
+      "physicalAttack": 167,
+      "magicalAttack": 70
+    },
+    "spirit_c43a0b85bf30c248": {
+      "sourcePetbaseId": 3102,
+      "attackPetbaseId": 3102,
+      "attackFormName": "瞌睡王",
+      "physicalAttack": 167,
+      "magicalAttack": 70
+    },
+    "spirit_46b0f0d4bc8a27ce": {
+      "sourcePetbaseId": 3330,
+      "attackPetbaseId": 3332,
+      "attackFormName": "千棘盔",
+      "physicalAttack": 41,
+      "magicalAttack": 99
+    },
+    "spirit_04123d2d926753e5": {
+      "sourcePetbaseId": 3475,
+      "attackPetbaseId": 3477,
+      "attackFormName": "千棘盔",
+      "physicalAttack": 41,
+      "magicalAttack": 100
+    },
+    "spirit_ac567756b7a95b52": {
+      "sourcePetbaseId": 3331,
+      "attackPetbaseId": 3332,
+      "attackFormName": "千棘盔",
+      "physicalAttack": 41,
+      "magicalAttack": 99
+    },
+    "spirit_d6b4788977838c16": {
+      "sourcePetbaseId": 3476,
+      "attackPetbaseId": 3477,
+      "attackFormName": "千棘盔",
+      "physicalAttack": 41,
+      "magicalAttack": 100
+    },
+    "spirit_afdd04c5a8919716": {
+      "sourcePetbaseId": 3332,
+      "attackPetbaseId": 3332,
+      "attackFormName": "千棘盔",
+      "physicalAttack": 41,
+      "magicalAttack": 99
+    },
+    "spirit_3b32f292af96feec": {
+      "sourcePetbaseId": 3477,
+      "attackPetbaseId": 3477,
+      "attackFormName": "千棘盔",
+      "physicalAttack": 41,
+      "magicalAttack": 100
+    },
+    "spirit_786924cd03526ca4": {
+      "sourcePetbaseId": 5012,
+      "attackPetbaseId": 5012,
+      "attackFormName": "千棘海针",
+      "physicalAttack": 32,
+      "magicalAttack": 85
+    },
+    "spirit_dbf6e5118a0b051e": {
+      "sourcePetbaseId": 5029,
+      "attackPetbaseId": 5029,
+      "attackFormName": "千棘海针",
+      "physicalAttack": 32,
+      "magicalAttack": 86
+    },
+    "spirit_70a40653ea0eee33": {
+      "sourcePetbaseId": 3227,
+      "attackPetbaseId": 3227,
+      "attackFormName": "菊花梨",
+      "physicalAttack": 56,
+      "magicalAttack": 127
+    },
+    "spirit_8e42310d48bd7fc7": {
+      "sourcePetbaseId": 3193,
+      "attackPetbaseId": 3194,
+      "attackFormName": "星光狮",
+      "physicalAttack": 101,
+      "magicalAttack": 106
+    },
+    "spirit_64a897c6b698c2a9": {
+      "sourcePetbaseId": 3442,
+      "attackPetbaseId": 3443,
+      "attackFormName": "星光狮",
+      "physicalAttack": 107,
+      "magicalAttack": 95
+    },
+    "spirit_56f8f0077302b8b4": {
+      "sourcePetbaseId": 3194,
+      "attackPetbaseId": 3194,
+      "attackFormName": "星光狮",
+      "physicalAttack": 101,
+      "magicalAttack": 106
+    },
+    "spirit_e0fd67c2b0e5c25a": {
+      "sourcePetbaseId": 3443,
+      "attackPetbaseId": 3443,
+      "attackFormName": "星光狮",
+      "physicalAttack": 107,
+      "magicalAttack": 95
+    },
+    "spirit_56a89afc73148f54": {
+      "sourcePetbaseId": 3058,
+      "attackPetbaseId": 3157,
+      "attackFormName": "花魁蜂后",
+      "physicalAttack": 54,
+      "magicalAttack": 49
+    },
+    "spirit_b6d5d374fe7a4115": {
+      "sourcePetbaseId": 3059,
+      "attackPetbaseId": 3157,
+      "attackFormName": "花魁蜂后",
+      "physicalAttack": 54,
+      "magicalAttack": 49
+    },
+    "spirit_d8b0958a9710ee37": {
+      "sourcePetbaseId": 3157,
+      "attackPetbaseId": 3157,
+      "attackFormName": "花魁蜂后",
+      "physicalAttack": 54,
+      "magicalAttack": 49
+    },
+    "spirit_7ae10f79a1849af1": {
+      "sourcePetbaseId": 5015,
+      "attackPetbaseId": 5015,
+      "attackFormName": "女王蜂",
+      "physicalAttack": 50,
+      "magicalAttack": 45
+    },
+    "spirit_bfe02d4281b32ae4": {
+      "sourcePetbaseId": 3142,
+      "attackPetbaseId": 3144,
+      "attackFormName": "朔夜伊芙",
+      "physicalAttack": 124,
+      "magicalAttack": 113
+    },
+    "spirit_e9b50c26f5156efb": {
+      "sourcePetbaseId": 3143,
+      "attackPetbaseId": 3144,
+      "attackFormName": "朔夜伊芙",
+      "physicalAttack": 124,
+      "magicalAttack": 113
+    },
+    "spirit_49ad5c69be90b5bf": {
+      "sourcePetbaseId": 3144,
+      "attackPetbaseId": 3144,
+      "attackFormName": "朔夜伊芙",
+      "physicalAttack": 124,
+      "magicalAttack": 113
+    },
+    "spirit_b40543f05ede5824": {
+      "sourcePetbaseId": 3346,
+      "attackPetbaseId": 3346,
+      "attackFormName": "翠顶夫人",
+      "physicalAttack": 95,
+      "magicalAttack": 86
+    },
+    "spirit_d68adbb57965af94": {
+      "sourcePetbaseId": 3571,
+      "attackPetbaseId": 3571,
+      "attackFormName": "黑羽夫人",
+      "physicalAttack": 93,
+      "magicalAttack": 87
+    },
+    "spirit_96afa437f590cc96": {
+      "sourcePetbaseId": 3069,
+      "attackPetbaseId": 3069,
+      "attackFormName": "锤头鹳",
+      "physicalAttack": 77,
+      "magicalAttack": 75
+    },
+    "spirit_1b3ea496d11a0eab": {
+      "sourcePetbaseId": 3026,
+      "attackPetbaseId": 3035,
+      "attackFormName": "魔草巫灵",
+      "physicalAttack": 48,
+      "magicalAttack": 120
+    },
+    "spirit_1336bf0fd9adf6ef": {
+      "sourcePetbaseId": 3035,
+      "attackPetbaseId": 3035,
+      "attackFormName": "魔草巫灵",
+      "physicalAttack": 48,
+      "magicalAttack": 120
+    },
+    "spirit_06c4fba64eb40bd2": {
+      "sourcePetbaseId": 3050,
+      "attackPetbaseId": 3050,
+      "attackFormName": "记忆石",
+      "physicalAttack": 108,
+      "magicalAttack": 97
+    },
+    "spirit_54ab5d440e31b493": {
+      "sourcePetbaseId": 3175,
+      "attackPetbaseId": 3177,
+      "attackFormName": "咔咔鸟",
+      "physicalAttack": 114,
+      "magicalAttack": 110
+    },
+    "spirit_fc1fa6ffcb752915": {
+      "sourcePetbaseId": 3176,
+      "attackPetbaseId": 3177,
+      "attackFormName": "咔咔鸟",
+      "physicalAttack": 114,
+      "magicalAttack": 110
+    },
+    "spirit_8c4b702650e31f66": {
+      "sourcePetbaseId": 3177,
+      "attackPetbaseId": 3177,
+      "attackFormName": "咔咔鸟",
+      "physicalAttack": 114,
+      "magicalAttack": 110
+    },
+    "spirit_838a843160d26986": {
+      "sourcePetbaseId": 3139,
+      "attackPetbaseId": 3141,
+      "attackFormName": "花衣蝶",
+      "physicalAttack": 72,
+      "magicalAttack": 77
+    },
+    "spirit_bd8da42d42852406": {
+      "sourcePetbaseId": 3140,
+      "attackPetbaseId": 3141,
+      "attackFormName": "花衣蝶",
+      "physicalAttack": 72,
+      "magicalAttack": 77
+    },
+    "spirit_765165af4a4e54de": {
+      "sourcePetbaseId": 3141,
+      "attackPetbaseId": 3141,
+      "attackFormName": "花衣蝶",
+      "physicalAttack": 72,
+      "magicalAttack": 77
+    },
+    "spirit_3ec8454e3503abf9": {
+      "sourcePetbaseId": 3276,
+      "attackPetbaseId": 3278,
+      "attackFormName": "魔眷鸟",
+      "physicalAttack": 106,
+      "magicalAttack": 29
+    },
+    "spirit_2009a4d521042694": {
+      "sourcePetbaseId": 3277,
+      "attackPetbaseId": 3278,
+      "attackFormName": "魔眷鸟",
+      "physicalAttack": 106,
+      "magicalAttack": 29
+    },
+    "spirit_23d8e46ab3759344": {
+      "sourcePetbaseId": 3278,
+      "attackPetbaseId": 3278,
+      "attackFormName": "魔眷鸟",
+      "physicalAttack": 106,
+      "magicalAttack": 29
+    },
+    "spirit_f0eb58fb18c9dca0": {
+      "sourcePetbaseId": 3014,
+      "attackPetbaseId": 3016,
+      "attackFormName": "罗隐",
+      "physicalAttack": 159,
+      "magicalAttack": 78
+    },
+    "spirit_608568e7fb1fc470": {
+      "sourcePetbaseId": 3015,
+      "attackPetbaseId": 3016,
+      "attackFormName": "罗隐",
+      "physicalAttack": 159,
+      "magicalAttack": 78
+    },
+    "spirit_4e7acb9d14c8f373": {
+      "sourcePetbaseId": 3016,
+      "attackPetbaseId": 3016,
+      "attackFormName": "罗隐",
+      "physicalAttack": 159,
+      "magicalAttack": 78
+    },
+    "spirit_897ad3f9223a851a": {
+      "sourcePetbaseId": 5053,
+      "attackPetbaseId": 5053,
+      "attackFormName": "深渊罗隐",
+      "physicalAttack": 159,
+      "magicalAttack": 78,
+      "sourcePetbaseIds": [
+        5053,
+        13000169
+      ],
+      "attackPetbaseIds": [
+        5053,
+        13000169
+      ],
+      "attackFormNames": [
+        "深渊罗隐"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_37e1d041ca12cf68": {
+      "sourcePetbaseId": 3115,
+      "attackPetbaseId": 3117,
+      "attackFormName": "彩蝶鲨",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_8dbef89746bfb3af": {
+      "sourcePetbaseId": 3116,
+      "attackPetbaseId": 3117,
+      "attackFormName": "彩蝶鲨",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_563a4e078a1d8cba": {
+      "sourcePetbaseId": 3117,
+      "attackPetbaseId": 3117,
+      "attackFormName": "彩蝶鲨",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_ebb2563e2410bd6a": {
+      "sourcePetbaseId": 5011,
+      "attackPetbaseId": 5011,
+      "attackFormName": "神谕鲨",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_6559cb4bdc43fc21": {
+      "sourcePetbaseId": 3170,
+      "attackPetbaseId": 3171,
+      "attackFormName": "巨灵石",
+      "physicalAttack": 99,
+      "magicalAttack": 99
+    },
+    "spirit_6c627aa77d71cf89": {
+      "sourcePetbaseId": 3171,
+      "attackPetbaseId": 3171,
+      "attackFormName": "巨灵石",
+      "physicalAttack": 99,
+      "magicalAttack": 99
+    },
+    "spirit_ba59dde12b0c0431": {
+      "sourcePetbaseId": 3109,
+      "attackPetbaseId": 3111,
+      "attackFormName": "仪式巨像",
+      "physicalAttack": 84,
+      "magicalAttack": 89
+    },
+    "spirit_ccd65f12c28c6c89": {
+      "sourcePetbaseId": 3110,
+      "attackPetbaseId": 3111,
+      "attackFormName": "仪式巨像",
+      "physicalAttack": 84,
+      "magicalAttack": 89
+    },
+    "spirit_8f210e2e5fe10327": {
+      "sourcePetbaseId": 3111,
+      "attackPetbaseId": 3111,
+      "attackFormName": "仪式巨像",
+      "physicalAttack": 84,
+      "magicalAttack": 89
+    },
+    "spirit_c8484f0c0681b6ae": {
+      "sourcePetbaseId": 5009,
+      "attackPetbaseId": 5009,
+      "attackFormName": "祭礼巨像",
+      "physicalAttack": 96,
+      "magicalAttack": 101
+    },
+    "spirit_efecf4d2f811fc11": {
+      "sourcePetbaseId": 3062,
+      "attackPetbaseId": 3063,
+      "attackFormName": "白金独角兽",
+      "physicalAttack": 61,
+      "magicalAttack": 161
+    },
+    "spirit_07cdb4d4a94ac1bd": {
+      "sourcePetbaseId": 3063,
+      "attackPetbaseId": 3063,
+      "attackFormName": "白金独角兽",
+      "physicalAttack": 61,
+      "magicalAttack": 161
+    },
+    "spirit_6a95a48463d87bef": {
+      "sourcePetbaseId": 5002,
+      "attackPetbaseId": 5002,
+      "attackFormName": "彩虹独角兽",
+      "physicalAttack": 78,
+      "magicalAttack": 192
+    },
+    "spirit_8a056366b4548195": {
+      "sourcePetbaseId": 3376,
+      "attackPetbaseId": 3377,
+      "attackFormName": "风滚暮虫",
+      "physicalAttack": 24,
+      "magicalAttack": 109
+    },
+    "spirit_bec6a078b9380d64": {
+      "sourcePetbaseId": 3496,
+      "attackPetbaseId": 3498,
+      "attackFormName": "风滚暮虫",
+      "physicalAttack": 25,
+      "magicalAttack": 111
+    },
+    "spirit_eaaf0316345348d1": {
+      "sourcePetbaseId": 3483,
+      "attackPetbaseId": 3377,
+      "attackFormName": "风滚暮虫",
+      "physicalAttack": 24,
+      "magicalAttack": 109
+    },
+    "spirit_f56a143b151ab432": {
+      "sourcePetbaseId": 3497,
+      "attackPetbaseId": 3498,
+      "attackFormName": "风滚暮虫",
+      "physicalAttack": 25,
+      "magicalAttack": 111
+    },
+    "spirit_47eda2b0ce0bbe10": {
+      "sourcePetbaseId": 3377,
+      "attackPetbaseId": 3377,
+      "attackFormName": "风滚暮虫",
+      "physicalAttack": 24,
+      "magicalAttack": 109
+    },
+    "spirit_520c19c877338dd4": {
+      "sourcePetbaseId": 3498,
+      "attackPetbaseId": 3498,
+      "attackFormName": "风滚暮虫",
+      "physicalAttack": 25,
+      "magicalAttack": 111
+    },
+    "spirit_7ddca2b7aaaf24c4": {
+      "sourcePetbaseId": 5056,
+      "attackPetbaseId": 5056,
+      "attackFormName": "暮风隐者",
+      "physicalAttack": 30,
+      "magicalAttack": 119
+    },
+    "spirit_75f54f47b35b9e9c": {
+      "sourcePetbaseId": 5062,
+      "attackPetbaseId": 5062,
+      "attackFormName": "暮风隐者",
+      "physicalAttack": 31,
+      "magicalAttack": 122
+    },
+    "spirit_16c94e4954935fac": {
+      "sourcePetbaseId": 3568,
+      "attackPetbaseId": 3569,
+      "attackFormName": "黑猫巫师",
+      "physicalAttack": 53,
+      "magicalAttack": 124
+    },
+    "spirit_b0e254d60233952f": {
+      "sourcePetbaseId": 3569,
+      "attackPetbaseId": 3569,
+      "attackFormName": "黑猫巫师",
+      "physicalAttack": 53,
+      "magicalAttack": 124
+    },
+    "spirit_7f2a9d80e7cec56e": {
+      "sourcePetbaseId": 5007,
+      "attackPetbaseId": 5007,
+      "attackFormName": "黑猫密探",
+      "physicalAttack": 65,
+      "magicalAttack": 143
+    },
+    "spirit_4e0dc7dc0b877594": {
+      "sourcePetbaseId": 3065,
+      "attackPetbaseId": 3066,
+      "attackFormName": "影狸",
+      "physicalAttack": 109,
+      "magicalAttack": 105
+    },
+    "spirit_2d79fe35a27f9483": {
+      "sourcePetbaseId": 3066,
+      "attackPetbaseId": 3066,
+      "attackFormName": "影狸",
+      "physicalAttack": 109,
+      "magicalAttack": 105
+    },
+    "spirit_be9941285a953245": {
+      "sourcePetbaseId": 3151,
+      "attackPetbaseId": 3153,
+      "attackFormName": "古啦多",
+      "physicalAttack": 88,
+      "magicalAttack": 88
+    },
+    "spirit_5a759518affc4d97": {
+      "sourcePetbaseId": 3152,
+      "attackPetbaseId": 3153,
+      "attackFormName": "古啦多",
+      "physicalAttack": 88,
+      "magicalAttack": 88
+    },
+    "spirit_704f8b90c87b1bf6": {
+      "sourcePetbaseId": 3153,
+      "attackPetbaseId": 3153,
+      "attackFormName": "古啦多",
+      "physicalAttack": 88,
+      "magicalAttack": 88
+    },
+    "spirit_9a811efcecccda12": {
+      "sourcePetbaseId": 3239,
+      "attackPetbaseId": 3241,
+      "attackFormName": "怖哭菇",
+      "physicalAttack": 63,
+      "magicalAttack": 69
+    },
+    "spirit_c55865acda344897": {
+      "sourcePetbaseId": 3240,
+      "attackPetbaseId": 3241,
+      "attackFormName": "怖哭菇",
+      "physicalAttack": 63,
+      "magicalAttack": 69
+    },
+    "spirit_d65c8e62b7f93bd8": {
+      "sourcePetbaseId": 3241,
+      "attackPetbaseId": 3241,
+      "attackFormName": "怖哭菇",
+      "physicalAttack": 63,
+      "magicalAttack": 69
+    },
+    "spirit_5e186c811af5ce3b": {
+      "sourcePetbaseId": 3011,
+      "attackPetbaseId": 3011,
+      "attackFormName": "恶魔狼",
+      "physicalAttack": 114,
+      "magicalAttack": 45
+    },
+    "spirit_f7e8528a743eaaf0": {
+      "sourcePetbaseId": 5016,
+      "attackPetbaseId": 5016,
+      "attackFormName": "恶魔狼王",
+      "physicalAttack": 121,
+      "magicalAttack": 50
+    },
+    "spirit_49699925c6ec1c8f": {
+      "sourcePetbaseId": 3434,
+      "attackPetbaseId": 3435,
+      "attackFormName": "电企鹅",
+      "physicalAttack": 56,
+      "magicalAttack": 126
+    },
+    "spirit_d1c13ba13b0d76ff": {
+      "sourcePetbaseId": 3435,
+      "attackPetbaseId": 3435,
+      "attackFormName": "电企鹅",
+      "physicalAttack": 56,
+      "magicalAttack": 126
+    },
+    "spirit_57cf990eab0a0502": {
+      "sourcePetbaseId": 3172,
+      "attackPetbaseId": 3174,
+      "attackFormName": "雪巨人",
+      "physicalAttack": 174,
+      "magicalAttack": 79
+    },
+    "spirit_37822bc1062c0c8e": {
+      "sourcePetbaseId": 3173,
+      "attackPetbaseId": 3174,
+      "attackFormName": "雪巨人",
+      "physicalAttack": 174,
+      "magicalAttack": 79
+    },
+    "spirit_510544553c4a7cbc": {
+      "sourcePetbaseId": 3174,
+      "attackPetbaseId": 3174,
+      "attackFormName": "雪巨人",
+      "physicalAttack": 174,
+      "magicalAttack": 79
+    },
+    "spirit_485ee637489f9ad5": {
+      "sourcePetbaseId": 3262,
+      "attackPetbaseId": 3263,
+      "attackFormName": "獠牙猪",
+      "physicalAttack": 119,
+      "magicalAttack": 41
+    },
+    "spirit_73f8f0f7a5af80e8": {
+      "sourcePetbaseId": 3263,
+      "attackPetbaseId": 3263,
+      "attackFormName": "獠牙猪",
+      "physicalAttack": 119,
+      "magicalAttack": 41
+    },
+    "spirit_990cb4aa69aae116": {
+      "sourcePetbaseId": 3333,
+      "attackPetbaseId": 3335,
+      "attackFormName": "雪灵",
+      "physicalAttack": 112,
+      "magicalAttack": 112
+    },
+    "spirit_8ad67cef500f03bb": {
+      "sourcePetbaseId": 3334,
+      "attackPetbaseId": 3335,
+      "attackFormName": "雪灵",
+      "physicalAttack": 112,
+      "magicalAttack": 112
+    },
+    "spirit_7abd8c5d14815f03": {
+      "sourcePetbaseId": 3335,
+      "attackPetbaseId": 3335,
+      "attackFormName": "雪灵",
+      "physicalAttack": 112,
+      "magicalAttack": 112
+    },
+    "spirit_dcb0504a22dc89a2": {
+      "sourcePetbaseId": 3121,
+      "attackPetbaseId": 3123,
+      "attackFormName": "雪影娃娃",
+      "physicalAttack": 103,
+      "magicalAttack": 98
+    },
+    "spirit_5a5fe946ec981a55": {
+      "sourcePetbaseId": 3122,
+      "attackPetbaseId": 3123,
+      "attackFormName": "雪影娃娃",
+      "physicalAttack": 103,
+      "magicalAttack": 98
+    },
+    "spirit_b5f7f523f4cb4178": {
+      "sourcePetbaseId": 3123,
+      "attackPetbaseId": 3123,
+      "attackFormName": "雪影娃娃",
+      "physicalAttack": 103,
+      "magicalAttack": 98
+    },
+    "spirit_504ad8ae5cd9a417": {
+      "sourcePetbaseId": 5013,
+      "attackPetbaseId": 5013,
+      "attackFormName": "雪影冰灵",
+      "physicalAttack": 120,
+      "magicalAttack": 114
+    },
+    "spirit_b7594c978ae26ecc": {
+      "sourcePetbaseId": 3410,
+      "attackPetbaseId": 3411,
+      "attackFormName": "权杖-V",
+      "physicalAttack": 105,
+      "magicalAttack": 97
+    },
+    "spirit_befdd756d3d8b3dd": {
+      "sourcePetbaseId": 3411,
+      "attackPetbaseId": 3411,
+      "attackFormName": "权杖-V",
+      "physicalAttack": 105,
+      "magicalAttack": 97
+    },
+    "spirit_500f4922dfc1cb1e": {
+      "sourcePetbaseId": 3075,
+      "attackPetbaseId": 3077,
+      "attackFormName": "尖嘴狐仙",
+      "physicalAttack": 87,
+      "magicalAttack": 87
+    },
+    "spirit_0ff44d4938dbfb6d": {
+      "sourcePetbaseId": 3076,
+      "attackPetbaseId": 3077,
+      "attackFormName": "尖嘴狐仙",
+      "physicalAttack": 87,
+      "magicalAttack": 87
+    },
+    "spirit_2f24d4018a1545f7": {
+      "sourcePetbaseId": 3077,
+      "attackPetbaseId": 3077,
+      "attackFormName": "尖嘴狐仙",
+      "physicalAttack": 87,
+      "magicalAttack": 87
+    },
+    "spirit_a9dbb2fc3935e468": {
+      "sourcePetbaseId": 3395,
+      "attackPetbaseId": 3397,
+      "attackFormName": "圣羽翼王",
+      "physicalAttack": 109,
+      "magicalAttack": 109
+    },
+    "spirit_9d2e8eeb9a1fe818": {
+      "sourcePetbaseId": 3396,
+      "attackPetbaseId": 3397,
+      "attackFormName": "圣羽翼王",
+      "physicalAttack": 109,
+      "magicalAttack": 109
+    },
+    "spirit_5ee78de2be28a163": {
+      "sourcePetbaseId": 3397,
+      "attackPetbaseId": 3397,
+      "attackFormName": "圣羽翼王",
+      "physicalAttack": 109,
+      "magicalAttack": 109
+    },
+    "spirit_a95bdb5c1c49960e": {
+      "sourcePetbaseId": 3594,
+      "attackPetbaseId": 3596,
+      "attackFormName": "针叶巡林",
+      "physicalAttack": 139,
+      "magicalAttack": 57
+    },
+    "spirit_8dbc85f59622c36a": {
+      "sourcePetbaseId": 3595,
+      "attackPetbaseId": 3596,
+      "attackFormName": "针叶巡林",
+      "physicalAttack": 139,
+      "magicalAttack": 57
+    },
+    "spirit_de22accf29301363": {
+      "sourcePetbaseId": 3596,
+      "attackPetbaseId": 3596,
+      "attackFormName": "针叶巡林",
+      "physicalAttack": 139,
+      "magicalAttack": 57
+    },
+    "spirit_d5db756766ab21aa": {
+      "sourcePetbaseId": 3600,
+      "attackPetbaseId": 3602,
+      "attackFormName": "炽心勇狮",
+      "physicalAttack": 62,
+      "magicalAttack": 126
+    },
+    "spirit_e44802e1537dc447": {
+      "sourcePetbaseId": 3601,
+      "attackPetbaseId": 3602,
+      "attackFormName": "炽心勇狮",
+      "physicalAttack": 62,
+      "magicalAttack": 126
+    },
+    "spirit_a339a9ece5b78fc4": {
+      "sourcePetbaseId": 3602,
+      "attackPetbaseId": 3602,
+      "attackFormName": "炽心勇狮",
+      "physicalAttack": 62,
+      "magicalAttack": 126
+    },
+    "spirit_23bd8615aa9c02c8": {
+      "sourcePetbaseId": 3597,
+      "attackPetbaseId": 3599,
+      "attackFormName": "游蛇魔使",
+      "physicalAttack": 112,
+      "magicalAttack": 104
+    },
+    "spirit_ac20eee6a2856869": {
+      "sourcePetbaseId": 3598,
+      "attackPetbaseId": 3599,
+      "attackFormName": "游蛇魔使",
+      "physicalAttack": 112,
+      "magicalAttack": 104
+    },
+    "spirit_40bee517b3857b1d": {
+      "sourcePetbaseId": 3599,
+      "attackPetbaseId": 3599,
+      "attackFormName": "游蛇魔使",
+      "physicalAttack": 112,
+      "magicalAttack": 104
+    },
+    "spirit_4009f06481c98efb": {
+      "sourcePetbaseId": 3499,
+      "attackPetbaseId": 3499,
+      "attackFormName": "公平鸽",
+      "physicalAttack": 93,
+      "magicalAttack": 93
+    },
+    "spirit_c1a3ba0f110ff76b": {
+      "sourcePetbaseId": 3237,
+      "attackPetbaseId": 3238,
+      "attackFormName": "怒目怂猫",
+      "physicalAttack": 136,
+      "magicalAttack": 130
+    },
+    "spirit_8e0dba092c6f9912": {
+      "sourcePetbaseId": 3238,
+      "attackPetbaseId": 3238,
+      "attackFormName": "怒目怂猫",
+      "physicalAttack": 136,
+      "magicalAttack": 130
+    },
+    "spirit_7ec62cbf0327ea5a": {
+      "sourcePetbaseId": 3127,
+      "attackPetbaseId": 3129,
+      "attackFormName": "皇家狮鹫",
+      "physicalAttack": 116,
+      "magicalAttack": 69
+    },
+    "spirit_7b6d1cc11f6fe4f4": {
+      "sourcePetbaseId": 3467,
+      "attackPetbaseId": 3469,
+      "attackFormName": "皇家狮鹫",
+      "physicalAttack": 110,
+      "magicalAttack": 59
+    },
+    "spirit_0a51522c0bea266e": {
+      "sourcePetbaseId": 3128,
+      "attackPetbaseId": 3129,
+      "attackFormName": "皇家狮鹫",
+      "physicalAttack": 116,
+      "magicalAttack": 69
+    },
+    "spirit_f7f1fe9be39a310e": {
+      "sourcePetbaseId": 3468,
+      "attackPetbaseId": 3469,
+      "attackFormName": "皇家狮鹫",
+      "physicalAttack": 110,
+      "magicalAttack": 59
+    },
+    "spirit_95ff64ade5643af6": {
+      "sourcePetbaseId": 3129,
+      "attackPetbaseId": 3129,
+      "attackFormName": "皇家狮鹫",
+      "physicalAttack": 116,
+      "magicalAttack": 69
+    },
+    "spirit_97a0af606aaed34c": {
+      "sourcePetbaseId": 3469,
+      "attackPetbaseId": 3469,
+      "attackFormName": "皇家狮鹫",
+      "physicalAttack": 110,
+      "magicalAttack": 59
+    },
+    "spirit_70cdb58d677fc0c1": {
+      "sourcePetbaseId": 3130,
+      "attackPetbaseId": 3132,
+      "attackFormName": "芋香巨角蛛",
+      "physicalAttack": 88,
+      "magicalAttack": 88
+    },
+    "spirit_68de87232e8ef07e": {
+      "sourcePetbaseId": 3131,
+      "attackPetbaseId": 3132,
+      "attackFormName": "芋香巨角蛛",
+      "physicalAttack": 88,
+      "magicalAttack": 88
+    },
+    "spirit_42ec7e9a6bdfd9fc": {
+      "sourcePetbaseId": 3132,
+      "attackPetbaseId": 3132,
+      "attackFormName": "芋香巨角蛛",
+      "physicalAttack": 88,
+      "magicalAttack": 88
+    },
+    "spirit_820232ca518d0543": {
+      "sourcePetbaseId": 3508,
+      "attackPetbaseId": 3510,
+      "attackFormName": "嗜波螺",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_ee846adcf271635a": {
+      "sourcePetbaseId": 3511,
+      "attackPetbaseId": 3513,
+      "attackFormName": "嗜波螺",
+      "physicalAttack": 106,
+      "magicalAttack": 106
+    },
+    "spirit_6c137a25617820e8": {
+      "sourcePetbaseId": 3509,
+      "attackPetbaseId": 3510,
+      "attackFormName": "嗜波螺",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_4d5d8c026429b806": {
+      "sourcePetbaseId": 3512,
+      "attackPetbaseId": 3513,
+      "attackFormName": "嗜波螺",
+      "physicalAttack": 106,
+      "magicalAttack": 106
+    },
+    "spirit_4bc9a982e5888257": {
+      "sourcePetbaseId": 3510,
+      "attackPetbaseId": 3510,
+      "attackFormName": "嗜波螺",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_fae287769f80486c": {
+      "sourcePetbaseId": 3513,
+      "attackPetbaseId": 3513,
+      "attackFormName": "嗜波螺",
+      "physicalAttack": 106,
+      "magicalAttack": 106
+    },
+    "spirit_83db81196f100ca8": {
+      "sourcePetbaseId": 3378,
+      "attackPetbaseId": 3380,
+      "attackFormName": "九幽菇",
+      "physicalAttack": 110,
+      "magicalAttack": 103
+    },
+    "spirit_d197cd68d0703776": {
+      "sourcePetbaseId": 3379,
+      "attackPetbaseId": 3380,
+      "attackFormName": "九幽菇",
+      "physicalAttack": 110,
+      "magicalAttack": 103
+    },
+    "spirit_fc159a604efaf226": {
+      "sourcePetbaseId": 3380,
+      "attackPetbaseId": 3380,
+      "attackFormName": "九幽菇",
+      "physicalAttack": 110,
+      "magicalAttack": 103
+    },
+    "spirit_3e425282b9a8c9ab": {
+      "sourcePetbaseId": 3534,
+      "attackPetbaseId": 3535,
+      "attackFormName": "斑枭",
+      "physicalAttack": 112,
+      "magicalAttack": 112
+    },
+    "spirit_3f90a2afd5df255c": {
+      "sourcePetbaseId": 3535,
+      "attackPetbaseId": 3535,
+      "attackFormName": "斑枭",
+      "physicalAttack": 112,
+      "magicalAttack": 112
+    },
+    "spirit_a1120fe1443fe89f": {
+      "sourcePetbaseId": 3008,
+      "attackPetbaseId": 3067,
+      "attackFormName": "卷毛鸭",
+      "physicalAttack": 98,
+      "magicalAttack": 29
+    },
+    "spirit_5f176b5856c40b8f": {
+      "sourcePetbaseId": 3067,
+      "attackPetbaseId": 3067,
+      "attackFormName": "卷毛鸭",
+      "physicalAttack": 98,
+      "magicalAttack": 29
+    },
+    "spirit_46522758f37081eb": {
+      "sourcePetbaseId": 3215,
+      "attackPetbaseId": 3216,
+      "attackFormName": "海豹船长",
+      "physicalAttack": 113,
+      "magicalAttack": 109
+    },
+    "spirit_a09a0cefefa72268": {
+      "sourcePetbaseId": 3216,
+      "attackPetbaseId": 3216,
+      "attackFormName": "海豹船长",
+      "physicalAttack": 113,
+      "magicalAttack": 109
+    },
+    "spirit_2ae6b5c4d6db7310": {
+      "sourcePetbaseId": 3529,
+      "attackPetbaseId": 3530,
+      "attackFormName": "圆号鱼",
+      "physicalAttack": 31,
+      "magicalAttack": 95
+    },
+    "spirit_83e3e8efde0199bf": {
+      "sourcePetbaseId": 3530,
+      "attackPetbaseId": 3530,
+      "attackFormName": "圆号鱼",
+      "physicalAttack": 31,
+      "magicalAttack": 95
+    },
+    "spirit_f675aae70d91a6ee": {
+      "sourcePetbaseId": 3112,
+      "attackPetbaseId": 3114,
+      "attackFormName": "卡洛儿",
+      "physicalAttack": 112,
+      "magicalAttack": 117
+    },
+    "spirit_e74caae57d4461fd": {
+      "sourcePetbaseId": 3113,
+      "attackPetbaseId": 3114,
+      "attackFormName": "卡洛儿",
+      "physicalAttack": 112,
+      "magicalAttack": 117
+    },
+    "spirit_95db5c2218b2ed8f": {
+      "sourcePetbaseId": 3114,
+      "attackPetbaseId": 3114,
+      "attackFormName": "卡洛儿",
+      "physicalAttack": 112,
+      "magicalAttack": 117
+    },
+    "spirit_de999044bdf8e8c1": {
+      "sourcePetbaseId": 3551,
+      "attackPetbaseId": 3551,
+      "attackFormName": "棋骑士",
+      "physicalAttack": 126,
+      "magicalAttack": 45
+    },
+    "spirit_dcd2e90fe8de4c65": {
+      "sourcePetbaseId": 3556,
+      "attackPetbaseId": 3556,
+      "attackFormName": "棋骑士",
+      "physicalAttack": 121,
+      "magicalAttack": 43
+    },
+    "spirit_065c69728f30ce93": {
+      "sourcePetbaseId": 5023,
+      "attackPetbaseId": 5023,
+      "attackFormName": "棋契陛下",
+      "physicalAttack": 200,
+      "magicalAttack": 91,
+      "sourcePetbaseIds": [
+        5023,
+        640001
+      ],
+      "attackPetbaseIds": [
+        5023,
+        640001
+      ],
+      "attackFormNames": [
+        "棋契陛下"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_839cd7d34d2dd422": {
+      "sourcePetbaseId": 5043,
+      "attackPetbaseId": 5043,
+      "attackFormName": "棋契陛下",
+      "physicalAttack": 194,
+      "magicalAttack": 88
+    },
+    "spirit_8748c0a6f05afc2d": {
+      "sourcePetbaseId": 3553,
+      "attackPetbaseId": 3553,
+      "attackFormName": "棋齐垒",
+      "physicalAttack": 94,
+      "magicalAttack": 38,
+      "sourcePetbaseIds": [
+        3553,
+        3558
+      ],
+      "attackPetbaseIds": [
+        3553,
+        3558
+      ],
+      "attackFormNames": [
+        "棋齐垒"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_218281240634725e": {
+      "sourcePetbaseId": 3553,
+      "attackPetbaseId": 3553,
+      "attackFormName": "棋齐垒",
+      "physicalAttack": 94,
+      "magicalAttack": 38,
+      "sourcePetbaseIds": [
+        3553,
+        3558
+      ],
+      "attackPetbaseIds": [
+        3553,
+        3558
+      ],
+      "attackFormNames": [
+        "棋齐垒"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_d4a7177497e7250e": {
+      "sourcePetbaseId": 5040,
+      "attackPetbaseId": 5040,
+      "attackFormName": "棋契陛下",
+      "physicalAttack": 143,
+      "magicalAttack": 143,
+      "sourcePetbaseIds": [
+        5040,
+        5044
+      ],
+      "attackPetbaseIds": [
+        5040,
+        5044
+      ],
+      "attackFormNames": [
+        "棋契陛下"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_3b52748976f979f2": {
+      "sourcePetbaseId": 5040,
+      "attackPetbaseId": 5040,
+      "attackFormName": "棋契陛下",
+      "physicalAttack": 143,
+      "magicalAttack": 143,
+      "sourcePetbaseIds": [
+        5040,
+        5044
+      ],
+      "attackPetbaseIds": [
+        5040,
+        5044
+      ],
+      "attackFormNames": [
+        "棋契陛下"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_e900600e3605dec4": {
+      "sourcePetbaseId": 3554,
+      "attackPetbaseId": 3554,
+      "attackFormName": "棋祈督",
+      "physicalAttack": 87,
+      "magicalAttack": 87,
+      "sourcePetbaseIds": [
+        3554,
+        3559
+      ],
+      "attackPetbaseIds": [
+        3554,
+        3559
+      ],
+      "attackFormNames": [
+        "棋祈督"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_213dd929c2abecd3": {
+      "sourcePetbaseId": 3554,
+      "attackPetbaseId": 3554,
+      "attackFormName": "棋祈督",
+      "physicalAttack": 87,
+      "magicalAttack": 87,
+      "sourcePetbaseIds": [
+        3554,
+        3559
+      ],
+      "attackPetbaseIds": [
+        3554,
+        3559
+      ],
+      "attackFormNames": [
+        "棋祈督"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_b9046792466d9675": {
+      "sourcePetbaseId": 5041,
+      "attackPetbaseId": 5041,
+      "attackFormName": "棋契陛下",
+      "physicalAttack": 157,
+      "magicalAttack": 80,
+      "sourcePetbaseIds": [
+        5041,
+        5045
+      ],
+      "attackPetbaseIds": [
+        5041,
+        5045
+      ],
+      "attackFormNames": [
+        "棋契陛下"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_2e04c8791a9f2542": {
+      "sourcePetbaseId": 5041,
+      "attackPetbaseId": 5041,
+      "attackFormName": "棋契陛下",
+      "physicalAttack": 157,
+      "magicalAttack": 80,
+      "sourcePetbaseIds": [
+        5041,
+        5045
+      ],
+      "attackPetbaseIds": [
+        5041,
+        5045
+      ],
+      "attackFormNames": [
+        "棋契陛下"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_b8395532616fe541": {
+      "sourcePetbaseId": 3552,
+      "attackPetbaseId": 3552,
+      "attackFormName": "棋绮后",
+      "physicalAttack": 84,
+      "magicalAttack": 84,
+      "sourcePetbaseIds": [
+        3552,
+        3557
+      ],
+      "attackPetbaseIds": [
+        3552,
+        3557
+      ],
+      "attackFormNames": [
+        "棋绮后"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_03d719be9841704e": {
+      "sourcePetbaseId": 3552,
+      "attackPetbaseId": 3552,
+      "attackFormName": "棋绮后",
+      "physicalAttack": 84,
+      "magicalAttack": 84,
+      "sourcePetbaseIds": [
+        3552,
+        3557
+      ],
+      "attackPetbaseIds": [
+        3552,
+        3557
+      ],
+      "attackFormNames": [
+        "棋绮后"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_7f340121dd6e8ed4": {
+      "sourcePetbaseId": 5042,
+      "attackPetbaseId": 5042,
+      "attackFormName": "棋契陛下",
+      "physicalAttack": 147,
+      "magicalAttack": 147,
+      "sourcePetbaseIds": [
+        5042,
+        5046
+      ],
+      "attackPetbaseIds": [
+        5042,
+        5046
+      ],
+      "attackFormNames": [
+        "棋契陛下"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_dca5b460922a95f9": {
+      "sourcePetbaseId": 5042,
+      "attackPetbaseId": 5042,
+      "attackFormName": "棋契陛下",
+      "physicalAttack": 147,
+      "magicalAttack": 147,
+      "sourcePetbaseIds": [
+        5042,
+        5046
+      ],
+      "attackPetbaseIds": [
+        5042,
+        5046
+      ],
+      "attackFormNames": [
+        "棋契陛下"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_e28371ed91d50b85": {
+      "sourcePetbaseId": 3255,
+      "attackPetbaseId": 3256,
+      "attackFormName": "流浪鼠",
+      "physicalAttack": 46,
+      "magicalAttack": 116
+    },
+    "spirit_892bc1a170d3f187": {
+      "sourcePetbaseId": 3256,
+      "attackPetbaseId": 3256,
+      "attackFormName": "流浪鼠",
+      "physicalAttack": 46,
+      "magicalAttack": 116
+    },
+    "spirit_f19630c316a3bfd7": {
+      "sourcePetbaseId": 3093,
+      "attackPetbaseId": 3095,
+      "attackFormName": "白发路路",
+      "physicalAttack": 100,
+      "magicalAttack": 107
+    },
+    "spirit_539c71eb7ab51df2": {
+      "sourcePetbaseId": 3094,
+      "attackPetbaseId": 3095,
+      "attackFormName": "白发路路",
+      "physicalAttack": 100,
+      "magicalAttack": 107
+    },
+    "spirit_55072e5b883cb75c": {
+      "sourcePetbaseId": 3095,
+      "attackPetbaseId": 3095,
+      "attackFormName": "白发路路",
+      "physicalAttack": 100,
+      "magicalAttack": 107
+    },
+    "spirit_dd9f6c54fe833615": {
+      "sourcePetbaseId": 3373,
+      "attackPetbaseId": 3375,
+      "attackFormName": "梦想三三",
+      "physicalAttack": 117,
+      "magicalAttack": 107
+    },
+    "spirit_f544e238b20d1b57": {
+      "sourcePetbaseId": 3374,
+      "attackPetbaseId": 3375,
+      "attackFormName": "梦想三三",
+      "physicalAttack": 117,
+      "magicalAttack": 107
+    },
+    "spirit_6d33a16d98f35c14": {
+      "sourcePetbaseId": 3375,
+      "attackPetbaseId": 3375,
+      "attackFormName": "梦想三三",
+      "physicalAttack": 117,
+      "magicalAttack": 107
+    },
+    "spirit_a9c19df7ed7f11ce": {
+      "sourcePetbaseId": 5024,
+      "attackPetbaseId": 5024,
+      "attackFormName": "奇梦咪",
+      "physicalAttack": 128,
+      "magicalAttack": 119
+    },
+    "spirit_a6c418b0b991f459": {
+      "sourcePetbaseId": 3506,
+      "attackPetbaseId": 3507,
+      "attackFormName": "鳗尾兽",
+      "physicalAttack": 91,
+      "magicalAttack": 91
+    },
+    "spirit_181a3dd66ff76d4a": {
+      "sourcePetbaseId": 3507,
+      "attackPetbaseId": 3507,
+      "attackFormName": "鳗尾兽",
+      "physicalAttack": 91,
+      "magicalAttack": 91
+    },
+    "spirit_50b77eaae7361af5": {
+      "sourcePetbaseId": 3211,
+      "attackPetbaseId": 3412,
+      "attackFormName": "伊兰亚龙",
+      "physicalAttack": 91,
+      "magicalAttack": 190
+    },
+    "spirit_b2f1251352d5f670": {
+      "sourcePetbaseId": 3412,
+      "attackPetbaseId": 3412,
+      "attackFormName": "伊兰亚龙",
+      "physicalAttack": 91,
+      "magicalAttack": 190
+    },
+    "spirit_cc4129b5ab2b9c0c": {
+      "sourcePetbaseId": 5022,
+      "attackPetbaseId": 5022,
+      "attackFormName": "伊兰龙",
+      "physicalAttack": 91,
+      "magicalAttack": 190
+    },
+    "spirit_cb0f3e33d8b40885": {
+      "sourcePetbaseId": 3188,
+      "attackPetbaseId": 3189,
+      "attackFormName": "酷拉",
+      "physicalAttack": 100,
+      "magicalAttack": 100
+    },
+    "spirit_f26505a4b7777206": {
+      "sourcePetbaseId": 3189,
+      "attackPetbaseId": 3189,
+      "attackFormName": "酷拉",
+      "physicalAttack": 100,
+      "magicalAttack": 100
+    },
+    "spirit_e0332c3637a510c6": {
+      "sourcePetbaseId": 5060,
+      "attackPetbaseId": 5060,
+      "attackFormName": "风暴酷拉",
+      "physicalAttack": 100,
+      "magicalAttack": 100,
+      "sourcePetbaseIds": [
+        5060,
+        13000171
+      ],
+      "attackPetbaseIds": [
+        5060,
+        13000171
+      ],
+      "attackFormNames": [
+        "风暴酷拉"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_6fc567ff2b56be9e": {
+      "sourcePetbaseId": 3195,
+      "attackPetbaseId": 3197,
+      "attackFormName": "荆棘电环",
+      "physicalAttack": 81,
+      "magicalAttack": 81
+    },
+    "spirit_e3880bbd97706d06": {
+      "sourcePetbaseId": 3196,
+      "attackPetbaseId": 3197,
+      "attackFormName": "荆棘电环",
+      "physicalAttack": 81,
+      "magicalAttack": 81
+    },
+    "spirit_57fff877bf40ffd4": {
+      "sourcePetbaseId": 3197,
+      "attackPetbaseId": 3197,
+      "attackFormName": "荆棘电环",
+      "physicalAttack": 81,
+      "magicalAttack": 81
+    },
+    "spirit_15d9cb4663223f27": {
+      "sourcePetbaseId": 3618,
+      "attackPetbaseId": 3619,
+      "attackFormName": "迷迷箱怪",
+      "physicalAttack": 129,
+      "magicalAttack": 129
+    },
+    "spirit_85bda8a55f4058a5": {
+      "sourcePetbaseId": 3619,
+      "attackPetbaseId": 3619,
+      "attackFormName": "迷迷箱怪",
+      "physicalAttack": 129,
+      "magicalAttack": 129
+    },
+    "spirit_5310c12954fea6be": {
+      "sourcePetbaseId": 3225,
+      "attackPetbaseId": 3226,
+      "attackFormName": "寒音蛇",
+      "physicalAttack": 87,
+      "magicalAttack": 87
+    },
+    "spirit_9b74b8247cee82c7": {
+      "sourcePetbaseId": 3226,
+      "attackPetbaseId": 3226,
+      "attackFormName": "寒音蛇",
+      "physicalAttack": 87,
+      "magicalAttack": 87
+    },
+    "spirit_c169e905c91eeb74": {
+      "sourcePetbaseId": 3178,
+      "attackPetbaseId": 3179,
+      "attackFormName": "恶魔红钻",
+      "physicalAttack": 147,
+      "magicalAttack": 137
+    },
+    "spirit_7c31fbd89f093c5d": {
+      "sourcePetbaseId": 3179,
+      "attackPetbaseId": 3179,
+      "attackFormName": "恶魔红钻",
+      "physicalAttack": 147,
+      "magicalAttack": 137
+    },
+    "spirit_5246e75d4b8d7592": {
+      "sourcePetbaseId": 3090,
+      "attackPetbaseId": 3092,
+      "attackFormName": "烈火守护",
+      "physicalAttack": 79,
+      "magicalAttack": 13
+    },
+    "spirit_308f9aec3f5f045d": {
+      "sourcePetbaseId": 3091,
+      "attackPetbaseId": 3092,
+      "attackFormName": "烈火守护",
+      "physicalAttack": 79,
+      "magicalAttack": 13
+    },
+    "spirit_8e02f5b94a74428b": {
+      "sourcePetbaseId": 3092,
+      "attackPetbaseId": 3092,
+      "attackFormName": "烈火守护",
+      "physicalAttack": 79,
+      "magicalAttack": 13
+    },
+    "spirit_741c2be5526d185a": {
+      "sourcePetbaseId": 3521,
+      "attackPetbaseId": 3521,
+      "attackFormName": "里拉鳐",
+      "physicalAttack": 82,
+      "magicalAttack": 89
+    },
+    "spirit_9d8badfc01f62f16": {
+      "sourcePetbaseId": 3430,
+      "attackPetbaseId": 3430,
+      "attackFormName": "海枝枝",
+      "physicalAttack": 58,
+      "magicalAttack": 148
+    },
+    "spirit_1ae8bf8691ced64f": {
+      "sourcePetbaseId": 3431,
+      "attackPetbaseId": 3431,
+      "attackFormName": "海枝枝",
+      "physicalAttack": 48,
+      "magicalAttack": 125
+    },
+    "spirit_dcad4af678b05dcc": {
+      "sourcePetbaseId": 3432,
+      "attackPetbaseId": 3432,
+      "attackFormName": "海枝枝",
+      "physicalAttack": 62,
+      "magicalAttack": 136
+    },
+    "spirit_e6f44a2b7c94c74f": {
+      "sourcePetbaseId": 3433,
+      "attackPetbaseId": 3433,
+      "attackFormName": "海枝枝",
+      "physicalAttack": 53,
+      "magicalAttack": 135
+    },
+    "spirit_decbdcb651f9d96c": {
+      "sourcePetbaseId": 3206,
+      "attackPetbaseId": 3208,
+      "attackFormName": "波多西",
+      "physicalAttack": 122,
+      "magicalAttack": 43
+    },
+    "spirit_57b9e1b098db23f2": {
+      "sourcePetbaseId": 3207,
+      "attackPetbaseId": 3208,
+      "attackFormName": "波多西",
+      "physicalAttack": 122,
+      "magicalAttack": 43
+    },
+    "spirit_5441c31fc38c5015": {
+      "sourcePetbaseId": 3208,
+      "attackPetbaseId": 3208,
+      "attackFormName": "波多西",
+      "physicalAttack": 122,
+      "magicalAttack": 43
+    },
+    "spirit_4901e4794bd32f40": {
+      "sourcePetbaseId": 3209,
+      "attackPetbaseId": 3210,
+      "attackFormName": "翼龙",
+      "physicalAttack": 114,
+      "magicalAttack": 31
+    },
+    "spirit_800a0042f52851cf": {
+      "sourcePetbaseId": 3210,
+      "attackPetbaseId": 3210,
+      "attackFormName": "翼龙",
+      "physicalAttack": 114,
+      "magicalAttack": 31
+    },
+    "spirit_fb284359b27daddf": {
+      "sourcePetbaseId": 3357,
+      "attackPetbaseId": 3359,
+      "attackFormName": "爵士鹿",
+      "physicalAttack": 77,
+      "magicalAttack": 20
+    },
+    "spirit_5b7800d23a14248c": {
+      "sourcePetbaseId": 3358,
+      "attackPetbaseId": 3359,
+      "attackFormName": "爵士鹿",
+      "physicalAttack": 77,
+      "magicalAttack": 20
+    },
+    "spirit_906f78a278f66fb9": {
+      "sourcePetbaseId": 3359,
+      "attackPetbaseId": 3359,
+      "attackFormName": "爵士鹿",
+      "physicalAttack": 77,
+      "magicalAttack": 20
+    },
+    "spirit_7d22156a66708de3": {
+      "sourcePetbaseId": 5020,
+      "attackPetbaseId": 5020,
+      "attackFormName": "波普鹿",
+      "physicalAttack": 81,
+      "magicalAttack": 21
+    },
+    "spirit_2663ae54113f96f0": {
+      "sourcePetbaseId": 3406,
+      "attackPetbaseId": 3407,
+      "attackFormName": "声波缇塔",
+      "physicalAttack": 124,
+      "magicalAttack": 48
+    },
+    "spirit_24ff0f0e3504e1ca": {
+      "sourcePetbaseId": 3407,
+      "attackPetbaseId": 3407,
+      "attackFormName": "声波缇塔",
+      "physicalAttack": 124,
+      "magicalAttack": 48
+    },
+    "spirit_8929e2beb3386bf2": {
+      "sourcePetbaseId": 3250,
+      "attackPetbaseId": 3252,
+      "attackFormName": "高脚鹬",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_641ef743b4f44873": {
+      "sourcePetbaseId": 3251,
+      "attackPetbaseId": 3252,
+      "attackFormName": "高脚鹬",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_485289864e937335": {
+      "sourcePetbaseId": 3252,
+      "attackPetbaseId": 3252,
+      "attackFormName": "高脚鹬",
+      "physicalAttack": 98,
+      "magicalAttack": 98
+    },
+    "spirit_9dff1b22873c62a9": {
+      "sourcePetbaseId": 5054,
+      "attackPetbaseId": 5054,
+      "attackFormName": "高帽鹬者",
+      "physicalAttack": 106,
+      "magicalAttack": 106
+    },
+    "spirit_41869713b59c286d": {
+      "sourcePetbaseId": 3126,
+      "attackPetbaseId": 3126,
+      "attackFormName": "圣代甜甜",
+      "physicalAttack": 112,
+      "magicalAttack": 119
+    },
+    "spirit_837b4392da6139fa": {
+      "sourcePetbaseId": 3458,
+      "attackPetbaseId": 3458,
+      "attackFormName": "圣代甜甜",
+      "physicalAttack": 120,
+      "magicalAttack": 110
+    },
+    "spirit_eeb5cb4fca4e17dd": {
+      "sourcePetbaseId": 3459,
+      "attackPetbaseId": 3459,
+      "attackFormName": "圣代甜甜",
+      "physicalAttack": 112,
+      "magicalAttack": 110
+    },
+    "spirit_7e8447269b167ed9": {
+      "sourcePetbaseId": 3460,
+      "attackPetbaseId": 3460,
+      "attackFormName": "圣代甜甜",
+      "physicalAttack": 117,
+      "magicalAttack": 110
+    },
+    "spirit_839523317c1f9cac": {
+      "sourcePetbaseId": 3461,
+      "attackPetbaseId": 3461,
+      "attackFormName": "圣代甜甜",
+      "physicalAttack": 109,
+      "magicalAttack": 100
+    },
+    "spirit_f6d8309391798193": {
+      "sourcePetbaseId": 3462,
+      "attackPetbaseId": 3462,
+      "attackFormName": "圣代甜甜",
+      "physicalAttack": 100,
+      "magicalAttack": 101
+    },
+    "spirit_82c2311d4036c4ee": {
+      "sourcePetbaseId": 3463,
+      "attackPetbaseId": 3463,
+      "attackFormName": "圣代甜甜",
+      "physicalAttack": 116,
+      "magicalAttack": 120
+    },
+    "spirit_5f38897fa15dae2c": {
+      "sourcePetbaseId": 3464,
+      "attackPetbaseId": 3464,
+      "attackFormName": "圣代甜甜",
+      "physicalAttack": 110,
+      "magicalAttack": 110
+    },
+    "spirit_659ec5a995873fbe": {
+      "sourcePetbaseId": 3465,
+      "attackPetbaseId": 3465,
+      "attackFormName": "圣代甜甜",
+      "physicalAttack": 107,
+      "magicalAttack": 110
+    },
+    "spirit_09a6740ea932b071": {
+      "sourcePetbaseId": 3582,
+      "attackPetbaseId": 3583,
+      "attackFormName": "月亮砣",
+      "physicalAttack": 100,
+      "magicalAttack": 98
+    },
+    "spirit_c3623ba0caf45206": {
+      "sourcePetbaseId": 3584,
+      "attackPetbaseId": 3585,
+      "attackFormName": "月亮砣",
+      "physicalAttack": 98,
+      "magicalAttack": 100
+    },
+    "spirit_190ce77fc690d90a": {
+      "sourcePetbaseId": 3583,
+      "attackPetbaseId": 3583,
+      "attackFormName": "月亮砣",
+      "physicalAttack": 100,
+      "magicalAttack": 98
+    },
+    "spirit_d9990ad61778d9ec": {
+      "sourcePetbaseId": 3585,
+      "attackPetbaseId": 3585,
+      "attackFormName": "月亮砣",
+      "physicalAttack": 98,
+      "magicalAttack": 100
+    },
+    "spirit_eef6c46566381bb0": {
+      "sourcePetbaseId": 3384,
+      "attackPetbaseId": 3386,
+      "attackFormName": "龙鱼",
+      "physicalAttack": 103,
+      "magicalAttack": 109
+    },
+    "spirit_e0314e9c0f0f09fc": {
+      "sourcePetbaseId": 3385,
+      "attackPetbaseId": 3386,
+      "attackFormName": "龙鱼",
+      "physicalAttack": 103,
+      "magicalAttack": 109
+    },
+    "spirit_97b704a0026aab99": {
+      "sourcePetbaseId": 3386,
+      "attackPetbaseId": 3386,
+      "attackFormName": "龙鱼",
+      "physicalAttack": 103,
+      "magicalAttack": 109
+    },
+    "spirit_2f1f048f002870ce": {
+      "sourcePetbaseId": 3266,
+      "attackPetbaseId": 3267,
+      "attackFormName": "闪电鳗鱼",
+      "physicalAttack": 115,
+      "magicalAttack": 115
+    },
+    "spirit_6aff1bd1d0653c7f": {
+      "sourcePetbaseId": 3267,
+      "attackPetbaseId": 3267,
+      "attackFormName": "闪电鳗鱼",
+      "physicalAttack": 115,
+      "magicalAttack": 115
+    },
+    "spirit_42d4dc4ef033e5b5": {
+      "sourcePetbaseId": 3119,
+      "attackPetbaseId": 3120,
+      "attackFormName": "琉璃水母",
+      "physicalAttack": 37,
+      "magicalAttack": 85
+    },
+    "spirit_bdc5a04507024396": {
+      "sourcePetbaseId": 3120,
+      "attackPetbaseId": 3120,
+      "attackFormName": "琉璃水母",
+      "physicalAttack": 37,
+      "magicalAttack": 85
+    },
+    "spirit_7122d669521799ee": {
+      "sourcePetbaseId": 3154,
+      "attackPetbaseId": 3156,
+      "attackFormName": "裘卡",
+      "physicalAttack": 93,
+      "magicalAttack": 83
+    },
+    "spirit_a652927efc54219c": {
+      "sourcePetbaseId": 3155,
+      "attackPetbaseId": 3156,
+      "attackFormName": "裘卡",
+      "physicalAttack": 93,
+      "magicalAttack": 83
+    },
+    "spirit_586560ce9f28bbbc": {
+      "sourcePetbaseId": 3156,
+      "attackPetbaseId": 3156,
+      "attackFormName": "裘卡",
+      "physicalAttack": 93,
+      "magicalAttack": 83
+    },
+    "spirit_d6bf08644fc68f43": {
+      "sourcePetbaseId": 3083,
+      "attackPetbaseId": 3085,
+      "attackFormName": "火焰猿",
+      "physicalAttack": 162,
+      "magicalAttack": 72
+    },
+    "spirit_d45d38fdc672b014": {
+      "sourcePetbaseId": 3084,
+      "attackPetbaseId": 3085,
+      "attackFormName": "火焰猿",
+      "physicalAttack": 162,
+      "magicalAttack": 72
+    },
+    "spirit_b7b7a4110258de78": {
+      "sourcePetbaseId": 3085,
+      "attackPetbaseId": 3085,
+      "attackFormName": "火焰猿",
+      "physicalAttack": 162,
+      "magicalAttack": 72
+    },
+    "spirit_f7bb3405a8942817": {
+      "sourcePetbaseId": 3257,
+      "attackPetbaseId": 3259,
+      "attackFormName": "冰钻布鲁斯",
+      "physicalAttack": 90,
+      "magicalAttack": 21
+    },
+    "spirit_54215b23a210c8df": {
+      "sourcePetbaseId": 3258,
+      "attackPetbaseId": 3259,
+      "attackFormName": "冰钻布鲁斯",
+      "physicalAttack": 90,
+      "magicalAttack": 21
+    },
+    "spirit_e926effbf164759a": {
+      "sourcePetbaseId": 3259,
+      "attackPetbaseId": 3259,
+      "attackFormName": "冰钻布鲁斯",
+      "physicalAttack": 90,
+      "magicalAttack": 21
+    },
+    "spirit_df98091d3189ef45": {
+      "sourcePetbaseId": 3081,
+      "attackPetbaseId": 3350,
+      "attackFormName": "红绒十字",
+      "physicalAttack": 42,
+      "magicalAttack": 108
+    },
+    "spirit_bbf5618c2d1a0750": {
+      "sourcePetbaseId": 3082,
+      "attackPetbaseId": 3350,
+      "attackFormName": "红绒十字",
+      "physicalAttack": 42,
+      "magicalAttack": 108
+    },
+    "spirit_2e7dd5cabd9695cb": {
+      "sourcePetbaseId": 3350,
+      "attackPetbaseId": 3350,
+      "attackFormName": "红绒十字",
+      "physicalAttack": 42,
+      "magicalAttack": 108
+    },
+    "spirit_28139e09cc2e10ba": {
+      "sourcePetbaseId": 3536,
+      "attackPetbaseId": 3538,
+      "attackFormName": "乌拉塔",
+      "physicalAttack": 158,
+      "magicalAttack": 82
+    },
+    "spirit_f3e25ac6f073239d": {
+      "sourcePetbaseId": 3539,
+      "attackPetbaseId": 3541,
+      "attackFormName": "乌拉塔",
+      "physicalAttack": 158,
+      "magicalAttack": 91
+    },
+    "spirit_be13027b1b8e6693": {
+      "sourcePetbaseId": 3537,
+      "attackPetbaseId": 3538,
+      "attackFormName": "乌拉塔",
+      "physicalAttack": 158,
+      "magicalAttack": 82
+    },
+    "spirit_d6fe54ebe357b3ff": {
+      "sourcePetbaseId": 3540,
+      "attackPetbaseId": 3541,
+      "attackFormName": "乌拉塔",
+      "physicalAttack": 158,
+      "magicalAttack": 91
+    },
+    "spirit_b83bc4598f48c604": {
+      "sourcePetbaseId": 3538,
+      "attackPetbaseId": 3538,
+      "attackFormName": "乌拉塔",
+      "physicalAttack": 158,
+      "magicalAttack": 82
+    },
+    "spirit_25e1d71de867c7dc": {
+      "sourcePetbaseId": 3541,
+      "attackPetbaseId": 3541,
+      "attackFormName": "乌拉塔",
+      "physicalAttack": 158,
+      "magicalAttack": 91
+    },
+    "spirit_e2ca38af6ca8a535": {
+      "sourcePetbaseId": 3484,
+      "attackPetbaseId": 3547,
+      "attackFormName": "帕帕斯卡",
+      "physicalAttack": 68,
+      "magicalAttack": 10
+    },
+    "spirit_01295eab9380e02c": {
+      "sourcePetbaseId": 3547,
+      "attackPetbaseId": 3547,
+      "attackFormName": "帕帕斯卡",
+      "physicalAttack": 68,
+      "magicalAttack": 10
+    },
+    "spirit_8f600a85a8feb5d8": {
+      "sourcePetbaseId": 3200,
+      "attackPetbaseId": 3202,
+      "attackFormName": "立方人",
+      "physicalAttack": 135,
+      "magicalAttack": 54
+    },
+    "spirit_9270c733ca1d4bd8": {
+      "sourcePetbaseId": 3201,
+      "attackPetbaseId": 3202,
+      "attackFormName": "立方人",
+      "physicalAttack": 135,
+      "magicalAttack": 54
+    },
+    "spirit_53a5e4ccea57fdd0": {
+      "sourcePetbaseId": 3202,
+      "attackPetbaseId": 3202,
+      "attackFormName": "立方人",
+      "physicalAttack": 135,
+      "magicalAttack": 54
+    },
+    "spirit_38995924fb931da3": {
+      "sourcePetbaseId": 3088,
+      "attackPetbaseId": 3088,
+      "attackFormName": "绅士鸡",
+      "physicalAttack": 120,
+      "magicalAttack": 120
+    },
+    "spirit_197cf12461c4fb80": {
+      "sourcePetbaseId": 3089,
+      "attackPetbaseId": 3089,
+      "attackFormName": "武者鸡",
+      "physicalAttack": 137,
+      "magicalAttack": 66
+    },
+    "spirit_87025d8e98fabe3c": {
+      "sourcePetbaseId": 3704,
+      "attackPetbaseId": 3705,
+      "attackFormName": "绒光优优",
+      "physicalAttack": 43,
+      "magicalAttack": 111
+    },
+    "spirit_56b76e5cddf39081": {
+      "sourcePetbaseId": 3705,
+      "attackPetbaseId": 3705,
+      "attackFormName": "绒光优优",
+      "physicalAttack": 43,
+      "magicalAttack": 111
+    },
+    "spirit_99f5d4bc7811d4a1": {
+      "sourcePetbaseId": 3444,
+      "attackPetbaseId": 3444,
+      "attackFormName": "噼啪鸟",
+      "physicalAttack": 116,
+      "magicalAttack": 109
+    },
+    "spirit_37ea034163f3e376": {
+      "sourcePetbaseId": 3381,
+      "attackPetbaseId": 3381,
+      "attackFormName": "深蓝鲸",
+      "physicalAttack": 44,
+      "magicalAttack": 121
+    },
+    "spirit_fdbf0fe966093747": {
+      "sourcePetbaseId": 3072,
+      "attackPetbaseId": 3074,
+      "attackFormName": "格兰球",
+      "physicalAttack": 52,
+      "magicalAttack": 124
+    },
+    "spirit_8c860bf0e5cbdc0b": {
+      "sourcePetbaseId": 3073,
+      "attackPetbaseId": 3074,
+      "attackFormName": "格兰球",
+      "physicalAttack": 52,
+      "magicalAttack": 124
+    },
+    "spirit_8de88e249e9a78f0": {
+      "sourcePetbaseId": 3074,
+      "attackPetbaseId": 3074,
+      "attackFormName": "格兰球",
+      "physicalAttack": 52,
+      "magicalAttack": 124
+    },
+    "spirit_87724eed654b46e2": {
+      "sourcePetbaseId": 3020,
+      "attackPetbaseId": 3022,
+      "attackFormName": "遁地鼠",
+      "physicalAttack": 119,
+      "magicalAttack": 51
+    },
+    "spirit_59ccfafcc79c03f0": {
+      "sourcePetbaseId": 3454,
+      "attackPetbaseId": 3456,
+      "attackFormName": "遁地鼠",
+      "physicalAttack": 118,
+      "magicalAttack": 23
+    },
+    "spirit_c2b48c73837fbed5": {
+      "sourcePetbaseId": 3021,
+      "attackPetbaseId": 3022,
+      "attackFormName": "遁地鼠",
+      "physicalAttack": 119,
+      "magicalAttack": 51
+    },
+    "spirit_e561ad5d9f280b7f": {
+      "sourcePetbaseId": 3455,
+      "attackPetbaseId": 3456,
+      "attackFormName": "遁地鼠",
+      "physicalAttack": 118,
+      "magicalAttack": 23
+    },
+    "spirit_5e1e865bae83bc25": {
+      "sourcePetbaseId": 3022,
+      "attackPetbaseId": 3022,
+      "attackFormName": "遁地鼠",
+      "physicalAttack": 119,
+      "magicalAttack": 51
+    },
+    "spirit_7da7428d895df131": {
+      "sourcePetbaseId": 3456,
+      "attackPetbaseId": 3456,
+      "attackFormName": "遁地鼠",
+      "physicalAttack": 118,
+      "magicalAttack": 23
+    },
+    "spirit_3247e9dd6602e72c": {
+      "sourcePetbaseId": 3578,
+      "attackPetbaseId": 3578,
+      "attackFormName": "混乱鱿彩",
+      "physicalAttack": 122,
+      "magicalAttack": 53
+    },
+    "spirit_d4f6e1e80d4f396e": {
+      "sourcePetbaseId": 3579,
+      "attackPetbaseId": 3579,
+      "attackFormName": "秩序鱿墨",
+      "physicalAttack": 120,
+      "magicalAttack": 40
+    },
+    "spirit_aa014ec2634077c5": {
+      "sourcePetbaseId": 3038,
+      "attackPetbaseId": 3013,
+      "attackFormName": "铠甲虫",
+      "physicalAttack": 95,
+      "magicalAttack": 43
+    },
+    "spirit_16b76c39e12ca79d": {
+      "sourcePetbaseId": 3013,
+      "attackPetbaseId": 3013,
+      "attackFormName": "铠甲虫",
+      "physicalAttack": 95,
+      "magicalAttack": 43
+    },
+    "spirit_311edd9f5c6873f8": {
+      "sourcePetbaseId": 3545,
+      "attackPetbaseId": 3546,
+      "attackFormName": "圣剑-X",
+      "physicalAttack": 144,
+      "magicalAttack": 139
+    },
+    "spirit_9c0a363768b55616": {
+      "sourcePetbaseId": 3546,
+      "attackPetbaseId": 3546,
+      "attackFormName": "圣剑-X",
+      "physicalAttack": 144,
+      "magicalAttack": 139
+    },
+    "spirit_79830b56df1224ea": {
+      "sourcePetbaseId": 5021,
+      "attackPetbaseId": 5021,
+      "attackFormName": "圣剑骑士",
+      "physicalAttack": 154,
+      "magicalAttack": 148
+    },
+    "spirit_05f3242dd3ab1ac6": {
+      "sourcePetbaseId": 3490,
+      "attackPetbaseId": 3491,
+      "attackFormName": "泥吼牙",
+      "physicalAttack": 112,
+      "magicalAttack": 41
+    },
+    "spirit_3049dc50139f821a": {
+      "sourcePetbaseId": 3491,
+      "attackPetbaseId": 3491,
+      "attackFormName": "泥吼牙",
+      "physicalAttack": 112,
+      "magicalAttack": 41
+    },
+    "spirit_77851a382e3aad75": {
+      "sourcePetbaseId": 5057,
+      "attackPetbaseId": 5057,
+      "attackFormName": "淤泥乌泽",
+      "physicalAttack": 138,
+      "magicalAttack": 58
+    },
+    "spirit_c62e3343e392241f": {
+      "sourcePetbaseId": 3268,
+      "attackPetbaseId": 3269,
+      "attackFormName": "寂灭骨龙",
+      "physicalAttack": 137,
+      "magicalAttack": 50
+    },
+    "spirit_2c2d72d3c0bbe704": {
+      "sourcePetbaseId": 3269,
+      "attackPetbaseId": 3269,
+      "attackFormName": "寂灭骨龙",
+      "physicalAttack": 137,
+      "magicalAttack": 50
+    },
+    "spirit_9551dc47632fbe3e": {
+      "sourcePetbaseId": 3419,
+      "attackPetbaseId": 3420,
+      "attackFormName": "厉毒修萝",
+      "physicalAttack": 80,
+      "magicalAttack": 21
+    },
+    "spirit_ed7ba8bc769c7d50": {
+      "sourcePetbaseId": 3420,
+      "attackPetbaseId": 3420,
+      "attackFormName": "厉毒修萝",
+      "physicalAttack": 80,
+      "magicalAttack": 21
+    },
+    "spirit_5aa0cc9f4b2133c8": {
+      "sourcePetbaseId": 3180,
+      "attackPetbaseId": 3182,
+      "attackFormName": "龙息帕尔",
+      "physicalAttack": 127,
+      "magicalAttack": 57
+    },
+    "spirit_178e6939722a30b8": {
+      "sourcePetbaseId": 3181,
+      "attackPetbaseId": 3182,
+      "attackFormName": "龙息帕尔",
+      "physicalAttack": 127,
+      "magicalAttack": 57
+    },
+    "spirit_684f5cd1fec1df27": {
+      "sourcePetbaseId": 3182,
+      "attackPetbaseId": 3182,
+      "attackFormName": "龙息帕尔",
+      "physicalAttack": 127,
+      "magicalAttack": 57
+    },
+    "spirit_7c5218a85eac0018": {
+      "sourcePetbaseId": 3604,
+      "attackPetbaseId": 3604,
+      "attackFormName": "捕尘长绒",
+      "physicalAttack": 100,
+      "magicalAttack": 34
+    },
+    "spirit_cd669a9720f51fe4": {
+      "sourcePetbaseId": 3605,
+      "attackPetbaseId": 3605,
+      "attackFormName": "食尘短绒",
+      "physicalAttack": 105,
+      "magicalAttack": 37
+    },
+    "spirit_5d306a78398c4bcd": {
+      "sourcePetbaseId": 3608,
+      "attackPetbaseId": 3608,
+      "attackFormName": "画间法师手",
+      "physicalAttack": 53,
+      "magicalAttack": 131
+    },
+    "spirit_4a91bd3db13b8a07": {
+      "sourcePetbaseId": 3609,
+      "attackPetbaseId": 3609,
+      "attackFormName": "画间沉铁兽",
+      "physicalAttack": 147,
+      "magicalAttack": 63
+    },
+    "spirit_b75ef6a541e92530": {
+      "sourcePetbaseId": 3612,
+      "attackPetbaseId": 3612,
+      "attackFormName": "古卷执政官",
+      "physicalAttack": 115,
+      "magicalAttack": 115
+    },
+    "spirit_fef49211939cd9fc": {
+      "sourcePetbaseId": 3613,
+      "attackPetbaseId": 3613,
+      "attackFormName": "古卷匣魔像",
+      "physicalAttack": 109,
+      "magicalAttack": 109
+    },
+    "spirit_c48b78143a3d44b3": {
+      "sourcePetbaseId": 3244,
+      "attackPetbaseId": 3246,
+      "attackFormName": "绒仙子",
+      "physicalAttack": 101,
+      "magicalAttack": 104
+    },
+    "spirit_e63ebdf7c40606e6": {
+      "sourcePetbaseId": 3245,
+      "attackPetbaseId": 3246,
+      "attackFormName": "绒仙子",
+      "physicalAttack": 101,
+      "magicalAttack": 104
+    },
+    "spirit_a6a97c769f74a474": {
+      "sourcePetbaseId": 3246,
+      "attackPetbaseId": 3246,
+      "attackFormName": "绒仙子",
+      "physicalAttack": 101,
+      "magicalAttack": 104
+    },
+    "spirit_dffa44a6fdca4257": {
+      "sourcePetbaseId": 3309,
+      "attackPetbaseId": 3311,
+      "attackFormName": "疾光千兽",
+      "physicalAttack": 146,
+      "magicalAttack": 67
+    },
+    "spirit_1ab64fdcf97bc5b4": {
+      "sourcePetbaseId": 3310,
+      "attackPetbaseId": 3311,
+      "attackFormName": "疾光千兽",
+      "physicalAttack": 146,
+      "magicalAttack": 67
+    },
+    "spirit_7212501b0d3c243e": {
+      "sourcePetbaseId": 3311,
+      "attackPetbaseId": 3311,
+      "attackFormName": "疾光千兽",
+      "physicalAttack": 146,
+      "magicalAttack": 67
+    },
+    "spirit_6aa27664c730f95a": {
+      "sourcePetbaseId": 3526,
+      "attackPetbaseId": 3526,
+      "attackFormName": "抹茶布丁",
+      "physicalAttack": 32,
+      "magicalAttack": 101
+    },
+    "spirit_80fbf0bae1147e9c": {
+      "sourcePetbaseId": 3527,
+      "attackPetbaseId": 3527,
+      "attackFormName": "椰浆布丁",
+      "physicalAttack": 34,
+      "magicalAttack": 89
+    },
+    "spirit_f99f67a3721ea123": {
+      "sourcePetbaseId": 3528,
+      "attackPetbaseId": 3528,
+      "attackFormName": "熔岩布丁",
+      "physicalAttack": 87,
+      "magicalAttack": 33
+    },
+    "spirit_3e8be135916b7e76": {
+      "sourcePetbaseId": 3398,
+      "attackPetbaseId": 3400,
+      "attackFormName": "陨星虫",
+      "physicalAttack": 78,
+      "magicalAttack": 78
+    },
+    "spirit_278f29da0bd4f52b": {
+      "sourcePetbaseId": 3399,
+      "attackPetbaseId": 3400,
+      "attackFormName": "陨星虫",
+      "physicalAttack": 78,
+      "magicalAttack": 78
+    },
+    "spirit_6ba7b3af27da2625": {
+      "sourcePetbaseId": 3400,
+      "attackPetbaseId": 3400,
+      "attackFormName": "陨星虫",
+      "physicalAttack": 78,
+      "magicalAttack": 78
+    },
+    "spirit_9ca96ae79c231b4b": {
+      "sourcePetbaseId": 3382,
+      "attackPetbaseId": 3383,
+      "attackFormName": "利灯鱼",
+      "physicalAttack": 68,
+      "magicalAttack": 138
+    },
+    "spirit_fa1c63ad49fa3ffa": {
+      "sourcePetbaseId": 3383,
+      "attackPetbaseId": 3383,
+      "attackFormName": "利灯鱼",
+      "physicalAttack": 68,
+      "magicalAttack": 138
+    },
+    "spirit_ee30eb99632df5ce": {
+      "sourcePetbaseId": 3457,
+      "attackPetbaseId": 3457,
+      "attackFormName": "月牙雪熊",
+      "physicalAttack": 97,
+      "magicalAttack": 39
+    },
+    "spirit_5f0f752695a65545": {
+      "sourcePetbaseId": 3614,
+      "attackPetbaseId": 3615,
+      "attackFormName": "窃光蚊",
+      "physicalAttack": 113,
+      "magicalAttack": 113
+    },
+    "spirit_7709f87e848d6006": {
+      "sourcePetbaseId": 3615,
+      "attackPetbaseId": 3615,
+      "attackFormName": "窃光蚊",
+      "physicalAttack": 113,
+      "magicalAttack": 113
+    },
+    "spirit_534e8dc232e788d6": {
+      "sourcePetbaseId": 3436,
+      "attackPetbaseId": 3437,
+      "attackFormName": "燃薪虫",
+      "physicalAttack": 120,
+      "magicalAttack": 48
+    },
+    "spirit_6cf962ececae443b": {
+      "sourcePetbaseId": 3437,
+      "attackPetbaseId": 3437,
+      "attackFormName": "燃薪虫",
+      "physicalAttack": 120,
+      "magicalAttack": 48
+    },
+    "spirit_afcb0198e268f000": {
+      "sourcePetbaseId": 3148,
+      "attackPetbaseId": 3150,
+      "attackFormName": "夜枭",
+      "physicalAttack": 10,
+      "magicalAttack": 61
+    },
+    "spirit_80151523a1bdecb1": {
+      "sourcePetbaseId": 3149,
+      "attackPetbaseId": 3150,
+      "attackFormName": "夜枭",
+      "physicalAttack": 10,
+      "magicalAttack": 61
+    },
+    "spirit_b0b427cf3d5241fa": {
+      "sourcePetbaseId": 3150,
+      "attackPetbaseId": 3150,
+      "attackFormName": "夜枭",
+      "physicalAttack": 10,
+      "magicalAttack": 61
+    },
+    "spirit_2d04c5a107c33674": {
+      "sourcePetbaseId": 5059,
+      "attackPetbaseId": 5059,
+      "attackFormName": "暗夜颅主",
+      "physicalAttack": 5,
+      "magicalAttack": 66
+    },
+    "spirit_e5e8224c029e15ec": {
+      "sourcePetbaseId": 3198,
+      "attackPetbaseId": 3199,
+      "attackFormName": "小皮球",
+      "physicalAttack": 68,
+      "magicalAttack": 127
+    },
+    "spirit_307957883064ab4d": {
+      "sourcePetbaseId": 3199,
+      "attackPetbaseId": 3199,
+      "attackFormName": "小皮球",
+      "physicalAttack": 68,
+      "magicalAttack": 127
+    },
+    "spirit_cc6013b1574cc28b": {
+      "sourcePetbaseId": 3203,
+      "attackPetbaseId": 3205,
+      "attackFormName": "贝古斯",
+      "physicalAttack": 76,
+      "magicalAttack": 130
+    },
+    "spirit_aacf610856d05cc9": {
+      "sourcePetbaseId": 3204,
+      "attackPetbaseId": 3205,
+      "attackFormName": "贝古斯",
+      "physicalAttack": 76,
+      "magicalAttack": 130
+    },
+    "spirit_e7f61f6680a77cd5": {
+      "sourcePetbaseId": 3205,
+      "attackPetbaseId": 3205,
+      "attackFormName": "贝古斯",
+      "physicalAttack": 76,
+      "magicalAttack": 130
+    },
+    "spirit_8508bbff0538ba3e": {
+      "sourcePetbaseId": 3320,
+      "attackPetbaseId": 3320,
+      "attackFormName": "粉耳星兔",
+      "physicalAttack": 79,
+      "magicalAttack": 148
+    },
+    "spirit_802fd62adaba698b": {
+      "sourcePetbaseId": 3485,
+      "attackPetbaseId": 3485,
+      "attackFormName": "落陨星兔",
+      "physicalAttack": 61,
+      "magicalAttack": 125
+    },
+    "spirit_e56cfb17e927501f": {
+      "sourcePetbaseId": 3473,
+      "attackPetbaseId": 3474,
+      "attackFormName": "上岸蛙",
+      "physicalAttack": 106,
+      "magicalAttack": 44
+    },
+    "spirit_895ceb36f1099b3b": {
+      "sourcePetbaseId": 3474,
+      "attackPetbaseId": 3474,
+      "attackFormName": "上岸蛙",
+      "physicalAttack": 106,
+      "magicalAttack": 44
+    },
+    "spirit_e68a6ec53f0dafff": {
+      "sourcePetbaseId": 3744,
+      "attackPetbaseId": 3745,
+      "attackFormName": "雅丹鬃",
+      "physicalAttack": 70,
+      "magicalAttack": 162
+    },
+    "spirit_e268b7cfd84f0a1f": {
+      "sourcePetbaseId": 3745,
+      "attackPetbaseId": 3745,
+      "attackFormName": "雅丹鬃",
+      "physicalAttack": 70,
+      "magicalAttack": 162
+    },
+    "spirit_5861aaece6abbc5f": {
+      "sourcePetbaseId": 3161,
+      "attackPetbaseId": 3372,
+      "attackFormName": "春花兔",
+      "physicalAttack": 73,
+      "magicalAttack": 74
+    },
+    "spirit_b4e949b761334e12": {
+      "sourcePetbaseId": 3162,
+      "attackPetbaseId": 3372,
+      "attackFormName": "春花兔",
+      "physicalAttack": 73,
+      "magicalAttack": 74
+    },
+    "spirit_698ad3439af7d73a": {
+      "sourcePetbaseId": 3372,
+      "attackPetbaseId": 3372,
+      "attackFormName": "春花兔",
+      "physicalAttack": 73,
+      "magicalAttack": 74
+    },
+    "spirit_9e9fbd0d21db6a27": {
+      "sourcePetbaseId": 3369,
+      "attackPetbaseId": 3371,
+      "attackFormName": "暮星辰",
+      "physicalAttack": 35,
+      "magicalAttack": 106
+    },
+    "spirit_868fe3816f18b653": {
+      "sourcePetbaseId": 3370,
+      "attackPetbaseId": 3371,
+      "attackFormName": "暮星辰",
+      "physicalAttack": 35,
+      "magicalAttack": 106
+    },
+    "spirit_11c4e6d87a317e03": {
+      "sourcePetbaseId": 3371,
+      "attackPetbaseId": 3371,
+      "attackFormName": "暮星辰",
+      "physicalAttack": 35,
+      "magicalAttack": 106
+    },
+    "spirit_853e9c4372c22fd7": {
+      "sourcePetbaseId": 3733,
+      "attackPetbaseId": 3735,
+      "attackFormName": "机幕方舟",
+      "physicalAttack": 113,
+      "magicalAttack": 105
+    },
+    "spirit_fadb3978eea5093f": {
+      "sourcePetbaseId": 3734,
+      "attackPetbaseId": 3735,
+      "attackFormName": "机幕方舟",
+      "physicalAttack": 113,
+      "magicalAttack": 105
+    },
+    "spirit_37e0a0d6a0d4b993": {
+      "sourcePetbaseId": 3735,
+      "attackPetbaseId": 3735,
+      "attackFormName": "机幕方舟",
+      "physicalAttack": 113,
+      "magicalAttack": 105
+    },
+    "spirit_944959c9abc3c627": {
+      "sourcePetbaseId": 3392,
+      "attackPetbaseId": 3394,
+      "attackFormName": "凡鹰",
+      "physicalAttack": 92,
+      "magicalAttack": 89
+    },
+    "spirit_bcb2369c1b3bf65e": {
+      "sourcePetbaseId": 3393,
+      "attackPetbaseId": 3394,
+      "attackFormName": "凡鹰",
+      "physicalAttack": 92,
+      "magicalAttack": 89
+    },
+    "spirit_c245104fe73fad25": {
+      "sourcePetbaseId": 3394,
+      "attackPetbaseId": 3394,
+      "attackFormName": "凡鹰",
+      "physicalAttack": 92,
+      "magicalAttack": 89
+    },
+    "spirit_cd1a308eb48c6ee7": {
+      "sourcePetbaseId": 3531,
+      "attackPetbaseId": 3532,
+      "attackFormName": "雪怪",
+      "physicalAttack": 107,
+      "magicalAttack": 99
+    },
+    "spirit_d7890eda12ee6281": {
+      "sourcePetbaseId": 3532,
+      "attackPetbaseId": 3532,
+      "attackFormName": "雪怪",
+      "physicalAttack": 107,
+      "magicalAttack": 99
+    },
+    "spirit_91b6b1d0ba27d34f": {
+      "sourcePetbaseId": 3572,
+      "attackPetbaseId": 3573,
+      "attackFormName": "爆焰喷喷",
+      "physicalAttack": 127,
+      "magicalAttack": 63
+    },
+    "spirit_08f17ac819b76607": {
+      "sourcePetbaseId": 3573,
+      "attackPetbaseId": 3573,
+      "attackFormName": "爆焰喷喷",
+      "physicalAttack": 127,
+      "magicalAttack": 63
+    },
+    "spirit_38ee49982b9585c9": {
+      "sourcePetbaseId": 3729,
+      "attackPetbaseId": 3730,
+      "attackFormName": "音碟吼",
+      "physicalAttack": 94,
+      "magicalAttack": 151
+    },
+    "spirit_1e6e7946ef781309": {
+      "sourcePetbaseId": 3730,
+      "attackPetbaseId": 3730,
+      "attackFormName": "音碟吼",
+      "physicalAttack": 94,
+      "magicalAttack": 151
+    },
+    "spirit_07b444210032f19b": {
+      "sourcePetbaseId": 3660,
+      "attackPetbaseId": 3660,
+      "attackFormName": "加油蟹",
+      "physicalAttack": 92,
+      "magicalAttack": 92
+    },
+    "spirit_190dc8281c5049b1": {
+      "sourcePetbaseId": 3743,
+      "attackPetbaseId": 3743,
+      "attackFormName": "加油蟹",
+      "physicalAttack": 130,
+      "magicalAttack": 58
+    },
+    "spirit_531f78b52160b070": {
+      "sourcePetbaseId": 3487,
+      "attackPetbaseId": 3489,
+      "attackFormName": "小丑公爵",
+      "physicalAttack": 145,
+      "magicalAttack": 147
+    },
+    "spirit_78f96b030afc52ad": {
+      "sourcePetbaseId": 3488,
+      "attackPetbaseId": 3489,
+      "attackFormName": "小丑公爵",
+      "physicalAttack": 145,
+      "magicalAttack": 147
+    },
+    "spirit_a0dd7aaab165d94a": {
+      "sourcePetbaseId": 3489,
+      "attackPetbaseId": 3489,
+      "attackFormName": "小丑公爵",
+      "physicalAttack": 145,
+      "magicalAttack": 147
+    },
+    "spirit_9ea91035b620d764": {
+      "sourcePetbaseId": 3677,
+      "attackPetbaseId": 3678,
+      "attackFormName": "烟花伯爵",
+      "physicalAttack": 55,
+      "magicalAttack": 129
+    },
+    "spirit_765e2b577e6118df": {
+      "sourcePetbaseId": 3678,
+      "attackPetbaseId": 3678,
+      "attackFormName": "烟花伯爵",
+      "physicalAttack": 55,
+      "magicalAttack": 129
+    },
+    "spirit_72d2072cd2a176d0": {
+      "sourcePetbaseId": 3683,
+      "attackPetbaseId": 3684,
+      "attackFormName": "咕德帽帽",
+      "physicalAttack": 92,
+      "magicalAttack": 90
+    },
+    "spirit_a35d11156a88dcac": {
+      "sourcePetbaseId": 3684,
+      "attackPetbaseId": 3684,
+      "attackFormName": "咕德帽帽",
+      "physicalAttack": 92,
+      "magicalAttack": 90
+    },
+    "spirit_86bbcbdab1a84627": {
+      "sourcePetbaseId": 3736,
+      "attackPetbaseId": 3737,
+      "attackFormName": "霹雳迪迪",
+      "physicalAttack": 119,
+      "magicalAttack": 139
+    },
+    "spirit_60f921afbc37ef1d": {
+      "sourcePetbaseId": 3737,
+      "attackPetbaseId": 3737,
+      "attackFormName": "霹雳迪迪",
+      "physicalAttack": 119,
+      "magicalAttack": 139
+    },
+    "spirit_063422817e8deefc": {
+      "sourcePetbaseId": 3708,
+      "attackPetbaseId": 3709,
+      "attackFormName": "巨鼓象",
+      "physicalAttack": 107,
+      "magicalAttack": 70
+    },
+    "spirit_faed11065c114c00": {
+      "sourcePetbaseId": 3709,
+      "attackPetbaseId": 3709,
+      "attackFormName": "巨鼓象",
+      "physicalAttack": 107,
+      "magicalAttack": 70
+    },
+    "spirit_6aa9095643b483ba": {
+      "sourcePetbaseId": 3234,
+      "attackPetbaseId": 3235,
+      "attackFormName": "帅帅魔偶",
+      "physicalAttack": 104,
+      "magicalAttack": 111
+    },
+    "spirit_9915319f405cd921": {
+      "sourcePetbaseId": 3235,
+      "attackPetbaseId": 3235,
+      "attackFormName": "帅帅魔偶",
+      "physicalAttack": 104,
+      "magicalAttack": 111
+    },
+    "spirit_bda93c9052c59fb1": {
+      "sourcePetbaseId": 3620,
+      "attackPetbaseId": 3620,
+      "attackFormName": "学院呱呱",
+      "physicalAttack": 99,
+      "magicalAttack": 99
+    },
+    "spirit_ccf6a088d572393c": {
+      "sourcePetbaseId": 3078,
+      "attackPetbaseId": 3080,
+      "attackFormName": "火羽",
+      "physicalAttack": 65,
+      "magicalAttack": 81
+    },
+    "spirit_a540cc055e4fa502": {
+      "sourcePetbaseId": 3079,
+      "attackPetbaseId": 3080,
+      "attackFormName": "火羽",
+      "physicalAttack": 65,
+      "magicalAttack": 81
+    },
+    "spirit_fbd420db80dc3a39": {
+      "sourcePetbaseId": 3080,
+      "attackPetbaseId": 3080,
+      "attackFormName": "火羽",
+      "physicalAttack": 65,
+      "magicalAttack": 81
+    },
+    "spirit_b4aa42d433371d0c": {
+      "sourcePetbaseId": 3752,
+      "attackPetbaseId": 3753,
+      "attackFormName": "飞飞钥",
+      "physicalAttack": 57,
+      "magicalAttack": 101
+    },
+    "spirit_03d19450769b55c0": {
+      "sourcePetbaseId": 3753,
+      "attackPetbaseId": 3753,
+      "attackFormName": "飞飞钥",
+      "physicalAttack": 57,
+      "magicalAttack": 101
+    },
+    "spirit_462cd79c7165004e": {
+      "sourcePetbaseId": 3402,
+      "attackPetbaseId": 3404,
+      "attackFormName": "蝎子王",
+      "physicalAttack": 146,
+      "magicalAttack": 139
+    },
+    "spirit_25d82643f5f69e28": {
+      "sourcePetbaseId": 3403,
+      "attackPetbaseId": 3404,
+      "attackFormName": "蝎子王",
+      "physicalAttack": 146,
+      "magicalAttack": 139
+    },
+    "spirit_3ba0ecc3da584c40": {
+      "sourcePetbaseId": 3404,
+      "attackPetbaseId": 3404,
+      "attackFormName": "蝎子王",
+      "physicalAttack": 146,
+      "magicalAttack": 139
+    },
+    "spirit_0dc6996242a7fc7f": {
+      "sourcePetbaseId": 3749,
+      "attackPetbaseId": 3751,
+      "attackFormName": "森巨人",
+      "physicalAttack": 160,
+      "magicalAttack": 70
+    },
+    "spirit_862ab314c1bbe236": {
+      "sourcePetbaseId": 3750,
+      "attackPetbaseId": 3751,
+      "attackFormName": "森巨人",
+      "physicalAttack": 160,
+      "magicalAttack": 70
+    },
+    "spirit_59367d8effdf8a49": {
+      "sourcePetbaseId": 3751,
+      "attackPetbaseId": 3751,
+      "attackFormName": "森巨人",
+      "physicalAttack": 160,
+      "magicalAttack": 70
+    },
+    "spirit_b361152983cb5fcf": {
+      "sourcePetbaseId": 3351,
+      "attackPetbaseId": 3353,
+      "attackFormName": "雷神之子",
+      "physicalAttack": 92,
+      "magicalAttack": 92
+    },
+    "spirit_8372a9cff5cfd614": {
+      "sourcePetbaseId": 3352,
+      "attackPetbaseId": 3353,
+      "attackFormName": "雷神之子",
+      "physicalAttack": 92,
+      "magicalAttack": 92
+    },
+    "spirit_09c86b84dc2e2fe2": {
+      "sourcePetbaseId": 3353,
+      "attackPetbaseId": 3353,
+      "attackFormName": "雷神之子",
+      "physicalAttack": 92,
+      "magicalAttack": 92
+    },
+    "spirit_754a6d48ff3008ca": {
+      "sourcePetbaseId": 3341,
+      "attackPetbaseId": 3343,
+      "attackFormName": "饮雪狂兽",
+      "physicalAttack": 110,
+      "magicalAttack": 40
+    },
+    "spirit_eea3305074d126d7": {
+      "sourcePetbaseId": 3342,
+      "attackPetbaseId": 3343,
+      "attackFormName": "饮雪狂兽",
+      "physicalAttack": 110,
+      "magicalAttack": 40
+    },
+    "spirit_c0b03ac594c86309": {
+      "sourcePetbaseId": 3343,
+      "attackPetbaseId": 3343,
+      "attackFormName": "饮雪狂兽",
+      "physicalAttack": 110,
+      "magicalAttack": 40
+    },
+    "spirit_5f3409c518edcf84": {
+      "sourcePetbaseId": 3754,
+      "attackPetbaseId": 3756,
+      "attackFormName": "火巨人",
+      "physicalAttack": 77,
+      "magicalAttack": 26
+    },
+    "spirit_f02313f5c7b8270f": {
+      "sourcePetbaseId": 3755,
+      "attackPetbaseId": 3756,
+      "attackFormName": "火巨人",
+      "physicalAttack": 77,
+      "magicalAttack": 26
+    },
+    "spirit_0955dfad72f8debd": {
+      "sourcePetbaseId": 3756,
+      "attackPetbaseId": 3756,
+      "attackFormName": "火巨人",
+      "physicalAttack": 77,
+      "magicalAttack": 26
+    },
+    "spirit_d09c113d91ed876b": {
+      "sourcePetbaseId": 3228,
+      "attackPetbaseId": 3229,
+      "attackFormName": "友爱星飞",
+      "physicalAttack": 37,
+      "magicalAttack": 116
+    },
+    "spirit_b9382967288bd429": {
+      "sourcePetbaseId": 3229,
+      "attackPetbaseId": 3229,
+      "attackFormName": "友爱星飞",
+      "physicalAttack": 37,
+      "magicalAttack": 116
+    },
+    "spirit_e00d520c0883489b": {
+      "sourcePetbaseId": 3747,
+      "attackPetbaseId": 3748,
+      "attackFormName": "克莱因龙",
+      "physicalAttack": 50,
+      "magicalAttack": 131
+    },
+    "spirit_77a7d75ef5d795a1": {
+      "sourcePetbaseId": 3748,
+      "attackPetbaseId": 3748,
+      "attackFormName": "克莱因龙",
+      "physicalAttack": 50,
+      "magicalAttack": 131
+    },
+    "spirit_beeaa0eedf384647": {
+      "sourcePetbaseId": 3183,
+      "attackPetbaseId": 3185,
+      "attackFormName": "邪眼巨魔",
+      "physicalAttack": 98,
+      "magicalAttack": 99
+    },
+    "spirit_1e1a54ce9df3fa73": {
+      "sourcePetbaseId": 3184,
+      "attackPetbaseId": 3185,
+      "attackFormName": "邪眼巨魔",
+      "physicalAttack": 98,
+      "magicalAttack": 99
+    },
+    "spirit_697c9e478c126d8b": {
+      "sourcePetbaseId": 3185,
+      "attackPetbaseId": 3185,
+      "attackFormName": "邪眼巨魔",
+      "physicalAttack": 98,
+      "magicalAttack": 99
+    },
+    "spirit_5a7139c375f14f75": {
+      "sourcePetbaseId": 3321,
+      "attackPetbaseId": 3323,
+      "attackFormName": "夜游魔",
+      "physicalAttack": 103,
+      "magicalAttack": 101
+    },
+    "spirit_4621dc00a0a34768": {
+      "sourcePetbaseId": 3322,
+      "attackPetbaseId": 3323,
+      "attackFormName": "夜游魔",
+      "physicalAttack": 103,
+      "magicalAttack": 101
+    },
+    "spirit_9113b86360b2a162": {
+      "sourcePetbaseId": 3323,
+      "attackPetbaseId": 3323,
+      "attackFormName": "夜游魔",
+      "physicalAttack": 103,
+      "magicalAttack": 101
+    },
+    "spirit_633f294762a4edb7": {
+      "sourcePetbaseId": 3347,
+      "attackPetbaseId": 3349,
+      "attackFormName": "障眼魔",
+      "physicalAttack": 103,
+      "magicalAttack": 98
+    },
+    "spirit_7b9235bec269eae3": {
+      "sourcePetbaseId": 3348,
+      "attackPetbaseId": 3349,
+      "attackFormName": "障眼魔",
+      "physicalAttack": 103,
+      "magicalAttack": 98
+    },
+    "spirit_569cad56dd846019": {
+      "sourcePetbaseId": 3349,
+      "attackPetbaseId": 3349,
+      "attackFormName": "障眼魔",
+      "physicalAttack": 103,
+      "magicalAttack": 98
+    },
+    "spirit_c81d428eaaa8e87b": {
+      "sourcePetbaseId": 3466,
+      "attackPetbaseId": 3466,
+      "attackFormName": "星云旅者",
+      "physicalAttack": 32,
+      "magicalAttack": 129
+    },
+    "spirit_bad7d47694c21629": {
+      "sourcePetbaseId": 3757,
+      "attackPetbaseId": 3758,
+      "attackFormName": "珀尔鼬",
+      "physicalAttack": 65,
+      "magicalAttack": 124
+    },
+    "spirit_ec7062cf16b55b35": {
+      "sourcePetbaseId": 3758,
+      "attackPetbaseId": 3758,
+      "attackFormName": "珀尔鼬",
+      "physicalAttack": 65,
+      "magicalAttack": 124
+    },
+    "spirit_530c8af0ca46270f": {
+      "sourcePetbaseId": 3616,
+      "attackPetbaseId": 3617,
+      "attackFormName": "溯源钟",
+      "physicalAttack": 99,
+      "magicalAttack": 101
+    },
+    "spirit_847ceda3de74ce90": {
+      "sourcePetbaseId": 3617,
+      "attackPetbaseId": 3617,
+      "attackFormName": "溯源钟",
+      "physicalAttack": 99,
+      "magicalAttack": 101
+    },
+    "spirit_837f83264c04abe9": {
+      "sourcePetbaseId": 3232,
+      "attackPetbaseId": 3232,
+      "attackFormName": "加尔",
+      "physicalAttack": 36,
+      "magicalAttack": 94
+    },
+    "spirit_20d0512761016266": {
+      "sourcePetbaseId": 3233,
+      "attackPetbaseId": 3233,
+      "attackFormName": "黑化加尔",
+      "physicalAttack": 35,
+      "magicalAttack": 104
+    },
+    "spirit_7852c4374166c897": {
+      "sourcePetbaseId": 3710,
+      "attackPetbaseId": 3711,
+      "attackFormName": "胡桃王子",
+      "physicalAttack": 127,
+      "magicalAttack": 21
+    },
+    "spirit_972e038b6e427f6b": {
+      "sourcePetbaseId": 3711,
+      "attackPetbaseId": 3711,
+      "attackFormName": "胡桃王子",
+      "physicalAttack": 127,
+      "magicalAttack": 21
+    },
+    "spirit_87ae52b86587400d": {
+      "sourcePetbaseId": 3718,
+      "attackPetbaseId": 3719,
+      "attackFormName": "离心舞者",
+      "physicalAttack": 50,
+      "magicalAttack": 110
+    },
+    "spirit_99a8fba5f269c210": {
+      "sourcePetbaseId": 3719,
+      "attackPetbaseId": 3719,
+      "attackFormName": "离心舞者",
+      "physicalAttack": 50,
+      "magicalAttack": 110
+    },
+    "spirit_4572605541ea5410": {
+      "sourcePetbaseId": 3360,
+      "attackPetbaseId": 3362,
+      "attackFormName": "徘徊爪爪",
+      "physicalAttack": 100,
+      "magicalAttack": 27
+    },
+    "spirit_cde6b16e331c998f": {
+      "sourcePetbaseId": 3361,
+      "attackPetbaseId": 3362,
+      "attackFormName": "徘徊爪爪",
+      "physicalAttack": 100,
+      "magicalAttack": 27
+    },
+    "spirit_2b2a9041fef7f98b": {
+      "sourcePetbaseId": 3362,
+      "attackPetbaseId": 3362,
+      "attackFormName": "徘徊爪爪",
+      "physicalAttack": 100,
+      "magicalAttack": 27
+    },
+    "spirit_e5d60f63ebdd049f": {
+      "sourcePetbaseId": 3759,
+      "attackPetbaseId": 3760,
+      "attackFormName": "炮米花",
+      "physicalAttack": 99,
+      "magicalAttack": 100
+    },
+    "spirit_d6dda154d3258734": {
+      "sourcePetbaseId": 3760,
+      "attackPetbaseId": 3760,
+      "attackFormName": "炮米花",
+      "physicalAttack": 99,
+      "magicalAttack": 100
+    },
+    "spirit_3184ea3b2586daef": {
+      "sourcePetbaseId": 3591,
+      "attackPetbaseId": 3593,
+      "attackFormName": "深渊蛙",
+      "physicalAttack": 143,
+      "magicalAttack": 60
+    },
+    "spirit_8792e27bbf3c11a4": {
+      "sourcePetbaseId": 3592,
+      "attackPetbaseId": 3593,
+      "attackFormName": "深渊蛙",
+      "physicalAttack": 143,
+      "magicalAttack": 60
+    },
+    "spirit_93e6120c353ab24b": {
+      "sourcePetbaseId": 3593,
+      "attackPetbaseId": 3593,
+      "attackFormName": "深渊蛙",
+      "physicalAttack": 143,
+      "magicalAttack": 60
+    },
+    "spirit_5469448171f0ed00": {
+      "sourcePetbaseId": 3264,
+      "attackPetbaseId": 3265,
+      "attackFormName": "卡拉波斯",
+      "physicalAttack": 81,
+      "magicalAttack": 23
+    },
+    "spirit_275dd104cb33f7c4": {
+      "sourcePetbaseId": 3265,
+      "attackPetbaseId": 3265,
+      "attackFormName": "卡拉波斯",
+      "physicalAttack": 81,
+      "magicalAttack": 23
+    },
+    "spirit_e421bd362627ef57": {
+      "sourcePetbaseId": 3675,
+      "attackPetbaseId": 3676,
+      "attackFormName": "流明坎德拉",
+      "physicalAttack": 96,
+      "magicalAttack": 104
+    },
+    "spirit_94a85e8f16adabcf": {
+      "sourcePetbaseId": 3676,
+      "attackPetbaseId": 3676,
+      "attackFormName": "流明坎德拉",
+      "physicalAttack": 96,
+      "magicalAttack": 104
+    },
+    "spirit_55b0f9a33ceb0415": {
+      "sourcePetbaseId": 3706,
+      "attackPetbaseId": 3707,
+      "attackFormName": "半朽蜜果灵",
+      "physicalAttack": 54,
+      "magicalAttack": 138
+    },
+    "spirit_3c13248ddfa2a129": {
+      "sourcePetbaseId": 3707,
+      "attackPetbaseId": 3707,
+      "attackFormName": "半朽蜜果灵",
+      "physicalAttack": 54,
+      "magicalAttack": 138
+    },
+    "spirit_318f0eeb215e3f31": {
+      "sourcePetbaseId": 3697,
+      "attackPetbaseId": 3698,
+      "attackFormName": "稻草守护者",
+      "physicalAttack": 96,
+      "magicalAttack": 96
+    },
+    "spirit_db6b6d95ebcaa2e3": {
+      "sourcePetbaseId": 3698,
+      "attackPetbaseId": 3698,
+      "attackFormName": "稻草守护者",
+      "physicalAttack": 96,
+      "magicalAttack": 96
+    },
+    "spirit_740d8925b0f9e3f9": {
+      "sourcePetbaseId": 3565,
+      "attackPetbaseId": 3566,
+      "attackFormName": "壳栗丝鼠",
+      "physicalAttack": 77,
+      "magicalAttack": 79
+    },
+    "spirit_90fe6de063fbcbcd": {
+      "sourcePetbaseId": 3566,
+      "attackPetbaseId": 3566,
+      "attackFormName": "壳栗丝鼠",
+      "physicalAttack": 77,
+      "magicalAttack": 79
+    },
+    "spirit_b7e38cd586b1d05c": {
+      "sourcePetbaseId": 3746,
+      "attackPetbaseId": 3746,
+      "attackFormName": "睡铃雪影娃娃",
+      "physicalAttack": 42,
+      "magicalAttack": 104
+    },
+    "spirit_5f3eaa6f91c32c93": {
+      "sourcePetbaseId": 3740,
+      "attackPetbaseId": 3741,
+      "attackFormName": "宝藏沙狐",
+      "physicalAttack": 101,
+      "magicalAttack": 41
+    },
+    "spirit_ad25e8d39ea8f904": {
+      "sourcePetbaseId": 3741,
+      "attackPetbaseId": 3741,
+      "attackFormName": "宝藏沙狐",
+      "physicalAttack": 101,
+      "magicalAttack": 41
+    },
+    "spirit_7d159935c8b45ec3": {
+      "sourcePetbaseId": 3663,
+      "attackPetbaseId": 3664,
+      "attackFormName": "测风蝉",
+      "physicalAttack": 105,
+      "magicalAttack": 103
+    },
+    "spirit_8735efa1d0793f6a": {
+      "sourcePetbaseId": 3664,
+      "attackPetbaseId": 3664,
+      "attackFormName": "测风蝉",
+      "physicalAttack": 105,
+      "magicalAttack": 103
+    },
+    "spirit_655fae6ca57866f1": {
+      "sourcePetbaseId": 3767,
+      "attackPetbaseId": 3768,
+      "attackFormName": "智辉章脑",
+      "physicalAttack": 53,
+      "magicalAttack": 123
+    },
+    "spirit_18d38a10544a16ea": {
+      "sourcePetbaseId": 3768,
+      "attackPetbaseId": 3768,
+      "attackFormName": "智辉章脑",
+      "physicalAttack": 53,
+      "magicalAttack": 123
+    },
+    "spirit_669c6c48798e31e2": {
+      "sourcePetbaseId": 3589,
+      "attackPetbaseId": 3590,
+      "attackFormName": "玳塔",
+      "physicalAttack": 47,
+      "magicalAttack": 107
+    },
+    "spirit_fa429ea152f6bdad": {
+      "sourcePetbaseId": 3590,
+      "attackPetbaseId": 3590,
+      "attackFormName": "玳塔",
+      "physicalAttack": 47,
+      "magicalAttack": 107
+    },
+    "spirit_fcf79e905db987ed": {
+      "sourcePetbaseId": 3773,
+      "attackPetbaseId": 3774,
+      "attackFormName": "摇铃魔偶",
+      "physicalAttack": 55,
+      "magicalAttack": 131
+    },
+    "spirit_d8e175477972f74d": {
+      "sourcePetbaseId": 3774,
+      "attackPetbaseId": 3774,
+      "attackFormName": "摇铃魔偶",
+      "physicalAttack": 55,
+      "magicalAttack": 131
+    },
+    "spirit_200b70f549b632c9": {
+      "sourcePetbaseId": 3542,
+      "attackPetbaseId": 3542,
+      "attackFormName": "未完虫",
+      "physicalAttack": 102,
+      "magicalAttack": 111
+    },
+    "spirit_14b3a744170db48f": {
+      "sourcePetbaseId": 3771,
+      "attackPetbaseId": 3772,
+      "attackFormName": "黑手浣熊",
+      "physicalAttack": 116,
+      "magicalAttack": 110
+    },
+    "spirit_586b8e1567f949f6": {
+      "sourcePetbaseId": 3772,
+      "attackPetbaseId": 3772,
+      "attackFormName": "黑手浣熊",
+      "physicalAttack": 116,
+      "magicalAttack": 110
+    },
+    "spirit_38e4783bc0ea21e7": {
+      "sourcePetbaseId": 3775,
+      "attackPetbaseId": 3776,
+      "attackFormName": "布灵布灵",
+      "physicalAttack": 115,
+      "magicalAttack": 40
+    },
+    "spirit_de488be076aaad90": {
+      "sourcePetbaseId": 3776,
+      "attackPetbaseId": 3776,
+      "attackFormName": "布灵布灵",
+      "physicalAttack": 115,
+      "magicalAttack": 40
+    },
+    "spirit_9f9a5018b4cb3927": {
+      "sourcePetbaseId": 3236,
+      "attackPetbaseId": 3236,
+      "attackFormName": "星星眼",
+      "physicalAttack": 97,
+      "magicalAttack": 120
+    },
+    "spirit_44fd7ec28737bb00": {
+      "sourcePetbaseId": 3764,
+      "attackPetbaseId": 3766,
+      "attackFormName": "月使鹭纳",
+      "physicalAttack": 99,
+      "magicalAttack": 100
+    },
+    "spirit_31414d060023c608": {
+      "sourcePetbaseId": 3765,
+      "attackPetbaseId": 3766,
+      "attackFormName": "月使鹭纳",
+      "physicalAttack": 99,
+      "magicalAttack": 100
+    },
+    "spirit_2e66129c499359af": {
+      "sourcePetbaseId": 3766,
+      "attackPetbaseId": 3766,
+      "attackFormName": "月使鹭纳",
+      "physicalAttack": 99,
+      "magicalAttack": 100
+    },
+    "spirit_62628958b4cc94fd": {
+      "sourcePetbaseId": 3574,
+      "attackPetbaseId": 3576,
+      "attackFormName": "圣凯布米龙",
+      "physicalAttack": 116,
+      "magicalAttack": 29
+    },
+    "spirit_d77a1d73a14413be": {
+      "sourcePetbaseId": 3575,
+      "attackPetbaseId": 3576,
+      "attackFormName": "圣凯布米龙",
+      "physicalAttack": 116,
+      "magicalAttack": 29
+    },
+    "spirit_5f3ff5817d7871b8": {
+      "sourcePetbaseId": 3576,
+      "attackPetbaseId": 3576,
+      "attackFormName": "圣凯布米龙",
+      "physicalAttack": 116,
+      "magicalAttack": 29
+    },
+    "spirit_b63c5f1a909fe37d": {
+      "sourcePetbaseId": 3761,
+      "attackPetbaseId": 3763,
+      "attackFormName": "银月狼王",
+      "physicalAttack": 128,
+      "magicalAttack": 51
+    },
+    "spirit_46a9e1d341b657aa": {
+      "sourcePetbaseId": 3762,
+      "attackPetbaseId": 3763,
+      "attackFormName": "银月狼王",
+      "physicalAttack": 128,
+      "magicalAttack": 51
+    },
+    "spirit_b689c0de815c95ef": {
+      "sourcePetbaseId": 3763,
+      "attackPetbaseId": 3763,
+      "attackFormName": "银月狼王",
+      "physicalAttack": 128,
+      "magicalAttack": 51
+    },
+    "spirit_8ac693cfd57fea1c": {
+      "sourcePetbaseId": 5063,
+      "attackPetbaseId": 5063,
+      "attackFormName": "烈焰狂战士",
+      "physicalAttack": 92,
+      "magicalAttack": 21
+    },
+    "spirit_59a68cf08569c4a7": {
+      "sourcePetbaseId": 5065,
+      "attackPetbaseId": 5065,
+      "attackFormName": "满月砣",
+      "physicalAttack": 108,
+      "magicalAttack": 111
+    },
+    "spirit_6b6f44bd83a5f495": {
+      "sourcePetbaseId": 3777,
+      "attackPetbaseId": 3777,
+      "attackFormName": "幽影树",
+      "physicalAttack": 96,
+      "magicalAttack": 96
+    },
+    "spirit_eb091eba9d871d80": {
+      "sourcePetbaseId": 3796,
+      "attackPetbaseId": 3796,
+      "attackFormName": "果实立方人",
+      "physicalAttack": 132,
+      "magicalAttack": 50
+    },
+    "spirit_b49b24f5ad669162": {
+      "sourcePetbaseId": 5064,
+      "attackPetbaseId": 5064,
+      "attackFormName": "满月砣",
+      "physicalAttack": 111,
+      "magicalAttack": 108,
+      "sourcePetbaseIds": [
+        5064,
+        13000173
+      ],
+      "attackPetbaseIds": [
+        5064,
+        13000173
+      ],
+      "attackFormNames": [
+        "满月砣"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_preview_s5_little-ming-dragon": {
+      "sourcePetbaseId": 3797,
+      "attackPetbaseId": 3798,
+      "attackFormName": "冥古龙",
+      "physicalAttack": 128,
+      "magicalAttack": 42
+    },
+    "spirit_preview_s5_minggulong": {
+      "sourcePetbaseId": 3798,
+      "attackPetbaseId": 3798,
+      "attackFormName": "冥古龙",
+      "physicalAttack": 128,
+      "magicalAttack": 42
+    },
+    "spirit_preview_s5_abu": {
+      "sourcePetbaseId": 3168,
+      "attackPetbaseId": 3168,
+      "attackFormName": "阿布",
+      "physicalAttack": 105,
+      "magicalAttack": 45
+    },
+    "spirit_preview_s5_silver-chain": {
+      "sourcePetbaseId": 3799,
+      "attackPetbaseId": 3801,
+      "attackFormName": "地绡银龙",
+      "physicalAttack": 53,
+      "magicalAttack": 123
+    },
+    "spirit_preview_s5_underground-silver-scale": {
+      "sourcePetbaseId": 3800,
+      "attackPetbaseId": 3801,
+      "attackFormName": "地绡银龙",
+      "physicalAttack": 53,
+      "magicalAttack": 123
+    },
+    "spirit_preview_s5_underground-silver-dragon": {
+      "sourcePetbaseId": 3801,
+      "attackPetbaseId": 3801,
+      "attackFormName": "地绡银龙",
+      "physicalAttack": 53,
+      "magicalAttack": 123
+    },
+    "spirit_preview_s5_sinking-gold-beast": {
+      "sourcePetbaseId": 3802,
+      "attackPetbaseId": 3804,
+      "attackFormName": "龙嵴金脉",
+      "physicalAttack": 131,
+      "magicalAttack": 58
+    },
+    "spirit_preview_s5_dragonhead-gold": {
+      "sourcePetbaseId": 3803,
+      "attackPetbaseId": 3804,
+      "attackFormName": "龙嵴金脉",
+      "physicalAttack": 131,
+      "magicalAttack": 58
+    },
+    "spirit_preview_s5_gold-vein-dragon": {
+      "sourcePetbaseId": 3804,
+      "attackPetbaseId": 3804,
+      "attackFormName": "龙嵴金脉",
+      "physicalAttack": 131,
+      "magicalAttack": 58
+    },
+    "spirit_preview_s5_boss-ice-bruce": {
+      "sourcePetbaseId": 5067,
+      "attackPetbaseId": 5067,
+      "attackFormName": "圣冠布鲁斯",
+      "physicalAttack": 103,
+      "magicalAttack": 28
+    },
+    "spirit_preview_s5_boss-glass-jellyfish": {
+      "sourcePetbaseId": 5066,
+      "attackPetbaseId": 5066,
+      "attackFormName": "琉璃君主",
+      "physicalAttack": 40,
+      "magicalAttack": 89
+    },
+    "spirit_preview_s5_jingyu": {
+      "sourcePetbaseId": 3812,
+      "attackPetbaseId": 3813,
+      "attackFormName": "圆环鲸羽",
+      "physicalAttack": 38,
+      "magicalAttack": 123
+    },
+    "spirit_preview_s5_doulie": {
+      "sourcePetbaseId": 3814,
+      "attackPetbaseId": 3815,
+      "attackFormName": "刨雪鹅",
+      "physicalAttack": 96,
+      "magicalAttack": 87
+    },
+    "spirit_preview_s5_watermelon-bug": {
+      "sourcePetbaseId": 3816,
+      "attackPetbaseId": 3817,
+      "attackFormName": "冬虫夏瓜",
+      "physicalAttack": 62,
+      "magicalAttack": 125
+    },
+    "spirit_preview_s5_diliutun": {
+      "sourcePetbaseId": 3820,
+      "attackPetbaseId": 3821,
+      "attackFormName": "滴廿豚",
+      "physicalAttack": 112,
+      "magicalAttack": 112
+    },
+    "spirit_preview_s5_egg-wrap": {
+      "sourcePetbaseId": 3808,
+      "attackPetbaseId": 3809,
+      "attackFormName": "鸡麻麻",
+      "physicalAttack": 96,
+      "magicalAttack": 95
+    },
+    "spirit_preview_s5_crab-coconut": {
+      "sourcePetbaseId": 3810,
+      "attackPetbaseId": 3811,
+      "attackFormName": "沙咔蟹",
+      "physicalAttack": 128,
+      "magicalAttack": 54
+    },
+    "spirit_preview_s5_little-scissor": {
+      "sourcePetbaseId": 3818,
+      "attackPetbaseId": 3819,
+      "attackFormName": "影子剪纸",
+      "physicalAttack": 143,
+      "magicalAttack": 56
+    },
+    "spirit_preview_s5_lily-of-valley": {
+      "sourcePetbaseId": 3824,
+      "attackPetbaseId": 3824,
+      "attackFormName": "铃兰夫人",
+      "physicalAttack": 46,
+      "magicalAttack": 110
+    },
+    "spirit_preview_s5_super-abu": {
+      "sourcePetbaseId": 5068,
+      "attackPetbaseId": 5068,
+      "attackFormName": "超能阿布",
+      "physicalAttack": 105,
+      "magicalAttack": 45
+    },
+    "spirit_preview_s5_shadow-papercut": {
+      "sourcePetbaseId": 3819,
+      "attackPetbaseId": 3819,
+      "attackFormName": "影子剪纸",
+      "physicalAttack": 143,
+      "magicalAttack": 56
+    },
+    "spirit_preview_s5_diniantun": {
+      "sourcePetbaseId": 3821,
+      "attackPetbaseId": 3821,
+      "attackFormName": "滴廿豚",
+      "physicalAttack": 112,
+      "magicalAttack": 112
+    },
+    "spirit_preview_s5_winter-bug-summer-melon": {
+      "sourcePetbaseId": 3817,
+      "attackPetbaseId": 3817,
+      "attackFormName": "冬虫夏瓜",
+      "physicalAttack": 62,
+      "magicalAttack": 125
+    },
+    "spirit_preview_s5_snow-shoveling-goose": {
+      "sourcePetbaseId": 3815,
+      "attackPetbaseId": 3815,
+      "attackFormName": "刨雪鹅",
+      "physicalAttack": 96,
+      "magicalAttack": 87
+    },
+    "spirit_preview_s5_halo-jingyu": {
+      "sourcePetbaseId": 3813,
+      "attackPetbaseId": 3813,
+      "attackFormName": "圆环鲸羽",
+      "physicalAttack": 38,
+      "magicalAttack": 123
+    },
+    "spirit_preview_s5_sand-crab": {
+      "sourcePetbaseId": 3811,
+      "attackPetbaseId": 3811,
+      "attackFormName": "沙咔蟹",
+      "physicalAttack": 128,
+      "magicalAttack": 54
+    },
+    "spirit_preview_s5_chicken-mama": {
+      "sourcePetbaseId": 3809,
+      "attackPetbaseId": 3809,
+      "attackFormName": "鸡麻麻",
+      "physicalAttack": 96,
+      "magicalAttack": 95
+    },
+    "spirit_preview_s5_awa-shark-lemon": {
+      "sourcePetbaseId": 3806,
+      "attackPetbaseId": 3806,
+      "attackFormName": "阿瓦鲨",
+      "physicalAttack": 117,
+      "magicalAttack": 46
+    },
+    "spirit_preview_s5_awa-shark-tiger": {
+      "sourcePetbaseId": 3807,
+      "attackPetbaseId": 3807,
+      "attackFormName": "阿瓦鲨",
+      "physicalAttack": 146,
+      "magicalAttack": 57
+    },
+    "spirit_42e0cf61b04cb1ab": {
+      "sourcePetbaseId": 3784,
+      "attackPetbaseId": 3785,
+      "attackFormName": "长江豚",
+      "physicalAttack": 46,
+      "magicalAttack": 126
+    },
+    "spirit_a601e182f9b30ba0": {
+      "sourcePetbaseId": 3785,
+      "attackPetbaseId": 3785,
+      "attackFormName": "长江豚",
+      "physicalAttack": 46,
+      "magicalAttack": 126
+    },
+    "spirit_4ba8f07d34a4e247": {
+      "sourcePetbaseId": 3070,
+      "attackPetbaseId": 3071,
+      "attackFormName": "音速犬",
+      "physicalAttack": 116,
+      "magicalAttack": 38
+    },
+    "spirit_58fba21fe70be498": {
+      "sourcePetbaseId": 3071,
+      "attackPetbaseId": 3071,
+      "attackFormName": "音速犬",
+      "physicalAttack": 116,
+      "magicalAttack": 38
+    },
+    "spirit_95aaf0ee94680c86": {
+      "sourcePetbaseId": 3499,
+      "attackPetbaseId": 3499,
+      "attackFormName": "公平鸽",
+      "physicalAttack": 93,
+      "magicalAttack": 93
+    },
+    "spirit_576805f2cd1bbd11": {
+      "sourcePetbaseId": 5018,
+      "attackPetbaseId": 5018,
+      "attackFormName": "风暴战犬",
+      "physicalAttack": 116,
+      "magicalAttack": 38,
+      "sourcePetbaseIds": [
+        5018,
+        5075
+      ],
+      "attackPetbaseIds": [
+        5018,
+        5075
+      ],
+      "attackFormNames": [
+        "风暴战犬"
+      ],
+      "resolution": "identical-attack-races"
+    },
+    "spirit_e09a7b2376f6e518": {
+      "sourcePetbaseId": 3255,
+      "attackPetbaseId": 3256,
+      "attackFormName": "流浪鼠",
+      "physicalAttack": 46,
+      "magicalAttack": 116
+    },
+    "spirit_95d31f7040c570b2": {
+      "sourcePetbaseId": 3256,
+      "attackPetbaseId": 3256,
+      "attackFormName": "流浪鼠",
+      "physicalAttack": 46,
+      "magicalAttack": 116
+    },
+    "spirit_bf63c954e18a8852": {
+      "sourcePetbaseId": 3506,
+      "attackPetbaseId": 3507,
+      "attackFormName": "鳗尾兽",
+      "physicalAttack": 91,
+      "magicalAttack": 91
+    },
+    "spirit_45095a4991f540a4": {
+      "sourcePetbaseId": 3507,
+      "attackPetbaseId": 3507,
+      "attackFormName": "鳗尾兽",
+      "physicalAttack": 91,
+      "magicalAttack": 91
+    },
+    "spirit_0aff77799da7257f": {
+      "sourcePetbaseId": 3697,
+      "attackPetbaseId": 3698,
+      "attackFormName": "稻草守护者",
+      "physicalAttack": 96,
+      "magicalAttack": 96
+    },
+    "spirit_9383a26b3b5da4c5": {
+      "sourcePetbaseId": 3698,
+      "attackPetbaseId": 3698,
+      "attackFormName": "稻草守护者",
+      "physicalAttack": 96,
+      "magicalAttack": 96
+    },
+    "spirit_preview_s5_daidailing": {
+      "sourcePetbaseId": 3822,
+      "attackPetbaseId": 3824,
+      "attackFormName": "铃兰夫人",
+      "physicalAttack": 46,
+      "magicalAttack": 110
+    },
+    "spirit_preview_s5_tiaotiaoling": {
+      "sourcePetbaseId": 3823,
+      "attackPetbaseId": 3824,
+      "attackFormName": "铃兰夫人",
+      "physicalAttack": 46,
+      "magicalAttack": 110
+    }
+  },
+  "missing": {
+    "spirit_0aa69ad38f66402d": {
+      "name": "毛毛",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3136
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3138,
+          "name": "化蝶",
+          "physicalAttack": 46,
+          "magicalAttack": 46
+        },
+        {
+          "petbaseId": 3470,
+          "name": "化蝶",
+          "physicalAttack": 42,
+          "magicalAttack": 42
+        },
+        {
+          "petbaseId": 3471,
+          "name": "化蝶",
+          "physicalAttack": 47,
+          "magicalAttack": 41
+        },
+        {
+          "petbaseId": 3472,
+          "name": "化蝶",
+          "physicalAttack": 46,
+          "magicalAttack": 44
+        }
+      ]
+    },
+    "spirit_552a95c89d0867e1": {
+      "name": "爬爬",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3137
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3138,
+          "name": "化蝶",
+          "physicalAttack": 46,
+          "magicalAttack": 46
+        },
+        {
+          "petbaseId": 3470,
+          "name": "化蝶",
+          "physicalAttack": 42,
+          "magicalAttack": 42
+        },
+        {
+          "petbaseId": 3471,
+          "name": "化蝶",
+          "physicalAttack": 47,
+          "magicalAttack": 41
+        },
+        {
+          "petbaseId": 3472,
+          "name": "化蝶",
+          "physicalAttack": 46,
+          "magicalAttack": 44
+        }
+      ]
+    },
+    "spirit_671f6866e48a615e": {
+      "name": "矿晶虫",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3307
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3308,
+          "name": "晶石蜗",
+          "physicalAttack": 96,
+          "magicalAttack": 101
+        },
+        {
+          "petbaseId": 3448,
+          "name": "晶石蜗",
+          "physicalAttack": 97,
+          "magicalAttack": 101
+        },
+        {
+          "petbaseId": 3449,
+          "name": "晶石蜗",
+          "physicalAttack": 101,
+          "magicalAttack": 101
+        },
+        {
+          "petbaseId": 3450,
+          "name": "晶石蜗",
+          "physicalAttack": 97,
+          "magicalAttack": 101
+        },
+        {
+          "petbaseId": 3451,
+          "name": "晶石蜗",
+          "physicalAttack": 97,
+          "magicalAttack": 107
+        },
+        {
+          "petbaseId": 3486,
+          "name": "晶石蜗",
+          "physicalAttack": 97,
+          "magicalAttack": 102
+        }
+      ]
+    },
+    "spirit_a4a37b0f3ab65804": {
+      "name": "小灵面",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3060
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3405,
+          "name": "幽冥眼",
+          "physicalAttack": 50,
+          "magicalAttack": 120
+        },
+        {
+          "petbaseId": 3482,
+          "name": "幽冥眼",
+          "physicalAttack": 38,
+          "magicalAttack": 120
+        }
+      ]
+    },
+    "spirit_2e19e8edb2a60bc2": {
+      "name": "蹦蹦果（海神球形态）",
+      "code": "strength-stage-3-not-found",
+      "reason": "匹配记录的普通进化链未找到强度三阶段，未使用首领分支替代。",
+      "sourcePetbaseIds": [
+        5004
+      ]
+    },
+    "spirit_f52c89e7811d8af3": {
+      "name": "蹦蹦果（彩玉球形态）",
+      "code": "strength-stage-3-not-found",
+      "reason": "匹配记录的普通进化链未找到强度三阶段，未使用首领分支替代。",
+      "sourcePetbaseIds": [
+        5033
+      ]
+    },
+    "spirit_ad6e62ee903dc2fe": {
+      "name": "蹦蹦果（短毛球形态）",
+      "code": "strength-stage-3-not-found",
+      "reason": "匹配记录的普通进化链未找到强度三阶段，未使用首领分支替代。",
+      "sourcePetbaseIds": [
+        5034
+      ]
+    },
+    "spirit_49cd0386a45b533d": {
+      "name": "蹦蹦果（象牙球形态）",
+      "code": "strength-stage-3-not-found",
+      "reason": "匹配记录的普通进化链未找到强度三阶段，未使用首领分支替代。",
+      "sourcePetbaseIds": [
+        5035
+      ]
+    },
+    "spirit_cf5102684c14c331": {
+      "name": "乖乖鹄",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3344
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3346,
+          "name": "翠顶夫人",
+          "physicalAttack": 95,
+          "magicalAttack": 86
+        },
+        {
+          "petbaseId": 3571,
+          "name": "黑羽夫人",
+          "physicalAttack": 93,
+          "magicalAttack": 87
+        }
+      ]
+    },
+    "spirit_e62f0702d019bbff": {
+      "name": "蓝珠天鹅",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3345
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3346,
+          "name": "翠顶夫人",
+          "physicalAttack": 95,
+          "magicalAttack": 86
+        },
+        {
+          "petbaseId": 3571,
+          "name": "黑羽夫人",
+          "physicalAttack": 93,
+          "magicalAttack": 87
+        }
+      ]
+    },
+    "spirit_4e1344e0cfd82bf9": {
+      "name": "棋棋（白子）",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3550
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3551,
+          "name": "棋骑士",
+          "physicalAttack": 126,
+          "magicalAttack": 45
+        },
+        {
+          "petbaseId": 3552,
+          "name": "棋绮后",
+          "physicalAttack": 84,
+          "magicalAttack": 84
+        },
+        {
+          "petbaseId": 3553,
+          "name": "棋齐垒",
+          "physicalAttack": 94,
+          "magicalAttack": 38
+        },
+        {
+          "petbaseId": 3554,
+          "name": "棋祈督",
+          "physicalAttack": 87,
+          "magicalAttack": 87
+        }
+      ]
+    },
+    "spirit_28e59ee92341bf43": {
+      "name": "棋棋（黑子）",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3555
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3556,
+          "name": "棋骑士",
+          "physicalAttack": 121,
+          "magicalAttack": 43
+        },
+        {
+          "petbaseId": 3557,
+          "name": "棋绮后",
+          "physicalAttack": 84,
+          "magicalAttack": 84
+        },
+        {
+          "petbaseId": 3558,
+          "name": "棋齐垒",
+          "physicalAttack": 94,
+          "magicalAttack": 38
+        },
+        {
+          "petbaseId": 3559,
+          "name": "棋祈督",
+          "physicalAttack": 87,
+          "magicalAttack": 87
+        }
+      ]
+    },
+    "spirit_3f805b382fb6670a": {
+      "name": "脆筒甜甜",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3124
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3126,
+          "name": "圣代甜甜",
+          "physicalAttack": 112,
+          "magicalAttack": 119
+        },
+        {
+          "petbaseId": 3458,
+          "name": "圣代甜甜",
+          "physicalAttack": 120,
+          "magicalAttack": 110
+        },
+        {
+          "petbaseId": 3459,
+          "name": "圣代甜甜",
+          "physicalAttack": 112,
+          "magicalAttack": 110
+        },
+        {
+          "petbaseId": 3460,
+          "name": "圣代甜甜",
+          "physicalAttack": 117,
+          "magicalAttack": 110
+        },
+        {
+          "petbaseId": 3461,
+          "name": "圣代甜甜",
+          "physicalAttack": 109,
+          "magicalAttack": 100
+        },
+        {
+          "petbaseId": 3462,
+          "name": "圣代甜甜",
+          "physicalAttack": 100,
+          "magicalAttack": 101
+        },
+        {
+          "petbaseId": 3463,
+          "name": "圣代甜甜",
+          "physicalAttack": 116,
+          "magicalAttack": 120
+        },
+        {
+          "petbaseId": 3464,
+          "name": "圣代甜甜",
+          "physicalAttack": 110,
+          "magicalAttack": 110
+        },
+        {
+          "petbaseId": 3465,
+          "name": "圣代甜甜",
+          "physicalAttack": 107,
+          "magicalAttack": 110
+        }
+      ]
+    },
+    "spirit_219690deb9569dc6": {
+      "name": "香草甜甜（樱桃饰品）",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3125
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3126,
+          "name": "圣代甜甜",
+          "physicalAttack": 112,
+          "magicalAttack": 119
+        },
+        {
+          "petbaseId": 3458,
+          "name": "圣代甜甜",
+          "physicalAttack": 120,
+          "magicalAttack": 110
+        },
+        {
+          "petbaseId": 3459,
+          "name": "圣代甜甜",
+          "physicalAttack": 112,
+          "magicalAttack": 110
+        }
+      ]
+    },
+    "spirit_f034858d5c81a2ae": {
+      "name": "香草甜甜（杨桃饰品）",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3478
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3463,
+          "name": "圣代甜甜",
+          "physicalAttack": 116,
+          "magicalAttack": 120
+        },
+        {
+          "petbaseId": 3464,
+          "name": "圣代甜甜",
+          "physicalAttack": 110,
+          "magicalAttack": 110
+        },
+        {
+          "petbaseId": 3465,
+          "name": "圣代甜甜",
+          "physicalAttack": 107,
+          "magicalAttack": 110
+        }
+      ]
+    },
+    "spirit_29b708f908c0d8a9": {
+      "name": "香草甜甜（蓝莓饰品）",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3479
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3460,
+          "name": "圣代甜甜",
+          "physicalAttack": 117,
+          "magicalAttack": 110
+        },
+        {
+          "petbaseId": 3461,
+          "name": "圣代甜甜",
+          "physicalAttack": 109,
+          "magicalAttack": 100
+        },
+        {
+          "petbaseId": 3462,
+          "name": "圣代甜甜",
+          "physicalAttack": 100,
+          "magicalAttack": 101
+        }
+      ]
+    },
+    "spirit_73e11369a58445a9": {
+      "name": "可立鸡",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3086
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3088,
+          "name": "绅士鸡",
+          "physicalAttack": 120,
+          "magicalAttack": 120
+        },
+        {
+          "petbaseId": 3089,
+          "name": "武者鸡",
+          "physicalAttack": 137,
+          "magicalAttack": 66
+        }
+      ]
+    },
+    "spirit_aab6e4b6314a2035": {
+      "name": "晕晕鸡",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3087
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3088,
+          "name": "绅士鸡",
+          "physicalAttack": 120,
+          "magicalAttack": 120
+        },
+        {
+          "petbaseId": 3089,
+          "name": "武者鸡",
+          "physicalAttack": 137,
+          "magicalAttack": 66
+        }
+      ]
+    },
+    "spirit_d218885988b9c5a0": {
+      "name": "墨鱿士",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3577
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3578,
+          "name": "混乱鱿彩",
+          "physicalAttack": 122,
+          "magicalAttack": 53
+        },
+        {
+          "petbaseId": 3579,
+          "name": "秩序鱿墨",
+          "physicalAttack": 120,
+          "magicalAttack": 40
+        }
+      ]
+    },
+    "spirit_cd5a04a9d9f170f9": {
+      "name": "毛头小蛛",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3603
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3604,
+          "name": "捕尘长绒",
+          "physicalAttack": 100,
+          "magicalAttack": 34
+        },
+        {
+          "petbaseId": 3605,
+          "name": "食尘短绒",
+          "physicalAttack": 105,
+          "magicalAttack": 37
+        }
+      ]
+    },
+    "spirit_50b9ea1cf5a9f06c": {
+      "name": "画精灵",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3606
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3608,
+          "name": "画间法师手",
+          "physicalAttack": 53,
+          "magicalAttack": 131
+        },
+        {
+          "petbaseId": 3609,
+          "name": "画间沉铁兽",
+          "physicalAttack": 147,
+          "magicalAttack": 63
+        }
+      ]
+    },
+    "spirit_6eefcea5a4902052": {
+      "name": "画像守护",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3607
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3608,
+          "name": "画间法师手",
+          "physicalAttack": 53,
+          "magicalAttack": 131
+        },
+        {
+          "petbaseId": 3609,
+          "name": "画间沉铁兽",
+          "physicalAttack": 147,
+          "magicalAttack": 63
+        }
+      ]
+    },
+    "spirit_595b959db1b3bdec": {
+      "name": "书魔虫",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3610
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3612,
+          "name": "古卷执政官",
+          "physicalAttack": 115,
+          "magicalAttack": 115
+        },
+        {
+          "petbaseId": 3613,
+          "name": "古卷匣魔像",
+          "physicalAttack": 109,
+          "magicalAttack": 109
+        }
+      ]
+    },
+    "spirit_35c4507102bacd52": {
+      "name": "书卷守护",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3611
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3612,
+          "name": "古卷执政官",
+          "physicalAttack": 115,
+          "magicalAttack": 115
+        },
+        {
+          "petbaseId": 3613,
+          "name": "古卷匣魔像",
+          "physicalAttack": 109,
+          "magicalAttack": 109
+        }
+      ]
+    },
+    "spirit_5c4297c8c8eab600": {
+      "name": "果冻",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3118
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3526,
+          "name": "抹茶布丁",
+          "physicalAttack": 32,
+          "magicalAttack": 101
+        },
+        {
+          "petbaseId": 3527,
+          "name": "椰浆布丁",
+          "physicalAttack": 34,
+          "magicalAttack": 89
+        },
+        {
+          "petbaseId": 3528,
+          "name": "熔岩布丁",
+          "physicalAttack": 87,
+          "magicalAttack": 33
+        }
+      ]
+    },
+    "spirit_3e28ee2df02a761f": {
+      "name": "粉星仔",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3319
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3320,
+          "name": "粉耳星兔",
+          "physicalAttack": 79,
+          "magicalAttack": 148
+        },
+        {
+          "petbaseId": 3485,
+          "name": "落陨星兔",
+          "physicalAttack": 61,
+          "magicalAttack": 125
+        }
+      ]
+    },
+    "spirit_ea44560ba353ca44": {
+      "name": "加油海葵",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3659
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3660,
+          "name": "加油蟹",
+          "physicalAttack": 92,
+          "magicalAttack": 92
+        },
+        {
+          "petbaseId": 3743,
+          "name": "加油蟹",
+          "physicalAttack": 130,
+          "magicalAttack": 58
+        }
+      ]
+    },
+    "spirit_58d9e599a25aa153": {
+      "name": "加灵",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3230
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3232,
+          "name": "加尔",
+          "physicalAttack": 36,
+          "magicalAttack": 94
+        },
+        {
+          "petbaseId": 3233,
+          "name": "黑化加尔",
+          "physicalAttack": 35,
+          "magicalAttack": 104
+        }
+      ]
+    },
+    "spirit_e1507f26b7fe0fd7": {
+      "name": "加益",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3231
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3232,
+          "name": "加尔",
+          "physicalAttack": 36,
+          "magicalAttack": 94
+        },
+        {
+          "petbaseId": 3233,
+          "name": "黑化加尔",
+          "physicalAttack": 35,
+          "magicalAttack": 104
+        }
+      ]
+    },
+    "spirit_preview_s5_lele-shark": {
+      "name": "乐乐鲨",
+      "code": "ambiguous-attack-races",
+      "reason": "普通进化链存在双攻不同的强度三阶段分支，不能唯一确定。",
+      "sourcePetbaseIds": [
+        3805
+      ],
+      "candidates": [
+        {
+          "petbaseId": 3806,
+          "name": "阿瓦鲨",
+          "physicalAttack": 117,
+          "magicalAttack": 46
+        },
+        {
+          "petbaseId": 3807,
+          "name": "阿瓦鲨",
+          "physicalAttack": 146,
+          "magicalAttack": 57
+        }
+      ]
+    },
+    "spirit_preview_s5_boss-abu": {
+      "name": "圣龙阿布",
+      "code": "package-record-not-matched",
+      "reason": "包体未找到名称或基础名称与六维同时相符的记录。"
+    },
+    "spirit_preview_s5_hidden-3217": {
+      "name": "呼拉猫",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3218": {
+      "name": "增肌猫",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3219": {
+      "name": "健猫教练",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3408": {
+      "name": "齿轮小子",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3409": {
+      "name": "机甲小子",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3416": {
+      "name": "格斗小五",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3417": {
+      "name": "格斗小六",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3418": {
+      "name": "格斗小八",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3825": {
+      "name": "鹭灯",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3826": {
+      "name": "光怪鹭",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-5070": {
+      "name": "失光迷鹭",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3849": {
+      "name": "藻龙骨",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3850": {
+      "name": "藻目舟",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3851": {
+      "name": "腐木船",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3863": {
+      "name": "红顶剑龙",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3864": {
+      "name": "赤顶翼龙",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3865": {
+      "name": "幻晶龙炎",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-5069": {
+      "name": "古齿帝牙",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3640": {
+      "name": "菌宝",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3641": {
+      "name": "竹笙仔",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3642": {
+      "name": "鬼笔伯爵",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3643": {
+      "name": "芝芝酥",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3644": {
+      "name": "药尾灵螈",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3645": {
+      "name": "三坛枞",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3646": {
+      "name": "六月星菌",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3647": {
+      "name": "小红侍",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    },
+    "spirit_preview_s5_hidden-3648": {
+      "name": "红膏女爵",
+      "code": "incomplete-race-stats",
+      "reason": "目录六维不完整，无法与包体精确匹配。"
+    }
+  }
+}

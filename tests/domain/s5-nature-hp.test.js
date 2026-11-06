@@ -44,16 +44,17 @@ test('other species use the same calibrated formula as extrapolation, without a 
   }
 });
 
-test('HP change preserves the old five non-HP stats, direct damage, and own HP',()=>{
+test('HP and shiny status preserve current attacks, defenses, direct damage, and own HP',()=>{
   const input=inputFor('可爱猿',42);
   const base=previewMatchup(input,catalog,dice);
   const up=base.outgoing[0].predictions.find(row=>row.natureId===hpNatures.up.id);
   assert.equal(up.damage,316);
   assert.equal(up.hpMax,454);
   assert.equal(base.ownPanel.hp,403);
-  const normal=wildPanel(species('可爱猿').raceStats,42,hpNatures.neutral);
-  assert.deepEqual({...normal,hp:undefined},{hp:undefined,physicalAttack:109,magicalAttack:45,physicalDefense:89,magicalDefense:72,speed:43});
-  const shiny=wildPanel(species('可爱猿').raceStats,42,hpNatures.neutral,{shiny:true});
+  const attackRaceStats=species('可爱猿').wildAttackRaceStats;
+  const normal=wildPanel(species('可爱猿').raceStats,42,hpNatures.neutral,{attackRaceStats});
+  assert.deepEqual({...normal,hp:undefined},{hp:undefined,physicalAttack:372,magicalAttack:158,physicalDefense:89,magicalDefense:72,speed:43});
+  const shiny=wildPanel(species('可爱猿').raceStats,42,hpNatures.neutral,{shiny:true,attackRaceStats});
   assert.deepEqual({...shiny,hp:undefined},{...normal,hp:undefined});
   assert.equal(previewMatchup({...input,targetShiny:true},catalog,dice).outgoing[0].predictions.find(row=>row.natureId===hpNatures.up.id).damage,316);
 });

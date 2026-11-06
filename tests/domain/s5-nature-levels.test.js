@@ -72,9 +72,10 @@ test('only the all-level selection aggregates differences within the same nature
   assert.deepEqual(values(groups[1].predictions, 'damage'), [226, 224]);
 });
 
-// Neutral single-hit fixtures isolate the level term from type/trait mechanics.
+// Neutral single-hit fixtures use explicitly supplied stage-3 attacks to isolate
+// the level term from type/trait mechanics.
 const recordCatalog = { natures: catalog.natures,
-  spirits: [{ id: 'target', name: 'Target', types: ['x'], raceStats: { hp: 125, physicalAttack: 116, magicalAttack: 92, physicalDefense: 88, magicalDefense: 79, speed: 55 } }, { id: 'own', types: ['x'] }],
+  spirits: [{ id: 'target', name: 'Target', types: ['x'], wildAttackRaceStats: { physicalAttack: 116, magicalAttack: 92 }, raceStats: { hp: 125, physicalAttack: 116, magicalAttack: 92, physicalDefense: 88, magicalDefense: 79, speed: 55 } }, { id: 'own', types: ['x'] }],
   skills: [{ id: 'p', supported: true, category: 'physical', basePower: 100, type: 'x' }, { id: 'm', supported: true, category: 'magical', basePower: 100, type: 'x' }],
   learnsets: [{ spiritId: 'target', skillIds: ['p', 'm'] }], typeChart: { types: ['x'], matrix: [[1]] } };
 const recordProfile = { ...profile, id: 'profile', spiritId: 'own', awakening: 0,
@@ -84,18 +85,22 @@ const incoming = (id, damage) => ({ id, skillId: id, profileId: 'profile', direc
 
 test('incoming damage uses each wild attacker level and does not splice levels between observations', () => {
   const nature = catalog.natures.find(row => row.id === 'bold');
-  const at41 = predictObservation({ ...recordSession, level: 41 }, incoming('p', 61), nature, recordCatalog);
-  const at42 = predictObservation({ ...recordSession, level: 42 }, incoming('p', 63), nature, recordCatalog);
-  assert.equal(at41.damage, 61);
-  assert.equal(at42.damage, 63);
+  const at41 = predictObservation({ ...recordSession, level: 41 }, incoming('p', 133), nature, recordCatalog);
+  const at42 = predictObservation({ ...recordSession, level: 42 }, incoming('p', 137), nature, recordCatalog);
+  assert.equal(at41.damage, 133);
+  assert.equal(at42.damage, 137);
   const preview = previewMatchup({ targetId: 'target', level: 'all', profile: recordProfile, incomingSkillIds: ['p'] }, recordCatalog);
-  assert.equal(preview.incoming.predictions.find(row => row.targetLevel === 41 && row.natureId === nature.id).damage, 61);
-  assert.equal(preview.incoming.predictions.find(row => row.targetLevel === 42 && row.natureId === nature.id).damage, 63);
-  const first = solve({ ...recordSession, observations: [incoming('p', 61)] }, recordCatalog);
-  const second = solve({ ...recordSession, observations: [incoming('m', 61)] }, recordCatalog);
+  assert.equal(preview.incoming.predictions.find(row => row.targetLevel === 41 && row.natureId === nature.id).damage, 133);
+  assert.equal(preview.incoming.predictions.find(row => row.targetLevel === 42 && row.natureId === nature.id).damage, 137);
+  const first = solve({ ...recordSession, observations: [incoming('p', 133)] }, recordCatalog);
+  const second = solve({ ...recordSession, observations: [incoming('m', 136)] }, recordCatalog);
   assert(first.candidates.some(row => row.nature.id === nature.id && row.levels.includes(41)));
   assert(second.candidates.some(row => row.nature.id === nature.id && row.levels.includes(42)));
-  const combined = solve({ ...recordSession, observations: [incoming('p', 61), incoming('m', 61)] }, recordCatalog);
+  // Physical 133 identifies level 41, while magical 136 identifies level 42.
+  // Matching the same nature at different levels must not form one encounter.
+  assert.deepEqual(first.candidates.find(row => row.nature.id === nature.id).levels, [41]);
+  assert.deepEqual(second.candidates.find(row => row.nature.id === nature.id).levels, [42]);
+  const combined = solve({ ...recordSession, observations: [incoming('p', 133), incoming('m', 136)] }, recordCatalog);
   assert.equal(combined.modelStatus, 'conflict');
   assert.deepEqual(combined.candidates, []);
   assert.equal(combined.observations.at(-1).remainingCount, 0);
@@ -106,7 +111,7 @@ test('all-level record candidates are deduplicated with explicit matching levels
   const empty = solve(recordSession, recordCatalog);
   assert.equal(empty.candidates.length, 30);
   assert(empty.candidates.every(row => row.levels.join(',') === '41,42,43' && row.panels.length === 3));
-  const result = solve({ ...recordSession, observations: [incoming('p', 61)] }, recordCatalog);
+  const result = solve({ ...recordSession, observations: [incoming('p', 133)] }, recordCatalog);
   assert.equal(new Set(result.candidates.map(row => row.nature.id)).size, result.candidates.length);
   for (const candidate of result.candidates) assert.deepEqual(candidate.panels.map(row => row.level), candidate.levels);
   assert(!result.warnings.some(warning => warning.startsWith('没有性格同时匹配')));

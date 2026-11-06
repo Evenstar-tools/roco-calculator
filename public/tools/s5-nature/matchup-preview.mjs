@@ -65,13 +65,15 @@ function diceForSide(ids, manualEffects, diceCatalog, label) {
   return { ids: selectedIds, effects, warnings };
 }
 
-function withDicePanel(panel, dice) {
+function withDicePanel(panel, dice, { wildAttacks = false } = {}) {
   if (!isObject(panel)) throw new RangeError('请填写我方实际面板。');
   const result = {};
   for (const stat of STATS) {
     if (!has(panel, stat) || panel[stat] === null || panel[stat] === undefined) continue;
-    if (!integer(panel[stat], 1, 100000)) throw new RangeError(`${STAT_LABELS[stat]}面板须为正整数。`);
-    result[stat] = Math.max(1, Math.round(panel[stat] * dice.effects[`${stat}Multiplier`]));
+    const preserve = wildAttacks && ['physicalAttack', 'magicalAttack'].includes(stat);
+    if (preserve ? !finite(panel[stat]) || panel[stat] < 1 || panel[stat] > 100000 : !integer(panel[stat], 1, 100000)) throw new RangeError(`${STAT_LABELS[stat]}面板须为正整数。`);
+    const value = panel[stat] * dice.effects[`${stat}Multiplier`];
+    result[stat] = Math.max(1, preserve ? value : Math.round(value));
   }
   return result;
 }
@@ -140,6 +142,7 @@ function damageEntry(skillId, overrideValue, direction, context) {
     if (!skill) throw new RangeError('请选择已收录的技能。');
     const override = readOverride(overrideValue);
     const incoming = direction === 'incoming';
+    if (incoming && target.wildAttackRaceStats === null) throw new RangeError('该精灵的三阶段双攻资料缺失。');
     const attacker = incoming ? target : ownSpirit;
     const defender = incoming ? ownSpirit : target;
     const attackerDice = incoming ? targetDice : ownDice;
@@ -226,8 +229,8 @@ export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
     const targetDice = diceForSide(input.targetDiceIds, input.targetDiceEffects, diceCatalog, '敌方');
     const ownPanel = withDicePanel(input.profile.panel, ownDice);
     const candidates = catalog.natures.map(nature => {
-      const panel = wildPanel(target.raceStats, input.level, nature, { shiny: wildTargetShiny(input) });
-      return { nature, panel: withDicePanel(panel, targetDice),
+      const panel = wildPanel(target.raceStats, input.level, nature, { shiny: wildTargetShiny(input), attackRaceStats: target.wildAttackRaceStats });
+      return { nature, panel: withDicePanel(panel, targetDice, { wildAttacks: true }),
         hpModelName: WILD_HP_MODEL.confirmedSpecies.includes(target.name) ? '深蓝鲸实测生命曲线' : '生命曲线（统一公式外推）' };
     });
     const targetHpByNature = { neutral: null, up: null, down: null };

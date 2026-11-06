@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.15",
+    date: "2026.11.06",
+    seasonId: "S5",
+    title: "S5 野怪出招伤害修正",
+    whatsNew: S5_FEATURE_INTRO,
+    fixes: ["野怪物攻、魔攻按家族三阶段数据与成长值计算，敌方出招同步性格、骰子和我方防御。", "保留41–43级对照与奇遇生命公式；国际服S3季中保持现状。"],
+  }),
+  createRelease({
     version: "v2.3.14",
     date: "2026.11.06",
     seasonId: "S5",
