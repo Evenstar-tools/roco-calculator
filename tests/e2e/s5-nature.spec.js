@@ -314,3 +314,61 @@ test("S5 nature presets share calculator configurations and preserve saved manua
     await expect(page.locator('#load-own-preset')).toBeEnabled();
   }
 });
+
+
+test("S5 nature cell picks use remaining HP and KO only highlights the selected cell", async ({ page }) => {
+  await page.goto(toolPath);
+  await expect(page.locator('#load-own-preset')).toBeEnabled();
+  await chooseTarget(page, '可爱猿');
+  await page.getByRole('group', { name: '野怪等级', exact: true }).getByRole('button', { name: '41', exact: true }).click();
+  const cells = page.locator('#preview-cells-0');
+  const hp = cells.locator('[data-nature-group="hp"][data-nature-condition="base"]');
+  const same = cells.locator('[data-nature-group="magicalDefense"][data-nature-condition="base"]');
+  await expect(hp.locator('.dmg')).toHaveText('103');
+  await expect(same.locator('.dmg')).toHaveText('103');
+  await expect(hp.locator('.rem b')).toHaveText('77%');
+  const verdict = page.locator('#preview-verdict .verdict-big');
+  // Identical damage does not identify HP nature; the surviving percentage does.
+  await page.locator('#preview-observed-0').fill('103');
+  await page.locator('#preview-observed-0').press('Tab');
+  await expect(verdict).not.toHaveText('生命↑');
+  await hp.locator('.rem').click();
+  await expect(hp).toHaveAttribute('aria-pressed', 'true');
+  await expect(cells.locator('.hit,.miss')).toHaveCount(0);
+  await expect(verdict).toHaveText('生命↑');
+  await expect(page.locator('#preview-verdict')).toContainText('余 77%');
+  await page.reload();
+  await expect(hp).toHaveAttribute('aria-pressed', 'true');
+  await expect(verdict).toHaveText('生命↑');
+  await hp.locator('.rem').click();
+  await expect(cells.locator('.picked')).toHaveCount(0);
+  await expect(verdict).toHaveText('待实测');
+  await chooseTarget(page, '小翼龙');
+  const picker = page.getByRole('combobox', { name: '我方技能 1', exact: true });
+  await picker.fill('地震');
+  await page.getByRole('option').getByText('地震', { exact: true }).click();
+  await expect(hp.locator('.ko')).toHaveText('一击倒 · 0%');
+  await hp.locator('.dmg').click();
+  await expect(hp).toHaveClass(/\bpicked\b/);
+  await expect(verdict).toHaveText('待实测');
+  await same.locator('.dmg').click();
+  await expect(same).toHaveClass(/\bpicked\b/);
+  await expect(cells.locator('.picked')).toHaveCount(1);
+  await expect(cells.locator('.hit,.miss')).toHaveCount(0);
+  await expect(verdict).toHaveText('待实测');
+  await expect(page.locator('#preview-verdict .evidence')).toHaveCount(0);
+  await page.reload();
+  await expect(same).toHaveClass(/\bpicked\b/);
+  await expect(verdict).toHaveText('待实测');
+  for (const [width, height] of [[1280,1000],[390,844]]) {
+    await page.setViewportSize({width,height});
+    await same.scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({path:`output/playwright/s5-ko-selection-${width}.png`});
+  }
+  await page.locator('#preview-observed-unit-0').click();
+  await page.locator('#preview-observed-0').fill('0');
+  await page.locator('#preview-observed-0').press('Tab');
+  await expect(verdict).toHaveText('待实测');
+  await expect(cells.locator('.hit,.miss,.picked')).toHaveCount(0);
+});
