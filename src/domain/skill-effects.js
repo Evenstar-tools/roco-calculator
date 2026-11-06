@@ -15,6 +15,21 @@ const numberInput = (key, label, min = 0, max, defaultValue) => ({
   type: "number",
 });
 
+const overchargeCountInput = numberInput("s5OverchargeChargeCount", "聚能次数", 0, undefined, 0);
+const [overchargeCountControl] = normalizeTriggerControls([overchargeCountInput], { source: "skill" });
+const [legacyOverchargeControl] = normalizeTriggerControls([
+  booleanInput("s5OverchargeActivated", "已聚能至少1次"),
+], { source: "skill" });
+
+export function readOverchargeCount(context = {}) {
+  context ??= {};
+  const hasCount = [overchargeCountControl.id, `skill.${overchargeCountControl.contextKey}`, overchargeCountControl.contextKey]
+    .some(key => Object.hasOwn(context, key));
+  const control = hasCount ? overchargeCountControl : legacyOverchargeControl;
+  const value = projectTriggerContext(context, [control])[control.contextKey];
+  return hasCount ? value : value === true ? 1 : 0;
+}
+
 export const SWEET_TRAP_ENERGY_RANGE = Object.freeze([0, 99]);
 
 const choiceInput = (key, label, options, defaultValue) => ({
@@ -276,7 +291,11 @@ const REVIEWED_EFFECTS = Object.freeze({
     ruleId: "count_cost_reduction",
     ruleParams: { contextKey: "s5EnergySpentBeforeUse", label: "累计耗能永久减耗", threshold: 10, reduction: 5, defaultValue: 0 },
   },
-  过充电: booleanAdd("s5OverchargeActivated", "已聚能至少1次", 30),
+  过充电: {
+    inputs: [overchargeCountInput],
+    ruleId: "stack_scaled",
+    ruleParams: { contextKey: "s5OverchargeChargeCount", label: "聚能次数", perStack: 30, defaultValue: 0 },
+  },
   离岸流: {
     inputs: [numberInput("s5WaterSkillUseCount", "此前水系技能次数", 0, undefined, 0)],
     ruleId: "count_cost_reduction",
@@ -1117,4 +1136,4 @@ export function hasDeclaredHitCount(skill) {
   return Boolean(getEditableHitCountInput(skill)) ||
     /(\d+)\s*连击/u.test(String(skill?.description ?? ""));
 }
-import { normalizeTriggerControls } from "./trigger-controls.js";
+import { normalizeTriggerControls, projectTriggerContext } from "./trigger-controls.js";

@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.11",
+    date: "2026.11.06",
+    seasonId: "S5",
+    title: "S5 电鹿过充电",
+    whatsNew: S5_FEATURE_INTRO,
+    features: ["电鹿首行新增过充电，每次聚能加30威力，斩杀线同步；国际服S3季中不变。"],
+  }),
+  createRelease({
     version: "v2.3.10",
     date: "2026.11.06",
     seasonId: "S5",

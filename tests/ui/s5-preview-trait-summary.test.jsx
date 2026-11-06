@@ -204,13 +204,13 @@ test("没有控件的候选仍显示摘要，未知机制原因不重复堆叠",
 });
 
 
-test.each([["gold-vein-dragon", "过充电", "已聚能至少1次"],
+test.each([["gold-vein-dragon", "过充电", "聚能次数"],
   ["underground-silver-dragon", "碎银", "此前累计消耗能量"]])("%s沿用特性计数，不再展示相同技能输入", (key, name, inputLabel) => {
   const attack = traitView(key);
   const selected = { ...skill, name };
   render(<SingleSkillEditor hitCount={1} selectedSkill={selected} skills={[selected]}
     attackerTrait={attack} attackerTraits={[attack.previewTraitEntity]} />);
-  expect(screen.queryByRole("spinbutton", { name: inputLabel })).toBeNull();
+  expect(screen.queryAllByRole("spinbutton", { name: inputLabel })).toHaveLength(key === "gold-vein-dragon" ? 1 : 0);
   expect(screen.queryByRole("checkbox", { name: inputLabel })).toBeNull();
   expect(screen.getByRole("spinbutton", { name: key === "gold-vein-dragon" ? "聚能次数" : "累计消耗能量" })).toBeInTheDocument();
 });

@@ -69,6 +69,45 @@ export function pruneCnProductionModule(code, id, { reviewedS5 = false } = {}) {
     // CN renders the source Chinese text; this table contains only EN/JA translations.
     return "export const calculatorMessages = {};";
   }
+  if (reviewedS5 && filename.endsWith("/src/i18n/calculator-text.js")) {
+    // Formal CN's locale hook is zh-CN; retain its interpolation and display-field returns.
+    const branches = [
+      ['if (locale === "zh-CN" || !source || depth > 8) return source;', "return source;"],
+      ['locale === "zh-CN" ? name : translateCalculatorText(name + "印记", locale)', "name"],
+      ['if (locale === "zh-CN") return entity?.displayName ?? entity?.fullName ?? entity?.name ?? "";', 'return entity?.displayName ?? entity?.fullName ?? entity?.name ?? "";'],
+      ['if (locale === "zh-CN") return entity?.description ?? "";', 'return entity?.description ?? "";'],
+    ];
+    const result = branches.reduce((result, [branch, replacement]) => {
+      if (!result.includes(branch)) throw new Error("Review CN calculator locale before pruning: " + id);
+      return result.replace(branch, replacement);
+    }, code);
+    const body = parse(result, { sourceType: "module" }).program.body;
+    const matcherNames = ["translatedStrings", "escape", "patterns"];
+    const matchers = body.filter(node => node.type === "VariableDeclaration" &&
+      node.declarations.some(declaration => matcherNames.includes(declaration.id.name)));
+    const translator = body.find(node => node.declaration?.id?.name === "translateCalculatorText")?.declaration;
+    const chineseReturn = translator?.body.body.find(node => node.type === "ReturnStatement" && node.argument?.name === "source");
+    if (!chineseReturn || matchers.length !== matcherNames.length || matchers.some((node, index) =>
+      node.kind !== "const" || node.declarations.length !== 1 || node.declarations[0].id.name !== matcherNames[index] ||
+      node.declarations[0].init?.type !== ["CallExpression", "ArrowFunctionExpression", "CallExpression"][index])) {
+      throw new Error("Review CN calculator matchers before pruning: " + id);
+    }
+    // These constructions are only used by each other and the unreachable EN/JA tail.
+    const allowed = [...matchers, { start: chineseReturn.end, end: translator.end }];
+    function inspect(node) {
+      if (!node || typeof node !== "object") return;
+      if (node.type === "Identifier" && matcherNames.includes(node.name) &&
+          !allowed.some(range => node.start >= range.start && node.end <= range.end)) {
+        throw new Error("Review CN calculator matcher use before pruning: " + id);
+      }
+      for (const child of Object.values(node)) {
+        if (Array.isArray(child)) child.forEach(inspect);
+        else if (child && typeof child === "object") inspect(child);
+      }
+    }
+    inspect(body);
+    return matchers.reduceRight((output, node) => output.slice(0, node.start) + output.slice(node.end), result);
+  }
   if (reviewedS5 && filename.endsWith("/src/i18n/useToolLocale.js")) {
     // Formal CN uses zh-CN. Its EN/JA catalogs are already omitted above;
     // make the existing Chinese return unconditional so the matcher is removed.

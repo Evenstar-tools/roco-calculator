@@ -1,6 +1,7 @@
 import {
   getDefaultHitCount,
   getSkillEffectInputs,
+  readOverchargeCount,
 } from "../domain/skill-effects.js";
 import { getSkillStatusEffectInputs } from "../domain/skill-status-effects.js";
 import { getNegativeStatusInputs } from "../domain/negative-status-rules.js";
@@ -566,6 +567,8 @@ function applyMatchupTraitDefaults(state, snapshot) {
 
 function migrateSkillContext(context, skill) {
   const controls = skillTriggerControls(skill);
+  const overcharge = controls.find(control => control.contextKey === "s5OverchargeChargeCount");
+  if (overcharge) context = { ...context, [overcharge.id]: readOverchargeCount(context) };
   return replaceSlotControls(
     context ?? {},
     controls,

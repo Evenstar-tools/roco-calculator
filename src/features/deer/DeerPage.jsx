@@ -162,6 +162,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     showFollowup: deferredShowFollowup,
     normalElectric: deferredNormalElectric,
     dischargeElectrified: deferredDischargeElectrified,
+    overchargeCount: deferredOverchargeCount,
     wishPowerType: deferredWishPowerType,
     wishPowerResponse: deferredWishPowerResponse,
   } = deferredSetup;
@@ -178,6 +179,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
       showFollowup: deferredShowFollowup,
       normalElectric: deferredNormalElectric,
       dischargeElectrified: deferredDischargeElectrified,
+      overchargeCount: deferredOverchargeCount,
       wishPowerType: deferredWishPowerType,
       wishPowerResponse: deferredWishPowerResponse,
   }), [
@@ -192,6 +194,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     deferredShowFollowup,
     deferredNormalElectric,
     deferredDischargeElectrified,
+    deferredOverchargeCount,
     deferredWishPowerType,
     deferredWishPowerResponse,
   ]);
@@ -319,7 +322,7 @@ export function DeerWorkspace({ snapshot, presets = {}, initialState = null, onR
     <section className="deer-results" aria-label={t("技能斩杀线")} aria-busy={updating}><div className="deer-results-heading"><h2>{t("技能斩杀线")}</h2><span className="deer-muted">{updating ? t("正在复算…") : t("目标生命 {v0} · 当前 {v1}%", { v0: stats.hp, v1: setup.defenderHp })}</span><label className="deer-check"><input type="checkbox" checked={setup.showFollowup} onChange={(event) => { setOptions({ showFollowup: event.target.checked }); if (!event.target.checked && expandedRow === "stone-counter") setExpandedRow("stone"); }} />{t("显示先发补刀")}</label></div>
       <div className="deer-table-scroll"><table className="deer-table"><thead><tr><th>{t("技能 / 条件")}</th><th>{t("属性")}</th><th>{t("单招最低")}{" "}</th>{setup.showFollowup && <th>{t("接先发最低")}{" "}</th>}<th>{t("当前")}{" "}{deferredSetup.stacks}{" "}{t("层伤害")}</th><th><span className="sr-only">{t("详情")}</span></th></tr></thead><tbody>
         {visibleRows.map((row) => <Fragment key={row.id}><tr className={`${expandedRow === row.id ? "is-selected" : ""}${activeMinimum?.id === row.id ? " is-recommended" : ""}`} aria-selected={activeMinimum?.id === row.id || undefined}>
-          <td><div className="deer-skill"><SkillIcon skill={row.skill} size={28} /><div><button type="button" className="deer-skill-name" aria-expanded={expandedRow === row.id} onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}>{t(row.label)}</button>{row.condition && <small className="deer-condition-tag">{t(row.condition)}</small>}{row.id === "bet-dark" && <label className="deer-check deer-electric" title={t("勾选将自身HP设为49%，取消恢复100%；手动修改血量时同步状态")}><input type="checkbox" checked={darkBetActive} onChange={(event) => setOptions({ attackerHp: event.target.checked ? 49 : 100 })} />{t("触发暗特效")}</label>}{row.id === "discharge" && <label className="deer-check deer-electric"><input type="checkbox" checked={setup.dischargeElectrified === true} onChange={(event) => setOptions({ dischargeElectrified: event.target.checked })} />{t("触发2层引电")}</label>}{row.id === "wish-power" && <label className="deer-check deer-electric" title={t("目标本回合使用状态技能时，愿力冲击威力×2.5")}><input type="checkbox" aria-label={t("愿力冲击触发应对")} checked={setup.wishPowerResponse === true} onChange={(event) => setOptions({ wishPowerResponse: event.target.checked })} />{t("触发应对")}</label>}{row.id === "arc" && <label className="deer-electric"><span className="sr-only">{t("普通电系技能")}</span><select aria-label={t("普通电系技能")} value={setup.normalElectric} onChange={(event) => setOptions({ normalElectric: event.target.value })}><option value="电弧">{t("电弧")}</option><option value="离子火花">{t("离子火花")}</option></select><small>{t("同威力 · 不同能耗")}</small></label>}</div></div></td>
+          <td><div className="deer-skill"><SkillIcon skill={row.skill} size={28} /><div><button type="button" className="deer-skill-name" aria-expanded={expandedRow === row.id} onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}>{t(row.label)}</button>{row.condition && <small className="deer-condition-tag">{t(row.condition)}</small>}{row.id === "bet-dark" && <label className="deer-check deer-electric" title={t("勾选将自身HP设为49%，取消恢复100%；手动修改血量时同步状态")}><input type="checkbox" checked={darkBetActive} onChange={(event) => setOptions({ attackerHp: event.target.checked ? 49 : 100 })} />{t("触发暗特效")}</label>}{row.id === "overcharge" && <label className="deer-number deer-electric"><span>{t("聚能次数")}</span><DraftNumberInput ariaLabel={t("聚能次数")} value={setup.overchargeCount ?? 0} min={0} step={1} onCommit={(value) => setOptions({ overchargeCount: Math.trunc(value) })} /></label>}{row.id === "discharge" && <label className="deer-check deer-electric"><input type="checkbox" checked={setup.dischargeElectrified === true} onChange={(event) => setOptions({ dischargeElectrified: event.target.checked })} />{t("触发2层引电")}</label>}{row.id === "wish-power" && <label className="deer-check deer-electric" title={t("目标本回合使用状态技能时，愿力冲击威力×2.5")}><input type="checkbox" aria-label={t("愿力冲击触发应对")} checked={setup.wishPowerResponse === true} onChange={(event) => setOptions({ wishPowerResponse: event.target.checked })} />{t("触发应对")}</label>}{row.id === "arc" && <label className="deer-electric"><span className="sr-only">{t("普通电系技能")}</span><select aria-label={t("普通电系技能")} value={setup.normalElectric} onChange={(event) => setOptions({ normalElectric: event.target.value })}><option value="电弧">{t("电弧")}</option><option value="离子火花">{t("离子火花")}</option></select><small>{t("同威力 · 不同能耗")}</small></label>}</div></div></td>
           <td><span className="deer-element"><ElementIcon type={row.skill.type} size={17} />{typeName(row.skill.type)}</span></td>
           <td className="deer-threshold" data-label={t("单招最低")}>{t(minimumText(row.minimum, row.current.lethalKnown))}</td>
           {setup.showFollowup && <td className="deer-threshold" data-label={t("接先发最低")}>{t(row.id === "first" ? "—" : minimumText(row.comboMinimum, row.current.lethalKnown))}</td>}

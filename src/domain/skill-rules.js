@@ -1,5 +1,5 @@
 import { getSkillEffectRule } from "./skill-effects.js";
-import { getSkillEffectInputs } from "./skill-effects.js";
+import { getSkillEffectInputs, readOverchargeCount } from "./skill-effects.js";
 import { projectTriggerContext } from "./trigger-controls.js";
 
 const DIFFERENCE_POWER_TABLE = Object.freeze([
@@ -1234,7 +1234,10 @@ export function usesAbsolutePowerRule(skill) {
 }
 
 export function resolveSkillPower(skill, context = {}) {
-  context = projectTriggerContext(context, getSkillEffectInputs(skill));
+  const controls = getSkillEffectInputs(skill);
+  const overcharge = controls.find(control => control.contextKey === "s5OverchargeChargeCount");
+  if (overcharge) context = { ...context, [overcharge.id]: readOverchargeCount(context) };
+  context = projectTriggerContext(context, controls);
   if (!skill || skill.category === "status" || skill.category === "defense") {
     return {
       status: "unsupported",
