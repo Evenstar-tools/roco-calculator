@@ -1,5 +1,6 @@
 import { test, expect } from 'vitest';
-import { natureAxisState, observationMatch, readOutgoingObservations, splitNatureConditions, validatePreviewSettings } from '../../public/tools/s5-nature/matchup-ui.mjs';
+import { readFileSync } from 'node:fs';
+import { incomingSkillOptions, natureAxisState, observationMatch, readOutgoingObservations, splitNatureConditions, validatePreviewSettings } from '../../public/tools/s5-nature/matchup-ui.mjs';
 
 const sessionWith = override => ({ profiles: [{ preview: { skillOverrides: { skill: override } } }],
   preview: { incomingOverridesList: [override] } });
@@ -176,4 +177,25 @@ test('preview settings validate optional HP-line pick segments and retain old pi
   for (const pick of ['hp:up', 'hp:base:other', 'hp:base:up:extra', 'hp::up', 'unknown:base:up']) {
     expect(() => validatePreviewSettings({ profiles: [{ preview: { picked: { 0: pick } } }] })).toThrow();
   }
+});
+
+test('enemy current-move options keep native skills first and retain recorded off-learnset attacks', () => {
+  const catalog = JSON.parse(readFileSync('public/tools/s5-nature/data/catalog.json', 'utf8'));
+  const target = catalog.spirits.find(spirit => spirit.name === '沉金兽');
+  const nativeIds = catalog.learnsets.find(row => row.spiritId === target.id).skillIds;
+  const ghost = catalog.skills.find(skill => skill.name === '撞鬼');
+  const electric = catalog.skills.find(skill => skill.name === '通电');
+  const before = [...nativeIds];
+  expect(nativeIds).not.toContain(ghost.id);
+  const options = incomingSkillOptions(catalog, target.id);
+  const ids = options.map(skill => skill.id);
+  expect(ids.slice(0, nativeIds.length)).toEqual(nativeIds);
+  expect(ids).toContain(ghost.id);
+  expect(ids).toContain(electric.id);
+  expect(new Set(ids).size).toBe(ids.length);
+  expect(options.filter(skill => !nativeIds.includes(skill.id)).every(skill => ['physical', 'magical'].includes(skill.category))).toBe(true);
+  expect(nativeIds).toEqual(before);
+  const saved = { profiles: [], preview: { incomingSkillIds: [ghost.id, electric.id], incomingDamages: [37, 32] } };
+  expect(() => validatePreviewSettings(saved)).not.toThrow();
+  expect(JSON.parse(JSON.stringify(saved)).preview.incomingSkillIds.every(id => ids.includes(id))).toBe(true);
 });

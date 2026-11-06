@@ -5,8 +5,8 @@
     "sourceRevision": "ee68d4a020225614a679b180050ba54c78177a01",
     "scope": "all-calculator-species-selectable; wild-level-41-43-basic-formula-preview",
     "calibrationStatus": "unverified",
-    "verification": "HP and 30 whale incoming samples retained. Stage-3 defense uses empirical coefficients with source-form calibrations. Wing-dragon level 42 matches neutral 684/540/99 and defense-up 207; three other defense discrepancies remain. Incoming dulling uses approximate field discounts. Display power is separate from final PVE power.",
-    "calibrationNote": "生命和双攻沿用已核公式；双防优先按源物种实测校准，其余按目标强度阶段拟合；小翼龙42级中性与加物防实测已接入，其他等级沿用成长式；钝化使用实测折扣。",
+    "verification": "HP and 30 whale incoming samples retained. Native attack stages use cross-species empirical multipliers, not recovered game code. Four live physical-defense points are bounded by source, level, nature, race and stage. Full capture replay: 14 conditional matches, 1 automatic mismatch, 1 missing input, 6 separate resource costs; dynamic-power and snapshot gaps remain.",
+    "calibrationNote": "生命保留原核验数据；双攻按本形态与强度阶段拟合；双防新增四个有限实测点，其余保留原模型。抵抗钝化0.6仍属实测拟合；完整实录保留自动威力缺口和未吻合项。",
     "sources": [
       {
         "title": "国服固定源码与S5运行数据",
@@ -46,7 +46,7 @@
       "originalGameFormulaRecovered": false
     },
     "wildDefenseModel": {
-      "id": "s5-stage3-defense-v2",
+      "id": "s5-source-defense-v3",
       "source": "user-authorized-encounter-formula-handoff-20261106",
       "kind": "empirical-formula",
       "raceStrengthStage": 3,
@@ -55,6 +55,8 @@
       "rounding": "none",
       "shinyMultiplier": 1,
       "originalGameFormulaRecovered": false,
+      "liveObservationSource": "pve-live-20261107-003806-000353",
+      "observedPointScope": "source-form, level, defense-nature band, race and strength-stage; blood and awakening are not runtime-matched",
       "coefficients": {
         "1": {
           "physicalDefense": 1.806,
@@ -79,6 +81,101 @@
             "neutral",
             "up"
           ]
+        },
+        "3398": {
+          "physicalDefensePoints": [
+            {
+              "level": 42,
+              "naturePercent": 100,
+              "raceDefense": 76,
+              "strengthStage": 1,
+              "effectiveDefense": 174,
+              "interval": [
+                173.8627787307,
+                174.1615120275
+              ],
+              "intervalBounds": "(lower,upper]",
+              "fixedOutgoingCorrectionMultiplier": 1.8,
+              "encounters": [
+                4,
+                5
+              ],
+              "observedBloodIds": [
+                23,
+                24
+              ],
+              "observedPreHitBloodIds": [
+                11,
+                24
+              ]
+            }
+          ],
+          "formulaVerified": false
+        },
+        "3444": {
+          "physicalDefensePoints": [
+            {
+              "level": 42,
+              "naturePercent": 100,
+              "raceDefense": 85,
+              "strengthStage": 3,
+              "effectiveDefense": 137,
+              "interval": [
+                136.6796116505,
+                137.3463414634
+              ],
+              "intervalBounds": "(lower,upper]",
+              "encounters": [
+                1
+              ],
+              "observedBloodIds": [
+                9
+              ]
+            },
+            {
+              "level": 43,
+              "naturePercent": 90,
+              "raceDefense": 85,
+              "strengthStage": 3,
+              "effectiveDefense": 126,
+              "interval": [
+                125.6964285714,
+                126.2600896861
+              ],
+              "intervalBounds": "(lower,upper]",
+              "encounters": [
+                2
+              ],
+              "observedBloodIds": [
+                13
+              ]
+            }
+          ],
+          "formulaVerified": false
+        },
+        "3802": {
+          "physicalDefensePoints": [
+            {
+              "level": 43,
+              "naturePercent": 100,
+              "raceDefense": 127,
+              "strengthStage": 1,
+              "effectiveDefense": 254,
+              "interval": [
+                253.6576576577,
+                254.421686747
+              ],
+              "intervalBounds": "(lower,upper]",
+              "encounters": [
+                6,
+                7
+              ],
+              "observedBloodIds": [
+                24
+              ]
+            }
+          ],
+          "formulaVerified": false
         }
       }
     }

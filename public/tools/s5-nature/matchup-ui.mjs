@@ -150,6 +150,19 @@ function shortReason(reason='') {
   return reason || '无法计算';
 }
 
+// 当次敌方招式可超出静态学习面；追加攻击招式仅供记录，不改变默认选技或学习面。
+export function incomingSkillOptions(catalog, targetId) {
+  const skills = new Map(catalog.skills.map(skill => [skill.id, skill]));
+  const native = (catalog.learnsets.find(row => row.spiritId === targetId)?.skillIds ?? []).map(id => skills.get(id));
+  const attacks = catalog.skills.filter(skill => ['physical', 'magical'].includes(skill.category));
+  const seen = new Set();
+  return [...native, ...attacks].filter(skill => {
+    if (!skill || seen.has(skill.id)) return false;
+    seen.add(skill.id);
+    return true;
+  });
+}
+
 // 我方档案保存四技能、骰子与特性层数；敌方技能与骰子属于本场遭遇。
 export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession, getProfile, commit }) {
   const skills = new Map(catalog.skills.map(s => [s.id,s]));
@@ -230,7 +243,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       encounter.incomingDamages = [encounter.incomingDamage ?? null, null];
       for (const key of ['incomingSkillId','incomingOverrides','incomingDamage']) delete encounter[key];
     }
-    const enemyRows = learnset(session.targetId);
+    const enemyRows = incomingSkillOptions(catalog, session.targetId);
     encounter.incomingSkillIds = Array.from({length:INCOMING_SLOTS},(_,i)=>enemyRows.some(s=>s.id===encounter.incomingSkillIds[i])?encounter.incomingSkillIds[i]:'');
     encounter.incomingOverridesList = Array.from({length:INCOMING_SLOTS},(_,i)=>object(encounter.incomingOverridesList?.[i])?encounter.incomingOverridesList[i]:{});
     encounter.incomingDamages = Array.from({length:INCOMING_SLOTS},(_,i)=>encounter.incomingDamages?.[i] ?? null);
@@ -285,7 +298,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const id = incoming ? `preview-incoming-skill-${index}` : `preview-skill-${index}`;
     const anchor = incoming ? `preview-incoming-picker-${index}` : `preview-skill-picker-${index}`;
     pickers.push(createPicker({anchor,trigger:`${id}-input`,source:id,label:incoming?`敌方技能 ${index+1}`:`我方技能 ${index+1}`,rows:()=>{
-      const {profile,session}=state(); return incoming ? learnset(session.targetId) : ownLearnset(profile.spiritId);
+      const {profile,session}=state(); return incoming ? incomingSkillOptions(catalog, session.targetId) : ownLearnset(profile.spiritId);
     },image:s=>s.iconUrl ?? catalog.assets?.elements?.[s.type],describe:s=>`${s.type} · ${category(s)} · 威力 ${s.basePower ?? '—'}`}));
     $(id).addEventListener('change',()=>commit(()=>{
       const {own,encounter}=state();
@@ -410,9 +423,9 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       const items = row.predictions.filter(p => inColumn(p, key, columns, same));
       (items.some(p => observationMatch(p, obs, format)) ? hits : misses).push({ key, label, same: key === same });
     }
-    if (!hits.length) return { text: '不符', tone: 'bad' };
-    if (hits.length === 1 && !hits[0].same) return { text: `${hits[0].label}${hits[0].key==='other'?'':'↑'}`, tone: 'good' };
-    if (misses.length) return { text: `排除${misses.map(m=>`${m.label}${m.key==='other'?'':'↑'}`).join('/')}`, tone: 'cut' };
+    if (!hits.length) return { text: '模型未吻合', tone: 'bad' };
+    if (hits.length === 1 && !hits[0].same) return { text: `${hits[0].label}${hits[0].key==='other'?'':'↑'}（参考）`, tone: 'good' };
+    if (misses.length) return { text: `${misses.map(m=>`${m.label}${m.key==='other'?'':'↑'}`).join('/')}未吻合`, tone: 'cut' };
     return { text: '无区分', tone: 'flat' };
   }
   function incomingObservation(encounter, k) {
@@ -439,14 +452,14 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     for (let k=0;k<INCOMING_SLOTS;k++) addEvidence(result.incomingList?.[k], incomingObservation(encounter,k), true);
     const matching = catalog.natures.filter(n => levels.some(level => candidates.has(`${level}:${n.id}`)));
     const ready = !invalid && used > 0 && matching.length > 0;
-    const summary = invalid ? '输入有误' : !used ? '待实测' : !matching.length ? '数值未匹配' : `${matching.length} 种性格`;
+    const summary = invalid ? '输入有误' : !used ? '待实测' : !matching.length ? '模型未吻合' : `${matching.length} 个模型候选`;
     const axes = ['hp','physicalDefense','magicalDefense','physicalAttack','magicalAttack'].map(key => {
       const value = ready ? natureAxisState(matching,key) : '—';
       return `<div class="nature-axis" data-stat="${key}"><span class="axis-name">${catalog.assets?.stats?.[key]?`<img src="${html(catalog.assets.stats[key])}" alt=""/>`:''}${statNames[key]}</span><b class="${value==='加'?'up':value==='减'?'down':value==='—'?'empty':''}">${value}</b></div>`;
     }).join('');
-    const chips = ready ? `<details class="nature-details" ${matching.length <= 5 ? 'open' : ''}><summary>符合性格 · ${matching.length}</summary><div class="nature-chips">${matching.map(n=>`<span>${html(n.name)}<em>${statNames[n.upStat]}↑ ${statNames[n.downStat]}↓</em></span>`).join('')}</div></details>` : '';
-    $('preview-verdict').innerHTML = `<div class="rail-cap"><span>性格计算</span><span>${html(target?.name ?? '')} · ${levelLabel(encounter.level)} 级</span></div><div class="verdict-big${invalid || (used && !matching.length) ? ' bad' : !used ? ' empty' : ''}">${summary}</div><div class="nature-axes">${axes}</div>${chips}${evidence.length?`<div class="evidence">${evidence.map(e=>`<div><i class="dot ${e.tone}"></i><span>${html(e.label)}</span><b class="${e.tone}">${html(e.text)}</b></div>`).join('')}</div>`:''}<p id="preview-comparison" class="compat-hidden">${used?`${matching.length} 种性格符合`:''}</p>`;
-    $('preview-result-brief').textContent = ready && matching.length === 1 ? matching[0].name : summary;
+    const chips = ready ? `<details class="nature-details" ${matching.length <= 5 ? 'open' : ''}><summary>模型候选 · ${matching.length}</summary><div class="nature-chips">${matching.map(n=>`<span>${html(n.name)}<em>${statNames[n.upStat]}↑ ${statNames[n.downStat]}↓</em></span>`).join('')}</div></details>` : '';
+    $('preview-verdict').innerHTML = `<div class="rail-cap"><span>性格计算</span><span>${html(target?.name ?? '')} · ${levelLabel(encounter.level)} 级</span></div><div class="verdict-big${invalid || (used && !matching.length) ? ' bad' : !used ? ' empty' : ''}">${summary}</div><p id="preview-comparison" class="verdict-note">经验模型，未吻合不能排除性格</p><div class="nature-axes">${axes}</div>${chips}${evidence.length?`<div class="evidence">${evidence.map(e=>`<div><i class="dot ${e.tone}"></i><span>${html(e.label)}</span><b class="${e.tone}">${html(e.text)}</b></div>`).join('')}</div>`:''}`;
+    $('preview-result-brief').textContent = ready && matching.length === 1 ? `${matching[0].name}（参考）` : summary;
     return { matching, used, invalid };
   }
   function traitSummary(info, stateValue, skillTypes) {
@@ -496,7 +509,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   function render() {
     const {session,profile,own,encounter}=state();
     const ownSpirit = spirits.get(profile.spiritId), target = spirits.get(session.targetId);
-    const ownRows=ownLearnset(profile.spiritId),enemyRows=learnset(session.targetId);
+    const ownRows=ownLearnset(profile.spiritId),enemyRows=incomingSkillOptions(catalog, session.targetId);
     const format = encounter.percentFormat ?? 'game0';
     for(let i=0;i<4;i++) {
       renderSkillControl(`preview-skill-${i}`,`preview-skill-meta-${i}`,`preview-condition-${i}`,ownRows,own.skillIds[i],own.skillOverrides[own.skillIds[i]]);

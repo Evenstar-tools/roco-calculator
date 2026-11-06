@@ -4,6 +4,8 @@ import { readFileSync } from 'node:fs';
 import { calculateWildDefense, WILD_DEFENSE_MODEL } from '../../public/tools/s5-nature/wild-defense.mjs';
 import { calculateDamage } from '../../public/tools/s5-nature/vendor/damage.mjs';
 import { previewMatchup } from '../../public/tools/s5-nature/matchup-preview.mjs';
+import { predictObservation } from '../../public/tools/s5-nature/engine.mjs';
+import { formatGamePercent } from '../../public/tools/s5-nature/hp-inverse.mjs';
 import { buildWildDefenseRaceData } from '../../scripts/prepare-s5-wild-defense.mjs';
 
 const read = name => JSON.parse(readFileSync(`public/tools/s5-nature/data/${name}.json`, 'utf8'));
@@ -20,6 +22,68 @@ function replay([name, level, stat, direction, attack, power]) {
   return calculateDamage({ attackerStat: attack, defenderDefense: defense, displayedPower: power, level: 60 }).total;
 }
 const PD = 'physicalDefense', MD = 'magicalDefense';
+
+test('archived live target powers reproduce measured damage through automatic and manual previews', () => {
+  const cases = [
+    ['噼啪鸟', 42, 'brave', ['地刺', '火焰切割'], [360, 100], [1331, 205]],
+    ['噼啪鸟', 43, 'gentle', ['火焰切割'], [100], [223]],
+    ['星尘虫', 42, 'adamant', ['火焰切割'], [200], [582]],
+    ['星尘虫', 42, 'timid', ['火焰切割'], [200], [582]],
+    ['沉金兽', 43, 'grounded', ['地刺', '火焰切割', '彼岸之手'], [360, 100, 300], [718, 110, 332]],
+  ];
+  for (const [name, level, natureId, names, powers, damages] of cases) {
+    const moves = names.map(name => catalog.skills.find(row => row.name === name));
+    const input = { targetId: species(name).id, level,
+      profile: { spiritId: species('罗隐').id, level: 60, awakening: 5,
+        panel: { hp: 403, physicalAttack: 312, magicalAttack: 136, physicalDefense: 183, magicalDefense: 137, speed: 176 } },
+      skillIds: moves.map(move => move.id) };
+    for (const manual of [false, true]) {
+      const result = previewMatchup({ ...input, ...(manual ? {
+        skillOverrides: Object.fromEntries(moves.map((move, i) => [move.id, { displayedPower: powers[i] }])),
+      } : {}) }, catalog);
+      assert.deepEqual(result.outgoing.map(row => row.displayedPower), powers);
+      const rows = result.outgoing.map(entry => entry.predictions.find(row => row.natureId === natureId));
+      assert.deepEqual(rows.map(row => row.damage), damages, `${name}/${level}/${natureId}/${manual}`);
+      assert(rows.every(row => row.status === 'estimated'));
+      if (name === '沉金兽') {
+        // User's "remaining 74" matches the first hit on the 420-point shield.
+        // The old wrong damage112 also rounded to74%; verify the exact pool too.
+        assert.equal(rows[1].hpMax, 420);
+        assert.equal(rows[1].remainingHp, 310);
+        assert.equal(formatGamePercent(rows[1].remainingPercent), 74);
+        // 332 was the third hit after two110 hits, not a fresh full-pool observation.
+        assert.equal(420 - rows[1].damage * 2, 200);
+      }
+      if (name === '噼啪鸟' && level === 43) {
+        assert.equal(calculateDamage({ attackerStat: 312, displayedPower: 100, level: 60,
+          defenderDefense: rows[0].defenderDefense, finalDamageMultiplier: 2 }).total, 446);
+      }
+    }
+  }
+});
+
+test('live defense points leave unmeasured levels, nature bands, forms and mappings on their previous model', () => {
+  for (const [source, race, stage, measuredLevel, direction] of [
+    [3444, 85, 3, 42, 'neutral'], [3444, 85, 3, 43, 'down'],
+    [3398, 76, 1, 42, 'neutral'], [3802, 127, 1, 43, 'neutral'],
+  ]) {
+    const nature = natureFor(PD, direction);
+    const otherLevel = 41;
+    assert.equal(calculateWildDefense(race, otherLevel, nature, PD, stage, source),
+      calculateWildDefense(race, otherLevel, nature, PD, stage));
+    assert.equal(calculateWildDefense(race, measuredLevel, natureFor(PD, 'up'), PD, stage, source),
+      calculateWildDefense(race, measuredLevel, natureFor(PD, 'up'), PD, stage));
+    assert.equal(calculateWildDefense(race + 1, measuredLevel, nature, PD, stage, source),
+      calculateWildDefense(race + 1, measuredLevel, nature, PD, stage));
+    const otherStage = stage === 1 ? 2 : 1;
+    assert.equal(calculateWildDefense(race, measuredLevel, nature, PD, otherStage, source),
+      calculateWildDefense(race, measuredLevel, nature, PD, otherStage));
+  }
+  assert.equal(calculateWildDefense(127, 43, natureFor(MD, 'neutral'), MD, 1, 3802),
+    calculateWildDefense(127, 43, natureFor(MD, 'neutral'), MD, 1));
+  assert.equal(calculateWildDefense(127, 43, natureFor(PD, 'neutral'), PD, 1, 3804),
+    calculateWildDefense(127, 43, natureFor(PD, 'neutral'), PD, 1));
+});
 
 test('stage coefficients reproduce the unrounded defense handoff across levels, natures and both categories', () => {
   const samples = [
@@ -151,4 +215,28 @@ test('defense exporter independently checks every allowed stage-3 branch', () =>
   assert.equal(buildWildDefenseRaceData(smallCatalog, attack, rows).bySpiritId.a.physicalDefense, 69);
   delete rows[1].spe_defence_race;
   assert.equal(buildWildDefenseRaceData(smallCatalog, attack, rows).missing.a.code, 'incomplete-defense-races');
+});
+
+test('absent defense mappings block outgoing previews and records without changing incoming or HP', () => {
+  const target = species('沉金兽');
+  const fire = catalog.skills.find(row => row.name === '火焰切割');
+  const incoming = catalog.skills.find(row => row.name === '龙炮');
+  const profile = { id: 'own', spiritId: species('罗隐').id, level: 60, awakening: 5,
+    panel: { hp: 403, physicalAttack: 312, magicalAttack: 136, physicalDefense: 183, magicalDefense: 137, speed: 151 } };
+  const input = { targetId: target.id, level: 43, profile, skillIds: [fire.id], incomingSkillId: incoming.id };
+  const baseline = previewMatchup(input, catalog);
+  const absent = structuredClone(catalog);
+  delete absent.spirits.find(row => row.id === target.id).wildDefenseRaceStats;
+  const result = previewMatchup(input, absent);
+  assert.equal(result.outgoing[0].status, 'unsupported');
+  assert.match(result.outgoing[0].reason, /三阶段双防资料缺失/);
+  assert.deepEqual(result.outgoing[0].predictions, []);
+  assert.deepEqual(result.incoming, baseline.incoming);
+  assert.deepEqual(result.targetHpByNature, baseline.targetHpByNature);
+  const observation = { id: 'outgoing', profileId: 'own', skillId: fire.id,
+    direction: 'outgoing', damage: 110, context: 'clean', reduction: 1 };
+  const record = predictObservation({ targetId: target.id, level: 43, profiles: [profile] },
+    observation, natureFor(PD, 'neutral'), absent);
+  assert.equal(record.status, 'blocked');
+  assert.match(record.reason, /三阶段双防资料缺失/);
 });

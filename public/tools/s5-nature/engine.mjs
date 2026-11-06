@@ -144,7 +144,7 @@ function damageContext(prepared, obs) {
   if (!skill || skill.supported !== true || !['physical', 'magical'].includes(skill.category) || !isNumber(skill.basePower) || skill.basePower <= 0 || skill.basePower > 10000) {
     return { error: '该技能尚未纳入简单单击白名单，暂不参与反推。' };
   }
-  if (obs.direction === 'outgoing' && target.wildDefenseRaceStats === null) return { error: '该精灵的三阶段双防资料缺失。' };
+  if (obs.direction === 'outgoing' && target.wildDefenseRaceStats == null) return { error: '该精灵的三阶段双防资料缺失。' };
   if (obs.direction === 'incoming' && target.wildAttackRaceStats == null) return { error: '该精灵的三阶段双攻资料缺失。' };
   if (obs.direction === 'incoming' && ![1, 2, 3].includes(target.wildStrengthStage)) return { error: '野怪强度阶段缺失或无效，双攻计算需要明确的1至3阶段。' };
   const requiredStat = obs.direction === 'incoming'

@@ -1,9 +1,10 @@
 // Field fits use the ordinary family's strength-stage-3 defense races. Prefer
 // measurements for the exact source form; strength-stage coefficients are the
 // fallback, not proof that different species have identical defenses.
-// Neither the base nor nature-adjusted defense is rounded before damage.
+// Observed effective-defense points match only their recorded level/nature band
+// and source mapping. The fallback keeps its original fractional growth model.
 export const WILD_DEFENSE_MODEL = Object.freeze({
-  id: 's5-stage3-defense-v2',
+  id: 's5-source-defense-v3',
   source: 'user-authorized-encounter-formula-handoff-20261106',
   kind: 'empirical-formula',
   raceStrengthStage: 3,
@@ -12,6 +13,8 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
   rounding: 'none',
   shinyMultiplier: 1,
   originalGameFormulaRecovered: false,
+  liveObservationSource: 'pve-live-20261107-003806-000353',
+  observedPointScope: 'source-form, level, defense-nature band, race and strength-stage; blood and awakening are not runtime-matched',
   coefficients: Object.freeze({
     1: Object.freeze({ physicalDefense: 1.806, magicalDefense: 1.806 }),
     2: Object.freeze({ physicalDefense: 1.65725, magicalDefense: 1.6005 }),
@@ -25,6 +28,38 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
     3209: Object.freeze({ physicalDefense: 1.643,
       measuredLevels: Object.freeze([42]),
       measuredPhysicalDefenseNatures: Object.freeze(['neutral', 'up']) }),
+    // Only super-effective observations exist here; D174 is conditional on K1.8.
+    3398: Object.freeze({
+      physicalDefensePoints: Object.freeze([
+        Object.freeze({ level: 42, naturePercent: 100, raceDefense: 76, strengthStage: 1,
+          effectiveDefense: 174, interval: Object.freeze([173.8627787307, 174.1615120275]),
+          intervalBounds: '(lower,upper]', fixedOutgoingCorrectionMultiplier: 1.8,
+          encounters: Object.freeze([4, 5]), observedBloodIds: Object.freeze([23, 24]),
+          // Encounter 4 reveals pollution only after the hit (blood11 ->23).
+          // Keep hit-time evidence separate from retrospective form/blood IDs.
+          observedPreHitBloodIds: Object.freeze([11, 24]) }),
+      ]),
+      formulaVerified: false }),
+    // Exact source/level/nature points only; magical defense keeps its prior model.
+    3444: Object.freeze({
+      physicalDefensePoints: Object.freeze([
+        Object.freeze({ level: 42, naturePercent: 100, raceDefense: 85, strengthStage: 3,
+          effectiveDefense: 137, interval: Object.freeze([136.6796116505, 137.3463414634]),
+          intervalBounds: '(lower,upper]', encounters: Object.freeze([1]), observedBloodIds: Object.freeze([9]) }),
+        Object.freeze({ level: 43, naturePercent: 90, raceDefense: 85, strengthStage: 3,
+          effectiveDefense: 126, interval: Object.freeze([125.6964285714, 126.2600896861]),
+          intervalBounds: '(lower,upper]', encounters: Object.freeze([2]), observedBloodIds: Object.freeze([13]) }),
+      ]),
+      formulaVerified: false }),
+    // Neutral fire100 ->110 and dark300 ->332 jointly constrain D; ground360
+    // ->718 with K1.8 cross-checks another encounter with equal initial snapshots.
+    3802: Object.freeze({
+      physicalDefensePoints: Object.freeze([
+        Object.freeze({ level: 43, naturePercent: 100, raceDefense: 127, strengthStage: 1,
+          effectiveDefense: 254, interval: Object.freeze([253.6576576577, 254.4216867470]),
+          intervalBounds: '(lower,upper]', encounters: Object.freeze([6, 7]), observedBloodIds: Object.freeze([24]) }),
+      ]),
+      formulaVerified: false }),
   }),
 });
 
@@ -43,7 +78,12 @@ export function calculateWildDefense(raceDefense, level, nature, stat, strengthS
   if (![1, 2, 3].includes(strengthStage)) throw new RangeError('野怪强度阶段资料缺失。');
   const base = 10 + raceDefense * (level + 50) / 100;
   const naturePercent = nature.upStat === stat ? 110 : nature.downStat === stat ? 90 : 100;
-  const coefficient = WILD_DEFENSE_MODEL.sourceFormCalibrations[sourcePetbaseId]?.[stat]
+  const calibration = WILD_DEFENSE_MODEL.sourceFormCalibrations[sourcePetbaseId];
+  const observed = stat === 'physicalDefense' && calibration?.physicalDefensePoints?.find(point =>
+    point.level === level && point.naturePercent === naturePercent
+    && point.raceDefense === raceDefense && point.strengthStage === strengthStage);
+  if (observed) return observed.effectiveDefense;
+  const coefficient = calibration?.[stat]
     ?? WILD_DEFENSE_MODEL.coefficients[strengthStage][stat];
   return coefficient * (base * naturePercent / 100 + WILD_DEFENSE_MODEL.baseTail);
 }

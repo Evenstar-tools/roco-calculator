@@ -361,7 +361,7 @@ test("S5 nature compact comparison keeps paired measurements separate from highl
   await expect(damage).toHaveValue('103'); await expect(remaining).toHaveValue('77');
   // Each field individually exists, but no single nature matches this pair.
   await damage.fill('94'); await damage.press('Tab');
-  await expect(verdict).toHaveText('数值未匹配');
+  await expect(verdict).toHaveText('模型未吻合');
   await damage.fill('103'); await damage.press('Tab');
   await remaining.fill(''); await remaining.press('Tab');
   await expect(damage).toHaveValue('103'); await expect(hpAxis).toHaveText('—');
