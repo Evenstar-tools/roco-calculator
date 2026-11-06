@@ -98,3 +98,54 @@ test("S5 nature stays absent from the Global toolbox", async ({ page }) => {
   await expect(menu.locator(`a[href="${toolPath}"]`)).toHaveCount(0);
   await expect(menu).not.toContainText("S5奇异性格检测");
 });
+
+test("S5 nature incoming attack shows measured whale damage and matches nature", async ({ page }) => {
+  await page.goto(toolPath);
+  await page.locator('[data-profile="dimo"]').click();
+  await page.locator('#nature-picker-trigger').click();
+  await page.getByRole('textbox', { name: '搜索性格', exact: true }).fill('莽撞');
+  await page.locator('[data-nature-id="rash"]').click();
+  await page.locator('#ivs-zero').click();
+  for (const stat of ['physicalAttack', 'magicalAttack', 'speed']) {
+    await page.locator(`[data-iv-stat="${stat}"]`).click();
+  }
+  await page.locator('#own-trait-stacks').fill('0');
+  await page.locator('#own-trait-stacks').press('Tab');
+  await page.locator('#own-dice').selectOption('none');
+  await chooseTarget(page, '深蓝鲸');
+  await page.getByRole('group', { name: '野怪等级', exact: true })
+    .getByRole('button', { name: '41', exact: true }).click();
+  const picker = page.getByRole('combobox', { name: '敌方技能 1', exact: true });
+  await picker.fill('甩水');
+  await page.getByRole('option').getByText('甩水', { exact: true }).click();
+  const cells = page.locator('#preview-incoming-cells-0');
+  const normal = cells.locator('[data-nature-group="physicalAttack"][data-nature-condition="base"]');
+  const raised = cells.locator('[data-nature-group="magicalAttack"][data-nature-condition="base"]');
+  await expect(normal.locator('.dmg')).toHaveText('41');
+  await expect(raised.locator('.dmg')).toHaveText('45');
+  const result = await page.evaluate(() => window.pveNatureUi.getPreview());
+  expect(result.ownPanel.magicalDefense).toBe(163);
+  expect(result.incomingList[0].effectivePower).toBe(37.5);
+  expect(result.incomingList[0].manualPower).toBe(false);
+  await page.locator('#preview-incoming-damage-0').fill('45');
+  await page.locator('#preview-incoming-damage-0').press('Tab');
+  await expect(raised).toHaveClass(/\bhit\b/);
+  await expect(normal).toHaveClass(/\bmiss\b/);
+  await expect(page.locator('#preview-verdict .verdict-big')).toContainText('魔攻');
+
+  // A skill power die must recalculate the shown incoming damage immediately.
+  await page.locator('#target-dice').selectOption('manual-power-plus-40');
+  await expect(raised.locator('.dmg')).toHaveText('106');
+  await page.locator('#target-dice').selectOption('none');
+  await expect(raised.locator('.dmg')).toHaveText('45');
+  await page.locator('#preview-incoming-damage-0').click();
+  for (const [width, height] of [[1280, 1000], [390, 844]]) {
+    await page.setViewportSize({ width, height });
+    await cells.scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await expect(raised.locator('.dmg')).toBeVisible();
+    await page.screenshot({ path: `output/playwright/s5-incoming-${width}.png` });
+    if (width === 1280) await page.locator('#preview-incoming').locator('..')
+      .screenshot({ path: 'output/playwright/s5-incoming-result.png' });
+  }
+});
