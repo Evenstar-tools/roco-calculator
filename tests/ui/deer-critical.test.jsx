@@ -2,10 +2,52 @@ import { readFileSync } from "node:fs";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test } from "vitest";
 import { withCalculatorExtras } from "../../src/data/snapshot-extras.js";
+import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
 import { DeerWorkspace } from "../../src/features/deer/DeerPage.jsx";
 
 const snapshot = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
 const skillRow = (name) => screen.getByRole("button", { name, exact: true }).closest("tr");
+
+test("S5过充电首行按聚能次数连续加威，伤害和最低层数同步且不改变其他技能", () => {
+  render(<DeerWorkspace snapshot={withWebPreview(snapshot)} />);
+  const control = screen.getByRole("spinbutton", { name: "聚能次数" });
+  expect(control).toHaveValue(0);
+  expect(control).not.toHaveAttribute("max");
+  expect(skillRow("过充电")).toBe(screen.getAllByRole("row")[1]);
+  const threshold = () => skillRow("过充电").querySelector(".deer-threshold").textContent;
+  const before = threshold();
+  const arc = skillRow("电弧 · 普通").textContent;
+  fireEvent.click(screen.getByRole("button", { name: "查看过充电详情" }));
+  expect(screen.getByText(/实际威力 65/)).toBeInTheDocument();
+  fireEvent.change(control, { target: { value: "1" } });
+  expect(control).toHaveValue(1);
+  expect(screen.getByText(/实际威力 95/)).toBeInTheDocument();
+  expect(threshold()).not.toBe(before);
+  expect(skillRow("电弧 · 普通")).toHaveTextContent(arc);
+  fireEvent.change(control, { target: { value: "2" } });
+  expect(screen.getByText(/实际威力 125/)).toBeInTheDocument();
+  fireEvent.change(control, { target: { value: "1000" } });
+  expect(control).toHaveValue(1000);
+  expect(screen.getByText(/实际威力 30065/)).toBeInTheDocument();
+  fireEvent.change(control, { target: { value: "0" } });
+  expect(control).toHaveValue(0);
+  expect(screen.getByText(/实际威力 65/)).toBeInTheDocument();
+  expect(threshold()).toBe(before);
+});
+
+test("S5两种电鹿均保留过充电与聚能状态，旧资料不显示缺失技能", () => {
+  const { unmount } = render(<DeerWorkspace snapshot={snapshot} />);
+  expect(screen.queryByRole("button", { name: "过充电", exact: true })).toBeNull();
+  unmount();
+  render(<DeerWorkspace snapshot={withWebPreview(snapshot)} />);
+  fireEvent.change(screen.getByRole("spinbutton", { name: "聚能次数" }), { target: { value: "2" } });
+  fireEvent.change(screen.getByLabelText("攻击方精灵"), { target: { value: "爵士鹿" } });
+  fireEvent.click(screen.getByRole("option", { name: /爵士鹿/ }));
+  expect(screen.getByRole("spinbutton", { name: "聚能次数" })).toHaveValue(2);
+  fireEvent.click(screen.getByRole("button", { name: "查看过充电详情" }));
+  expect(screen.getByText(/实际威力 125/)).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "愿力冲击", exact: true })).toBeInTheDocument();
+});
 
 test("通电位于先发上方，默认只算直伤，勾选触发2层引电显示合计及拆分", () => {
   render(<DeerWorkspace snapshot={snapshot} />);

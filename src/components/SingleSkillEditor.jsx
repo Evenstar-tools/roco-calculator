@@ -79,7 +79,7 @@ export function withoutTraitLinkedSkillInputs(inputs, traits = []) {
   return inputs.filter(input => {
     const key = input.contextKey ?? input.key;
     return !(key === "s5EnergySpentBeforeUse" && mechanics.has("underground-silver-dragon") ||
-      key === "s5OverchargeActivated" && mechanics.has("gold-vein-dragon"));
+      key === "s5OverchargeChargeCount" && mechanics.has("gold-vein-dragon"));
   });
 }
 

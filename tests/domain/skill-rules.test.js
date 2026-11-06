@@ -4,8 +4,10 @@ import {
   getDefaultHitCount,
   getSkillEffectInputs,
   getSkillEffectRule,
+  readOverchargeCount,
 } from "../../src/domain/skill-effects.js";
 import { resolveSkillPower } from "../../src/domain/skill-rules.js";
+import { normalizeTriggerControls } from "../../src/domain/trigger-controls.js";
 
 function skill(overrides = {}) {
   return {
@@ -67,14 +69,46 @@ describe("resolveSkillPower", () => {
       .toMatchObject({ value: 200, resolvedCost: cases.at(-1)[1] });
   });
 
-  test("S5 过充电只在确认至少聚能一次后加30，不按次数叠加或因重复求值成长", () => {
+  test("S5 过充电每次聚能增加30威力，次数无上限且重复求值不推进次数", () => {
     const current = skill({ name: "过充电", basePower: 65, cost: 2 });
     const [control] = getSkillEffectInputs(current);
-    expect(control).toMatchObject({ contextKey: "s5OverchargeActivated", label: "已聚能至少1次", defaultValue: false });
+    expect(control).toMatchObject({ contextKey: "s5OverchargeChargeCount", label: "聚能次数", defaultValue: 0, min: 0, type: "number" });
+    expect(control).not.toHaveProperty("max");
     expect(resolveSkillPower(current, {})).toMatchObject({ value: 65 });
-    expect(resolveSkillPower(current, { [control.id]: true })).toMatchObject({ value: 95 });
-    expect(resolveSkillPower(current, { [control.id]: true })).toMatchObject({ value: 95 });
-    expect(resolveSkillPower(current, { s5OverchargeActivated: true, basePowerOverride: 100 })).toMatchObject({ value: 130 });
+    for (const count of [0, 1, 2, 10, 1000]) {
+      for (const key of [control.id, `skill.${control.contextKey}`, control.contextKey]) {
+        const context = { [key]: count };
+        for (let index = 0; index < 2; index++) expect(resolveSkillPower(current, context)).toMatchObject({ value: 65 + 30 * count });
+        expect(context).toEqual({ [key]: count });
+        expect(resolveSkillPower(current, { ...context, basePowerOverride: 100 })).toMatchObject({ value: 100 + 30 * count });
+      }
+    }
+    expect(resolveSkillPower(current, { [control.id]: 2.9 })).toMatchObject({ value: 125 });
+    expect(resolveSkillPower(current, { [control.id]: -1 })).toMatchObject({ value: 65 });
+  });
+
+  test("S5 过充电旧布尔保存值换为0/1，显式新次数包括0优先", () => {
+    const current = skill({ name: "过充电", basePower: 65, cost: 2 });
+    const [control] = getSkillEffectInputs(current);
+    const [legacy] = normalizeTriggerControls([{ key: "s5OverchargeActivated", label: "已聚能至少1次", type: "boolean", defaultValue: false }], { source: "skill" });
+    for (const key of [legacy.id, `skill.${legacy.contextKey}`, legacy.contextKey]) {
+      for (const active of [true, false]) {
+        const context = { [key]: active };
+        expect(readOverchargeCount(context)).toBe(active ? 1 : 0);
+        expect(resolveSkillPower(current, context)).toMatchObject({ value: active ? 95 : 65 });
+        expect(resolveSkillPower(current, { ...context, basePowerOverride: 100 })).toMatchObject({ value: active ? 130 : 100 });
+      }
+      for (const newKey of [control.id, `skill.${control.contextKey}`, control.contextKey]) {
+        for (const count of [0, 2]) {
+          const context = { [key]: true, [newKey]: count };
+          expect(readOverchargeCount(context)).toBe(count);
+          expect(resolveSkillPower(current, context)).toMatchObject({ value: 65 + 30 * count });
+        }
+      }
+    }
+    expect(readOverchargeCount({ [control.id]: 2.9 })).toBe(2);
+    expect(readOverchargeCount({ [control.id]: 0, [control.contextKey]: 10, [legacy.id]: true })).toBe(0);
+    expect(readOverchargeCount(null)).toBe(0);
   });
 
   test("S5 投毒只读取已确认生效的成长次数，不借用当前毒层数或普通技能使用次数", () => {

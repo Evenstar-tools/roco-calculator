@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { parse } from "@babel/parser";
 import { expect, test } from "vitest";
+import { translateUi } from "../../src/i18n/messages.js";
 import { CN_ICON_WEIGHTS, cnProductionPruningPlugin, pruneCnProductionModule } from "../../scripts/cn-production-pruning.mjs";
 
 test("CN preview excludes official Global display records while preserving export contracts and metadata", () => {
@@ -156,6 +157,142 @@ test("reviewed CN tool formatter keeps the exact Chinese branch and interpolatio
   for (const source of [null, undefined, 0, false, "", "龙骑士", "伤害{amount}，{missing}", "{amount}% × {hits}"]) {
     const values = { amount: 130, hits: 2 };
     expect(format(result)(source, "zh-CN", values)).toEqual(format(code)(source, "zh-CN", values));
+  }
+});
+
+test("reviewed CN calculator formatter preserves nonstrings, recursion and placeholder values", () => {
+  const filename = "src/i18n/calculator-text.js";
+  const code = readFileSync(filename, "utf8");
+  const branch = 'if (locale === "zh-CN" || !source || depth > 8) return source;';
+  expect(pruneCnProductionModule(code, `D:/project/${filename}`)).toBeNull();
+  const result = pruneCnProductionModule(code, `D:/project/${filename}`, { reviewedS5: true });
+  const declaration = source => parse(source, { sourceType: "module" }).program.body
+    .find(node => node.declaration?.id?.name === "translateCalculatorText").declaration;
+  // The earlier recursive renderer must stay unchanged.
+  expect(result.slice(declaration(result).start, declaration(result).end))
+    .toBe(code.slice(declaration(code).start, declaration(code).end).replace(branch, "return source;"));
+  const format = source => {
+    const node = declaration(source);
+    return new Function("translateUi", source.slice(node.start, node.end) + ";return translateCalculatorText;")(translateUi);
+  };
+  const before = format(code);
+  const after = format(result);
+  const object = { name: "龙骑士" };
+  for (const source of [null, undefined, 0, false, object]) {
+    expect(after(source)).toBe(source);
+    expect(after(source, "zh-CN", { v0: "文本" })).toBe(source);
+  }
+  expect(after("龙骑士")).toBe("龙骑士");
+  expect(after("", "zh-CN", {})).toBe("");
+  expect(after("伤害{v0}，{missing}", "zh-CN", { v0: 130 })).toBe("伤害130，{missing}");
+  expect(after("{v0}／{v1}／{v2}", "zh-CN", { v0: 0, v1: false, v2: null })).toBe("0／false／null");
+  // Substitution strings are processed without passing the outer values recursively.
+  expect(after("{v0}／{v1}", "zh-CN", { v0: "{v1}", v1: "已冻结" })).toBe("{v1}／已冻结");
+  for (const depth of [0, 7, 8, 9]) {
+    const args = ["当前：{v0}｜{v1}", "zh-CN", { v0: "冰封 · 伤害", v1: "{v0}" }, depth];
+    expect(after(...args)).toBe(before(...args));
+    expect(after("威力+20　能耗-1", "zh-CN", undefined, depth)).toBe(before("威力+20　能耗-1", "zh-CN", undefined, depth));
+  }
+  expect(() => pruneCnProductionModule(code.replace(branch, "return source;"), `D:/project/${filename}`, { reviewedS5: true }))
+    .toThrow("Review CN calculator locale before pruning");
+});
+
+test("reviewed CN calculator hook keeps Chinese display priorities and ignores Global canonical fallbacks", () => {
+  const filename = "src/i18n/calculator-text.js";
+  const code = readFileSync(filename, "utf8");
+  expect(pruneCnProductionModule(code, `D:/project/${filename}`, { reviewedS5: false })).toBeNull();
+  const result = pruneCnProductionModule(code, `D:/project/${filename}`, { reviewedS5: true });
+  const declarations = source => parse(source, { sourceType: "module" }).program.body
+    .filter(node => node.type === "ExportNamedDeclaration").map(node => node.declaration);
+  expect(declarations(result).map(node => node.id.name)).toEqual(declarations(code).map(node => node.id.name));
+  const hook = source => {
+    const declaration = declarations(source).find(node => node.id.name === "useCalculatorLocale");
+    return new Function("useLocale", "useMemo", "translateCalculatorText", "localizeType", "entityText",
+      source.slice(declaration.start, declaration.end) + ";return useCalculatorLocale;")(
+      () => ({ locale: "zh-CN" }),
+      (factory, dependencies) => { expect(dependencies).toEqual(["zh-CN"]); return factory(); },
+      (...args) => args,
+      (...args) => args,
+      new Proxy({}, { get() { throw new Error("Chinese display must not query Global canonical text"); } }),
+    )();
+  };
+  const before = hook(code);
+  const after = hook(result);
+  expect(Object.keys(after)).toEqual(Object.keys(before));
+  expect(after.locale).toBe("zh-CN");
+  expect(after.tc("伤害{v0}", { v0: 130 })).toEqual(["伤害{v0}", "zh-CN", { v0: 130 }]);
+  expect(after.typeLabel("电")).toEqual(["电", "zh-CN"]);
+  for (const name of [undefined, null, "", "雷", { name: "原展示值" }]) {
+    expect(after.markLabel(name)).toBe(name);
+    expect(after.markLabel(name)).toBe(before.markLabel(name));
+  }
+  const fixtures = [
+    [undefined, "", ""],
+    [null, "", ""],
+    [{}, "", ""],
+    [{ displayName: "展示名", fullName: "全名", name: "简称", description: "展示说明" }, "展示名", "展示说明"],
+    [{ displayName: "", fullName: "全名", name: "简称", description: "" }, "", ""],
+    [{ displayName: null, fullName: "全名", name: "简称", description: null }, "全名", ""],
+    [{ displayName: null, fullName: null, name: "简称" }, "简称", ""],
+    [{ name: "继承展示名", description: "继承展示说明", previewTraitEntity: {
+      name: "canonical name", description: "canonical description", inheritedFrom: "source",
+    } }, "继承展示名", "继承展示说明"],
+  ];
+  for (const kind of ["spirit", "skill", "trait"]) {
+    for (const [entity, name, description] of fixtures) {
+      expect(after.entityName(kind, entity)).toBe(name);
+      expect(after.entityDescription(kind, entity)).toBe(description);
+      expect(after.entityName(kind, entity)).toBe(before.entityName(kind, entity));
+      expect(after.entityDescription(kind, entity)).toBe(before.entityDescription(kind, entity));
+    }
+  }
+  for (const branch of [
+    'locale === "zh-CN" ? name : translateCalculatorText(name + "印记", locale)',
+    'if (locale === "zh-CN") return entity?.displayName ?? entity?.fullName ?? entity?.name ?? "";',
+    'if (locale === "zh-CN") return entity?.description ?? "";',
+  ]) {
+    expect(() => pruneCnProductionModule(code.replace(branch, ""), `D:/project/${filename}`, { reviewedS5: true }))
+      .toThrow("Review CN calculator locale before pruning");
+  }
+});
+
+test("reviewed CN removes only unreachable matcher declarations and retains missing-text exports", () => {
+  const filename = "src/i18n/calculator-text.js";
+  const code = readFileSync(filename, "utf8");
+  const result = pruneCnProductionModule(code, `D:/project/${filename}`, { reviewedS5: true });
+  const statements = source => parse(source, { sourceType: "module" }).program.body;
+  const topLevelVariables = source => statements(source).filter(node => node.type === "VariableDeclaration")
+    .flatMap(node => node.declarations.map(declaration => declaration.id.name));
+  expect(topLevelVariables(code)).toEqual(["missing", "translatedStrings", "escape", "patterns"]);
+  expect(topLevelVariables(result)).toEqual(["missing"]);
+  const preserved = source => statements(source).filter(node => node.type === "ImportDeclaration" ||
+    (node.type === "VariableDeclaration" && node.declarations[0].id.name === "missing") ||
+    ["getMissingCalculatorTexts", "clearMissingCalculatorTexts"].includes(node.declaration?.id?.name))
+    .map(node => source.slice(node.start, node.end));
+  expect(preserved(result)).toEqual(preserved(code));
+  // Evaluate the whole module without EN/JA tables: no matcher initializer may execute.
+  const executable = statements(result).filter(node => node.type !== "ImportDeclaration")
+    .map(node => result.slice((node.declaration ?? node).start, node.end)).join("\n");
+  const api = new Function("translateUi", executable +
+    ";return { translateCalculatorText, getMissingCalculatorTexts, clearMissingCalculatorTexts };")(translateUi);
+  expect(api.translateCalculatorText("伤害{v0}", "zh-CN", { v0: "130" })).toBe("伤害130");
+  expect(api.getMissingCalculatorTexts()).toEqual([]);
+  expect(api.clearMissingCalculatorTexts()).toBeUndefined();
+  expect(api.getMissingCalculatorTexts()).toEqual([]);
+  for (const changed of [
+    code.replace("const escape =", "const escapeMatcher ="),
+    code.replace("const escape =", "let escape ="),
+  ]) {
+    expect(() => pruneCnProductionModule(changed, `D:/project/${filename}`, { reviewedS5: true }))
+      .toThrow("Review CN calculator matchers before pruning");
+  }
+  for (const changed of [
+    code + "\nexport const matcherCount = patterns.length;",
+    code.replace('if (typeof source !== "string")', 'patterns; if (typeof source !== "string")'),
+    code.replace("markLabel: (name) =>", "markLabel: (name = translatedStrings) =>"),
+  ]) {
+    expect(() => pruneCnProductionModule(changed, `D:/project/${filename}`, { reviewedS5: true }))
+      .toThrow("Review CN calculator matcher use before pruning");
   }
 });
 

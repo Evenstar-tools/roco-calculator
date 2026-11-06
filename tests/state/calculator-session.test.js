@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import runtimeSnapshot from "../../public/data/runtime.json";
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
+import { normalizeTriggerControls } from "../../src/domain/trigger-controls.js";
 import { getSkillStatusEffectInputs } from "../../src/domain/skill-status-effects.js";
 import { getNegativeStatusInputs, resolveNegativeStatusApplications } from "../../src/domain/negative-status-rules.js";
 import { getTraitEffectInputs } from "../../src/domain/trait-effects.js";
@@ -118,6 +119,37 @@ test("异常复选框兼容旧配置，单技能切走再切回仍保留", () =>
       snapshot: runtimeSnapshot }).state;
   }
   expect(state.directions.forward.context[input.id]).toBe(true);
+});
+
+test("过充电旧布尔存档在方向、技能槽和记忆中迁移为次数，显式新0优先", () => {
+  const skill = { id: "overcharge-migration-fixture", name: "过充电", basePower: 65, cost: 2, type: "电", category: "physical" };
+  const fixture = { ...runtimeSnapshot, skills: [...runtimeSnapshot.skills, skill] };
+  const [control] = getSkillEffectInputs(skill);
+  const [legacy] = normalizeTriggerControls([{ key: "s5OverchargeActivated", label: "已聚能至少1次", type: "boolean", defaultValue: false }], { source: "skill" });
+  for (const key of [legacy.id, `skill.${legacy.contextKey}`, legacy.contextKey]) {
+    for (const active of [true, false]) {
+      for (const count of [undefined, 0, 2]) {
+        const context = { [key]: active, ...(count === undefined ? {} : { [control.contextKey]: count }) };
+        const state = createProductInitialState(fixture);
+        state.sides.attacker.skills.single = { skillId: skill.id, context,
+          memoryBySkill: { [skill.id]: { context } } };
+        state.sides.attacker.skills.four[0] = { skillId: skill.id, context };
+        state.directions.forward.context = context;
+        const migrated = migrateSharedConfiguration(state, state.versions, fixture);
+        const expected = count ?? (active ? 1 : 0);
+        for (const actual of [migrated.directions.forward.context,
+          migrated.sides.attacker.skills.single.context,
+          migrated.sides.attacker.skills.single.memoryBySkill[skill.id].context,
+          migrated.sides.attacker.skills.four[0].context]) {
+          expect(actual[control.id]).toBe(expected);
+        }
+        expect(context).toEqual({ [key]: active, ...(count === undefined ? {} : { [control.contextKey]: count }) });
+      }
+    }
+  }
+  const empty = createProductInitialState(fixture);
+  empty.sides.attacker.skills.four[0] = { skillId: skill.id, context: null };
+  expect(migrateSharedConfiguration(empty, empty.versions, fixture).sides.attacker.skills.four[0].context[control.id]).toBe(0);
 });
 
 test("传感器显式连击随技能记忆保存，不串到别的单技能", () => {

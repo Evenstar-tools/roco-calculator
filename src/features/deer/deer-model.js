@@ -13,6 +13,8 @@ import { canonicalTraitControlKey, materializeTraitContext } from "../../state/t
 import { applyBattleActivation } from "../../state/battle-activation.js";
 import { updateGlobalWeather } from "../../state/calculator-session.js";
 import { currentWeather } from "../../state/weather.js";
+import { getSkillEffectInputs, readOverchargeCount } from "../../domain/skill-effects.js";
+import { entryDetails, skillEntriesForMode } from "../../domain/skill-result/loadout.js";
 
 const zeroIvs = { hp: 0, physicalAttack: 0, magicalAttack: 0, physicalDefense: 0, magicalDefense: 0, speed: 0 };
 export const DEER_NAMES = ["波普鹿", "爵士鹿"];
@@ -35,9 +37,15 @@ export const DEER_VARIANTS = [
 ];
 
 export function deerVariantsFor(snapshot, setup) {
+  const variants = [...DEER_VARIANTS];
+  if (snapshot.skills.some(skill => skill.name === "过充电")) variants.unshift({
+    id: "overcharge", name: "过充电", label: "过充电",
+    note: "每次聚能威力＋30，可重复叠加。",
+    context: { s5OverchargeChargeCount: setup.overchargeCount ?? 0 },
+  });
   const attacker = snapshot.spirits.find((spirit) => spirit.id === setup.state.sides.attacker.spiritId);
-  if (attacker?.fullName !== "爵士鹿") return DEER_VARIANTS;
-  return [...DEER_VARIANTS, {
+  if (attacker?.fullName !== "爵士鹿") return variants;
+  return [...variants, {
     id: "wish-power",
     name: "愿力冲击",
     label: "愿力冲击",
@@ -133,6 +141,14 @@ export function createDeerSetup(snapshot, currentState = null) {
     const mark = setup.state.marks.defender.negative;
     setup.starfall = mark.id === "starfall" ? mark.stacks : 0;
     setup.reduction = (1 - setup.state.directions.forward.reduction) * 100;
+    const overcharge = snapshot.skills.find(skill => skill.name === "过充电");
+    if (overcharge) {
+      const entry = skillEntriesForMode(setup.state.sides.attacker, setup.state.mode)
+        .find(entry => (typeof entry === "string" ? entry : entry?.skillId ?? entry?.id) === overcharge.id);
+      const details = entryDetails(entry);
+      setup.overchargeCount = readOverchargeCount({ ...context, ...details.context,
+        ...setup.state.directions.forward.overrides?.context, ...details.overrides?.context });
+    }
     return setup;
   }
   const state = createInitialState(snapshot);
@@ -146,7 +162,7 @@ export function createDeerSetup(snapshot, currentState = null) {
   }
   Object.assign(state.sides.attacker, { nature: "cheerful", displayIvs: { ...zeroIvs, hp: 60, physicalAttack: 60, speed: 60 } });
   Object.assign(state.sides.defender, { nature: "silent", displayIvs: { ...DEFENSE_TEMPLATES[0].displayIvs } });
-  return { state, stacks: 1, attackerHp: 100, defenderHp: 100, defenseTemplate: "tank", attackPreset: "standard", freeze: 0, starfall: 0, weather: "none", reduction: 0, showFollowup: true, normalElectric: "电弧", wishPowerType: "武", wishPowerResponse: false };
+  return { state, stacks: 1, attackerHp: 100, defenderHp: 100, defenseTemplate: "tank", attackPreset: "standard", freeze: 0, starfall: 0, weather: "none", reduction: 0, showFollowup: true, normalElectric: "电弧", overchargeCount: 0, wishPowerType: "武", wishPowerResponse: false };
 }
 
 export function applyDeerPreset(side, preset) {
@@ -188,6 +204,11 @@ export function buildDeerInput(snapshot, setup, variant, stacks, prepared = null
   if (!stackControl) throw new Error("攻击方不是支持入场层数的电鹿");
   state.sides.attacker.traitValues[canonicalTraitControlKey(stackControl)] = stacks;
   state.sides.attacker.skills.single = { skillId: skill.id, context: { ...variant.context } };
+  if (variant.id === "overcharge") {
+    // Slot overrides take precedence over imported stable direction controls.
+    const control = getSkillEffectInputs(skill).find(input => input.contextKey === "s5OverchargeChargeCount");
+    state.sides.attacker.skills.single.overrides = { context: { [control.id]: setup.overchargeCount ?? 0 } };
+  }
   for (const key of ["attacker", "defender"]) {
     const side = state.sides[key];
     side.natureMultipliers = getNatureMultipliers(side.nature);

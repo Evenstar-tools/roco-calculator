@@ -180,11 +180,11 @@ export function calculateSkillResult({
   if (skill.name === "过充电") {
     const trait = attacker.traits.find(item => /^s5(?:[-_:]|$)/iu.test(item.previewIdentity?.catalogId ?? "") &&
       item.previewIdentity?.mechanicKey === "gold-vein-dragon");
-    const control = getSkillEffectInputs(skill).find(input => input.contextKey === "s5OverchargeActivated");
+    const control = getSkillEffectInputs(skill).find(input => input.contextKey === "s5OverchargeChargeCount");
     const evaluation = trait && getS5PreviewTraitEvaluation(trait, "attacker", rawContext);
     if (control && evaluation?.calcStatus === "ready") {
-      rawContext[control.id] = evaluation.totalCount >= 1;
-      rawContext[control.contextKey] = evaluation.totalCount >= 1;
+      rawContext[control.id] = evaluation.totalCount;
+      rawContext[control.contextKey] = evaluation.totalCount;
     }
   }
   const positionControl = getSkillEffectInputs(skill).find(
