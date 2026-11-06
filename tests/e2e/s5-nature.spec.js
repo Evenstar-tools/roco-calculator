@@ -44,6 +44,29 @@ test("S5 nature CN toolbox opens encounter HP with shiny and responsive assets",
     await shiny.uncheck();
     await expectHp(page, values);
   }
+  // A fixed level must show each nature condition as a single value. Only the
+  // explicit all-level selection may aggregate the same condition across levels.
+  const levelButtons = page.getByRole("group", { name: "野怪等级", exact: true });
+  for (const level of [41, 42, 43]) {
+    await levelButtons.getByRole("button", { name: String(level), exact: true }).click();
+    for (const value of await page.locator(".pcell .dmg").all()) await expect(value).toHaveText(/^\d+$/);
+    for (const value of await page.locator(".pcell .rem b").all()) await expect(value).toHaveText(/^\d+%$/);
+  }
+  await shiny.check();
+  await levelButtons.getByRole("button", { name: "41–43级全部", exact: true }).click();
+  await expect(shiny).toBeChecked();
+  await expectHp(page, ["762–783", "831–855", "693–711"]);
+  const allLevels = await page.evaluate(() => window.pveNatureUi.getPreview());
+  expect(allLevels.targetLevels).toEqual([41, 42, 43]);
+  for (const row of allLevels.outgoing.filter(row => row.status === "estimated")) {
+    expect([...new Set(row.predictions.map(p => p.targetLevel))]).toEqual([41, 42, 43]);
+  }
+  await page.reload();
+  await expect(levelButtons.getByRole("button", { name: "41–43级全部", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expectHp(page, ["762–783", "831–855", "693–711"]);
+  await shiny.uncheck();
+  await levelButtons.getByRole("button", { name: "41", exact: true }).click();
+  await expectHp(page, [508, 554, 462]);
   expect(await page.evaluate(() => window.pveNatureUi.getPreview().ownPanel.hp)).toBe(ownHp);
 
   // Root-relative assets must survive the nested standalone-tool route.
