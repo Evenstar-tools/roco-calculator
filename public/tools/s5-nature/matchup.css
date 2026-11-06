@@ -169,7 +169,7 @@ body[data-workspace-mode="validation"] .versus-grid .trait-grid { display:none; 
 
 /* 判定栏 */
 .preview-rail { position:sticky; top:12px; display:flex; flex-direction:column; gap:14px; }
-.rail-card { background:#fff; border:1px solid var(--card-line); border-radius:12px; padding:14px 16px; }
+.rail-card { background:#fff; border:1px solid var(--card-line); border-radius:12px; padding:14px 16px; min-width:0; }
 .rail-cap { display:flex; justify-content:space-between; gap:8px; font-size:12px; color:var(--muted); }
 .verdict-big { margin-top:8px; display:flex; align-items:center; gap:8px; font-size:20px; font-weight:700; }
 .verdict-big img { width:34px; height:34px; background:var(--hit-soft); border-radius:9px; padding:5px; }

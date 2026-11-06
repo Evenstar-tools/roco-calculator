@@ -414,11 +414,22 @@ test("S5 nature compact comparison keeps paired measurements separate from highl
   await damage.fill('103'); await damage.press('Tab');
   for (const [width,height] of [[1920,1080],[390,844],[320,740]]) {
     await page.setViewportSize({width,height});
+    // Fallback glyph metrics exposed the rail's implicit min-content width.
+    const fallbackFont = width === 320
+      ? await page.addStyleTag({ content: ':root { font-family: SimSun, serif; }' }) : null;
     await page.locator('[data-preview-row="0"]').locator('.pskill').scrollIntoViewIfNeeded();
-    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    const layout = await page.evaluate(() => ({
+      viewport: innerWidth, scrollWidth: document.documentElement.scrollWidth,
+      overflow: [...document.querySelectorAll('body *')].filter(node => {
+        const rect = node.getBoundingClientRect();
+        return rect.width > 0 && rect.right > innerWidth + 0.5;
+      }).map(node => ({ id: node.id, className: node.className, right: node.getBoundingClientRect().right })).slice(0, 12),
+    }));
+    expect(layout.scrollWidth, JSON.stringify(layout)).toBeLessThanOrEqual(layout.viewport);
     await expect(damage).toBeVisible(); await expect(remaining).toBeVisible();
     if(width<800) expect(await damage.boundingBox().then(box=>box.width)).toBeGreaterThan(60);
     await page.screenshot({path:`output/playwright/s5-compact-${width}.png`});
+    if (fallbackFont) await fallbackFont.evaluate(node => node.remove());
   }
   // Undo feedback floats over the document and does not move the skill input.
   await page.setViewportSize({width:1920,height:1080});
