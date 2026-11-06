@@ -226,3 +226,15 @@ body[data-workspace-mode="validation"] .versus-grid .trait-grid { display:none; 
   .dice-values { grid-template-columns:1fr 1fr; }
   .pcell .dmg { font-size:15px; }
 }
+
+/* 单级精准对照；减益性格单列，范围只用于跨等级。 */
+#wild-side .side-eyebrow { height:auto; min-height:30px; flex-wrap:wrap; }
+#wild-side .eyebrow-end { flex-wrap:wrap; justify-content:flex-end; }
+#level-seg { flex-shrink:0; }
+#level-seg button { white-space:nowrap; }
+.pcell-stack { min-width:0; align-self:stretch; display:flex; flex-direction:column; justify-content:center; }
+.pcell-stack .pcell { margin-bottom:2px; }
+.pcell-penalty { border-top:1px solid var(--line); border-radius:0 0 7px 7px; margin-top:0; padding-top:5px; min-height:0; }
+.pcell-penalty .dmg { font-size:15px; }
+.condition-label { font-size:12px; color:var(--blue); }
+@media(max-width:440px) { #wild-side .eyebrow-end { width:100%; justify-content:space-between; } .pcell .rem { flex-wrap:wrap; justify-content:center; white-space:normal; } }

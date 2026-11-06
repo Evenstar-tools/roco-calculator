@@ -10,6 +10,12 @@ const integer = (value, min, max) => isNumber(value) && Number.isSafeInteger(val
 const present = value => value !== null && value !== undefined;
 const halfUp = (numerator, denominator) => Math.floor((numerator + denominator / 2) / denominator);
 
+export function targetLevels(level) {
+  if (level === 'all') return [41, 42, 43];
+  if ([41, 42, 43].includes(level)) return [level];
+  throw new RangeError('野生等级仅支持41、42、43或41–43级全部。');
+}
+
 function checkNature(nature) {
   if (!nature || !STATS.includes(nature.upStat) || !STATS.includes(nature.downStat) || nature.upStat === nature.downStat) {
     throw new RangeError('性格的增强项和削弱项必须是不同的六维属性。');
@@ -201,7 +207,7 @@ function calculatePrediction(prepared, obs, nature, context, beforeStates) {
   }
   return {
     prediction: {
-      natureId: nature.id, damage, hpMax: panel.hp, actualDamage: obs.damage ?? null,
+      natureId: nature.id, targetLevel: prepared.session.level, damage, hpMax: panel.hp, actualDamage: obs.damage ?? null,
       compatible: nextStates.size > 0, remainingHp: hpRange(nextStates),
       warnings: context.traitWarnings || [],
       estimated: prepared.catalog.meta?.calibrationStatus === 'unverified' || Boolean(context.traitWarnings?.length),
@@ -212,6 +218,15 @@ function calculatePrediction(prepared, obs, nature, context, beforeStates) {
 
 /** An isolated prediction starts at unknown remaining HP, never at full HP. */
 export function predictObservation(session, obs, nature, catalog) {
+  if (session?.level === 'all') {
+    const predictions = targetLevels('all').map(level => predictObservation({ ...session, level }, obs, nature, catalog));
+    const rows = predictions.filter(row => row.status === 'used');
+    const range = key => rows.length && rows.every(row => typeof row[key] === 'number')
+      ? { min: Math.min(...rows.map(row => row[key])), max: Math.max(...rows.map(row => row[key])) } : null;
+    return { ...predictions[0], targetLevel: 'all', targetLevels: targetLevels('all'), predictions,
+      compatible: predictions.some(row => row.compatible), levels: predictions.filter(row => row.compatible).map(row => row.targetLevel),
+      damage: range('damage'), hpMax: range('hpMax'), remainingHp: null };
+  }
   const calibrationStatus = catalog?.meta?.calibrationStatus ?? 'not-specified';
   try {
     const prepared = prepare(session, catalog);
@@ -227,6 +242,9 @@ export function predictObservation(session, obs, nature, catalog) {
 }
 
 export function solve(session, catalog) {
+  // Each level owns a complete HP history. Merge only after all observations,
+  // so two individually matching levels cannot be spliced into one encounter.
+  if (session?.level === 'all') return solveAllLevels(session, catalog);
   // Calibration belongs to the shipped catalog, never to imported session input.
   const calibrationStatus = catalog?.meta?.calibrationStatus ?? 'not-specified';
   const unverified = calibrationStatus === 'unverified';
@@ -296,5 +314,43 @@ export function solve(session, catalog) {
   else if (candidates.length > 1) suggestions.push('补充另一伤害类别的中性单击承伤，或已知扣血前后的生命百分比。');
   if (session.observations.length) warnings.push('所有记录按同一只野怪的时间顺序核算；换我方面板不会重置敌方生命。');
   if (modelStatus === 'conflict') warnings.push('没有性格同时匹配已核算记录，请核对技能、面板、回合状态及记录顺序。');
-  return { status, modelStatus, calibrationStatus, candidatesEstimated: unverified, candidates, observations, suggestions, warnings };
+  return { status, modelStatus, calibrationStatus, candidatesEstimated: unverified,
+    targetLevels: [session.level],
+    candidates: candidates.map(row => ({ ...row, levels: [session.level], panels: [{ level: session.level, panel: row.panel }] })),
+    observations, suggestions, warnings };
+}
+
+function solveAllLevels(session, catalog) {
+  const levels = targetLevels('all');
+  const results = levels.map(level => solve({ ...session, level }, catalog));
+  if (results.every(result => !result.targetLevels)) return { ...results[0], targetLevels: levels };
+  const grouped = new Map();
+  for (const [index, result] of results.entries()) for (const row of result.candidates) {
+    const candidate = grouped.get(row.nature.id) ?? { ...row, levels: [], panels: [] };
+    candidate.levels.push(levels[index]);
+    candidate.panels.push({ level: levels[index], panel: row.panel });
+    grouped.set(row.nature.id, candidate);
+  }
+  const candidates = [...grouped.values()];
+  const survivors = levels.map(() => new Set(catalog.natures.map(nature => nature.id)));
+  const observations = results[0].observations.map((row, index) => {
+    const atLevel = results.map(result => result.observations[index]);
+    for (const [levelIndex, item] of atLevel.entries()) if (item.status === 'used') {
+      survivors[levelIndex] = new Set(item.predictions.filter(prediction => prediction.compatible).map(prediction => prediction.natureId));
+    }
+    return { ...row, predictions: atLevel.flatMap(item => item.predictions),
+      remainingCount: new Set(survivors.flatMap(ids => [...ids])).size };
+  });
+  const used = observations.some(row => row.status === 'used');
+  const blocked = observations.some(row => row.status === 'blocked');
+  const modelStatus = used && !candidates.length ? 'conflict' : blocked ? 'incomplete' : !used ? 'empty' : candidates.length === 1 ? 'unique' : 'multiple';
+  const status = results[0].candidatesEstimated && session.demo !== true && modelStatus !== 'conflict' ? 'incomplete' : modelStatus;
+  const suggestions = [];
+  if (blocked) suggestions.push('修改标记为未参与匹配的记录，补齐列出的条件。');
+  if (!candidates.length && used) suggestions.push('检查实际扣血、技能、面板、取整方式和记录顺序；换一只野怪时请清空旧记录。');
+  else if (candidates.length > 1) suggestions.push('补充另一伤害类别的中性单击承伤，或已知扣血前后的生命百分比。');
+  // A rejected level is not a global conflict when another level matches.
+  const warnings = [...new Set(results.flatMap(result => result.warnings).filter(warning =>
+    !candidates.length || !warning.startsWith('没有性格同时匹配') && !warning.startsWith('另有记录未参与')) )];
+  return { ...results[0], status, modelStatus, targetLevels: levels, candidates, observations, suggestions, warnings };
 }

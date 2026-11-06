@@ -1,5 +1,6 @@
 import { invertHpObservations, invertPoisonTick } from './hp-inverse.mjs';
 import { calculateWildHp, wildTargetShiny, WILD_HP_MODEL } from './wild-hp.mjs';
+import { targetLevels } from './engine.mjs';
 
 export function poisonMultiplier(target, catalog) {
   if (!target?.types?.length || target.types.includes('毒')) return null;
@@ -78,10 +79,13 @@ export function analyzeHealth(session, catalog) {
   const count = ranges.reduce((sum, range) => sum + range.max - range.min + 1, 0);
   const status = !usedCount ? 'empty' : !count ? 'conflict' : count === 1 ? 'unique' : 'range';
   const capped = percentages.capped && ranges.some(range => range.max === percentages.upperBoundSearched);
-  const naturePreview = usedCount && Number.isInteger(target?.raceStats?.hp) && [41, 42, 43].includes(session.level)
-    ? catalog.natures.filter(nature => {
-      const hp = calculateWildHp(target.raceStats.hp, session.level, nature, { shiny: wildTargetShiny(session) });
-      return ranges.some(range => range.min <= hp && hp <= range.max);
+  const levels = [41, 42, 43, 'all'].includes(session.level) ? targetLevels(session.level) : [];
+  const naturePreview = usedCount && Number.isInteger(target?.raceStats?.hp) && levels.length
+    ? catalog.natures.flatMap(nature => {
+      const hpByLevel = levels.map(level => ({ level,
+        hp: calculateWildHp(target.raceStats.hp, level, nature, { shiny: wildTargetShiny(session) }) }))
+        .filter(row => ranges.some(range => range.min <= row.hp && row.hp <= range.max));
+      return hpByLevel.length ? [{ ...nature, levels: hpByLevel.map(row => row.level), hpByLevel }] : [];
     }) : null;
   return { status, ranges, count, usedCount, capped, percentages, poison, naturePreview, hpModel: WILD_HP_MODEL };
 }
@@ -90,7 +94,8 @@ export function analyzeHealth(session, catalog) {
 export function compareFieldSamples(session, catalog, data) {
   const target = catalog.spirits.find(row => row.id === session.targetId);
   return session.observations.flatMap((obs, index) => {
-    const matches = data.entries.filter(row => row.targetId === target?.id && row.level === session.level
+    const levels = [41, 42, 43, 'all'].includes(session.level) ? targetLevels(session.level) : [];
+    const matches = data.entries.filter(row => row.targetId === target?.id && levels.includes(row.level)
       && row.direction === obs.direction && row.damage === obs.damage
       && (obs.direction === 'poison' || row.skillId && row.skillId === obs.skillId));
     if (!matches.length) return [];

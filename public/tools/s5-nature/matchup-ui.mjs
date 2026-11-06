@@ -50,8 +50,9 @@ export function validatePreviewSettings(session) {
     }
     if (holder.observedUnits !== undefined && (!object(holder.observedUnits) || Object.entries(holder.observedUnits).some(([key,v])=>!['0','1','2','3'].includes(key)||!['damage','percent'].includes(v)))) fail();
     const statKeys = ['hp','physicalAttack','magicalAttack','physicalDefense','magicalDefense','speed'];
-    if (holder.picked !== undefined && (!object(holder.picked) || Object.entries(holder.picked).some(([key,v])=>!['0','1','2','3'].includes(key)||!statKeys.includes(v)))) fail();
-    if (holder.incomingPicks !== undefined && (!Array.isArray(holder.incomingPicks)||holder.incomingPicks.length>4||holder.incomingPicks.some(v=>v!=null&&!statKeys.includes(v)))) fail();
+    const validPick = value => typeof value === 'string' && statKeys.includes(value.split(':')[0]) && (value.split(':').length === 1 || (value.split(':').length === 2 && /:(base|down)$/.test(value)));
+    if (holder.picked !== undefined && (!object(holder.picked) || Object.entries(holder.picked).some(([key,v])=>!['0','1','2','3'].includes(key)||!validPick(v)))) fail();
+    if (holder.incomingPicks !== undefined && (!Array.isArray(holder.incomingPicks)||holder.incomingPicks.length>4||holder.incomingPicks.some(v=>v!=null&&!validPick(v)))) fail();
     if (holder.shiny !== undefined && typeof holder.shiny !== 'boolean') fail();
     if (holder.trait !== undefined) {
       if (!object(holder.trait)) fail();
@@ -92,6 +93,19 @@ function sameAsOtherColumn(skill, incoming) {
   if (incoming) return skill.category === 'physical' ? 'magicalAttack' : skill.category === 'magical' ? 'physicalAttack' : null;
   return skill.category === 'physical' ? 'magicalDefense' : skill.category === 'magical' ? 'physicalDefense' : null;
 }
+// Split actual nature penalties before aggregating levels; a single level never
+// turns two distinct stat conditions into an apparent random damage range.
+export function splitNatureConditions(predictions, skill, incoming = false) {
+  const physical = skill?.category === 'physical';
+  const relevant = incoming ? (physical ? 'physicalAttack' : 'magicalAttack') : (physical ? 'physicalDefense' : 'magicalDefense');
+  return [
+    { condition: 'base', label: '', predictions: predictions.filter(p => p.downStat !== relevant) },
+    { condition: 'down', label: `${statNames[relevant]}↓`, predictions: predictions.filter(p => p.downStat === relevant) },
+  ].filter(group => group.predictions.length);
+}
+const levelLabel = level => level === 'all' ? '41–43' : level;
+const caseId = prediction => `${prediction.targetLevel}:${prediction.natureId}`;
+
 function shortReason(reason='') {
   if (/条件、状态或多段/.test(reason)) return '条件技能 · 在「条件」填有效威力';
   if (/没有明确的物理／魔法/.test(reason)) return '变化技能，无直接伤害';
@@ -161,11 +175,16 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     }
     if (!object(session.preview)) session.preview = {};
     const encounter = session.preview;
-    if (encounter.targetId !== session.targetId || encounter.level !== session.level) {
+    if (encounter.targetId !== session.targetId) {
       for (const key of ['incomingSkillId','incomingOverrides','incomingDamage']) delete encounter[key];
       Object.assign(encounter, {targetId:session.targetId,level:session.level,incomingSkillIds:defaultIncoming(session.targetId, spirits.get(profile.spiritId)),
         incomingOverridesList:Array.from({length:INCOMING_SLOTS},()=>({})),incomingDamages:Array(INCOMING_SLOTS).fill(null),incomingPicks:Array(INCOMING_SLOTS).fill(null),shiny:false,diceId:'none',diceEffects:{}});
       for (const item of session.profiles) if(object(item.preview)) { item.preview.observed={}; item.preview.picked={}; }
+    }
+    if (encounter.level !== session.level) {
+      encounter.level = session.level;
+      encounter.incomingDamages = Array(INCOMING_SLOTS).fill(null);
+      encounter.incomingPicks = Array(INCOMING_SLOTS).fill(null);
     }
     if (!Array.isArray(encounter.incomingSkillIds)) {
       // 旧记录只有一个敌方技能。
@@ -251,7 +270,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   function togglePick(event) {
     const cell = event.target.closest('.pcell[data-nature-group]'); if (!cell) return;
     const row = cell.closest('[data-preview-row],[data-incoming-row]'); if (!row) return;
-    const key = cell.dataset.natureGroup;
+    const key = `${cell.dataset.natureGroup}:${cell.dataset.natureCondition}`;
     commit(()=>{
       const {own,encounter}=state();
       if (row.dataset.previewRow !== undefined) {
@@ -293,8 +312,12 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   }
   // 某列包含的性格：该属性增益；“同其他”列另含不在三列中的其余性格。
   const inColumn = (p, key, columns, same) => p.upStat === key || (key === same && !columns.some(([stat]) => stat === p.upStat));
-  function observationMatch(prediction, obs, format, columns, same) {
-    if (obs.unit === 'pick') return inColumn(prediction, obs.key, columns, same);
+  function observationMatch(prediction, obs, format, columns, same, skill, incoming = false) {
+    if (obs.unit === 'pick') {
+      const [key, condition] = obs.key.split(':');
+      if (!inColumn(prediction, key, columns, same)) return false;
+      return !condition || splitNatureConditions([prediction], skill, incoming)[0]?.condition === condition;
+    }
     if (obs.unit === 'percent') return percentDisplay(format)(prediction.remainingPercent) === obs.value;
     return Math.min(prediction.damage, prediction.hpMax) === obs.value;
   }
@@ -305,24 +328,25 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const digits = format==='round1' ? 1 : 0, display = percentDisplay(format);
     return columns.map(([key,label])=>{
       const items = row.predictions.filter(p => inColumn(p, key, columns, same));
-      const own = items;
-      let mark = '';
-      if (obs) mark = items.some(p => observationMatch(p, obs, format, columns, same)) ? ' hit' : ' miss';
-      const picked = obs?.unit === 'pick' && obs.key === key;
-      const allKo = own.every(p => p.damage >= p.hpMax);
-      const hpGroups = [
-        ['neutral', '普通', p => p.upStat !== 'hp' && p.downStat !== 'hp'],
-        ['up', '加生命', p => p.upStat === 'hp'],
-        ['down', '减生命', p => p.downStat === 'hp'],
-      ];
-      const tail = incoming ? '' : allKo ? '<span class="ko">一击倒 · 0%</span>'
-        : hpGroups.map(([hpKey, hpLabel, matches]) => {
-          const entries = own.filter(matches);
-          if (!entries.length) return '';
-          const rems = entries.map(p => display(p.remainingPercent));
-          return `<span class="rem" data-hp-nature="${hpKey}"><span>${hpLabel}</span><b>${range(rems,digits)}%</b></span>`;
-        }).join('');
-      return `<div class="pcell${mark}${key===same?' same':''}${picked?' picked':''}" data-nature-group="${key}" role="button" tabindex="0" aria-pressed="${picked}" title="点击勾选：实测落在这一列">${key===same?'<span class="same-tag">同其他</span>':''}<strong class="dmg">${range(own.map(p=>p.damage))}</strong>${tail}<span class="pcell-label">${label}↑</span></div>`;
+      const cases = splitNatureConditions(items, skill, incoming);
+      return `<div class="pcell-stack">${cases.map(({condition, label: conditionLabel, predictions: own}) => {
+        let mark = '';
+        if (obs) mark = own.some(p => observationMatch(p, obs, format, columns, same, skill, incoming)) ? ' hit' : ' miss';
+        const picked = obs?.unit === 'pick' && (obs.key === `${key}:${condition}` || obs.key === key);
+        const allKo = own.every(p => p.damage >= p.hpMax);
+        const hpGroups = [
+          ['neutral', '普通', p => p.upStat !== 'hp' && p.downStat !== 'hp'],
+          ['up', '加生命', p => p.upStat === 'hp'],
+          ['down', '减生命', p => p.downStat === 'hp'],
+        ];
+        const tail = incoming ? '' : allKo ? '<span class="ko">一击倒 · 0%</span>'
+          : hpGroups.map(([hpKey, hpLabel, matches]) => {
+            const entries = own.filter(matches);
+            if (!entries.length) return '';
+            return `<span class="rem" data-hp-nature="${hpKey}"><span>${hpLabel}</span><b>${range(entries.map(p => display(p.remainingPercent)),digits)}%</b></span>`;
+          }).join('');
+        return `<div class="pcell${mark}${key===same?' same':''}${picked?' picked':''}${condition==='down'?' pcell-penalty':''}" data-nature-group="${key}" data-nature-condition="${condition}" role="button" tabindex="0" aria-pressed="${picked}" title="${label}↑${conditionLabel?`、${conditionLabel}`:''}：点击匹配此组数值">${key===same && condition==='base'?'<span class="same-tag">同其他</span>':''}${conditionLabel?`<span class="condition-label">${conditionLabel}</span>`:''}<strong class="dmg">${range(own.map(p=>p.damage))}</strong>${tail}<span class="pcell-label">${label}↑</span></div>`;
+      }).join('')}</div>`;
     }).join('');
   }
   function readObserved(own, format) {
@@ -346,7 +370,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const hits = [], misses = [];
     for (const [key,label] of columns) {
       const items = row.predictions.filter(p => inColumn(p, key, columns, same));
-      (items.some(p => observationMatch(p, obs, format, columns, same)) ? hits : misses).push({ key, label, same: key === same });
+      (items.some(p => observationMatch(p, obs, format, columns, same, skill, incoming)) ? hits : misses).push({ key, label, same: key === same });
     }
     if (!hits.length) return { text: '不符', tone: 'bad' };
     if (hits.length === 1 && !hits[0].same) return { text: `${hits[0].label}↑`, tone: 'good' };
@@ -360,26 +384,27 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   }
   function renderVerdict(result, own, encounter, target, format) {
     const { observed, invalid } = readObserved(own, format);
-    let candidates = new Set(catalog.natures.map(n=>n.id)), used = 0;
+    const levels = result.targetLevels ?? [getSession().level];
+    let candidates = new Set(levels.flatMap(level => catalog.natures.map(n => `${level}:${n.id}`))), used = 0;
     const evidence = [];
     for (let i=0;i<4;i++) {
       const obs = observed[i], row = result.outgoing?.[i];
       if (!obs || obs.invalid || row?.status !== 'estimated') continue;
       const same = sameAsOtherColumn(skills.get(row.skillId), false);
-      const ids = new Set(row.predictions.filter(p => observationMatch(p, obs, format, OUT_COLUMNS, same)).map(p => p.natureId));
+      const ids = new Set(row.predictions.filter(p => observationMatch(p, obs, format, OUT_COLUMNS, same, skills.get(row.skillId), false)).map(caseId));
       candidates = new Set([...candidates].filter(id => ids.has(id))); used++;
-      const what = obs.unit==='pick' ? `勾选${statNames[obs.key]}列` : obs.unit==='percent' ? `余 ${obs.value}%` : `伤害 ${obs.value}`;
+      const what = obs.unit==='pick' ? `勾选${statNames[obs.key.split(':')[0]]}列` : obs.unit==='percent' ? `余 ${obs.value}%` : `伤害 ${obs.value}`;
       evidence.push({ label: `${row.skillName} ${what}`, ...evidenceTag(row, OUT_COLUMNS, false, obs, format) });
     }
     for (let k=0;k<INCOMING_SLOTS;k++) {
       const obs = incomingObservation(encounter, k), row = result.incomingList?.[k];
       if (!obs || row?.status !== 'estimated') continue;
       const same = sameAsOtherColumn(skills.get(row.skillId), true);
-      const ids = new Set(row.predictions.filter(p => observationMatch(p, obs, format, IN_COLUMNS, same)).map(p => p.natureId));
+      const ids = new Set(row.predictions.filter(p => observationMatch(p, obs, format, IN_COLUMNS, same, skills.get(row.skillId), true)).map(caseId));
       candidates = new Set([...candidates].filter(id => ids.has(id))); used++;
-      evidence.push({ label: `${row.skillName} ${obs.unit==='pick'?`勾选${statNames[obs.key]}列`:`掉血 ${obs.value}`}`, ...evidenceTag(row, IN_COLUMNS, true, obs, format) });
+      evidence.push({ label: `${row.skillName} ${obs.unit==='pick'?`勾选${statNames[obs.key.split(':')[0]]}列`:`掉血 ${obs.value}`}`, ...evidenceTag(row, IN_COLUMNS, true, obs, format) });
     }
-    const matching = catalog.natures.filter(n => candidates.has(n.id));
+    const matching = catalog.natures.filter(n => levels.some(level => candidates.has(`${level}:${n.id}`)));
     const ups = [...new Set(matching.map(n => n.upStat))];
     let big;
     if (invalid) big = `<div class="verdict-big bad">输入有误</div><p class="verdict-note">伤害填非负整数，剩余百分比按所选显示精度填写。</p>`;
@@ -392,7 +417,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
         ? matching.map(n=>`<span>${html(n.name)}<em>${statNames[n.downStat]}↓</em></span>`).join('')
         : ups.map(s=>`<span>${statNames[s]}↑<em>×${matching.filter(n=>n.upStat===s).length}</em></span>`).join('')}</div>`;
     }
-    $('preview-verdict').innerHTML = `<div class="rail-cap"><span>判定</span><span>${html(target?.name ?? '')} · ${encounter.level} 级</span></div>${big}${evidence.length?`<div class="evidence">${evidence.map(e=>`<div><i class="dot ${e.tone}"></i><span>${html(e.label)}</span><b class="${e.tone}">${html(e.text)}</b></div>`).join('')}</div>`:''}<p id="preview-comparison" class="compat-hidden">${used?`${matching.length} 种性格符合`:''}</p>`;
+    $('preview-verdict').innerHTML = `<div class="rail-cap"><span>判定</span><span>${html(target?.name ?? '')} · ${levelLabel(encounter.level)} 级</span></div>${big}${evidence.length?`<div class="evidence">${evidence.map(e=>`<div><i class="dot ${e.tone}"></i><span>${html(e.label)}</span><b class="${e.tone}">${html(e.text)}</b></div>`).join('')}</div>`:''}<p id="preview-comparison" class="compat-hidden">${used?`${matching.length} 种性格符合`:''}</p>`;
     $('preview-result-brief').textContent = invalid ? '输入有误，请核对实测数值' : !used ? '待录入实测' : !matching.length ? '未找到匹配' : matching.length === 1 ? `匹配性格：${matching[0].name}` : `匹配到 ${matching.length} 种性格`;
     return { matching, used, invalid };
   }
@@ -484,8 +509,8 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       $(`preview-incoming-damage-${k}`).classList.toggle('filled',obs?.unit==='damage');
     }
     const targetHp = currentPreview.targetHpByNature;
-    $('target-hp-range').innerHTML = [['neutral','奇遇普通'],['up','奇遇加生命'],['down','奇遇减生命']].map(([key,label]) => `<div data-hp-nature="${key}"><span>${label}</span><b>${targetHp?.[key] ?? '—'}</b></div>`).join('');
-    $('preview-target-label').textContent=`${profile.name} → ${target?.name ?? '野生目标'} ${session.level} 级 · 每招满血单发 · 余血按奇遇血量`;
+    $('target-hp-range').innerHTML = [['neutral','奇遇普通'],['up','奇遇加生命'],['down','奇遇减生命']].map(([key,label]) => `<div data-hp-nature="${key}"><span>${label}</span><b>${typeof targetHp?.[key] === 'object' ? range([targetHp[key].min,targetHp[key].max]) : targetHp?.[key] ?? '—'}</b></div>`).join('');
+    $('preview-target-label').textContent=`${profile.name} → ${target?.name ?? '野生目标'} ${levelLabel(session.level)} 级 · 每招满血单发 · 余血按奇遇血量`;
     $('preview-incoming-title').textContent=`${target?.name ?? '敌方'} → ${profile.name}`;
     const info = renderTraits(ownSpirit, target, own);
     renderPanel(profile, ownSpirit, info, own);

@@ -218,8 +218,8 @@ function renderTargetPicker() {
     : "";
   setSpiritImage("target-image", spirit);
   $("target-tags").innerHTML = tagsFor(spirit);
-  $("level-seg").innerHTML = [41, 42, 43]
-    .map((level) => `<button type="button" data-level="${level}" aria-pressed="${session.level === level}">${level}</button>`)
+  $("level-seg").innerHTML = [41, 42, 43, "all"]
+    .map((level) => `<button type="button" data-level="${level}" aria-pressed="${session.level === level}">${level === "all" ? "41–43级全部" : level}</button>`)
     .join("");
   const form = fieldData.formMappings.find(row => row.sourceId === spirit?.id && row.initialId !== spirit.id);
   $("use-initial-form").hidden = !form;
@@ -245,7 +245,7 @@ function renderMatchup() {
     `<span class="attack-name">${escapeHtml(attack)}</span><span>→</span><span class="defense-name">${escapeHtml(defense)}</span>`;
   $("current-matchup").textContent =
     direction === "hp"
-      ? `生命验证：${target} · ${session.level} 级`
+      ? `生命验证：${target} · ${session.level === "all" ? "41–43" : session.level} 级`
       : direction === "incoming"
         ? `攻击方：${target} → 防御方：${profile?.name ?? "我方精灵"}`
         : `攻击方：${profile?.name ?? "我方精灵"} → 防御方：${target}`;
@@ -719,12 +719,12 @@ function renderResults() {
   const candidates = showCandidates
     ? `<ul class="candidate-list">${result.candidates
         .map(
-          ({ nature, panel }) =>
-            `<li><details><summary><span class="candidate-main"><span class="candidate-name">${escapeHtml(nature.name)}</span><span class="candidate-change"><span class="up">${escapeHtml(STATS[nature.upStat] ?? nature.upStat)} ↑</span><span class="down">${escapeHtml(STATS[nature.downStat] ?? nature.downStat)} ↓</span></span></span></summary><div class="candidate-panel">${Object.entries(
+          ({ nature, panel, panels }) =>
+            `<li><details><summary><span class="candidate-main"><span class="candidate-name">${escapeHtml(nature.name)}${panels ? ` · ${panels.map(row => row.level).join("/")}级` : ""}</span><span class="candidate-change"><span class="up">${escapeHtml(STATS[nature.upStat] ?? nature.upStat)} ↑</span><span class="down">${escapeHtml(STATS[nature.downStat] ?? nature.downStat)} ↓</span></span></span></summary><div class="candidate-panel">${Object.entries(
               STATS,
             )
               .map(
-                ([key, label]) => `${label} ${escapeHtml(panel?.[key] ?? "—")}`,
+                ([key, label]) => `${label} ${escapeHtml(panels ? [...new Set(panels.map(row => row.panel[key]))].join(" / ") : panel?.[key] ?? "—")}`,
               )
               .join(" · ")}</div></details></li>`,
         )
@@ -746,9 +746,9 @@ function renderResults() {
               (prediction) => prediction.compatible,
             );
             const value = (prediction) =>
-              observation?.direction === "hp"
+              (prediction.targetLevel ? `${prediction.targetLevel}级 · ` : "") + (observation?.direction === "hp"
                 ? `生命 ${prediction.hpMax ?? "—"}`
-                : `伤害 ${prediction.damage ?? "—"} · 生命 ${prediction.hpMax ?? "—"}`;
+                : `伤害 ${prediction.damage ?? "—"} · 生命 ${prediction.hpMax ?? "—"}`);
             return `<details class="evidence-row"><summary>第 ${session.observations.indexOf(observation) + 1} 条 · 匹配 ${item.remainingCount ?? compatible.length} 种性格</summary><div class="evidence-details"><p>${escapeHtml(readableMessage(item.reason ?? descriptionForObservation(observation ?? {})))}</p><div class="evidence-table">${predictions
               .map((prediction) => {
                 const nature = catalog.natures.find(
@@ -794,7 +794,7 @@ function validateImport(value) {
   if (
     !incoming ||
     !spiritMap.has(incoming.targetId) ||
-    ![41, 42, 43].includes(incoming.level) ||
+    ![41, 42, 43, "all"].includes(incoming.level) ||
     !Array.isArray(incoming.profiles) ||
     incoming.profiles.length !== 2 ||
     !Array.isArray(incoming.observations) ||
@@ -1191,7 +1191,7 @@ function attachEvents() {
     });
   });
   $("target-level").addEventListener("change", () => {
-    const level = readNumber("target-level");
+    const level = $("target-level").value === "all" ? "all" : readNumber("target-level");
     if (level === session.level) return;
     remember();
     session.level = level;

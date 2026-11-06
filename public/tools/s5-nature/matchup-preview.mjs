@@ -1,6 +1,6 @@
 import { calculateDamage } from './vendor/damage.mjs';
 import { getAwakeningBonuses, resolveAwakeningType } from './awakening.mjs';
-import { wildPanel } from './engine.mjs';
+import { wildPanel, targetLevels } from './engine.mjs';
 import { WILD_HP_MODEL, wildTargetShiny } from './wild-hp.mjs';
 export { SHINY_HP_MULTIPLIER } from './wild-hp.mjs';
 import { traitInfo, resolveOwnTrait, applyAttackStage, applyDefenseStage } from './own-trait.mjs';
@@ -168,7 +168,7 @@ function damageEntry(skillId, overrideValue, direction, context) {
       const remainingHp = Math.max(0, hpMax - damage);
       return {
         status: 'estimated',
-        natureId: candidate.nature.id, natureName: candidate.nature.name,
+        natureId: candidate.nature.id, natureName: candidate.nature.name, targetLevel: input.level,
         upStat: candidate.nature.upStat, downStat: candidate.nature.downStat,
         damage, actualLossFromFull: Math.min(hpMax, damage), hpMax, remainingHp,
         remainingPercent: remainingHp * 100 / hpMax, fromFull: true,
@@ -194,9 +194,24 @@ function damageEntry(skillId, overrideValue, direction, context) {
  * explicit multiplier. Duplicate dice IDs on one side are applied only once.
  */
 export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
+  if (input?.level === 'all') {
+    const levels = targetLevels('all');
+    const results = levels.map(level => previewMatchup({ ...input, level }, catalog, diceCatalog, traitCatalog));
+    const mergeEntry = entries => entries[0] ? { ...entries[0], predictions: entries.flatMap(entry => entry?.predictions ?? []) } : null;
+    const outgoing = results[0].outgoing.map((_, index) => mergeEntry(results.map(result => result.outgoing[index])));
+    const incomingList = results[0].incomingList.map((_, index) => mergeEntry(results.map(result => result.incomingList[index])));
+    const targetHpByLevel = results.flatMap(result => result.targetHpByLevel);
+    const targetHpByNature = targetHpByLevel.length === levels.length
+      ? Object.fromEntries(['neutral', 'up', 'down'].map(key => [key, {
+        min: Math.min(...targetHpByLevel.map(row => row[key])), max: Math.max(...targetHpByLevel.map(row => row[key])),
+      }])) : null;
+    return { ...results[0], targetLevel: 'all', targetLevels: levels, outgoing, incomingList, incoming: incomingList[0] ?? null,
+      targetHpByLevel, targetHpByNature,
+      targetHpRange: targetHpByNature ? { min: Math.min(...Object.values(targetHpByNature).map(row => row.min)), max: Math.max(...Object.values(targetHpByNature).map(row => row.max)) } : null };
+  }
   const skillIds = Array.isArray(input?.skillIds) ? input.skillIds.slice(0, 4) : [];
   const incomingIds = Array.isArray(input?.incomingSkillIds) ? input.incomingSkillIds.slice(0, 4) : input?.incomingSkillId ? [input.incomingSkillId] : [];
-  const initial = { calibrationStatus: 'unverified', outgoing: [], incoming: null, incomingList: [], warnings: [], targetHpByNature: null, targetHpRange: null };
+  const initial = { calibrationStatus: 'unverified', outgoing: [], incoming: null, incomingList: [], warnings: [], targetHpByNature: null, targetHpRange: null, targetHpByLevel: [], targetLevels: [] };
   try {
     if (!isObject(input)) throw new RangeError('请先选择双方精灵与技能。');
     if (input.skillIds !== undefined && !Array.isArray(input.skillIds)) throw new RangeError('技能选择须为数组。');
@@ -233,8 +248,8 @@ export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
     const warnings = unique([...ownDice.warnings, ...targetDice.warnings]);
     return { ...initial, status: [...outgoing, ...incomingList].some(row => row?.status === 'estimated') ? 'estimated' : 'unsupported',
       outgoing, incoming, incomingList, warnings, ownPanel, ownTrait, ownDiceIds: ownDice.ids, targetDiceIds: targetDice.ids,
-      targetId: target.id, ownSpiritId: ownSpirit.id, targetLevel: input.level, hpModel: WILD_HP_MODEL,
-      targetHpByNature, targetHpRange };
+      targetId: target.id, ownSpiritId: ownSpirit.id, targetLevel: input.level, targetLevels: [input.level], hpModel: WILD_HP_MODEL,
+      targetHpByNature, targetHpRange, targetHpByLevel: [{ level: input.level, ...targetHpByNature }] };
   } catch (error) {
     const reason = error.message || '当前输入无法预估。';
     return { ...initial, status: 'unsupported', reason,
