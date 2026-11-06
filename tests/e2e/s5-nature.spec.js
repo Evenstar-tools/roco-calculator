@@ -242,3 +242,75 @@ test("S5 nature incoming attack shows measured whale damage and matches nature",
   expect(flood.displayedPower).toBe(187.5);
   expect(flood.manualPower).toBe(false);
 });
+
+test("S5 nature presets share calculator configurations and preserve saved manual edits", async ({ page }) => {
+  await page.goto(toolPath);
+  await expect(page.locator('#load-own-preset')).toBeEnabled();
+  const active = () => page.evaluate(() => {
+    const session = window.pveNatureUi.getSession();
+    return session.profiles.find(row => row.id === session.activeProfileId);
+  });
+  for (const [id, nature, ivs, moves, panel] of [
+    ['luoyin', 'adamant', ['hp','physicalAttack','physicalDefense'], ['火焰切割','地刺','彼岸之手','鸣沙陷阱'], [403,312,136,216,137,143]],
+    ['dimo', 'rash', ['physicalAttack','magicalAttack','speed'], ['光球','棘突','热砂','超导'], [374,181,181,175,163,223]],
+  ]) {
+    await page.locator(`[data-profile="${id}"]`).click();
+    const profile = await active();
+    expect(profile.awakening).toBe(5);
+    expect(profile.natureId).toBe(nature);
+    const stats = ['hp','physicalAttack','magicalAttack','physicalDefense','magicalDefense','speed'];
+    expect(stats.map(key => profile.displayIvs[key])).toEqual(stats.map(key => ivs.includes(key) ? 60 : 0));
+    expect(stats.map(key => profile.panel[key])).toEqual(panel);
+    for (const [index, move] of moves.entries()) await expect(page.getByRole('combobox', { name: `我方技能 ${index + 1}`, exact: true })).toHaveValue(move);
+  }
+  await page.locator('#star-seg').getByRole('button', { name: '8★', exact: true }).click();
+  await page.locator('[data-iv-stat="magicalAttack"]').click();
+  await page.reload();
+  await expect(page.locator('#star-seg').getByRole('button', { name: '8★', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  expect((await active()).displayIvs.magicalAttack).toBe(0);
+  await page.locator('#load-own-preset').click();
+  expect((await active()).awakening).toBe(5);
+  expect((await active()).displayIvs.magicalAttack).toBe(60);
+  await page.locator('#undo').click();
+  expect((await active()).awakening).toBe(3);
+  expect((await active()).displayIvs.magicalAttack).toBe(0);
+  await page.locator('#load-own-preset').click();
+  for (const [width, height] of [[1280,1000], [390,844]]) {
+    await page.setViewportSize({ width, height });
+    await page.locator('#load-own-preset').scrollIntoViewIfNeeded();
+    await expect(page.locator('#load-own-preset')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: `output/playwright/s5-presets-${width}.png` });
+  }
+
+  // Other species read the same published library, then prefer local CN edits.
+  const library = await (await page.request.get('/data/presets/pvp-popular-configs.json')).json();
+  const catalog = await (await page.request.get('/tools/s5-nature/data/catalog.json')).json();
+  const wolf = catalog.spirits.find(row => row.name === '恶魔狼王');
+  const shared = library.entries.find(row => row.spiritId === wolf.id);
+  const picker = page.getByRole('combobox', { name: '选择我方精灵', exact: true });
+  await picker.fill('恶魔狼王');
+  await page.getByRole('option').getByText('恶魔狼王', { exact: true }).click();
+  const picked = await active();
+  expect(picked.natureId).toBe(shared.natureId);
+  expect(picked.displayIvs).toEqual(shared.displayIvs);
+  expect(picked.preview.skillIds).toEqual(shared.skills);
+  await page.evaluate(entry => localStorage.setItem('rock-calculator.servers.cn.spirit-configs.v2', JSON.stringify({
+    schemaVersion: 2, configs: { [entry.spiritId]: { ...entry, natureId: 'rash', skills: { four: entry.skills.map(skillId => ({skillId})) } } },
+  })), shared);
+  await page.locator('#load-own-preset').click();
+  expect((await active()).natureId).toBe('rash');
+  expect((await active()).preview.skillIds).toEqual(shared.skills);
+  await page.reload();
+  await expect(picker).toHaveValue('恶魔狼王');
+  expect((await active()).natureId).toBe('rash');
+  for (const name of ['圆号鱼', '圣龙阿布']) {
+    const spirit = catalog.spirits.find(row => row.name === name);
+    const expected = library.entries.find(row => row.spiritId === spirit.id);
+    await picker.click();
+    await picker.fill(name);
+    await page.getByRole('option').getByText(name, { exact: true }).click();
+    expect((await active()).preview.skillIds).toEqual(expected.skills);
+    await expect(page.locator('#load-own-preset')).toBeEnabled();
+  }
+});
