@@ -391,7 +391,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const skill = skills.get(row.skillId), same = sameAsOtherColumn(skill, incoming);
     if (!incoming && pickedKey?.split(':')[0] === 'other') pickedKey = pickedKey.replace('other', same);
     const hits = obs ? row.predictions.filter(p => observationMatch(p, obs, format)) : [];
-    if (hits.length && hits.every(p => p.damage >= p.hpMax)) obs = null;
+    if (!incoming && hits.length && hits.every(p => p.damage >= p.hpMax)) obs = null;
     const digits = format==='round1' ? 1 : 0, display = percentDisplay(format);
     return columns.map(([key,label])=>{
       const items = row.predictions.filter(p => inColumn(p, key, columns, same));
@@ -440,8 +440,10 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const addEvidence = (row, obs, incoming) => {
       if (!obs || obs.invalid || row?.status !== 'estimated') return;
       const hits = row.predictions.filter(p => observationMatch(p, obs, format));
-      // An observed knockout supplies no HP/nature evidence.
-      if (hits.length && hits.every(p => p.damage >= p.hpMax)) return;
+      // Outgoing knockout observations do not distinguish the target's HP.
+      // Incoming displayed damage remains an attack-stat observation even when
+      // the hit exceeds our own maximum HP (for example, the recorded 660).
+      if (!incoming && hits.length && hits.every(p => p.damage >= p.hpMax)) return;
       const ids = new Set(hits.map(caseId));
       candidates = new Set([...candidates].filter(id => ids.has(id))); used++;
       const values = [obs.damage == null ? '' : `${incoming ? '掉血' : '伤害'} ${obs.damage}`,
