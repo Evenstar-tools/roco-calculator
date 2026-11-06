@@ -18,11 +18,12 @@ export const DEFAULT_PERFORMANCE_BUDGETS = Object.freeze({
 });
 
 export const DEFAULT_HARD_OVERAGE_BYTES = 22 * 1024;
-// 预警不阻断；超过固定硬上限才阻断，不随当前构建自动扩容。
+// 预警不阻断；固定硬上限不随当前构建自动扩容。
+// 2026-11-06：加入独立 S5 工具并纳入 .mjs，依据见 performance-budget-policy.md。
 export const DEFAULT_HARD_OVERAGE_BY_KEY = Object.freeze({
-  clientTotal: 4 * 1024 * 1024,
+  clientTotal: 12 * 1024 * 1024,
   cssGzip: 24 * 1024,
-  jsGzip: 112 * 1024,
+  jsGzip: 240 * 1024,
   jsRaw: 0.5 * 1024 * 1024,
   runtimeJson: 0.5 * 1024 * 1024,
 });
@@ -67,7 +68,7 @@ export function verifyPerformanceBudget({
   }
 
   const files = filesUnder(distRoot);
-  const jsFiles = files.filter((file) => file.endsWith(".js"));
+  const jsFiles = files.filter((file) => /\.m?js$/u.test(file));
   const cssFiles = files.filter((file) => file.endsWith(".css"));
   const metrics = {
     clientTotal: files.reduce((total, file) => total + byteSize(file), 0),
