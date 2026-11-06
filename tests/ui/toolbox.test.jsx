@@ -113,14 +113,23 @@ test("已解锁入口仅为左键或中键导航发放凭据，普通打开菜�
   expect(document.cookie).toContain("roco-cn-plugin-entry=1");
 });
 
-test("桌面 app 协议不显示国服网页专属工具", () => {
+test("桌面 app 协议开放国服性格计算，网页插件保持隐藏", () => {
   globalThis.jsdom.reconfigure({ url: "app://calculator/cn/" });
   renderUnlockable(<Toolbox actions={{ types: vi.fn() }} />);
   unlock();
-  fireEvent.click(screen.getByRole("button", { name: "工具箱" }));
+  const trigger = screen.getByRole("button", { name: "工具箱" });
+  fireEvent.click(trigger);
   expect(screen.queryByRole("region", { name: "插件工具" })).not.toBeInTheDocument();
   expect(screen.queryByRole("link", { name: "野生精灵检测器" })).not.toBeInTheDocument();
-  expect(screen.queryByRole("link", { name: "S5奇异性格计算" })).not.toBeInTheDocument();
+  const nature = screen.getByRole("link", { name: "S5奇异性格计算" });
+  expect(nature).toBeVisible();
+  expect(nature).toHaveAttribute("href", "/tools/s5-nature/index.html");
+  expect(nature.href).toBe("app://calculator/tools/s5-nature/index.html");
+  expect(nature).not.toHaveAttribute("target");
+  nature.addEventListener("click", event => event.preventDefault(), { once: true });
+  fireEvent.click(nature);
+  expect(screen.queryByRole("navigation", { name: "工具箱" })).not.toBeInTheDocument();
+  expect(trigger).toHaveFocus();
 });
 
 test("正式版隐藏抢先入口，重复点击、外部点击、Esc 关闭，键盘焦点在工具与插件链接间循环", () => {

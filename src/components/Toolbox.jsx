@@ -18,7 +18,7 @@ export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
   const { serverId } = useRuntime();
   const pluginUnlocked = usePluginAccess();
   const showReturnEntry = serverId === "cn" && IS_PREVIEW_BUILD;
-  const showNatureTool = serverId === "cn" && !IS_PREVIEW_BUILD && window.location.protocol !== "app:";
+  const showNatureTool = serverId === "cn" && !IS_PREVIEW_BUILD;
   const showPluginTools = pluginUnlocked && serverId === "cn" && !IS_PREVIEW_BUILD && window.location.protocol !== "app:";
   const toolGroups = groups.map(([label, entries]) => [label, label !== "查询" ? entries
     : serverId === "cn" ? [...entries, ["balanceHistory", "平衡调整回顾", <ClockCounterClockwise size={18} aria-hidden="true" />]]
