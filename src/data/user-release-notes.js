@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.13",
+    date: "2026.11.06",
+    seasonId: "S5",
+    title: "S5 过充电单次强化",
+    whatsNew: S5_FEATURE_INTRO,
+    features: ["过充电仅强化一次，电鹿顶部区分未强化65与已强化95两行，分别查看斩杀线；国际服S3季中不变。"],
+  }),
+  createRelease({
     version: "v2.3.12",
     date: "2026.11.06",
     seasonId: "S5",
@@ -251,7 +259,7 @@ export const USER_RELEASE_NOTES = Object.freeze([
     seasonId: "S5",
     title: "S5 电鹿过充电",
     whatsNew: S5_FEATURE_INTRO,
-    features: ["电鹿首行新增过充电，每次聚能加30威力，斩杀线同步；国际服S3季中不变。"],
+    features: ["电鹿首行新增过充电，支持聚能条件与斩杀线计算；国际服S3季中不变。"],
   }),
   createRelease({
     version: "v2.3.10",

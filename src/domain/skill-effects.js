@@ -294,7 +294,7 @@ const REVIEWED_EFFECTS = Object.freeze({
   过充电: {
     inputs: [overchargeCountInput],
     ruleId: "stack_scaled",
-    ruleParams: { contextKey: "s5OverchargeChargeCount", label: "聚能次数", perStack: 30, defaultValue: 0 },
+    ruleParams: { contextKey: "s5OverchargeChargeCount", label: "聚能次数", perStack: 30, maxStacks: 1, defaultValue: 0 },
   },
   离岸流: {
     inputs: [numberInput("s5WaterSkillUseCount", "此前水系技能次数", 0, undefined, 0)],

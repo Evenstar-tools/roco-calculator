@@ -69,7 +69,7 @@ describe("resolveSkillPower", () => {
       .toMatchObject({ value: 200, resolvedCost: cases.at(-1)[1] });
   });
 
-  test("S5 过充电每次聚能增加30威力，次数无上限且重复求值不推进次数", () => {
+  test("S5 过充电聚能至少一次仅增加30威力，保留实际次数且重复求值不推进次数", () => {
     const current = skill({ name: "过充电", basePower: 65, cost: 2 });
     const [control] = getSkillEffectInputs(current);
     expect(control).toMatchObject({ contextKey: "s5OverchargeChargeCount", label: "聚能次数", defaultValue: 0, min: 0, type: "number" });
@@ -78,12 +78,13 @@ describe("resolveSkillPower", () => {
     for (const count of [0, 1, 2, 10, 1000]) {
       for (const key of [control.id, `skill.${control.contextKey}`, control.contextKey]) {
         const context = { [key]: count };
-        for (let index = 0; index < 2; index++) expect(resolveSkillPower(current, context)).toMatchObject({ value: 65 + 30 * count });
+        for (let index = 0; index < 2; index++) expect(resolveSkillPower(current, context)).toMatchObject({ value: count > 0 ? 95 : 65 });
+        expect(readOverchargeCount(context)).toBe(count);
         expect(context).toEqual({ [key]: count });
-        expect(resolveSkillPower(current, { ...context, basePowerOverride: 100 })).toMatchObject({ value: 100 + 30 * count });
+        expect(resolveSkillPower(current, { ...context, basePowerOverride: 100 })).toMatchObject({ value: count > 0 ? 130 : 100 });
       }
     }
-    expect(resolveSkillPower(current, { [control.id]: 2.9 })).toMatchObject({ value: 125 });
+    expect(resolveSkillPower(current, { [control.id]: 2.9 })).toMatchObject({ value: 95 });
     expect(resolveSkillPower(current, { [control.id]: -1 })).toMatchObject({ value: 65 });
   });
 
@@ -102,7 +103,7 @@ describe("resolveSkillPower", () => {
         for (const count of [0, 2]) {
           const context = { [key]: true, [newKey]: count };
           expect(readOverchargeCount(context)).toBe(count);
-          expect(resolveSkillPower(current, context)).toMatchObject({ value: 65 + 30 * count });
+          expect(resolveSkillPower(current, context)).toMatchObject({ value: count > 0 ? 95 : 65 });
         }
       }
     }
