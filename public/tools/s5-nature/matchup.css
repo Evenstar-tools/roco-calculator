@@ -210,6 +210,14 @@ body[data-workspace-mode="validation"] .versus-grid .trait-grid { display:none; 
 .dice-custom p { font-size:12px; color:var(--muted); margin:0 0 6px; }
 .dice-values { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; }
 .dice-values label { font-size:12px; }
+.dice-line select { min-width:0; width:0; flex:1; text-overflow:ellipsis; }
+.dice-note { margin:4px 0 8px 42px; color:var(--muted); font-size:12px; line-height:1.6; overflow-wrap:anywhere; }
+.dice-panel-source { margin:6px 0 2px 42px; }
+.dice-panel-source label { display:flex; flex-direction:row; align-items:center; justify-content:flex-start; gap:7px; font-size:12px; line-height:1.6; }
+.dice-panel-source input { flex:none; margin:0; }
+.dice-panel-source p { margin:3px 0 0; color:var(--muted); font-size:12px; line-height:1.5; }
+.preview-final-power { margin-top:8px; }
+.preview-final-power label { display:block; margin-top:6px; }
 
 /* 操作反馈独立于页面布局。 */
 #notice { position:fixed; z-index:90; top:64px; left:50%; transform:translateX(-50%); width:max-content; max-width:min(520px,calc(100% - 24px)); margin:0; padding:9px 14px; font-size:13px; box-shadow:0 5px 20px #14302e1f; pointer-events:none; overflow-wrap:anywhere; }

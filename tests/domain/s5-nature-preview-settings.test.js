@@ -10,6 +10,27 @@ test('preview settings preserve fractional displayed power and legacy final powe
   }
 });
 
+test('preview settings restore all original effect IDs without dropping the chosen face', () => {
+  for (let id = 1; id <= 40; id++) {
+    expect(() => validatePreviewSettings({ profiles: [{ preview: { diceId: `game-dice-effect-${id}` } }],
+      preview: { diceId: `game-dice-effect-${id}` } })).not.toThrow();
+  }
+  for (const id of ['game-dice-effect-0', 'game-dice-effect-41', 'game-dice-effect-01', 'game-dice-effect-8-extra']) {
+    expect(() => validatePreviewSettings({ profiles: [{ preview: { diceId: id } }] })).toThrow();
+  }
+});
+
+test('preview settings preserve the explicit included-panel flag and speed multiplier', () => {
+  for (const included of [true, false]) {
+    expect(() => validatePreviewSettings({ profiles: [{ preview: {
+      panelIncludesDice: included, diceEffects: { speedMultiplier: 1.5 },
+    } }] })).not.toThrow();
+  }
+  for (const included of [1, 'true', null, {}]) {
+    expect(() => validatePreviewSettings({ profiles: [{ preview: { panelIncludesDice: included } }] })).toThrow();
+  }
+});
+
 test('preview settings reject ambiguous mixed power fields in either direction', () => {
   const mixed = { displayedPower: 60.5, effectivePower: 137.5 };
   expect(() => validatePreviewSettings({ profiles: [{ preview: { skillOverrides: { skill: mixed } } }] })).toThrow();

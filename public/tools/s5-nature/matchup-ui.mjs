@@ -14,6 +14,7 @@ const diceFields = [
   ['magicalAttackMultiplier','魔攻倍率',1,10,0.01],
   ['physicalDefenseMultiplier','物防倍率',1,10,0.01],
   ['magicalDefenseMultiplier','魔防倍率',1,10,0.01],
+  ['speedMultiplier','速度倍率',1,10,0.01],
 ];
 // 分组只用于展示，实测始终对完整性格集合求交集。
 const OUT_COLUMNS = [['hp','生命'],['physicalDefense','物防'],['magicalDefense','魔防']];
@@ -22,6 +23,8 @@ export const INCOMING_SLOTS = 2;
 const number = input => input.value.trim() === '' ? null : Number(input.value);
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const powerNumber = value => Number.isFinite(value) ? String(Number(value.toFixed(6))) : '—';
+const diceDescription = row => [19,33].includes(row?.gameEffectId)
+  ? `双攻、双防、速度 +${row.gameEffectId===19?30:100}%（不含生命）` : row?.description ?? '';
 
 export function validatePreviewSettings(session) {
   const fail = () => { throw new Error('配招判断的配置或实测格式无效，请核对导入文件。'); };
@@ -68,7 +71,9 @@ export function validatePreviewSettings(session) {
       for (const value of holder.incomingOverridesList) overrides(value);
     }
     if (holder.incomingDamages!==undefined && (!Array.isArray(holder.incomingDamages)||holder.incomingDamages.length>4||holder.incomingDamages.some(v=>v!=null&&(!Number.isInteger(v)||v<0||v>1000000)))) fail();
-    if(holder.diceId!==undefined && !['none','manual-power-plus-40','custom','unresolved-all-stats-plus-30'].includes(holder.diceId)) fail();
+    if(holder.diceId!==undefined && !['none','manual-power-plus-40','custom','unresolved-all-stats-plus-30'].includes(holder.diceId)
+      && !(typeof holder.diceId === 'string' && /^game-dice-effect-(?:[1-9]|[1-3][0-9]|40)$/.test(holder.diceId))) fail();
+    if(holder.panelIncludesDice!==undefined && typeof holder.panelIncludesDice!=='boolean') fail();
     if(holder.diceEffects!==undefined) {
       if(!object(holder.diceEffects)) fail();
       for(const [key,v] of Object.entries(holder.diceEffects)) {
@@ -140,7 +145,7 @@ const caseId = prediction => `${prediction.targetLevel}:${prediction.natureId}`;
 
 function shortReason(reason='') {
   if (/没有明确的物理／魔法/.test(reason)) return '变化技能，无直接伤害';
-  if (/骰子/.test(reason)) return '该骰子效果未接入，请改用自填数值';
+  if (/骰子|极化|钝化/.test(reason)) return reason;
   if (/种族|资料/.test(reason)) return '该精灵资料不足';
   return reason || '无法计算';
 }
@@ -242,7 +247,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     return `<div class="pskill"><span class="pskill-slot">${slotLabel}</span><div class="pskill-body"><div class="picker-anchor" id="${pickerId}"><input id="${id}-input" autocomplete="off" placeholder="选择技能"/><span class="picker-caret" aria-hidden="true">⌄</span></div><select id="${id}" class="compat-hidden" tabindex="-1" aria-hidden="true"></select><div id="${metaId}" class="pskill-meta"></div>${conditionControl(prefix)}</div></div>`;
   }
   function conditionControl(prefix) {
-    return `<div id="${prefix}-legacyPower" class="preview-legacy-power" hidden><span id="${prefix}-legacyPower-label"></span><button id="${prefix}-resetPower" type="button">恢复自动</button></div><details class="preview-condition"><summary>条件</summary><div class="preview-conditions-grid"><label>威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>显示威力<input id="${prefix}-displayedPower" type="number" min="0" max="100000" step="any" placeholder="自动"/></label></div><p>显示威力含特性与骰子加成，留空自动计算。</p></details>`;
+    return `<div id="${prefix}-legacyPower" class="preview-legacy-power" hidden><span id="${prefix}-legacyPower-label"></span><button id="${prefix}-resetPower" type="button">恢复自动</button></div><details class="preview-condition"><summary>条件</summary><div class="preview-conditions-grid"><label>额外威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>显示威力<input id="${prefix}-displayedPower" type="number" min="0" max="100000" step="any" placeholder="自动"/></label></div><p>留空自动。手填显示威力时不重复叠加攻防、威力骰子；已包含的额外倍率填 1。</p><details class="preview-final-power"><summary>已知最终威力</summary><label>最终威力<input id="${prefix}-effectivePower" type="number" min="0" max="100000" step="any" placeholder="未填写"/></label><p>仅填已知且包含系别、极化/钝化的威力；不含面板攻防。与显示威力互斥，原存档沿用此口径。</p></details></details>`;
   }
   const heading = (columns, last) => `<div class="pth pth-skill">技能</div>${columns.map(([key,label])=>`<div class="pth">${catalog.assets?.stats?.[key]?`<img src="${html(catalog.assets.stats[key])}" alt=""/>`:''}${label}${key==='other'?'':'<span class="up-arrow">↑</span>'}</div>`).join('')}<div class="pth">${last}</div>`;
   $('preview-outgoing').innerHTML = heading(OUT_COLUMNS,'实测') + Array.from({length:4},(_,i) =>
@@ -251,17 +256,30 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     `<div class="prow" data-incoming-row="${k}">${skillControl(`preview-incoming-skill-${k}`,`preview-incoming-picker-${k}`,`preview-incoming-meta-${k}`,`preview-incoming-condition-${k}`,'敌')}<div class="pcells" id="preview-incoming-cells-${k}"></div><div class="pobs"><input id="preview-incoming-damage-${k}" type="number" min="0" max="1000000" step="1" inputmode="numeric" aria-label="敌方技能 ${k+1} 我方掉血"/><span class="unit-label">HP</span></div></div>`).join('');
 
   function configureDice(side) {
-    $(`${side}-dice`).innerHTML = '<option value="none">无加成</option><option value="manual-power-plus-40">技能威力 +40</option><option value="custom">自填属性加成</option>';
-    $(`${side}-dice-custom`).innerHTML = '<p>倍率 1.30 即 +30%；面板已含加成时填 1。</p><div class="dice-values">' + diceFields.map(([key,label,value,max,step])=>`<label>${label}<input id="${side}-dice-${key}" type="number" value="${value}" min="${key === 'skillPowerAdd' ? 0 : 0.01}" max="${max}" step="${step}" /></label>`).join('') + '</div>';
+    const records = (diceCatalog?.dice ?? []).filter(row => Number.isInteger(row.gameEffectId));
+    const group = (label, rows) => rows.length ? `<optgroup label="${label}">${rows.map(row=>`<option value="${html(row.id)}">${html(row.name)} · ${html(diceDescription(row))}</option>`).join('')}</optgroup>` : '';
+    $(`${side}-dice`).innerHTML = '<option value="none">无加成</option>'
+      + group('属性与威力 · 试算', records.filter(row=>row.supported))
+      + group('系别关系 · 待校验', records.filter(row=>row.typeCoefficient))
+      + group('回合与特殊效果 · 仅资料', records.filter(row=>!row.supported&&!row.typeCoefficient))
+      + '<option value="custom">自填合计加成</option>'
+      + (diceCatalog?.dice ?? []).filter(row=>['manual-power-plus-40','unresolved-all-stats-plus-30'].includes(row.id)).map(row=>`<option value="${row.id}" hidden>${html(row.name)}（旧配置）</option>`).join('');
+    $(`${side}-dice-custom`).innerHTML = '<p>倍率 1.30 即 +30%；留空不额外加成。面板已含属性时勾选下方标记。</p><div class="dice-values">' + diceFields.map(([key,label,value,max,step])=>`<label>${label}<input id="${side}-dice-${key}" type="number" placeholder="${value}" min="${key === 'skillPowerAdd' ? -10000 : 0.001}" max="${max}" step="${step}" /></label>`).join('') + '</div>';
     $(`${side}-dice`).addEventListener('change',()=>commit(()=> {
       const {own,encounter}=state(); (side==='own'?own:encounter).diceId=$(`${side}-dice`).value;
     }));
     for (const [key] of diceFields) $(`${side}-dice-${key}`).addEventListener('change',()=>commit(()=>{
       const {own,encounter}=state(), holder=side==='own'?own:encounter;
-      holder.diceEffects={...(holder.diceEffects ?? {}),[key]:number($(`${side}-dice-${key}`))};
+      holder.diceEffects={...(holder.diceEffects ?? {})};
+      const value=number($(`${side}-dice-${key}`));
+      if(value===null) delete holder.diceEffects[key]; else holder.diceEffects[key]=value;
     }));
   }
   configureDice('own'); configureDice('target');
+  $('own-dice-panel-included').addEventListener('change',()=>commit(()=>{
+    const {own,profile}=state();
+    own.panelIncludesDice=profile.panelSource==='manual' && $('own-dice-panel-included').checked;
+  }));
 
   function configureSkill(index, incoming) {
     const id = incoming ? `preview-incoming-skill-${index}` : `preview-skill-${index}`;
@@ -275,11 +293,12 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       else {own.skillIds[index]=$(id).value;delete own.observed[index];delete own.picked[index];}
     }));
     const prefix=incoming?`preview-incoming-condition-${index}`:`preview-condition-${index}`;
-    for (const key of ['powerMultiplier','hitCount','displayedPower']) $(`${prefix}-${key}`).addEventListener('change',()=>commit(()=>{
+    for (const key of ['powerMultiplier','hitCount','displayedPower','effectivePower']) $(`${prefix}-${key}`).addEventListener('change',()=>commit(()=>{
       const {own,encounter}=state();
       const holder=incoming?encounter.incomingOverridesList[index]:(own.skillOverrides[own.skillIds[index]]??={});
-      if (key === 'displayedPower') delete holder.effectivePower;
       const value=number($(`${prefix}-${key}`)); if(value===null) delete holder[key]; else holder[key]=value;
+      if(value!==null && key==='displayedPower') delete holder.effectivePower;
+      if(value!==null && key==='effectivePower') delete holder.displayedPower;
     }));
     $(`${prefix}-resetPower`).addEventListener('click',()=>commit(()=>{
       const {own,encounter}=state();
@@ -336,11 +355,11 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   function renderSkillControl(id, metaId, prefix, rows, skillId, overrides) {
     if (!object(overrides)) overrides={};
     $(id).innerHTML=skillOptions(rows); $(id).value=skillId ?? '';
-    for(const key of ['powerMultiplier','hitCount','displayedPower']) $(`${prefix}-${key}`).value=overrides[key] ?? '';
+    for(const key of ['powerMultiplier','hitCount','displayedPower','effectivePower']) $(`${prefix}-${key}`).value=overrides[key] ?? '';
     const legacy = Object.hasOwn(overrides, 'effectivePower');
     $(`${prefix}-legacyPower`).hidden = !legacy;
-    $(`${prefix}-legacyPower-label`).textContent = legacy ? `旧记录：最终威力 ${powerNumber(overrides.effectivePower)}` : '';
-    $(`${prefix}-displayedPower`).placeholder = legacy ? '旧记录生效中' : '自动';
+    $(`${prefix}-legacyPower-label`).textContent = legacy ? `最终威力 ${powerNumber(overrides.effectivePower)} · 已含系别与觉醒` : '';
+    $(`${prefix}-displayedPower`).placeholder = legacy ? '最终威力生效中' : '自动';
     const skill=skills.get(skillId);
     if(!skill) { $(metaId).innerHTML='<span class="muted">未选技能</span>'; $(metaId).title=''; return; }
     $(metaId).innerHTML=`${html(skill.type)} · ${category(skill)} · 显示威力 —`;
@@ -469,8 +488,9 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const skillTypes = own.skillIds.map(id => skills.get(id)?.type).filter(Boolean);
     const pct = traitPanelPercents(info, own.trait, skillTypes);
     const stacks = traitControls(info).stack ? own.trait.stacks ?? 0 : 0;
-    const head = `${html(profile.name)}当前面板 · ${(profile.awakening ?? 0) + 5}★ ${html(nature?.name ?? '普通')}${stacks?` · 特性 ${stacks} 层`:''}`;
-    $('preview-panel').innerHTML = `<div class="rail-cap"><span>${head}</span></div><div class="panel-stats">${Object.entries(statNames).map(([key,label])=>`<div class="${nature?.upStat===key?'up':nature?.downStat===key?'down':''}"><span>${label}</span><b>${profile.panel?.[key] ?? '—'}${pct[key]?`<em>+${pct[key]}%</em>`:''}</b></div>`).join('')}</div>`;
+    const head = `${html(profile.name)}${own.panelIncludesDice?'战斗':'计算'}面板 · ${(profile.awakening ?? 0) + 5}★ ${html(nature?.name ?? '普通')}${stacks?` · 特性 ${stacks} 层`:''}`;
+    const panel = currentPreview?.ownPanel ?? profile.panel;
+    $('preview-panel').innerHTML = `<div class="rail-cap"><span>${head}</span></div><div class="panel-stats">${Object.entries(statNames).map(([key,label])=>`<div class="${nature?.upStat===key?'up':nature?.downStat===key?'down':''}"><span>${label}</span><b>${powerNumber(panel?.[key])}${pct[key]?`<em>+${pct[key]}%</em>`:''}</b></div>`).join('')}</div>`;
   }
 
   function render() {
@@ -490,15 +510,27 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       $(`preview-incoming-damage-${k}`).placeholder='';
     }
     for(const [side,holder] of [['own',own],['target',encounter]]) {
-      const id = holder.diceId === 'unresolved-all-stats-plus-30' ? 'none' : holder.diceId ?? 'none';
+      const id = holder.diceId ?? 'none';
       $(`${side}-dice`).value=id;
       $(`${side}-dice-custom`).hidden=holder.diceId!=='custom';
-      for(const [key,,fallback] of diceFields) $(`${side}-dice-${key}`).value=holder.diceEffects?.[key] ?? fallback;
+      for(const [key] of diceFields) $(`${side}-dice-${key}`).value=holder.diceEffects?.[key] ?? '';
+      const row=diceCatalog?.dice?.find(item=>item.id===id);
+      const note=$(`${side}-dice-note`);
+      note.hidden=id==='none';
+      note.textContent=id==='custom'?'按手填合计试算；组合与取整仍需实测。'
+        : row ? `${diceDescription(row)} ${row.typeCoefficient?'与双系、极化/钝化的组合待校验，非中性关系暂停自动试算。':row.supported?'按原配置试算，取整与叠加待实测。':row.unsupportedReason ?? '当前仅展示资料，未接入结算。'}`
+          : '骰子资料缺失，请重新选择。';
     }
+    const includedAllowed=profile.panelSource==='manual';
+    if(!includedAllowed) own.panelIncludesDice=false;
+    $('own-dice-panel-included').closest('.dice-panel-source').hidden=(own.diceId??'none')==='none' && !own.panelIncludesDice;
+    $('own-dice-panel-included').checked=own.panelIncludesDice===true;
+    $('own-dice-panel-included').disabled=!includedAllowed;
+    $('own-dice-panel-note').textContent=includedAllowed?'已包含时不再叠加骰子属性；技能威力加值仍单独处理。':'配置面板不含骰子；手填面板后可标记已包含。';
     $('preview-percent-format').value=format;
     $('target-shiny').checked=encounter.shiny;
     for(const picker of pickers) picker.refresh();
-    const input={targetId:session.targetId,level:session.level,profile,skillIds:own.skillIds,skillOverrides:own.skillOverrides,
+    const input={targetId:session.targetId,level:session.level,profile:{...profile,panelIncludesDice:own.panelIncludesDice===true},skillIds:own.skillIds,skillOverrides:own.skillOverrides,
       incomingSkillIds:encounter.incomingSkillIds,incomingOverridesList:encounter.incomingOverridesList,ownTrait:own.trait,targetShiny:encounter.shiny,
       ownDiceIds:own.diceId==='custom'?[]:[own.diceId ?? 'none'],targetDiceIds:encounter.diceId==='custom'?[]:[encounter.diceId ?? 'none'],
       ownDiceEffects:own.diceId==='custom'?(own.diceEffects ?? {}):{},targetDiceEffects:encounter.diceId==='custom'?(encounter.diceEffects ?? {}):{}};

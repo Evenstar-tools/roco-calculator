@@ -1,12 +1,12 @@
 {
   "meta": {
-    "schemaVersion": 1,
-    "version": "2026-11-06",
+    "schemaVersion": 2,
+    "version": "2026-11-07",
     "scope": "S5 field dice parameters for the standalone manual PVE calculator",
-    "status": "partial",
+    "status": "original-config-partial-trial",
     "bothSidesIndependent": true,
-    "selectionPolicy": "每一方独立选择数值预设；不自动给另一方添加效果，不由资源面数随机生成效果。",
-    "sourceBoundary": "本地旧提取只确认7类资源；没有恢复S5正式骰面玩法配置。滴溜豚特性投骰与野外骰子分开。",
+    "selectionPolicy": "双方各自确认实际生效来源；一次仅试算单一效果，不按骰子面数随机生成，不替另一侧自动附加。",
+    "sourceBoundary": "四种龙龙骰玩法和40个效果来自原始配置；不等于实战验证、全部可获得或本局已生效。与精灵特性投骰分离。",
     "supportedEffectFields": [
       "hpMultiplier",
       "physicalAttackMultiplier",
@@ -26,41 +26,175 @@
       "damage-reduction",
       "unresolved-stat-multiplier"
     ],
-    "stackingPolicy": "本资料没有证明骰面之间的叠加次序；同一方不得据此自动叠加多个同名预设。"
+    "stackingPolicy": "未恢复多个同时生效来源的叠加公式；原始add_max不作为可叠证明，重复BUFFBASE项不得去重。",
+    "gameplayTypeCount": 4,
+    "gameEffectCount": 40,
+    "supportMeaning": "supported=true仅指可按现有标量安全试算；supportStatus=trial，不代表服务器公式或实战已验证。",
+    "hpPolicy": "本目录没有通用生命上限骰子；回合恢复、扣当前生命及护盾不得映射为hpMultiplier。"
   },
   "sources": [
     {
       "id": "local-dice-extraction-20261105",
       "kind": "local-static-extraction",
-      "title": "本地包骰子种类与属性提取结果",
-      "path": "D:/codex/worktrees/roco-plugin-web-release-20261105/output/local-package-lists-20261105/dice/dice-gameplay-list.json",
-      "status": "resource-types-only-no-gameplay-effects",
+      "title": "历史骰子外观资源提取",
+      "table": "season NPC dice blueprint resources",
+      "status": "resource-appearance-only",
       "readDate": "2026-11-06"
     },
     {
       "id": "local-dice-resource-evidence-20261105",
       "kind": "local-static-extraction",
-      "title": "骰子模型与可读配置范围",
-      "path": "D:/codex/worktrees/roco-plugin-web-release-20261105/output/local-package-lists-20261105/dice/dice-config-evidence.json",
+      "title": "历史骰子模型与配置范围",
+      "table": "season NPC dice blueprint resources",
       "readDate": "2026-11-06"
     },
     {
       "id": "comment-image-6",
       "kind": "user-supplied-comment",
       "title": "Vodka_Cranberry：锤头鹳打十星迪莫",
-      "path": "C:/Users/Administrator/Downloads/S5奇遇机制视频评论区.docx",
-      "extractedImage": "output/s5-comment-verification/image6.png",
-      "transcription": "output/s5-comment-verification/images-1-10-audit.json",
-      "note": "评论明确提到威力加40的buff；未提供其正式骰面名称、ID或完整触发过程。"
+      "sourceDocument": "S5奇遇机制视频评论区.docx",
+      "note": "历史评论记录威力+40；原图与实战链不随此公开目录发布。"
     },
     {
       "id": "comment-image-14",
       "kind": "user-supplied-comment",
       "title": "尹仙子：伊兰亚龙打十星罗隐",
-      "path": "C:/Users/Administrator/Downloads/S5奇遇机制视频评论区.docx",
-      "extractedImage": "output/s5-comment-verification/image14.png",
-      "transcription": "output/s5-comment-verification/images-11-20-audit.md",
-      "note": "评论称全属性加30%骰子；未定义全属性作用范围、实际防御或面板/伤害乘区。"
+      "sourceDocument": "S5奇遇机制视频评论区.docx",
+      "note": "保留旧全属性+30%未核实入口；原表已补充五项作用范围，不等同该局实战验证。"
+    },
+    {
+      "id": "game-dice-effects-20261107",
+      "kind": "original-game-config",
+      "tables": [
+        "SEASON_BONUS_DICE_CONF",
+        "SEASON_BONUS_DICEBUFF_CONF",
+        "SEASON_DICE_CONF"
+      ],
+      "pak": "pakchunk4-WindowsNoEditor_4_P.pak",
+      "reviewDate": "2026-11-07",
+      "sourceSnapshotDate": "2026-11-06",
+      "note": "回读已有解码资料，按挂载点合并基础包及0至12号增量包；40个配置效果不等于40个当前可获得效果。"
+    },
+    {
+      "id": "game-buff-tables-20261107",
+      "kind": "original-game-config",
+      "tables": [
+        "BUFF_CONF",
+        "BUFFBASE_CONF"
+      ],
+      "pak": "pakchunk4-WindowsNoEditor_12_P.pak",
+      "note": "保留原始buff、基础效果顺序和重复ID；消费公式、触发流程及取整未恢复。"
+    },
+    {
+      "id": "game-attributes-20261107",
+      "kind": "original-game-config",
+      "tables": [
+        "ATTRIBUTE_CONF"
+      ],
+      "pak": "pakchunk4-WindowsNoEditor_3_P.pak",
+      "note": "按原始属性ID识别双攻、双防与速度；全能不含生命。"
+    }
+  ],
+  "diceTypes": [
+    {
+      "id": "game-dice-type-101",
+      "gameDiceId": 101,
+      "diceType": 3,
+      "name": "奇异龙龙骰",
+      "description": "一颗带有八个面的魔法骰子，在赛季战斗中使用，根据骰子掷出的结果，战斗中可以携带不同的效果。",
+      "recordKind": "gameplay-type",
+      "supportStatus": "reference",
+      "evidenceStatus": "original-config-not-live-verified",
+      "sourceIds": [
+        "game-dice-effects-20261107"
+      ],
+      "availability": {
+        "currentlyObtainable": null,
+        "note": "静态玩法记录不证明当前账号或场景可获得。"
+      },
+      "originalConfig": {
+        "id": 101,
+        "dice_type": 3,
+        "dice_name": "奇异龙龙骰",
+        "dice_icon": "Texture2D'/Game/NewRoco/Modules/System/Common/Icon/BagItem/101068.101068'",
+        "dice_big_icon": "Texture2D'/Game/NewRoco/Modules/System/Common/Icon/Item190/101068.101068'",
+        "dice_desc": "一颗带有八个面的魔法骰子，在赛季战斗中使用，根据骰子掷出的结果，战斗中可以携带不同的效果。"
+      }
+    },
+    {
+      "id": "game-dice-type-102",
+      "gameDiceId": 102,
+      "diceType": 4,
+      "name": "异色龙龙骰",
+      "description": "一颗带有十个面的魔法骰子，在赛季战斗中使用，根据骰子掷出的结果，战斗中可以携带不同的效果。",
+      "recordKind": "gameplay-type",
+      "supportStatus": "reference",
+      "evidenceStatus": "original-config-not-live-verified",
+      "sourceIds": [
+        "game-dice-effects-20261107"
+      ],
+      "availability": {
+        "currentlyObtainable": null,
+        "note": "静态玩法记录不证明当前账号或场景可获得。"
+      },
+      "originalConfig": {
+        "id": 102,
+        "dice_type": 4,
+        "dice_name": "异色龙龙骰",
+        "dice_icon": "Texture2D'/Game/NewRoco/Modules/System/Common/Icon/BagItem/101069.101069'",
+        "dice_big_icon": "Texture2D'/Game/NewRoco/Modules/System/Common/Icon/Item190/101069.101069'",
+        "dice_desc": "一颗带有十个面的魔法骰子，在赛季战斗中使用，根据骰子掷出的结果，战斗中可以携带不同的效果。"
+      }
+    },
+    {
+      "id": "game-dice-type-103",
+      "gameDiceId": 103,
+      "diceType": 2,
+      "name": "污染龙龙骰",
+      "description": "一颗带有六个面的魔法骰子，在赛季战斗中使用，根据骰子掷出的结果，战斗中可以携带不同的效果。",
+      "recordKind": "gameplay-type",
+      "supportStatus": "reference",
+      "evidenceStatus": "original-config-not-live-verified",
+      "sourceIds": [
+        "game-dice-effects-20261107"
+      ],
+      "availability": {
+        "currentlyObtainable": null,
+        "note": "静态玩法记录不证明当前账号或场景可获得。"
+      },
+      "originalConfig": {
+        "id": 103,
+        "dice_type": 2,
+        "dice_name": "污染龙龙骰",
+        "dice_icon": "Texture2D'/Game/NewRoco/Modules/System/Common/Icon/BagItem/101067.101067'",
+        "dice_big_icon": "Texture2D'/Game/NewRoco/Modules/System/Common/Icon/Item190/101067.101067'",
+        "dice_desc": "一颗带有六个面的魔法骰子，在赛季战斗中使用，根据骰子掷出的结果，战斗中可以携带不同的效果。"
+      }
+    },
+    {
+      "id": "game-dice-type-104",
+      "gameDiceId": 104,
+      "diceType": 1,
+      "name": "龙龙骰",
+      "description": "一颗带有四个面的魔法骰子，在赛季战斗中使用，根据骰子掷出的结果，战斗中可以携带不同的效果。",
+      "recordKind": "gameplay-type",
+      "supportStatus": "reference",
+      "evidenceStatus": "original-config-not-live-verified",
+      "sourceIds": [
+        "game-dice-effects-20261107"
+      ],
+      "availability": {
+        "currentlyObtainable": null,
+        "note": "静态玩法记录不证明当前账号或场景可获得。"
+      },
+      "originalConfig": {
+        "id": 104,
+        "dice_type": 1,
+        "dice_name": "龙龙骰",
+        "dice_icon": "Texture2D'/Game/NewRoco/Modules/System/Common/Icon/BagItem/101066.101066'",
+        "dice_big_icon": "Texture2D'/Game/NewRoco/Modules/System/Common/Icon/Item190/101066.101066'",
+        "dice_desc": "一颗带有四个面的魔法骰子，在赛季战斗中使用，根据骰子掷出的结果，战斗中可以携带不同的效果。"
+      }
     }
   ],
   "dice": [
@@ -73,7 +207,9 @@
       "effects": {},
       "evidenceStatus": "explicit-neutral-input",
       "sourceIds": [],
-      "requiresConfirmation": false
+      "requiresConfirmation": false,
+      "recordKind": "neutral",
+      "supportStatus": "neutral"
     },
     {
       "id": "manual-power-plus-40",
@@ -91,12 +227,16 @@
         "comment-image-6"
       ],
       "requiresConfirmation": true,
-      "applicationNote": "仅对所选一方的技能基础威力增加40；用户须确认本场确实出现此项效果且没有其他骰面效果。不是最终伤害+40，也不是伤害乘1.4；与其他固定威力增益的叠加阶段尚待实测。"
+      "applicationNote": "仅对所选一方的技能基础威力增加40；用户须确认本场确实出现此项效果且没有其他骰面效果。不是最终伤害+40，也不是伤害乘1.4；与其他固定威力增益的叠加阶段尚待实测。",
+      "recordKind": "legacy-alias",
+      "aliasOf": "game-dice-effect-17",
+      "legacyAlias": true,
+      "supportStatus": "trial"
     },
     {
       "id": "unresolved-all-stats-plus-30",
-      "name": "全属性 +30%（范围待核对）",
-      "description": "评论提到全属性加30%，但没有确认是否涵盖生命/速度以及与面板的结算顺序，暂不自动应用。",
+      "name": "全属性 +30%（旧配置，需重选）",
+      "description": "原表已恢复全能：双攻、双防和速度+30%，不含生命。旧配置保持未应用，请重新选择全能后试算。",
       "supported": false,
       "effectKinds": [
         "unresolved-stat-multiplier"
@@ -106,15 +246,26 @@
         {
           "kind": "stat-multiplier",
           "multiplier": 1.3,
-          "stats": null
+          "stats": [
+            "physicalAttack",
+            "magicalAttack",
+            "physicalDefense",
+            "magicalDefense",
+            "speed"
+          ]
         }
       ],
-      "evidenceStatus": "reported-ambiguous-scope",
+      "evidenceStatus": "legacy-unapplied-original-scope-restored",
       "sourceIds": [
         "comment-image-14"
       ],
       "requiresConfirmation": true,
-      "unsupportedReason": "缺少具体受影响属性与结算阶段；不能把该说法自动扩成六维、HP或最终伤害统一乘1.3。"
+      "unsupportedReason": "旧未生效配置不静默改为生效；请重新选择game-dice-effect-19（全能），确认本局生效且面板未重复包含后试算。",
+      "recordKind": "legacy-alias",
+      "aliasOf": "game-dice-effect-19",
+      "compatibilityNote": "保留旧未核实ID及不自动计算语义；原表全能仅双攻、双防和速度，不含生命。新选择使用game-dice-effect-19。",
+      "legacyAlias": true,
+      "supportStatus": "unsupported"
     },
     {
       "id": "resource-dice-1100012",
@@ -140,7 +291,9 @@
       },
       "faceCount": 4,
       "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_4.BP_NPC_S5_Dice_4_C'",
-      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。",
+      "recordKind": "legacy-resource",
+      "supportStatus": "reference"
     },
     {
       "id": "resource-dice-1100013",
@@ -166,7 +319,9 @@
       },
       "faceCount": 6,
       "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_6.BP_NPC_S5_Dice_6_C'",
-      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。",
+      "recordKind": "legacy-resource",
+      "supportStatus": "reference"
     },
     {
       "id": "resource-dice-1100014",
@@ -192,7 +347,9 @@
       },
       "faceCount": 8,
       "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_8.BP_NPC_S5_Dice_8_C'",
-      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。",
+      "recordKind": "legacy-resource",
+      "supportStatus": "reference"
     },
     {
       "id": "resource-dice-1100015",
@@ -218,7 +375,9 @@
       },
       "faceCount": 10,
       "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_10.BP_NPC_S5_Dice_10_C'",
-      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。",
+      "recordKind": "legacy-resource",
+      "supportStatus": "reference"
     },
     {
       "id": "resource-dice-1100016",
@@ -244,7 +403,9 @@
       },
       "faceCount": null,
       "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_YiSe.BP_NPC_S5_Dice_YiSe_C'",
-      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。",
+      "recordKind": "legacy-resource",
+      "supportStatus": "reference"
     },
     {
       "id": "resource-dice-1100017",
@@ -270,7 +431,9 @@
       },
       "faceCount": null,
       "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_EMeng.BP_NPC_S5_Dice_EMeng_C'",
-      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。",
+      "recordKind": "legacy-resource",
+      "supportStatus": "reference"
     },
     {
       "id": "resource-dice-1100018",
@@ -296,7 +459,6210 @@
       },
       "faceCount": null,
       "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_QiYi.BP_NPC_S5_Dice_QiYi_C'",
-      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。",
+      "recordKind": "legacy-resource",
+      "supportStatus": "reference"
+    },
+    {
+      "id": "game-dice-effect-1",
+      "gameEffectId": 1,
+      "recordKind": "game-effect",
+      "buffId": 20010285,
+      "name": "基础",
+      "description": "物攻和魔攻+10%",
+      "supported": true,
+      "supportStatus": "trial",
+      "effects": {
+        "physicalAttackMultiplier": 1.1,
+        "magicalAttackMultiplier": 1.1
+      },
+      "effectKinds": [
+        "stat-multiplier"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 1
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20010285
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001001
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001002
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 29
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 30
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 0,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 1,
+        "dice_icon_type": 1,
+        "icon_number": 3,
+        "buff_id": 20010285,
+        "buff_name": "基础",
+        "buff_text": "物攻和魔攻<span color=\"#73c715\">+10%</>",
+        "buff_quality": 1,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010922,
+        "textPlain": "物攻和魔攻+10%",
+        "buff": {
+          "id": 20010285,
+          "buff_base_ids": [
+            2001001,
+            2001002
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2001001,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  29
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  1000
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001002,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  30
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  1000
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [
+          {
+            "baseId": 2001001,
+            "attributeId": 29,
+            "attributeName": "物理攻击力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                29
+              ],
+              [
+                0
+              ],
+              [
+                1000
+              ]
+            ]
+          },
+          {
+            "baseId": 2001002,
+            "attributeId": 30,
+            "attributeName": "魔法攻击力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                30
+              ],
+              [
+                0
+              ],
+              [
+                1000
+              ]
+            ]
+          }
+        ],
+        "faceConfigReferenceCount": 0
+      },
+      "applicationNote": "仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。"
+    },
+    {
+      "id": "game-dice-effect-2",
+      "gameEffectId": 2,
+      "recordKind": "game-effect",
+      "buffId": 20011780,
+      "name": "强攻",
+      "description": "物攻和魔攻+25%",
+      "supported": true,
+      "supportStatus": "trial",
+      "effects": {
+        "physicalAttackMultiplier": 1.25,
+        "magicalAttackMultiplier": 1.25
+      },
+      "effectKinds": [
+        "stat-multiplier"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 2
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20011780
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001178
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001179
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 29
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 30
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 9,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 2,
+        "dice_icon_type": 1,
+        "icon_number": 3,
+        "buff_id": 20011780,
+        "buff_name": "强攻",
+        "buff_text": "物攻和魔攻<span color=\"#73c715\">+25%</>",
+        "buff_quality": 1,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010923,
+        "textPlain": "物攻和魔攻+25%",
+        "buff": {
+          "id": 20011780,
+          "buff_base_ids": [
+            2001178,
+            2001179
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2001178,
+            "buffbase_order": 1,
+            "buffbase_param": [
+              {
+                "params": [
+                  29
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  2500
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001179,
+            "buffbase_order": 1,
+            "buffbase_param": [
+              {
+                "params": [
+                  30
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  2500
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [
+          {
+            "baseId": 2001178,
+            "attributeId": 29,
+            "attributeName": "物理攻击力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                29
+              ],
+              [
+                0
+              ],
+              [
+                2500
+              ]
+            ]
+          },
+          {
+            "baseId": 2001179,
+            "attributeId": 30,
+            "attributeName": "魔法攻击力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                30
+              ],
+              [
+                0
+              ],
+              [
+                2500
+              ]
+            ]
+          }
+        ],
+        "faceConfigReferenceCount": 9
+      },
+      "applicationNote": "仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。"
+    },
+    {
+      "id": "game-dice-effect-3",
+      "gameEffectId": 3,
+      "recordKind": "game-effect",
+      "buffId": 20011800,
+      "name": "固守",
+      "description": "物防和魔防+25%",
+      "supported": true,
+      "supportStatus": "trial",
+      "effects": {
+        "physicalDefenseMultiplier": 1.25,
+        "magicalDefenseMultiplier": 1.25
+      },
+      "effectKinds": [
+        "stat-multiplier"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 3
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20011800
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001180
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001181
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 31
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 32
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 12,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 3,
+        "dice_icon_type": 1,
+        "buff_id": 20011800,
+        "buff_name": "固守",
+        "buff_text": "物防和魔防<span color=\"#73c715\">+25%</>",
+        "buff_quality": 1,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010924,
+        "textPlain": "物防和魔防+25%",
+        "buff": {
+          "id": 20011800,
+          "buff_base_ids": [
+            2001180,
+            2001181
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2001180,
+            "buffbase_order": 1,
+            "buffbase_param": [
+              {
+                "params": [
+                  31
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  2500
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001181,
+            "buffbase_order": 1,
+            "buffbase_param": [
+              {
+                "params": [
+                  32
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  2500
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [
+          {
+            "baseId": 2001180,
+            "attributeId": 31,
+            "attributeName": "物理防御力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                31
+              ],
+              [
+                0
+              ],
+              [
+                2500
+              ]
+            ]
+          },
+          {
+            "baseId": 2001181,
+            "attributeId": 32,
+            "attributeName": "魔法防御力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                32
+              ],
+              [
+                0
+              ],
+              [
+                2500
+              ]
+            ]
+          }
+        ],
+        "faceConfigReferenceCount": 12
+      },
+      "applicationNote": "仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。"
+    },
+    {
+      "id": "game-dice-effect-4",
+      "gameEffectId": 4,
+      "recordKind": "game-effect",
+      "buffId": 20011820,
+      "name": "加速",
+      "description": "速度+50%",
+      "supported": true,
+      "supportStatus": "trial",
+      "effects": {
+        "speedMultiplier": 1.5
+      },
+      "effectKinds": [
+        "stat-multiplier"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 4
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20011820
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001182
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 6
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 9,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 4,
+        "dice_icon_type": 1,
+        "icon_number": 4,
+        "buff_id": 20011820,
+        "buff_name": "加速",
+        "buff_text": "速度<span color=\"#73c715\">+50%</>",
+        "buff_quality": 1,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010925,
+        "textPlain": "速度+50%",
+        "buff": {
+          "id": 20011820,
+          "buff_base_ids": [
+            2001182
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2001182,
+            "buffbase_order": 1,
+            "buffbase_param": [
+              {
+                "params": [
+                  6
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  5000
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [
+          {
+            "baseId": 2001182,
+            "attributeId": 6,
+            "attributeName": "速度",
+            "is_percent_attr": null,
+            "rawParams": [
+              [
+                6
+              ],
+              [
+                1
+              ],
+              [
+                5000
+              ]
+            ]
+          }
+        ],
+        "faceConfigReferenceCount": 9
+      },
+      "applicationNote": "仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。速度仅调整面板，不自动判定先手或条件技能。"
+    },
+    {
+      "id": "game-dice-effect-5",
+      "gameEffectId": 5,
+      "recordKind": "game-effect",
+      "buffId": 20174000,
+      "name": "生息",
+      "description": "回合结束生命恢复+10%",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 5
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20174000
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017400
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 8,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 5,
+        "dice_icon_type": 1,
+        "icon_number": 5,
+        "buff_id": 20174000,
+        "buff_name": "生息",
+        "buff_text": "回合结束生命恢复<span color=\"#73c715\">+10%</>",
+        "buff_quality": 1,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010930,
+        "textPlain": "回合结束生命恢复+10%",
+        "buff": {
+          "id": 20174000,
+          "buff_base_ids": [
+            2017400
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2017400,
+            "buffbase_order": 17,
+            "trigger_type": 7,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  1005010
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 8
+      },
+      "unsupportedReason": "回合结束恢复生命不是生命上限加成；尚无回合及恢复结算。"
+    },
+    {
+      "id": "game-dice-effect-6",
+      "gameEffectId": 6,
+      "recordKind": "game-effect",
+      "buffId": 20174010,
+      "name": "源流",
+      "description": "回合结束能量+2",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 6
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20174010
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017401
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 9,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 6,
+        "dice_icon_type": 1,
+        "icon_number": 8,
+        "buff_id": 20174010,
+        "buff_name": "源流",
+        "buff_text": "回合结束能量<span color=\"#73c715\">+2</>",
+        "buff_quality": 1,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010931,
+        "textPlain": "回合结束能量+2",
+        "buff": {
+          "id": 20174010,
+          "buff_base_ids": [
+            2017401
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2017401,
+            "buffbase_order": 17,
+            "trigger_type": 7,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  1019002
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 9
+      },
+      "unsupportedReason": "回合结束回复能量需要能量与回合事件，不映射为伤害或威力倍率。"
+    },
+    {
+      "id": "game-dice-effect-7",
+      "gameEffectId": 7,
+      "recordKind": "game-effect",
+      "buffId": 20420180,
+      "name": "克制",
+      "description": "克制系数增加为250%",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "type-coefficient"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 7
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20420180
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2042018
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 12,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 7,
+        "dice_icon_type": 1,
+        "icon_number": 18,
+        "buff_id": 20420180,
+        "buff_name": "克制",
+        "buff_text": "克制系数增加为<span color=\"#73c715\">250%</>",
+        "buff_quality": 1,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010944,
+        "textPlain": "克制系数增加为250%",
+        "buff": {
+          "id": 20420180,
+          "buff_base_ids": [
+            2042018
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2042018,
+            "buffbase_order": 42,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  50
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 12
+      },
+      "typeCoefficient": {
+        "relation": "super-effective",
+        "value": 2.5
+      },
+      "unsupportedReason": "保留原文系别系数；双属性、极化与钝化组合公式未闭合，不自动套全局威力或伤害倍率。"
+    },
+    {
+      "id": "game-dice-effect-8",
+      "gameEffectId": 8,
+      "recordKind": "game-effect",
+      "buffId": 20420200,
+      "name": "抵抗",
+      "description": "抵抗系数降低为40%",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "type-coefficient"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 8
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20420200
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2042020
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 9,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 8,
+        "dice_icon_type": 1,
+        "icon_number": 17,
+        "buff_id": 20420200,
+        "buff_name": "抵抗",
+        "buff_text": "抵抗系数降低为<span color=\"#73c715\">40%</>",
+        "buff_quality": 1,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010946,
+        "textPlain": "抵抗系数降低为40%",
+        "buff": {
+          "id": 20420200,
+          "buff_base_ids": [
+            2042020
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2042020,
+            "buffbase_order": 42,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  20
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 9
+      },
+      "typeCoefficient": {
+        "relation": "resistance",
+        "value": 0.4
+      },
+      "unsupportedReason": "保留原文系别系数；双属性、极化与钝化组合公式未闭合，不自动套全局威力或伤害倍率。"
+    },
+    {
+      "id": "game-dice-effect-9",
+      "gameEffectId": 9,
+      "recordKind": "game-effect",
+      "buffId": 20174050,
+      "name": "侵蚀",
+      "description": "敌人回合结束受到效果伤害+100%，对龙棋士效果翻倍",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 9
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20174050
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017405
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2040172
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 8,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 9,
+        "dice_icon_type": 1,
+        "icon_number": 10,
+        "buff_id": 20174050,
+        "buff_name": "侵蚀",
+        "buff_text": "敌人回合结束受到效果伤害<span color=\"#73c715\">+100%</>，对龙棋士效果翻倍",
+        "buff_quality": 1,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010935,
+        "textPlain": "敌人回合结束受到效果伤害+100%，对龙棋士效果翻倍",
+        "buff": {
+          "id": 20174050,
+          "buff_base_ids": [
+            2017405,
+            2040172
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2017405,
+            "buffbase_order": 17,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  21660030
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2040172,
+            "buffbase_order": 40,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  21690010
+                ]
+              },
+              {
+                "params": [
+                  1,
+                  0
+                ]
+              },
+              {
+                "params": [
+                  21660060
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  6
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 8
+      },
+      "unsupportedReason": "效果伤害及对龙棋士的额外效果尚未接入直接命中结算。"
+    },
+    {
+      "id": "game-dice-effect-10",
+      "gameEffectId": 10,
+      "recordKind": "game-effect",
+      "buffId": 20450182,
+      "name": "连打",
+      "description": "连击+1",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 10
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20450182
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2045005
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 9,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 10,
+        "dice_icon_type": 1,
+        "icon_number": 9,
+        "buff_id": 20450182,
+        "buff_name": "连打",
+        "buff_text": "连击<span color=\"#73c715\">+1</>",
+        "buff_quality": 1,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010948,
+        "textPlain": "连击+1",
+        "buff": {
+          "id": 20450182,
+          "buff_base_ids": [
+            2045005
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2045005,
+            "buffbase_order": 45,
+            "trigger_type": 12,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 9
+      },
+      "unsupportedReason": "增加连击需要核对实际命中与技能类别，不直接乘最终伤害。"
+    },
+    {
+      "id": "game-dice-effect-11",
+      "gameEffectId": 11,
+      "recordKind": "game-effect",
+      "buffId": 20231340,
+      "name": "巧劲",
+      "description": "威力+20",
+      "supported": true,
+      "supportStatus": "trial",
+      "effects": {
+        "skillPowerAdd": 20
+      },
+      "effectKinds": [
+        "skill-power-flat"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 11
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20231340
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2023134
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 9,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 11,
+        "dice_icon_type": 1,
+        "icon_number": 1,
+        "buff_id": 20231340,
+        "buff_name": "巧劲",
+        "buff_text": "威力<span color=\"#73c715\">+20</>",
+        "buff_quality": 1,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010938,
+        "textPlain": "威力+20",
+        "buff": {
+          "id": 20231340,
+          "buff_base_ids": [
+            2023134
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2023134,
+            "buffbase_order": 23,
+            "trigger_type": 12,
+            "show_letters": [
+              1
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  20
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 9
+      },
+      "applicationNote": "仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。"
+    },
+    {
+      "id": "game-dice-effect-12",
+      "gameEffectId": 12,
+      "recordKind": "game-effect",
+      "buffId": 20011830,
+      "name": "物理强化",
+      "description": "物攻+100%",
+      "supported": true,
+      "supportStatus": "trial",
+      "effects": {
+        "physicalAttackMultiplier": 2
+      },
+      "effectKinds": [
+        "stat-multiplier"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 12
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20011830
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001183
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 29
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 5,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 12,
+        "dice_icon_type": 1,
+        "icon_number": 15,
+        "buff_id": 20011830,
+        "buff_name": "物理强化",
+        "buff_text": "物攻<span color=\"#73c715\">+100%</>",
+        "buff_quality": 2,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010926,
+        "textPlain": "物攻+100%",
+        "buff": {
+          "id": 20011830,
+          "buff_base_ids": [
+            2001183
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "type": 4,
+          "add_max": 99,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2001183,
+            "buffbase_order": 1,
+            "buffbase_param": [
+              {
+                "params": [
+                  29
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [
+          {
+            "baseId": 2001183,
+            "attributeId": 29,
+            "attributeName": "物理攻击力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                29
+              ],
+              [
+                0
+              ],
+              [
+                10000
+              ]
+            ]
+          }
+        ],
+        "faceConfigReferenceCount": 5
+      },
+      "applicationNote": "仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。"
+    },
+    {
+      "id": "game-dice-effect-13",
+      "gameEffectId": 13,
+      "recordKind": "game-effect",
+      "buffId": 20011840,
+      "name": "魔法强化",
+      "description": "魔攻+100%",
+      "supported": true,
+      "supportStatus": "trial",
+      "effects": {
+        "magicalAttackMultiplier": 2
+      },
+      "effectKinds": [
+        "stat-multiplier"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 13
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20011840
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001184
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 30
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 3,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 13,
+        "dice_icon_type": 1,
+        "icon_number": 14,
+        "buff_id": 20011840,
+        "buff_name": "魔法强化",
+        "buff_text": "魔攻<span color=\"#73c715\">+100%</>",
+        "buff_quality": 2,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010927,
+        "textPlain": "魔攻+100%",
+        "buff": {
+          "id": 20011840,
+          "buff_base_ids": [
+            2001184
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "type": 4,
+          "add_max": 99,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2001184,
+            "buffbase_order": 1,
+            "buffbase_param": [
+              {
+                "params": [
+                  30
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [
+          {
+            "baseId": 2001184,
+            "attributeId": 30,
+            "attributeName": "魔法攻击力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                30
+              ],
+              [
+                0
+              ],
+              [
+                10000
+              ]
+            ]
+          }
+        ],
+        "faceConfigReferenceCount": 3
+      },
+      "applicationNote": "仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。"
+    },
+    {
+      "id": "game-dice-effect-14",
+      "gameEffectId": 14,
+      "recordKind": "game-effect",
+      "buffId": 20420190,
+      "name": "强力克制",
+      "description": "克制系数增加为350%",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "type-coefficient"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 14
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20420190
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2042019
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 9,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 14,
+        "dice_icon_type": 1,
+        "icon_number": 18,
+        "buff_id": 20420190,
+        "buff_name": "强力克制",
+        "buff_text": "克制系数增加为<span color=\"#73c715\">350%</>",
+        "buff_quality": 2,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010945,
+        "textPlain": "克制系数增加为350%",
+        "buff": {
+          "id": 20420190,
+          "buff_base_ids": [
+            2042019
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "type": 4,
+          "add_max": 99,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2042019,
+            "buffbase_order": 42,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  150
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 9
+      },
+      "typeCoefficient": {
+        "relation": "super-effective",
+        "value": 3.5
+      },
+      "unsupportedReason": "保留原文系别系数；双属性、极化与钝化组合公式未闭合，不自动套全局威力或伤害倍率。"
+    },
+    {
+      "id": "game-dice-effect-15",
+      "gameEffectId": 15,
+      "recordKind": "game-effect",
+      "buffId": 20420210,
+      "name": "强力抵抗",
+      "description": "抵抗系数降低为25%",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "type-coefficient"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 15
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20420210
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2042021
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 5,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 15,
+        "dice_icon_type": 1,
+        "icon_number": 17,
+        "buff_id": 20420210,
+        "buff_name": "强力抵抗",
+        "buff_text": "抵抗系数降低为<span color=\"#73c715\">25%</>",
+        "buff_quality": 2,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010947,
+        "textPlain": "抵抗系数降低为25%",
+        "buff": {
+          "id": 20420210,
+          "buff_base_ids": [
+            2042021
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "type": 4,
+          "add_max": 99,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2042021,
+            "buffbase_order": 42,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  50
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 5
+      },
+      "typeCoefficient": {
+        "relation": "resistance",
+        "value": 0.25
+      },
+      "unsupportedReason": "保留原文系别系数；双属性、极化与钝化组合公式未闭合，不自动套全局威力或伤害倍率。"
+    },
+    {
+      "id": "game-dice-effect-16",
+      "gameEffectId": 16,
+      "recordKind": "game-effect",
+      "buffId": 20174020,
+      "name": "强力生息",
+      "description": "回合结束生命恢复+25%",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 16
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20174020
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017402
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 5,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 16,
+        "dice_icon_type": 1,
+        "icon_number": 5,
+        "buff_id": 20174020,
+        "buff_name": "强力生息",
+        "buff_text": "回合结束生命恢复<span color=\"#73c715\">+25%</>",
+        "buff_quality": 2,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010932,
+        "textPlain": "回合结束生命恢复+25%",
+        "buff": {
+          "id": 20174020,
+          "buff_base_ids": [
+            2017402
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "type": 4,
+          "add_max": 99,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2017402,
+            "buffbase_order": 17,
+            "trigger_type": 7,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  1005025
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 5
+      },
+      "unsupportedReason": "回合结束恢复生命不是生命上限加成；尚无回合及恢复结算。"
+    },
+    {
+      "id": "game-dice-effect-17",
+      "gameEffectId": 17,
+      "recordKind": "game-effect",
+      "buffId": 20231350,
+      "name": "强力巧劲",
+      "description": "威力+40",
+      "supported": true,
+      "supportStatus": "trial",
+      "effects": {
+        "skillPowerAdd": 40
+      },
+      "effectKinds": [
+        "skill-power-flat"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 17
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20231350
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2023135
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 8,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 17,
+        "dice_icon_type": 1,
+        "icon_number": 1,
+        "buff_id": 20231350,
+        "buff_name": "强力巧劲",
+        "buff_text": "威力<span color=\"#73c715\">+40</>",
+        "buff_quality": 2,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010939,
+        "textPlain": "威力+40",
+        "buff": {
+          "id": 20231350,
+          "buff_base_ids": [
+            2023135
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "type": 4,
+          "add_max": 99,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2023135,
+            "buffbase_order": 23,
+            "trigger_type": 12,
+            "show_letters": [
+              1
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  40
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 8
+      },
+      "applicationNote": "仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。"
+    },
+    {
+      "id": "game-dice-effect-18",
+      "gameEffectId": 18,
+      "recordKind": "game-effect",
+      "buffId": 20320075,
+      "name": "节流",
+      "description": "能耗-3",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 18
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20320075
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2032007
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2032007
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2032007
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 8,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 18,
+        "dice_icon_type": 1,
+        "icon_number": 2,
+        "buff_id": 20320075,
+        "buff_name": "节流",
+        "buff_text": "能耗<span color=\"#73c715\">-3</>",
+        "buff_quality": 2,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010941,
+        "textPlain": "能耗-3",
+        "buff": {
+          "id": 20320075,
+          "buff_base_ids": [
+            2032007,
+            2032007,
+            2032007
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "type": 4,
+          "add_max": 99,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2032007,
+            "buffbase_order": 32,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  -1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2032007,
+            "buffbase_order": 32,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  -1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2032007,
+            "buffbase_order": 32,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  -1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 8
+      },
+      "unsupportedReason": "能耗-3保留三份原始基础效果；尚无骰子能耗事件结算。"
+    },
+    {
+      "id": "game-dice-effect-19",
+      "gameEffectId": 19,
+      "recordKind": "game-effect",
+      "buffId": 20011850,
+      "name": "全能",
+      "description": "全属性+30%",
+      "supported": true,
+      "supportStatus": "trial",
+      "effects": {
+        "physicalAttackMultiplier": 1.3,
+        "magicalAttackMultiplier": 1.3,
+        "physicalDefenseMultiplier": 1.3,
+        "magicalDefenseMultiplier": 1.3,
+        "speedMultiplier": 1.3
+      },
+      "effectKinds": [
+        "stat-multiplier"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 19
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20011850
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001185
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001186
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001187
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001188
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001189
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 29
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 30
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 31
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 32
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 6
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 11,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 19,
+        "dice_icon_type": 1,
+        "icon_number": 6,
+        "buff_id": 20011850,
+        "buff_name": "全能",
+        "buff_text": "全属性<span color=\"#73c715\">+30%</>",
+        "buff_quality": 2,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010928,
+        "textPlain": "全属性+30%",
+        "buff": {
+          "id": 20011850,
+          "buff_base_ids": [
+            2001185,
+            2001186,
+            2001187,
+            2001188,
+            2001189
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "type": 4,
+          "add_max": 99,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2001185,
+            "buffbase_order": 1,
+            "buffbase_param": [
+              {
+                "params": [
+                  29
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  3000
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001186,
+            "buffbase_order": 1,
+            "buffbase_param": [
+              {
+                "params": [
+                  30
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  3000
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001187,
+            "buffbase_order": 1,
+            "buffbase_param": [
+              {
+                "params": [
+                  31
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  3000
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001188,
+            "buffbase_order": 1,
+            "buffbase_param": [
+              {
+                "params": [
+                  32
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  3000
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001189,
+            "buffbase_order": 1,
+            "buffbase_param": [
+              {
+                "params": [
+                  6
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  3000
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [
+          {
+            "baseId": 2001185,
+            "attributeId": 29,
+            "attributeName": "物理攻击力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                29
+              ],
+              [
+                0
+              ],
+              [
+                3000
+              ]
+            ]
+          },
+          {
+            "baseId": 2001186,
+            "attributeId": 30,
+            "attributeName": "魔法攻击力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                30
+              ],
+              [
+                0
+              ],
+              [
+                3000
+              ]
+            ]
+          },
+          {
+            "baseId": 2001187,
+            "attributeId": 31,
+            "attributeName": "物理防御力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                31
+              ],
+              [
+                0
+              ],
+              [
+                3000
+              ]
+            ]
+          },
+          {
+            "baseId": 2001188,
+            "attributeId": 32,
+            "attributeName": "魔法防御力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                32
+              ],
+              [
+                0
+              ],
+              [
+                3000
+              ]
+            ]
+          },
+          {
+            "baseId": 2001189,
+            "attributeId": 6,
+            "attributeName": "速度",
+            "is_percent_attr": null,
+            "rawParams": [
+              [
+                6
+              ],
+              [
+                1
+              ],
+              [
+                3000
+              ]
+            ]
+          }
+        ],
+        "faceConfigReferenceCount": 11
+      },
+      "applicationNote": "仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。速度仅调整面板，不自动判定先手或条件技能。"
+    },
+    {
+      "id": "game-dice-effect-20",
+      "gameEffectId": 20,
+      "recordKind": "game-effect",
+      "buffId": 20174060,
+      "name": "强力侵蚀",
+      "description": "敌人回合结束受到效果伤害+400%，对龙棋士效果翻倍",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 20
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20174060
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017406
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2040173
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 20,
+        "dice_icon_type": 1,
+        "icon_number": 10,
+        "buff_id": 20174060,
+        "buff_name": "强力侵蚀",
+        "buff_text": "敌人回合结束受到效果伤害<span color=\"#73c715\">+400%</>，对龙棋士效果翻倍",
+        "buff_quality": 3,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010936,
+        "textPlain": "敌人回合结束受到效果伤害+400%，对龙棋士效果翻倍",
+        "buff": {
+          "id": 20174060,
+          "buff_base_ids": [
+            2017406,
+            2040173
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2017406,
+            "buffbase_order": 17,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  21660040
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2040173,
+            "buffbase_order": 40,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  21690010
+                ]
+              },
+              {
+                "params": [
+                  1,
+                  0
+                ]
+              },
+              {
+                "params": [
+                  21660070
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  6
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "效果伤害及对龙棋士的额外效果尚未接入直接命中结算。"
+    },
+    {
+      "id": "game-dice-effect-21",
+      "gameEffectId": 21,
+      "recordKind": "game-effect",
+      "buffId": 20370250,
+      "name": "高效",
+      "description": "附加增减益效果效率+200%",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 21
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20370250
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2037025
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2037027
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 2,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 21,
+        "dice_icon_type": 1,
+        "icon_number": 13,
+        "buff_id": 20370250,
+        "buff_name": "高效",
+        "buff_text": "附加增减益效果效率<span color=\"#73c715\">+200%</>",
+        "buff_quality": 3,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010942,
+        "textPlain": "附加增减益效果效率+200%",
+        "buff": {
+          "id": 20370250,
+          "buff_base_ids": [
+            2037025,
+            2037027
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2037025,
+            "buffbase_order": 37,
+            "show_letters": [
+              1
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  20000
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  3
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2037027,
+            "buffbase_order": 37,
+            "show_letters": [
+              1
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  20000
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  3
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 2
+      },
+      "unsupportedReason": "附加效果效率涉及增减益附加事件，不能换成通用攻防或威力倍率。"
+    },
+    {
+      "id": "game-dice-effect-22",
+      "gameEffectId": 22,
+      "recordKind": "game-effect",
+      "buffId": 20370260,
+      "name": "精通",
+      "description": "附加印记效果层数+2",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 22
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20370260
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2037026
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 22,
+        "dice_icon_type": 1,
+        "icon_number": 7,
+        "buff_id": 20370260,
+        "buff_name": "精通",
+        "buff_text": "附加印记效果层数<span color=\"#73c715\">+2</>",
+        "buff_quality": 3,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010943,
+        "textPlain": "附加印记效果层数+2",
+        "buff": {
+          "id": 20370260,
+          "buff_base_ids": [
+            2037026
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2037026,
+            "buffbase_order": 37,
+            "show_letters": [
+              1
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  20010022,
+                  20010031,
+                  20010041,
+                  20010061,
+                  20010090,
+                  20010101,
+                  20010920,
+                  20011011,
+                  20070011,
+                  20170010,
+                  20170011,
+                  20210040,
+                  20210060,
+                  20230020,
+                  20320070,
+                  20370200,
+                  20490010,
+                  20490020,
+                  20490030,
+                  20490390,
+                  20530070,
+                  20930080,
+                  20940010,
+                  20230022,
+                  20490031,
+                  20210042,
+                  20210061,
+                  20530071,
+                  20490021,
+                  20170012,
+                  20320071,
+                  20010092,
+                  20930081,
+                  20070012,
+                  20940011,
+                  20490391,
+                  20370201
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  3
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "附加印记层数需要具体印记、目标和事件，不能换成直接伤害倍率。"
+    },
+    {
+      "id": "game-dice-effect-23",
+      "gameEffectId": 23,
+      "recordKind": "game-effect",
+      "buffId": 20460270,
+      "name": "强力源流",
+      "description": "回合结束能量+10",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 23
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20460270
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017407
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 23,
+        "dice_icon_type": 1,
+        "icon_number": 8,
+        "buff_id": 20460270,
+        "buff_name": "强力源流",
+        "buff_text": "回合结束能量<span color=\"#73c715\">+10</>",
+        "buff_quality": 3,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010950,
+        "textPlain": "回合结束能量+10",
+        "buff": {
+          "id": 20460270,
+          "buff_base_ids": [
+            2017407
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2017407,
+            "buffbase_order": 17,
+            "trigger_type": 7,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  1019010
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "回合结束回复能量需要能量与回合事件，不映射为伤害或威力倍率。"
+    },
+    {
+      "id": "game-dice-effect-24",
+      "gameEffectId": 24,
+      "recordKind": "game-effect",
+      "buffId": 20450221,
+      "name": "强力连打",
+      "description": "连击+3",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 24
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20450221
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2045022
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 24,
+        "dice_icon_type": 1,
+        "icon_number": 9,
+        "buff_id": 20450221,
+        "buff_name": "强力连打",
+        "buff_text": "连击<span color=\"#73c715\">+3</>",
+        "buff_quality": 3,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010949,
+        "textPlain": "连击+3",
+        "buff": {
+          "id": 20450221,
+          "buff_base_ids": [
+            2045022
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2045022,
+            "buffbase_order": 45,
+            "trigger_type": 12,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  3
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "增加连击需要核对实际命中与技能类别，不直接乘最终伤害。"
+    },
+    {
+      "id": "game-dice-effect-25",
+      "gameEffectId": 25,
+      "recordKind": "game-effect",
+      "buffId": 20150110,
+      "name": "连动",
+      "description": "技能额外释放1次，能耗-2",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 25
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20150110
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2015011
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2032006
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 25,
+        "dice_icon_type": 1,
+        "icon_number": 16,
+        "buff_id": 20150110,
+        "buff_name": "连动",
+        "buff_text": "技能额外释放<span color=\"#73c715\">1次</>，能耗<span color=\"#73c715\">-2</>",
+        "buff_quality": 3,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010929,
+        "textPlain": "技能额外释放1次，能耗-2",
+        "buff": {
+          "id": 20150110,
+          "buff_base_ids": [
+            2015011,
+            2032006
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2015011,
+            "buffbase_order": 15,
+            "show_letters": [
+              1
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  18,
+                  19,
+                  20,
+                  21
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2032006,
+            "buffbase_order": 32,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  -2
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "额外释放与能耗变化是不同事件；不能视为固定连击或伤害翻倍。"
+    },
+    {
+      "id": "game-dice-effect-26",
+      "gameEffectId": 26,
+      "recordKind": "game-effect",
+      "buffId": 20174040,
+      "name": "强击",
+      "description": "立刻扣除敌人30%当前生命",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 26
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20174040
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017404
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 3,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 26,
+        "dice_icon_type": 1,
+        "icon_number": 11,
+        "buff_id": 20174040,
+        "buff_name": "强击",
+        "buff_text": "立刻扣除敌人<span color=\"#73c715\">30%</>当前生命",
+        "buff_quality": 3,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010934,
+        "textPlain": "立刻扣除敌人30%当前生命",
+        "buff": {
+          "id": 20174040,
+          "buff_base_ids": [
+            2017404
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2017404,
+            "buffbase_order": 17,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  1001031
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 3
+      },
+      "unsupportedReason": "扣除敌方当前生命是独立事件；缺当前生命状态，不当作生命上限或技能伤害倍率。"
+    },
+    {
+      "id": "game-dice-effect-27",
+      "gameEffectId": 27,
+      "recordKind": "game-effect",
+      "buffId": 20174030,
+      "name": "惊喜",
+      "description": "回合结束，随机1个骰子效果",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 27
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20174030
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017403
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 27,
+        "dice_icon_type": 1,
+        "icon_number": 12,
+        "buff_id": 20174030,
+        "buff_name": "惊喜",
+        "buff_text": "回合结束，随机<span color=\"#73c715\">1个</>骰子效果",
+        "buff_quality": 3,
+        "durability": -1,
+        "lucky_misfortune": 1,
+        "show_buff": 20010933,
+        "textPlain": "回合结束，随机1个骰子效果",
+        "buff": {
+          "id": 20174030,
+          "buff_base_ids": [
+            2017403
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 4,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2017403,
+            "buffbase_order": 17,
+            "trigger_type": 7,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  1016038
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "随机效果须先确定本局实际结果；不随机生成或猜测其效果。"
+    },
+    {
+      "id": "game-dice-effect-28",
+      "gameEffectId": 28,
+      "recordKind": "game-effect",
+      "buffId": 20329050,
+      "name": "能耗降低",
+      "description": "能耗降低；所有技能能耗-5",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 28
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20329050
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2032905
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 28,
+        "dice_icon_type": 1,
+        "icon_number": 9,
+        "buff_id": 20329050,
+        "buff_name": "能耗降低",
+        "buff_text": "能耗降低",
+        "textPlain": "能耗降低",
+        "buff": {
+          "id": 20329050,
+          "buff_base_ids": [
+            2032905
+          ],
+          "buff_list_priority": 1,
+          "buff_groupsigns": [
+            0
+          ],
+          "name": "能耗减少",
+          "type_id": "3",
+          "add_des": "能耗减少",
+          "add_icon": 6,
+          "type": 3,
+          "add_max": 99,
+          "desc": "所有技能能耗-5",
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ],
+          "is_clean_when_rest": 1
+        },
+        "buffBases": [
+          {
+            "id": 2032905,
+            "buffbase_order": 32,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  -5
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "技能能耗变化尚无骰子事件结算，不映射为威力倍率。"
+    },
+    {
+      "id": "game-dice-effect-29",
+      "gameEffectId": 29,
+      "recordKind": "game-effect",
+      "buffId": 20450220,
+      "name": "连击次数提升",
+      "description": "连击次数提升；连击次数+5",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 29
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20450220
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2045024
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 29,
+        "dice_icon_type": 1,
+        "icon_number": 10,
+        "buff_id": 20450220,
+        "buff_name": "连击次数提升",
+        "buff_text": "连击次数提升",
+        "textPlain": "连击次数提升",
+        "buff": {
+          "id": 20450220,
+          "buff_base_ids": [
+            2045024
+          ],
+          "buff_list_priority": 1,
+          "buff_groupsigns": [
+            0
+          ],
+          "name": "连击提升",
+          "type_id": "3",
+          "type": 3,
+          "add_max": 99,
+          "desc": "连击次数+5",
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ],
+          "is_clean_when_rest": 1
+        },
+        "buffBases": [
+          {
+            "id": 2045024,
+            "buffbase_order": 45,
+            "trigger_type": 12,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  5
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "连击次数变化尚无适用技能与命中事件结算，不直接乘最终伤害。"
+    },
+    {
+      "id": "game-dice-effect-30",
+      "gameEffectId": 30,
+      "recordKind": "game-effect",
+      "buffId": 20174051,
+      "name": "强力侵蚀",
+      "description": "强力侵蚀；效果伤害+100%",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 30
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20174051
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017405
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 30,
+        "dice_icon_type": 1,
+        "icon_number": 14,
+        "buff_id": 20174051,
+        "buff_name": "强力侵蚀",
+        "buff_text": "强力侵蚀",
+        "textPlain": "强力侵蚀",
+        "buff": {
+          "id": 20174051,
+          "buff_base_ids": [
+            2017405
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "name": "强力侵蚀",
+          "type_id": "3",
+          "type": 4,
+          "add_max": 99,
+          "desc": "效果伤害+100%",
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2017405,
+            "buffbase_order": 17,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  21660030
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "效果伤害不是通用技能直接伤害；尚未接入对应事件。"
+    },
+    {
+      "id": "game-dice-effect-31",
+      "gameEffectId": 31,
+      "recordKind": "game-effect",
+      "buffId": 20420170,
+      "name": "强力克制",
+      "description": "克制伤害提升；造成克制伤害+100%",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 31
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20420170
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2042017
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 31,
+        "dice_icon_type": 1,
+        "icon_number": 12,
+        "buff_id": 20420170,
+        "buff_name": "强力克制",
+        "buff_text": "克制伤害提升",
+        "textPlain": "克制伤害提升",
+        "buff": {
+          "id": 20420170,
+          "buff_base_ids": [
+            2042017
+          ],
+          "buff_list_priority": 1,
+          "buff_groupsigns": [
+            0
+          ],
+          "name": "强力克制",
+          "type_id": "3",
+          "type": 3,
+          "add_max": 99,
+          "desc": "造成克制伤害+100%",
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ],
+          "is_clean_when_rest": 1
+        },
+        "buffBases": [
+          {
+            "id": 2042017,
+            "buffbase_order": 42,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  100
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "仅作用于克制伤害，双属性及极化组合公式未闭合，不套通用伤害倍率。"
+    },
+    {
+      "id": "game-dice-effect-32",
+      "gameEffectId": 32,
+      "recordKind": "game-effect",
+      "buffId": 20150070,
+      "name": "过载",
+      "description": "过载；下次技能可以额外释放1次",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 32
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20150070
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2015007
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 2,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 32,
+        "dice_icon_type": 1,
+        "icon_number": 13,
+        "buff_id": 20150070,
+        "buff_name": "过载",
+        "buff_text": "过载",
+        "textPlain": "过载",
+        "buff": {
+          "id": 20150070,
+          "buff_base_ids": [
+            2015007
+          ],
+          "buff_list_priority": 3,
+          "buff_groupsigns": [
+            0
+          ],
+          "name": "过载",
+          "type_id": "1",
+          "type": 1,
+          "add_max": 10,
+          "desc": "下次技能可以额外释放1次",
+          "buff_group_reduce": [
+            {
+              "reduce_type": 7,
+              "reduce_param": [
+                1,
+                1
+              ]
+            }
+          ],
+          "is_clean_when_rest": 1
+        },
+        "buffBases": [
+          {
+            "id": 2015007,
+            "buffbase_order": 15,
+            "show_letters": [
+              1
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  2,
+                  3,
+                  4,
+                  5,
+                  6,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12,
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  18,
+                  19,
+                  20,
+                  21
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 2
+      },
+      "unsupportedReason": "下次技能额外释放涉及次数消耗与技能事件，不视为连击或通用伤害翻倍。"
+    },
+    {
+      "id": "game-dice-effect-33",
+      "gameEffectId": 33,
+      "recordKind": "game-effect",
+      "buffId": 28810073,
+      "name": "全属性+100%",
+      "description": "全属性+100%",
+      "supported": true,
+      "supportStatus": "trial",
+      "effects": {
+        "physicalAttackMultiplier": 2,
+        "magicalAttackMultiplier": 2,
+        "physicalDefenseMultiplier": 2,
+        "magicalDefenseMultiplier": 2,
+        "speedMultiplier": 2
+      },
+      "effectKinds": [
+        "stat-multiplier"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 33
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 28810073
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001120
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001121
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001122
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001123
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001124
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 29
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 30
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 31
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 32
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 6
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 33,
+        "dice_icon_type": 1,
+        "icon_number": 14,
+        "buff_id": 28810073,
+        "buff_name": "全属性+100%",
+        "buff_text": "全属性+100%",
+        "textPlain": "全属性+100%",
+        "buff": {
+          "id": 28810073,
+          "buff_base_ids": [
+            2001120,
+            2001121,
+            2001122,
+            2001123,
+            2001124
+          ],
+          "buff_list_priority": 3,
+          "buff_groupsigns": [
+            0
+          ],
+          "name": "属性提升",
+          "type_id": "3",
+          "add_des": "属性提升",
+          "add_icon": 1,
+          "type": 3,
+          "add_max": 99,
+          "desc": "全属性+100%",
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ],
+          "is_clean_when_rest": 1
+        },
+        "buffBases": [
+          {
+            "id": 2001120,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  29
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001121,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  30
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001122,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  31
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001123,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  32
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001124,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  6
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [
+          {
+            "baseId": 2001120,
+            "attributeId": 29,
+            "attributeName": "物理攻击力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                29
+              ],
+              [
+                0
+              ],
+              [
+                10000
+              ]
+            ]
+          },
+          {
+            "baseId": 2001121,
+            "attributeId": 30,
+            "attributeName": "魔法攻击力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                30
+              ],
+              [
+                0
+              ],
+              [
+                10000
+              ]
+            ]
+          },
+          {
+            "baseId": 2001122,
+            "attributeId": 31,
+            "attributeName": "物理防御力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                31
+              ],
+              [
+                0
+              ],
+              [
+                10000
+              ]
+            ]
+          },
+          {
+            "baseId": 2001123,
+            "attributeId": 32,
+            "attributeName": "魔法防御力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                32
+              ],
+              [
+                0
+              ],
+              [
+                10000
+              ]
+            ]
+          },
+          {
+            "baseId": 2001124,
+            "attributeId": 6,
+            "attributeName": "速度",
+            "is_percent_attr": null,
+            "rawParams": [
+              [
+                6
+              ],
+              [
+                1
+              ],
+              [
+                10000
+              ]
+            ]
+          }
+        ],
+        "faceConfigReferenceCount": 1
+      },
+      "applicationNote": "仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。速度仅调整面板，不自动判定先手或条件技能。"
+    },
+    {
+      "id": "game-dice-effect-34",
+      "gameEffectId": 34,
+      "recordKind": "game-effect",
+      "buffId": 20174001,
+      "name": "恢复生命",
+      "description": "恢复生命；回合结束恢复10%生命",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 34
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20174001
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017400
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 34,
+        "dice_icon_type": 1,
+        "icon_number": 11,
+        "buff_id": 20174001,
+        "buff_name": "恢复生命",
+        "buff_text": "恢复生命",
+        "textPlain": "恢复生命",
+        "buff": {
+          "id": 20174001,
+          "buff_base_ids": [
+            2017400
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "name": "恢复生命",
+          "type_id": "3",
+          "type": 4,
+          "add_max": 99,
+          "desc": "回合结束恢复10%生命",
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2017400,
+            "buffbase_order": 17,
+            "trigger_type": 7,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  1005010
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  1
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "回合结束恢复生命不是生命上限加成；尚无回合及恢复结算。"
+    },
+    {
+      "id": "game-dice-effect-35",
+      "gameEffectId": 35,
+      "recordKind": "game-effect",
+      "buffId": 20011649,
+      "name": "防御提升",
+      "description": "防御提升；物防和魔防+20%",
+      "supported": true,
+      "supportStatus": "trial",
+      "effects": {
+        "physicalDefenseMultiplier": 1.2,
+        "magicalDefenseMultiplier": 1.2
+      },
+      "effectKinds": [
+        "stat-multiplier"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 35
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20011649
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001131
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001132
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 31
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 32
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 35,
+        "dice_icon_type": 1,
+        "icon_number": 16,
+        "buff_id": 20011649,
+        "buff_name": "防御提升",
+        "buff_text": "防御提升",
+        "textPlain": "防御提升",
+        "buff": {
+          "id": 20011649,
+          "buff_base_ids": [
+            2001131,
+            2001132
+          ],
+          "buff_list_priority": 1,
+          "buff_groupsigns": [
+            0
+          ],
+          "name": "防御提升",
+          "type_id": "3",
+          "type": 3,
+          "add_max": 99,
+          "desc": "物防和魔防+20%",
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ],
+          "is_clean_when_rest": 1
+        },
+        "buffBases": [
+          {
+            "id": 2001131,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  31
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  2000
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001132,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  32
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  2000
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [
+          {
+            "baseId": 2001131,
+            "attributeId": 31,
+            "attributeName": "物理防御力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                31
+              ],
+              [
+                0
+              ],
+              [
+                2000
+              ]
+            ]
+          },
+          {
+            "baseId": 2001132,
+            "attributeId": 32,
+            "attributeName": "魔法防御力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                32
+              ],
+              [
+                0
+              ],
+              [
+                2000
+              ]
+            ]
+          }
+        ],
+        "faceConfigReferenceCount": 1
+      },
+      "applicationNote": "仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。"
+    },
+    {
+      "id": "game-dice-effect-36",
+      "gameEffectId": 36,
+      "recordKind": "game-effect",
+      "buffId": 28800023,
+      "name": "速度提升",
+      "description": "速度提升；速度+50。",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 36
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 28800023
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001010
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001010
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001010
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001010
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001010
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 6
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 6
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 6
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 6
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 6
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 36,
+        "dice_icon_type": 1,
+        "icon_number": 17,
+        "buff_id": 28800023,
+        "buff_name": "速度提升",
+        "buff_text": "速度提升",
+        "textPlain": "速度提升",
+        "buff": {
+          "id": 28800023,
+          "buff_base_ids": [
+            2001010,
+            2001010,
+            2001010,
+            2001010,
+            2001010
+          ],
+          "buff_list_priority": 1,
+          "buff_groupsigns": [
+            0
+          ],
+          "name": "速度提升",
+          "type_id": "3",
+          "add_des": "速度",
+          "type": 3,
+          "add_max": 99,
+          "desc": "速度<span color=\"#73c715\">+50</>。",
+          "buff_group_reduce": [
+            {
+              "reduce_type": 2,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ],
+          "is_clean_when_rest": 1
+        },
+        "buffBases": [
+          {
+            "id": 2001010,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  6
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  10
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001010,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  6
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  10
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001010,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  6
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  10
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001010,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  6
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  10
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2001010,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  6
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  10
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [
+          {
+            "baseId": 2001010,
+            "attributeId": 6,
+            "attributeName": "速度",
+            "is_percent_attr": null,
+            "rawParams": [
+              [
+                6
+              ],
+              [
+                0
+              ],
+              [
+                10
+              ]
+            ]
+          },
+          {
+            "baseId": 2001010,
+            "attributeId": 6,
+            "attributeName": "速度",
+            "is_percent_attr": null,
+            "rawParams": [
+              [
+                6
+              ],
+              [
+                0
+              ],
+              [
+                10
+              ]
+            ]
+          },
+          {
+            "baseId": 2001010,
+            "attributeId": 6,
+            "attributeName": "速度",
+            "is_percent_attr": null,
+            "rawParams": [
+              [
+                6
+              ],
+              [
+                0
+              ],
+              [
+                10
+              ]
+            ]
+          },
+          {
+            "baseId": 2001010,
+            "attributeId": 6,
+            "attributeName": "速度",
+            "is_percent_attr": null,
+            "rawParams": [
+              [
+                6
+              ],
+              [
+                0
+              ],
+              [
+                10
+              ]
+            ]
+          },
+          {
+            "baseId": 2001010,
+            "attributeId": 6,
+            "attributeName": "速度",
+            "is_percent_attr": null,
+            "rawParams": [
+              [
+                6
+              ],
+              [
+                0
+              ],
+              [
+                10
+              ]
+            ]
+          }
+        ],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "原始五份速度+10是固定速度+50；现有标量只支持速度倍率，不冒充+50%。"
+    },
+    {
+      "id": "game-dice-effect-37",
+      "gameEffectId": 37,
+      "recordKind": "game-effect",
+      "buffId": 20011391,
+      "name": "物攻提升",
+      "description": "物攻提升；物攻+15%。",
+      "supported": true,
+      "supportStatus": "trial",
+      "effects": {
+        "physicalAttackMultiplier": 1.15
+      },
+      "effectKinds": [
+        "stat-multiplier"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 37
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20011391
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2001126
+        },
+        {
+          "table": "ATTRIBUTE_CONF",
+          "recordId": 29
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 37,
+        "dice_icon_type": 1,
+        "icon_number": 18,
+        "buff_id": 20011391,
+        "buff_name": "物攻提升",
+        "buff_text": "物攻提升",
+        "textPlain": "物攻提升",
+        "buff": {
+          "id": 20011391,
+          "buff_base_ids": [
+            2001126
+          ],
+          "buff_list_priority": 3,
+          "buff_groupsigns": [
+            1
+          ],
+          "name": "物攻提升",
+          "type_id": "3",
+          "add_des": "物理攻击",
+          "add_icon": 1,
+          "type": 3,
+          "add_max": 99,
+          "desc": "物攻+<span color=\"#73c715\">15%</>。",
+          "res_id_0": "/Game/ArtRes/Effects/G6Skill/Buff/800001",
+          "res_id_1": "/Game/ArtRes/Effects/G6Skill/Buff/800001",
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ]
+        },
+        "buffBases": [
+          {
+            "id": 2001126,
+            "buffbase_order": 1,
+            "show_letters": [
+              3
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  29
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              },
+              {
+                "params": [
+                  1500
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [
+          {
+            "baseId": 2001126,
+            "attributeId": 29,
+            "attributeName": "物理攻击力加成",
+            "is_percent_attr": 1,
+            "rawParams": [
+              [
+                29
+              ],
+              [
+                0
+              ],
+              [
+                1500
+              ]
+            ]
+          }
+        ],
+        "faceConfigReferenceCount": 1
+      },
+      "applicationNote": "仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。"
+    },
+    {
+      "id": "game-dice-effect-38",
+      "gameEffectId": 38,
+      "recordKind": "game-effect",
+      "buffId": 23032740,
+      "name": "临时等级增加",
+      "description": "临时等级增加；临时等级+10",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 38
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 23032740
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2167007
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 1,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 38,
+        "dice_icon_type": 1,
+        "icon_number": 1,
+        "buff_id": 23032740,
+        "buff_name": "临时等级增加",
+        "buff_text": "临时等级增加",
+        "textPlain": "临时等级增加",
+        "buff": {
+          "id": 23032740,
+          "buff_base_ids": [
+            2167007
+          ],
+          "buff_list_priority": 1,
+          "buff_groupsigns": [
+            0
+          ],
+          "name": "等级提升",
+          "type_id": "3",
+          "type": 3,
+          "add_max": 99,
+          "desc": "临时等级+10",
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ],
+          "is_clean_when_rest": 1
+        },
+        "buffBases": [
+          {
+            "id": 2167007,
+            "buffbase_order": 167,
+            "show_letters": [
+              1
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  10
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 1
+      },
+      "unsupportedReason": "临时等级变化涉及属性与伤害系数重算，现有野怪等级链未支持。"
+    },
+    {
+      "id": "game-dice-effect-39",
+      "gameEffectId": 39,
+      "recordKind": "game-effect",
+      "buffId": 20174920,
+      "name": "大成功",
+      "description": "对敌人造成高额伤害，不会致死",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 39
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20174920
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017493
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017492
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 0,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 39,
+        "dice_icon_type": 1,
+        "icon_number": 26,
+        "buff_id": 20174920,
+        "buff_name": "大成功",
+        "buff_text": "对敌人造成高额伤害，不会致死",
+        "buff_quality": 4,
+        "durability": -1,
+        "lucky_misfortune": 2,
+        "show_buff": 20010937,
+        "textPlain": "对敌人造成高额伤害，不会致死",
+        "buff": {
+          "id": 20174920,
+          "buff_base_ids": [
+            2017493,
+            2017492
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 3,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ],
+          "is_clean_when_rest": 1
+        },
+        "buffBases": [
+          {
+            "id": 2017493,
+            "buffbase_order": 17,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  20380021
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          },
+          {
+            "id": 2017492,
+            "buffbase_order": 17,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  1001009
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 0
+      },
+      "unsupportedReason": "高额且不致死伤害需要事件、当前生命及保底逻辑，不伪装为固定倍率。"
+    },
+    {
+      "id": "game-dice-effect-40",
+      "gameEffectId": 40,
+      "recordKind": "game-effect",
+      "buffId": 20174940,
+      "name": "大失败",
+      "description": "对敌人附加强力强化",
+      "supported": false,
+      "supportStatus": "unsupported",
+      "effects": {},
+      "effectKinds": [
+        "event-or-unresolved"
+      ],
+      "evidenceStatus": "original-config-not-live-verified",
+      "formulaVerified": false,
+      "requiresConfirmation": true,
+      "sourceIds": [
+        "game-dice-effects-20261107",
+        "game-buff-tables-20261107",
+        "game-attributes-20261107"
+      ],
+      "evidenceRefs": [
+        {
+          "table": "SEASON_BONUS_DICEBUFF_CONF",
+          "recordId": 40
+        },
+        {
+          "table": "BUFF_CONF",
+          "recordId": 20174940
+        },
+        {
+          "table": "BUFFBASE_CONF",
+          "recordId": 2017494
+        }
+      ],
+      "availability": {
+        "faceConfigReferenceCount": 0,
+        "currentlyObtainable": null,
+        "note": "静态引用数不是概率或当前可获得性，也不证明本局已生效。"
+      },
+      "stacking": {
+        "rule": "unknown",
+        "liveCount": null,
+        "note": "add_max及重复策略为原始字段，不据此推断实际叠加公式。"
+      },
+      "originalConfig": {
+        "id": 40,
+        "dice_icon_type": 1,
+        "icon_number": 27,
+        "buff_id": 20174940,
+        "buff_name": "大失败",
+        "buff_text": "对敌人附加强力强化",
+        "buff_quality": 1,
+        "durability": -1,
+        "lucky_misfortune": 3,
+        "show_buff": 20010940,
+        "textPlain": "对敌人附加强力强化",
+        "buff": {
+          "id": 20174940,
+          "buff_base_ids": [
+            2017494
+          ],
+          "buff_list_priority": 99,
+          "buff_groupsigns": [
+            0
+          ],
+          "buff_repeataddpolicy": 1,
+          "type": 3,
+          "add_max": 1,
+          "buff_group_reduce": [
+            {
+              "reduce_type": 13,
+              "reduce_param": [
+                999,
+                0
+              ]
+            }
+          ],
+          "is_clean_when_rest": 1
+        },
+        "buffBases": [
+          {
+            "id": 2017494,
+            "buffbase_order": 17,
+            "show_letters": [
+              0
+            ],
+            "buffbase_param": [
+              {
+                "params": [
+                  20231390
+                ]
+              },
+              {
+                "params": [
+                  10000
+                ]
+              },
+              {
+                "params": [
+                  2
+                ]
+              },
+              {
+                "params": [
+                  0
+                ]
+              }
+            ]
+          }
+        ],
+        "originalAttributeLinks": [],
+        "faceConfigReferenceCount": 0
+      },
+      "unsupportedReason": "给敌人附加强化需要解析实际目标及后续buff事件，不自动给所选一侧加成。"
     }
   ]
 }

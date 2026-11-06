@@ -53,7 +53,7 @@ test("S5 nature display power and conditional attacks calculate immediately with
     own.preview.skillOverrides[own.preview.skillIds[0]] = { effectivePower: 90 };
     window.pveNatureUi.setSession(session);
   });
-  await expect(page.locator('#preview-condition-0-legacyPower')).toContainText('旧记录：最终威力 90');
+  await expect(page.locator('#preview-condition-0-legacyPower')).toContainText('最终威力 90');
   await page.locator('#preview-condition-0-resetPower').click();
   await expect(page.locator('#preview-condition-0-legacyPower')).toBeHidden();
   await expect(base.locator('.dmg')).toHaveText('113');

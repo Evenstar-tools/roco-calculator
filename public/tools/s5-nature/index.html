@@ -90,6 +90,11 @@
                   <label class="config-key" for="own-dice">骰子</label><select id="own-dice" aria-label="我方骰子加成"></select>
                 </div>
                 <div id="own-dice-custom" class="dice-custom" hidden></div>
+                <p id="own-dice-note" class="dice-note" role="status" hidden></p>
+                <div class="dice-panel-source">
+                  <label><input id="own-dice-panel-included" type="checkbox" />战斗面板已含骰子属性</label>
+                  <p id="own-dice-panel-note"></p>
+                </div>
               </div>
               <details id="profiles-section" class="detail-panel">
                 <summary>详细面板 / 个体数值</summary>
@@ -168,6 +173,7 @@
                   <label class="config-key" for="target-dice">骰子</label><select id="target-dice" aria-label="敌方骰子加成"></select>
                 </div>
                 <div id="target-dice-custom" class="dice-custom" hidden></div>
+                <p id="target-dice-note" class="dice-note" role="status" hidden></p>
               </div>
             </section>
             <div id="trait-grid" class="trait-grid" aria-label="双方特性"></div>
