@@ -26,6 +26,19 @@ function run(args, input) {
 }
 
 describe("default CLI follows the pinned CN Web release", () => {
+  test.each([0, 1, 2, 1000])("current CN overcharge accepts %s charges without a power cap", (count) => {
+    const explained = run(["explain", "--input", "-", "--direction", "forward"], {
+      attacker: { spirit: "波普鹿", skill: { name: "过充电", context: { s5OverchargeChargeCount: count } } },
+      defender: { spirit: "迪莫", skill: "光球" },
+    });
+    expect(explained.ok).toBe(true);
+    expect(explained.engine.sourceRevision).toBe(pin.sourceRevision);
+    expect(explained.result.status).toBe("exact");
+    expect(explained.result.formulaSteps).toContainEqual(expect.objectContaining({
+      label: "层数缩放威力", input: count, before: 65, after: 65 + 30 * count,
+    }));
+  }, 120_000);
+
   test("missing current-source configuration never falls back to a historical snapshot", async () => {
     await expect(executeCurrentCli(["meta"], { cwd: root, projectRoot: path.join(root, "config") }))
       .rejects.toThrow("不会退回旧快照");
