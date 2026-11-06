@@ -92,7 +92,7 @@ export default function StarfallThresholdDialog({ snapshot, source, onClose, onA
         <button type="button" className="starfall-primary" disabled={threshold?.status !== "found"} onClick={() => apply({ stacks: threshold.minimum })}>{threshold?.status === "found" ? t("填入 {count} 层", { count: threshold.minimum }) : t("填入 最低层数")}</button>
       </section>
       <div className="starfall-table-tools"><div><h3>{t("三档培养对比")}</h3><small>{t("满血 · 无减伤/异常 · 不计防守特性")}</small></div>
-        <label className="starfall-search"><MagnifyingGlass size={18} aria-hidden="true" /><input aria-label={t("搜索星陨斩杀精灵")} placeholder={t("搜索名称、别名或图鉴号")} value={query} onChange={(event) => setQuery(event.target.value)} />{query ? <button type="button" aria-label={t("清空星陨搜索")} onClick={() => setQuery("")}><X size={16} /></button> : null}</label>
+        <label className="starfall-search"><MagnifyingGlass size={18} aria-hidden="true" /><input data-search aria-label={t("搜索星陨斩杀精灵")} placeholder={t("搜索名称、别名或图鉴号")} value={query} onChange={(event) => setQuery(event.target.value)} />{query ? <button type="button" aria-label={t("清空星陨搜索")} onClick={() => setQuery("")}><X size={16} /></button> : null}</label>
       </div>
       <div className="starfall-progress" role="status">{error ? t(error) : loading ? t("正在计算 {completed}/{total}", { completed: currentProgress?.completed ?? 0, total: currentProgress?.total ?? snapshot.spirits.length }) : result?.issue ? t(result.issue) : t("{count} 只精灵／形态", { count: rows.length })}</div>
       <div className="starfall-table-scroll" aria-busy={loading} onScroll={(event) => {

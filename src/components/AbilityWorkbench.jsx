@@ -810,7 +810,7 @@ export function SpeedOverview({
           onProfilesChange={onProfilesChange}
           profileIds={profileIds}
         />}
-        {standalone ? <label className="rank-search"><MagnifyingGlass size={16} /><input aria-label={t("搜索速度榜精灵")} placeholder={t("搜索名字、图鉴号，或输入速度（如 137）")} value={query} onChange={(event) => onQueryChange(event.target.value)} /></label> : <SpeedTargetPicker
+        {standalone ? <label className="rank-search"><MagnifyingGlass size={16} /><input data-search aria-label={t("搜索速度榜精灵")} placeholder={t("搜索名字、图鉴号，或输入速度（如 137）")} value={query} onChange={(event) => onQueryChange(event.target.value)} /></label> : <SpeedTargetPicker
           onTargetChange={onTargetChange}
           selected={selected}
           targets={targets}

@@ -115,7 +115,7 @@ export function DurabilityRankingView({ snapshot, backButtonRef, currentRowRef, 
     {!standalone ? <header className="rank-context-header"><button onClick={onBack} ref={backButtonRef} type="button"><ArrowLeft size={17} />{t("返回能力分析")}</button><div><h4>{t("标准耐久榜")}</h4><small>{t("最终形态与首领 · 搜索不改变名次")}</small></div></header> : null}
     {detail ? <ReadonlyDetail entry={detail} attackType={attackType} templateId={templateId} onBack={closeDetail} /> : null}
     <div className="rank-view__content" hidden={Boolean(detail)}>
-      <div className="rank-toolbar"><label className="rank-search"><MagnifyingGlass size={17} aria-hidden="true" /><input aria-label={t("搜索耐久榜精灵")} value={query} placeholder={t("搜索名称、图鉴号或别名")} onChange={(event) => setQuery(event.target.value)} /></label>
+      <div className="rank-toolbar"><label className="rank-search"><MagnifyingGlass size={17} aria-hidden="true" /><input data-search aria-label={t("搜索耐久榜精灵")} value={query} placeholder={t("搜索名称、图鉴号或别名")} onChange={(event) => setQuery(event.target.value)} /></label>
         <select aria-label={t("承受属性")} value={attackType} onChange={(event) => updateResistance({ attackType: event.target.value, multipliers })}><option value="">{t("不限属性")}</option>{(snapshot.typeChart?.types ?? ELEMENT_TYPES).map((type) => <option key={type} value={type}>{typeName(type)}</option>)}</select>
         <button type="button" aria-expanded={more} onClick={() => setMore(!more)} className="rank-filter-button"><SlidersHorizontal size={17} />{t("筛选")}</button>
       </div>

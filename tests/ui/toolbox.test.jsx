@@ -2,9 +2,18 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
 import { Toolbox } from "../../src/components/Toolbox.jsx";
 import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
+import { PluginAccess } from "../../src/runtime/PluginAccess.jsx";
 
 const testUrl = window.location.href;
-afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); globalThis.jsdom.reconfigure({ url: testUrl }); });
+afterEach(() => {
+  vi.restoreAllMocks(); vi.unstubAllEnvs(); vi.resetModules();
+  globalThis.jsdom.reconfigure({ url: testUrl });
+  document.cookie = "roco-cn-plugin-entry=; Max-Age=0; Path=/";
+});
+function renderUnlockable(children) {
+  return render(<PluginAccess enabled><input aria-label="彩蛋搜索" type="search" defaultValue="龙骑士" />{children}</PluginAccess>);
+}
+const unlock = () => fireEvent.keyDown(screen.getByLabelText("彩蛋搜索"), { key: "Enter" });
 
 test("加载阶段不开放会在就绪时消失的工具菜单", () => {
   const { rerender } = render(<Toolbox />);
@@ -44,7 +53,8 @@ test("only warms the tool under pointer or keyboard focus", () => {
 test("Global 工具箱保留克制图，不显示国服平衡调整回顾入口", () => {
   const openChart = vi.fn();
   const openBalanceHistory = vi.fn();
-  render(<RuntimeProvider serverId="global"><Toolbox actions={{ types: vi.fn(), typeChart: openChart, balanceHistory: openBalanceHistory }} /></RuntimeProvider>);
+  renderUnlockable(<RuntimeProvider serverId="global"><Toolbox actions={{ types: vi.fn(), typeChart: openChart, balanceHistory: openBalanceHistory }} /></RuntimeProvider>);
+  unlock();
   fireEvent.click(screen.getByRole("button", { name: "工具箱" }));
   expect(screen.queryByRole("link", { name: "S5 抢先体验" })).toBeNull();
   expect(screen.queryByRole("region", { name: "插件工具" })).not.toBeInTheDocument();
@@ -55,10 +65,18 @@ test("Global 工具箱保留克制图，不显示国服平衡调整回顾入口"
   expect(openBalanceHistory).not.toHaveBeenCalled();
 });
 
-test("国服正式版插件链接新开介绍页并收起菜单，保留当前计算器状态", () => {
+test("国服正式版插件入口默认隐藏，解锁后点击才发导航凭据并收起菜单", () => {
+  globalThis.jsdom.reconfigure({ url: "https://rococalc.top/cn/" });
+  document.cookie = "roco-cn-plugin-entry=; Max-Age=0; Path=/";
   const actions = { types: vi.fn(), skills: vi.fn() };
-  render(<Toolbox actions={actions} />);
+  renderUnlockable(<Toolbox actions={actions} />);
   const trigger = screen.getByRole("button", { name: "工具箱" });
+  fireEvent.click(trigger);
+  expect(screen.queryByRole("region", { name: "插件工具" })).toBeNull();
+  expect(screen.queryByRole("link", { name: "野生精灵检测器" })).toBeNull();
+  fireEvent.click(trigger);
+  unlock();
+  expect(document.cookie).not.toContain("roco-cn-plugin-entry=");
   fireEvent.click(trigger);
   const plugins = screen.getByRole("region", { name: "插件工具" });
   const link = within(plugins).getByRole("link", { name: "野生精灵检测器" });
@@ -66,16 +84,33 @@ test("国服正式版插件链接新开介绍页并收起菜单，保留当前�
   expect(link).toHaveAttribute("target", "_blank");
   expect(link).toHaveAttribute("rel", "noopener noreferrer");
   expect(link).toHaveStyle({ minHeight: "44px" });
+  const setCookie = vi.spyOn(document, "cookie", "set");
+  link.addEventListener("click", event => event.preventDefault(), { once: true });
   fireEvent.click(link);
+  expect(document.cookie).toContain("roco-cn-plugin-entry=1");
+  expect(setCookie).toHaveBeenCalledWith(expect.stringMatching(/^roco-cn-plugin-entry=1; Max-Age=\d+; Path=\/; SameSite=Strict; Secure$/));
   expect(screen.queryByRole("navigation", { name: "工具箱" })).not.toBeInTheDocument();
   expect(trigger).toHaveFocus();
   expect(actions.types).not.toHaveBeenCalled();
   expect(actions.skills).not.toHaveBeenCalled();
 });
 
+test("已解锁入口仅为左键或中键导航发放凭据，普通打开菜单和右键不发放", () => {
+  renderUnlockable(<Toolbox actions={{ types: vi.fn() }} />);
+  unlock();
+  fireEvent.click(screen.getByRole("button", { name: "工具箱" }));
+  const link = screen.getByRole("link", { name: "野生精灵检测器" });
+  expect(document.cookie).not.toContain("roco-cn-plugin-entry=");
+  fireEvent(link, new MouseEvent("auxclick", { bubbles: true, button: 2 }));
+  expect(document.cookie).not.toContain("roco-cn-plugin-entry=");
+  fireEvent(link, new MouseEvent("auxclick", { bubbles: true, button: 1 }));
+  expect(document.cookie).toContain("roco-cn-plugin-entry=1");
+});
+
 test("桌面 app 协议不显示插件工具", () => {
   globalThis.jsdom.reconfigure({ url: "app://calculator/cn/" });
-  render(<Toolbox actions={{ types: vi.fn() }} />);
+  renderUnlockable(<Toolbox actions={{ types: vi.fn() }} />);
+  unlock();
   fireEvent.click(screen.getByRole("button", { name: "工具箱" }));
   expect(screen.queryByRole("region", { name: "插件工具" })).not.toBeInTheDocument();
   expect(screen.queryByRole("link", { name: "野生精灵检测器" })).not.toBeInTheDocument();
@@ -83,7 +118,8 @@ test("桌面 app 协议不显示插件工具", () => {
 
 test("正式版隐藏抢先入口，重复点击、外部点击、Esc 关闭，键盘焦点在工具与插件链接间循环", () => {
   const actions=Object.fromEntries(["types","skills","balanceHistory","deer","transmission","speed","durability"].map(id=>[id,vi.fn()]));
-  render(<Toolbox actions={actions} />);
+  renderUnlockable(<Toolbox actions={actions} />);
+  unlock();
   const trigger=screen.getByRole("button",{name:"工具箱"});
   fireEvent.click(trigger);
   const buttons=within(screen.getByRole("navigation")).getAllByRole("button");
@@ -109,8 +145,10 @@ test("抢先版工具箱返回正式版，链接参与键盘焦点循环", async
   vi.stubEnv("MODE", "pre");
   vi.resetModules();
   const { Toolbox: PreviewToolbox } = await import("../../src/components/Toolbox.jsx");
+  const { PluginAccess: PreviewAccess } = await import("../../src/runtime/PluginAccess.jsx");
   const actions = Object.fromEntries(["types", "skills", "balanceHistory", "deer", "transmission", "speed", "durability"].map(id => [id, vi.fn()]));
-  render(<PreviewToolbox actions={actions} />);
+  render(<PreviewAccess enabled><input aria-label="彩蛋搜索" type="search" defaultValue="龙骑士" /><PreviewToolbox actions={actions} /></PreviewAccess>);
+  unlock();
   fireEvent.click(screen.getByRole("button", { name: "工具箱" }));
   const panel = screen.getByRole("navigation", { name: "工具箱" });
   const first = within(panel).getAllByRole("button")[0];

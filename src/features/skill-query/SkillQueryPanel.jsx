@@ -95,7 +95,7 @@ function VerifiedSkillQueryPanel({ onClose, skills = [], spirits = [], snapshot,
   const openQuery = (target) => { setEntry({ ...target, seasonId: season.id, fromView: view }); setView("all"); };
   const announcementWithoutNewSkills = season?.id === "S5" && snapshot?.meta?.s5NrcSync?.complete !== true &&
     !season.skills.some(skill => skill.introducedSeason === "S5");
-  const filters = data && <div className="skill-query__filters"><input aria-label={t("搜索技能或精灵")} placeholder={view === "gains" ? t("搜索精灵或调整技能") : t("搜索技能名称或效果")} value={query} onChange={(event) => setQuery(event.target.value)} />
+  const filters = data && <div className="skill-query__filters"><input data-search aria-label={t("搜索技能或精灵")} placeholder={view === "gains" ? t("搜索精灵或调整技能") : t("搜索技能名称或效果")} value={query} onChange={(event) => setQuery(event.target.value)} />
     {view !== "gains" && <><select aria-label={t("技能属性")} value={type} onChange={(event) => setType(event.target.value)}><option value="">{t("全部属性")}</option>{[...new Set(season.skills.map((entry) => entry.type))].map((item) => <option key={item} value={item}>{typeName(item)}</option>)}</select><select aria-label={t("技能种类")} value={category} onChange={(event) => setCategory(event.target.value)}><option value="">{t("全部种类")}</option>{Object.entries(categoryNames).map(([id, label]) => <option key={id} value={id}>{t(label)}</option>)}</select></>}
   </div>;
   return <div className="skill-query-backdrop"><section aria-label={t("技能查询")} aria-modal="true" role="dialog" tabIndex={-1} ref={root} className="skill-query">

@@ -23,7 +23,7 @@ export default function BaseSpeedOverview({ location, detail, detailPanel, snaps
   }, [location]);
   return <section className="base-speed" aria-label={t("种族速度总览")}>
     <div className="rank-toolbar">
-      <label className="rank-search"><input aria-label={t("搜索种族总览")} placeholder={t("名称、图鉴号或种族速度")} value={query} onChange={event => onQueryChange(event.target.value)} /></label>
+      <label className="rank-search"><input data-search aria-label={t("搜索种族总览")} placeholder={t("名称、图鉴号或种族速度")} value={query} onChange={event => onQueryChange(event.target.value)} /></label>
       <select className="base-speed-mobile-profile" aria-label={t("总览培养口径")} value={mobileProfile} onChange={event => setMobileProfile(event.target.value)}>{BASE_SPEED_PROFILES.map((id, index) => <option key={id} value={id}>{t(labels[index])}</option>)}</select>
       <button type="button" onClick={() => onQueryChange("")}>{t("重置")}</button>
     </div>

@@ -15,6 +15,7 @@ import { readLastRandomSeasonTheme, readSeasonThemePreference, writeLastRandomSe
 import { SeasonThemeProvider } from "../theme/SeasonThemeContext.jsx";
 import { recoverableLazy } from "./chunk-recovery.js";
 import { FeatureLoadingBoundary } from "./FeatureBoundary.jsx";
+import { PluginAccess } from "./PluginAccess.jsx";
 
 const CalculatorRouter = recoverableLazy(() => import("../CalculatorRouter.jsx").then((module) => ({ default: module.CalculatorRouter })));
 const pageText = {
@@ -165,7 +166,7 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
     error={incoming?.error} targetServer={conflictServer}
     onOpen={openMatchingServer} onCancel={dismissShare} />;
 
-  return <>
+  return <PluginAccess enabled={!global && !isDesktop && !IS_PREVIEW_BUILD}>
     {(entry.conflict || manualShare) && <div className="entry-share-notice__cn">{entryNotice}</div>}
     {(cnVisited || isDesktop) && <SeasonThemeProvider serverId="cn" active={!global}
       seasonThemeId={cnSeasonThemeId} preference={seasonPreferences.cn} onSeasonThemeChange={(value) => changeSeasonTheme("cn", value)}>
@@ -190,5 +191,5 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
         </LocaleProvider>
       </RuntimeProvider>
     </FeatureLoadingBoundary></RuntimeErrorBoundary></div></SeasonThemeProvider>}
-  </>;
+  </PluginAccess>;
 }

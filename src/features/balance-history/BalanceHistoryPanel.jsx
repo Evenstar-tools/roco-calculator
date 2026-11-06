@@ -56,7 +56,7 @@ function Portrait({ entity, skill = false, size = 38 }) {
 
 function Search({ value, onChange, label }) {
   return <div className="bh-search"><MagnifyingGlass size={18} aria-hidden="true" />
-    <input aria-label={label} placeholder={label} value={value} onChange={event => onChange(event.target.value)} />
+    <input data-search aria-label={label} placeholder={label} value={value} onChange={event => onChange(event.target.value)} />
     {value && <button type="button" aria-label={`清空${label}`} onClick={() => onChange("")}><X size={16} /></button>}
   </div>;
 }

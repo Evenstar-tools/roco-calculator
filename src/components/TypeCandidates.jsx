@@ -22,7 +22,7 @@ export default function TypeCandidates({ type, snapshot, onClose, onApply }) {
   const selected = rows.find(row => row.spiritId === selectedId);
   return <section ref={root} className="type-candidates" aria-label={t("{v0}属性抗性候选", { v0: type })} onKeyDown={event => { if (event.key === "Escape") { event.stopPropagation(); onClose(); } }}>
     <header><h3><ElementIcon type={type} size={22} />{" "}{t("抗性候选 · 耐久排行")}</h3><button type="button" onClick={onClose}>{t("返回矩阵")}</button></header>
-    <div className="tc-controls"><input aria-label={t("搜索抗性候选")} placeholder={t("名称、图鉴号或别名")} value={query} onChange={event => setQuery(event.target.value)} />
+    <div className="tc-controls"><input data-search aria-label={t("搜索抗性候选")} placeholder={t("名称、图鉴号或别名")} value={query} onChange={event => setQuery(event.target.value)} />
       <select aria-label={t("候选抗性倍率")} value={multiplier} onChange={event => setMultiplier(event.target.value)}><option value="all">{t("全部抗性")}</option>{bins.map(value => <option key={value} value={value}>{value === 0 ? t("免疫") : `×${value}`}</option>)}</select>
       <select aria-label={t("候选耐久模板")} value={templateId} onChange={event => setTemplateId(event.target.value)}>{Object.values(STANDARD_DURABILITY_TEMPLATES).map(template => <option key={template.id} value={template.id}>{t(template.label)}</option>)}</select>
       <select aria-label={t("候选排序")} value={metric} onChange={event => setMetric(event.target.value)}>{Object.entries(metrics).map(([id, label]) => <option key={id} value={id}>{t(label)}{t("有效耐久")}</option>)}</select>

@@ -4,6 +4,7 @@ import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { Toolbox as ToolboxIcon, Shapes, MagnifyingGlass, Lightning, Gear, Speedometer, Shield, Table, ClockCounterClockwise, PuzzlePiece } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { grantPluginEntry, usePluginAccess } from "../runtime/PluginAccess.jsx";
 
 // Icons are written as elements so the CN build can see which icon styles are used.
 const groups = [
@@ -15,8 +16,9 @@ const groups = [
 export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
+  const pluginUnlocked = usePluginAccess();
   const showReturnEntry = serverId === "cn" && IS_PREVIEW_BUILD;
-  const showPluginTools = serverId === "cn" && !IS_PREVIEW_BUILD && window.location.protocol !== "app:";
+  const showPluginTools = pluginUnlocked && serverId === "cn" && !IS_PREVIEW_BUILD && window.location.protocol !== "app:";
   const toolGroups = groups.map(([label, entries]) => [label, label !== "查询" ? entries
     : serverId === "cn" ? [...entries, ["balanceHistory", "平衡调整回顾", <ClockCounterClockwise size={18} aria-hidden="true" />]]
       : [...entries, ["typeChart", "18 系克制图", <Table size={18} aria-hidden="true" />]]]);
@@ -73,7 +75,8 @@ export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
           <div className="app-menu__group-label">插件工具</div>
           <a href="/plugins/wild-spirit-detector/" target="_blank" rel="noopener noreferrer"
             style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44 }}
-            onClick={() => { setOpen(false); trigger.current?.focus(); }}>
+            onClick={() => { grantPluginEntry(); setOpen(false); trigger.current?.focus(); }}
+            onAuxClick={event => { if (event.button === 1) grantPluginEntry(); }}>
             <PuzzlePiece size={18} aria-hidden="true" />野生精灵检测器
           </a>
         </section>

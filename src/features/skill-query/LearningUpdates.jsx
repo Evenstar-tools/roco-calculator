@@ -45,7 +45,7 @@ export default function LearningUpdates({ season, previous, changes, spirits = E
 
   return <>
     <div className="skill-query__filters learning-updates__filters">
-      <input aria-label={t("搜索技能或精灵")} placeholder={t("搜索精灵或调整技能")} value={query} onChange={update("query")} />
+      <input data-search aria-label={t("搜索技能或精灵")} placeholder={t("搜索精灵或调整技能")} value={query} onChange={update("query")} />
       <select aria-label={t("技能属性")} value={type} onChange={update("type")}>
         <option value="">{t("全部属性")}</option>{types.map(value => <option key={value} value={value}>{typeName(value)}</option>)}
       </select>

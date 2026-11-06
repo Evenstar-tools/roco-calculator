@@ -45,6 +45,7 @@ export default defineConfig({
             "tests/runtime/preview-storage.test.js",
             "tests/runtime/load-recovery.test.jsx",
             "tests/ui/public-resource-base.test.jsx",
+            "tests/ui/plugin-access.test.jsx",
             "tests/ui/skill-icon-loading.test.jsx",
             "tests/ui/wish-power-icons.test.jsx",
             "tests/ui/skill-query-batch.test.jsx",
