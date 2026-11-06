@@ -3,7 +3,7 @@ import { resetUiuxStorage, waitForAppReady } from "./helpers/uiux-helpers.js";
 
 const toolPath = "/tools/s5-nature/index.html";
 
-test("S5 nature display power applies boosts once and keeps legacy records explicit", async ({ page }) => {
+test("S5 nature display power and conditional attacks calculate immediately without duplicate boosts", async ({ page }) => {
   await page.goto(toolPath);
   await expect(page.getByRole('heading', { name: 'S5奇异性格计算', exact: true })).toBeVisible();
   await expect(page).toHaveTitle('S5奇异性格计算 · 洛克计算器');
@@ -62,12 +62,30 @@ test("S5 nature display power applies boosts once and keeps legacy records expli
   await expect(base.locator('.dmg')).toHaveText('182');
   await expect(base.locator('.rem b')).toHaveText('57%');
   await expect(page.locator('#preview-skill-meta-0')).toContainText('显示威力 50');
-  if (!(await condition.evaluate(node => node.open))) await condition.locator('summary').click();
+  // Conditional damage moves must produce numbers as soon as selected.
+  await skillPicker.fill('先发制人');
+  await page.getByRole('option').getByText('先发制人', { exact: true }).click();
+  await expect(base.locator('.dmg')).toHaveText('111');
+  await expect(base.locator('.rem b')).toHaveText('74%');
+  await expect(power).toHaveValue('');
+  await page.locator('#preview-observed-0').fill('111');
+  await page.locator('#preview-observed-0').press('Tab');
+  await expect(base).toHaveClass(/\bhit\b/);
+  await expect(page.locator('#preview-verdict')).not.toContainText('未找到匹配');
+  const secondPicker = page.getByRole('combobox', { name: '我方技能 2', exact: true });
+  await secondPicker.fill('地刺');
+  await page.getByRole('option').getByText('地刺', { exact: true }).click();
+  const ground = page.locator('#preview-cells-1 [data-nature-group="hp"][data-nature-condition="base"]');
+  await expect(ground.locator('.dmg')).toHaveText('364');
+  await expect(ground.locator('.rem b')).toHaveText('13%');
+  await expect(page.locator('#preview-skill-meta-1')).toContainText('显示威力 180');
+  await expect(page.locator('#preview-condition-1-displayedPower')).toHaveValue('');
+  if (await condition.evaluate(node => node.open)) await condition.locator('summary').click();
   for (const [width, height] of [[1280, 1000], [390, 844]]) {
     await page.setViewportSize({ width, height });
     await condition.scrollIntoViewIfNeeded();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await page.screenshot({ path: `output/playwright/s5-display-power-${width}.png` });
+    await page.screenshot({ path: `output/playwright/s5-conditional-power-${width}.png` });
   }
 });
 
@@ -216,4 +234,11 @@ test("S5 nature incoming attack shows measured whale damage and matches nature",
     if (width === 1280) await page.locator('#preview-incoming').locator('..')
       .screenshot({ path: 'output/playwright/s5-incoming-result.png' });
   }
+  await picker.fill('天洪');
+  await page.getByRole('option').getByText('天洪', { exact: true }).click();
+  await expect(normal.locator('.dmg')).toHaveText('209');
+  await expect(page.locator('#preview-incoming-condition-0-displayedPower')).toHaveValue('');
+  const flood = await page.evaluate(() => window.pveNatureUi.getPreview().incomingList[0]);
+  expect(flood.displayedPower).toBe(187.5);
+  expect(flood.manualPower).toBe(false);
 });

@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.17",
+    date: "2026.11.06",
+    seasonId: "S5",
+    title: "S5 条件技能直接计算",
+    whatsNew: S5_FEATURE_INTRO,
+    fixes: ["先发制人、地刺、天洪等技能选中即可按当前威力计算，固定连击自动带入基础次数。", "触发效果仍可调整威力与命中次数；本次修复仅用于国服，国际服S3季中沿用原版。"],
+  }),
+  createRelease({
     version: "v2.3.16",
     date: "2026.11.06",
     seasonId: "S5",
