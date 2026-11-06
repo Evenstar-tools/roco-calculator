@@ -1,6 +1,14 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
-import { PluginAccess, usePluginAccess } from "../../src/runtime/PluginAccess.jsx";
+import { grantPluginEntry, PluginAccess, usePluginAccess } from "../../src/runtime/PluginAccess.jsx";
+
+const testUrl = window.location.href;
+function desktopSession() {
+  const storage = sessionStorage;
+  globalThis.jsdom.reconfigure({ url: "app://calculator/" });
+  vi.stubGlobal("sessionStorage", storage);
+  return storage;
+}
 
 function AccessState() {
   return <span data-testid="plugin-access">{usePluginAccess() ? "已解锁" : "未解锁"}</span>;
@@ -11,7 +19,11 @@ function content(inputProps = {}) {
 const search = () => screen.getByLabelText("搜索");
 const access = () => screen.getByTestId("plugin-access");
 const enter = (options = {}) => fireEvent.keyDown(search(), { key: "Enter", ...options });
-afterEach(() => { cleanup(); vi.useRealTimers(); });
+afterEach(() => {
+  cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllGlobals();
+  globalThis.jsdom.reconfigure({ url: testUrl });
+  sessionStorage.clear();
+});
 
 test.each([{ type: "search" }, { role: "combobox" }, { "data-search": true }])(
   "搜索入口 %j 精确输入口令并按 Enter 才解锁，输入本身不发放介绍页凭据", props => {
@@ -109,4 +121,33 @@ test("卸载移除全局监听，重新挂载从未解锁开始", () => {
   render(<PluginAccess enabled>{content({ type: "search" })}</PluginAccess>);
   expect(access()).toHaveTextContent("未解锁");
   expect(screen.queryByRole("status")).toBeNull();
+});
+
+test("app口令与提示保持原样，会话凭据不解锁菜单，刷新挂载恢复隐藏", () => {
+  const storage = desktopSession();
+  const credential = String(Date.now() + 30_000);
+  storage.setItem("roco-cn-plugin-entry", credential);
+  const view = render(<PluginAccess enabled>{content({ type: "search" })}</PluginAccess>);
+  expect(access()).toHaveTextContent("未解锁");
+  expect(screen.queryByRole("status")).toBeNull();
+  enter();
+  expect(access()).toHaveTextContent("已解锁");
+  expect(screen.getByRole("status")).toHaveTextContent("某处的大门已开启");
+  expect(storage.getItem("roco-cn-plugin-entry")).toBe(credential);
+  view.unmount();
+  render(<PluginAccess enabled>{content({ type: "search" })}</PluginAccess>);
+  expect(access()).toHaveTextContent("未解锁");
+  expect(screen.queryByRole("status")).toBeNull();
+});
+
+test("app主动进入插件只写30秒到期时间会话凭据，不使用网页Cookie", () => {
+  const storage = desktopSession();
+  const now = vi.spyOn(Date, "now").mockReturnValue(1000);
+  const cookie = vi.spyOn(document, "cookie", "set");
+  grantPluginEntry();
+  expect(storage.getItem("roco-cn-plugin-entry")).toBe("31000");
+  now.mockReturnValue(2000);
+  grantPluginEntry();
+  expect(storage.getItem("roco-cn-plugin-entry")).toBe("32000");
+  expect(cookie).not.toHaveBeenCalled();
 });

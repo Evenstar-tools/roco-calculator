@@ -17,9 +17,10 @@ export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
   const { t } = useLocale();
   const { serverId } = useRuntime();
   const pluginUnlocked = usePluginAccess();
+  const isDesktop = window.location.protocol === "app:";
   const showReturnEntry = serverId === "cn" && IS_PREVIEW_BUILD;
   const showNatureTool = serverId === "cn" && !IS_PREVIEW_BUILD;
-  const showPluginTools = pluginUnlocked && serverId === "cn" && !IS_PREVIEW_BUILD && window.location.protocol !== "app:";
+  const showPluginTools = pluginUnlocked && serverId === "cn" && !IS_PREVIEW_BUILD;
   const toolGroups = groups.map(([label, entries]) => [label, label !== "查询" ? entries
     : serverId === "cn" ? [...entries, ["balanceHistory", "平衡调整回顾", <ClockCounterClockwise size={18} aria-hidden="true" />]]
       : [...entries, ["typeChart", "18 系克制图", <Table size={18} aria-hidden="true" />]]]);
@@ -78,10 +79,10 @@ export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
         <div className="app-menu__separator" role="separator" />
         <section aria-label="插件工具">
           <div className="app-menu__group-label">插件工具</div>
-          <a href="/plugins/wild-spirit-detector/" target="_blank" rel="noopener noreferrer"
+          <a href="/plugins/wild-spirit-detector/" target={isDesktop ? undefined : "_blank"} rel={isDesktop ? undefined : "noopener noreferrer"}
             style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44 }}
             onClick={() => { grantPluginEntry(); setOpen(false); trigger.current?.focus(); }}
-            onAuxClick={event => { if (event.button === 1) grantPluginEntry(); }}>
+            onAuxClick={event => { if (event.button === 1 && !isDesktop) grantPluginEntry(); }}>
             <PuzzlePiece size={18} aria-hidden="true" />野生精灵检测器
           </a>
         </section>

@@ -6,9 +6,10 @@ import { PluginAccess } from "../../src/runtime/PluginAccess.jsx";
 
 const testUrl = window.location.href;
 afterEach(() => {
-  vi.restoreAllMocks(); vi.unstubAllEnvs(); vi.resetModules();
+  vi.restoreAllMocks(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.resetModules();
   globalThis.jsdom.reconfigure({ url: testUrl });
   document.cookie = "roco-cn-plugin-entry=; Max-Age=0; Path=/";
+  sessionStorage.clear();
 });
 function renderUnlockable(children) {
   return render(<PluginAccess enabled><input aria-label="彩蛋搜索" type="search" defaultValue="龙骑士" />{children}</PluginAccess>);
@@ -113,10 +114,11 @@ test("已解锁入口仅为左键或中键导航发放凭据，普通打开菜�
   expect(document.cookie).toContain("roco-cn-plugin-entry=1");
 });
 
-test("桌面 app 协议开放国服性格计算，网页插件保持隐藏", () => {
+test("桌面 app 协议保留独立野怪计算，原彩蛋解锁后同窗进入插件", () => {
+  const storage = sessionStorage;
   globalThis.jsdom.reconfigure({ url: "app://calculator/cn/" });
+  vi.stubGlobal("sessionStorage", storage);
   renderUnlockable(<Toolbox actions={{ types: vi.fn() }} />);
-  unlock();
   const trigger = screen.getByRole("button", { name: "工具箱" });
   fireEvent.click(trigger);
   expect(screen.queryByRole("region", { name: "插件工具" })).not.toBeInTheDocument();
@@ -128,6 +130,23 @@ test("桌面 app 协议开放国服性格计算，网页插件保持隐藏", () 
   expect(nature).not.toHaveAttribute("target");
   nature.addEventListener("click", event => event.preventDefault(), { once: true });
   fireEvent.click(nature);
+  expect(screen.queryByRole("navigation", { name: "工具箱" })).not.toBeInTheDocument();
+  expect(trigger).toHaveFocus();
+  unlock();
+  fireEvent.click(trigger);
+  const plugin = screen.getByRole("link", { name: "野生精灵检测器" });
+  expect(plugin).toBeVisible();
+  expect(plugin.href).toBe("app://calculator/plugins/wild-spirit-detector/");
+  expect(plugin).not.toHaveAttribute("target");
+  expect(plugin).not.toHaveAttribute("rel");
+  expect(storage.getItem("roco-cn-plugin-entry")).toBeNull();
+  fireEvent(plugin, new MouseEvent("auxclick", { bubbles: true, button: 1 }));
+  expect(storage.getItem("roco-cn-plugin-entry")).toBeNull();
+  plugin.addEventListener("click", event => event.preventDefault(), { once: true });
+  const now = Date.now();
+  fireEvent.click(plugin);
+  expect(Number(storage.getItem("roco-cn-plugin-entry"))).toBeGreaterThanOrEqual(now + 30_000);
+  expect(Number(storage.getItem("roco-cn-plugin-entry"))).toBeLessThanOrEqual(Date.now() + 30_000);
   expect(screen.queryByRole("navigation", { name: "工具箱" })).not.toBeInTheDocument();
   expect(trigger).toHaveFocus();
 });
