@@ -108,7 +108,7 @@ body[data-workspace-mode="validation"] .versus-grid .trait-grid { display:none; 
 .preview-heading h2 { flex:none; white-space:nowrap; margin:0; font-size:16px; }
 .preview-heading p { margin:0; font-size:12px; color:var(--muted); }
 .preview-grid { display:grid; align-items:center; column-gap:8px; row-gap:8px; }
-.preview-grid--out { grid-template-columns:minmax(180px,1.5fr) repeat(4,minmax(0,1fr)) 126px; }
+.preview-grid--out { grid-template-columns:minmax(180px,1.5fr) repeat(3,minmax(0,1fr)) 126px; }
 .preview-grid--in { grid-template-columns:minmax(180px,1.5fr) repeat(3,minmax(0,1fr)) 126px; }
 .prow, .pcells { display:contents; }
 .pth { font-size:12px; color:var(--muted); padding:6px; display:flex; align-items:center; justify-content:center; gap:4px; border-bottom:1px solid var(--line); }
@@ -140,20 +140,18 @@ body[data-workspace-mode="validation"] .versus-grid .trait-grid { display:none; 
 .pcell .bar b.mid { background:var(--amber); }
 .pcell .bar b.lo { background:var(--red); }
 .pcell .ko { flex-basis:100%; margin-top:3px; font-size:12px; color:var(--muted); }
-.same-tag { position:absolute; top:3px; left:50%; transform:translateX(-50%); font-size:10.5px; line-height:15px; color:var(--muted); background:#eef1f6; border-radius:4px; padding:0 5px; white-space:nowrap; }
 .pcell-label { display:none; }
 .pcell[role="button"] { cursor:pointer; }
 .pcell[role="button"]:hover:not(.hit):not(.miss):not(.picked) { background:#f4f7fb; border-color:#d5dbe6; }
 .pcell[role="button"]:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
 .pcell.hit { background:var(--hit-soft); border-color:var(--hit); }
 .pcell.picked { background:var(--hit-soft); border-color:var(--hit); box-shadow:0 0 0 2px rgba(19,134,90,.12); }
-.pcell.hit .same-tag { background:#d3eee1; color:var(--hit); }
 .pcell.miss { background:#f4f5f8; }
 .pcell.miss .dmg, .pcell.miss .rem, .pcell.miss .rem b { color:#7a8598; }
 .pcell.miss .bar b { background:#d6dbe4; }
 .pcell.miss .ko { color:#7a8598; }
 .pcell-note { color:var(--muted); font-size:12.5px; text-align:center; padding:12px 6px; background:#f7f8fb; border-radius:8px; margin:4px 2px; }
-.preview-grid--out .pcell-note { grid-column:span 4; }
+.preview-grid--out .pcell-note { grid-column:span 3; }
 .preview-grid--in .pcell-note { grid-column:span 3; }
 .pobservations { display:grid; gap:6px; min-width:0; padding:8px 0; }
 .pobs { display:flex; flex-direction:row; align-items:center; gap:0; min-width:0; height:36px; border:1px solid var(--line); border-radius:7px; background:#fff; overflow:hidden; }
@@ -226,7 +224,6 @@ body[data-workspace-mode="validation"] .versus-grid .trait-grid { display:none; 
 .pcell-penalty .dmg { flex-basis:auto; font-size:14px; }
 .condition-label { font-size:12px; color:var(--blue); }
 .pcell-penalty .rem, .pcell-penalty .ko { flex-basis:100%; margin-top:0; }
-.same-placeholder { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; min-height:68px; min-width:0; color:var(--muted); font-size:12px; background:#f6f7fa; border-radius:7px; padding:8px 4px; }
 
 @media (min-width:1400px) { body[data-workspace-mode="preview"] #app { max-width:1340px; margin:auto; } }
 @media (max-width:1100px) {
@@ -255,9 +252,8 @@ body[data-workspace-mode="validation"] .versus-grid .trait-grid { display:none; 
   .pcell { padding:6px 5px; }
   .pcell-label { display:block; flex-basis:100%; order:-1; font-size:12px; color:var(--muted); margin-bottom:4px; }
   .pcell-penalty .pcell-label { display:none; }
-  .same-placeholder { justify-content:flex-start; padding-top:7px; }
-  .preview-grid--in .pcell-stack:last-child { grid-column:1/-1; }
-  .preview-grid--in .pcell-stack:last-child .pcell { min-height:0; }
+  .preview-grid--out .pcell-stack:last-child, .preview-grid--in .pcell-stack:last-child { grid-column:1/-1; }
+  .preview-grid--out .pcell-stack:last-child .pcell, .preview-grid--in .pcell-stack:last-child .pcell { min-height:0; }
   .pcell-note { grid-column:1/-1 !important; }
   .picker-anchor > .picker-popup, .nature-picker > .picker-popup { width:100%; min-width:0; max-width:100%; box-sizing:border-box; }
   .picker-option { gap:8px; }
