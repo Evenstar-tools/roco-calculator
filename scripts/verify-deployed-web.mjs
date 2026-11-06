@@ -3,6 +3,7 @@ import { extractWebReferences, resolveWebReference } from "./verify-web-artifact
 
 export const DEPLOYED_WEB_ENTRIES = Object.freeze([
   "/", "/cn/", "/dianlu/", "/en/", "/jp/", "/global/zh-CN/", "/global/ja/",
+  "/tools/s5-nature/index.html",
 ]);
 export const DEPLOYED_WEB_PORTRAITS = Object.freeze([
   "/global-assets/assets/spirits/spirit_e0332c3637a510c6.png",

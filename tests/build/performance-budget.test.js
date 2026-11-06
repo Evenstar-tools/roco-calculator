@@ -34,29 +34,38 @@ function fixture({ css = "body{}", js = "export default 1", runtime = "{}" } = {
 }
 
 describe("release performance budget", () => {
-  test("总资源保留开发余量，超过 24 MiB 仍阻断", () => {
+  test("总资源保留开发余量，超过 32 MiB 仍阻断", () => {
     expect(DEFAULT_PERFORMANCE_BUDGETS.clientTotal).toBe(20 * 1024 * 1024);
-    expect(DEFAULT_PERFORMANCE_BUDGETS.clientTotal + DEFAULT_HARD_OVERAGE_BY_KEY.clientTotal).toBe(24 * 1024 * 1024);
+    expect(DEFAULT_PERFORMANCE_BUDGETS.clientTotal + DEFAULT_HARD_OVERAGE_BY_KEY.clientTotal).toBe(32 * 1024 * 1024);
     expect(DEFAULT_PERFORMANCE_BUDGETS.cssGzip).toBe(72 * 1024);
     expect(DEFAULT_PERFORMANCE_BUDGETS.runtimeJson).toBe(2 * 1024 * 1024);
     const root = fixture();
     const base = verifyPerformanceBudget({ distRoot: root }).metrics.clientTotal;
-    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(24 * 1024 * 1024 - base));
+    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(32 * 1024 * 1024 - base));
     expect(verifyPerformanceBudget({ distRoot: root }).violations).toEqual([]);
-    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(24 * 1024 * 1024 - base + 1));
+    writeFileSync(path.join(root, "assets", "test.bin"), Buffer.alloc(32 * 1024 * 1024 - base + 1));
     expect(verifyPerformanceBudget({ distRoot: root }).violations).toEqual([
-      expect.objectContaining({ key: "clientTotal", hardLimit: 24 * 1024 * 1024 }),
+      expect.objectContaining({ key: "clientTotal", hardLimit: 32 * 1024 * 1024 }),
     ]);
   });
   test("keeps separate warning and blocking limits for modest JS growth", () => {
     expect(DEFAULT_PERFORMANCE_BUDGETS.jsGzip).toBe(400 * 1024);
     expect(
       DEFAULT_PERFORMANCE_BUDGETS.jsGzip + DEFAULT_HARD_OVERAGE_BY_KEY.jsGzip,
-    ).toBe(512 * 1024);
+    ).toBe(640 * 1024);
     expect(DEFAULT_PERFORMANCE_BUDGETS.jsRaw).toBe(1536 * 1024);
     expect(
       DEFAULT_PERFORMANCE_BUDGETS.jsRaw + DEFAULT_HARD_OVERAGE_BY_KEY.jsRaw,
     ).toBe(2048 * 1024);
+  });
+
+  test("standalone tool modules count toward both JS budgets", () => {
+    const root = fixture();
+    const before = verifyPerformanceBudget({ distRoot: root }).metrics;
+    writeFileSync(path.join(root, "assets", "tool.mjs"), "export const hp = 554;");
+    const after = verifyPerformanceBudget({ distRoot: root }).metrics;
+    expect(after.jsRaw - before.jsRaw).toBe(Buffer.byteLength("export const hp = 554;"));
+    expect(after.jsGzip).toBeGreaterThan(before.jsGzip);
   });
 
   test("原始 JS 恰好 2048 KiB 通过，多 1 字节阻断", () => {

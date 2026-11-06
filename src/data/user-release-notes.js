@@ -245,6 +245,15 @@ export const USER_RELEASE_NOTES = Object.freeze([
     features: ["过充电仅强化一次，电鹿顶部区分未强化65与已强化95两行，分别查看斩杀线；国际服S3季中不变。"],
   }),
   createRelease({
+    version: "v2.3.12",
+    date: "2026.11.06",
+    seasonId: "S5",
+    title: "S5 奇异性格检测",
+    whatsNew: S5_FEATURE_INTRO,
+    features: ["国服网页工具箱的计算栏新增 S5奇异性格检测，支持选择双方精灵、配招与骰子，手动录入战斗读数。"],
+    fixes: ["野怪分开显示奇遇普通、加生命、减生命三档血量；剩余百分比随等级、异色及骰子同步。", "异色血量在配招页与实测记录页保持一致；国际服S3季中保持现状。"],
+  }),
+  createRelease({
     version: "v2.3.11",
     date: "2026.11.06",
     seasonId: "S5",
