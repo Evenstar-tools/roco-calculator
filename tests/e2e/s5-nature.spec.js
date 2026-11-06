@@ -28,7 +28,7 @@ test("S5 nature display power and conditional attacks calculate immediately with
   await expect(page.locator('#preview-skill-meta-0')).toContainText('显示威力 110');
   await expect(base.locator('.dmg')).toHaveText('113');
   const condition = page.locator('[data-preview-row="0"] .preview-condition');
-  await condition.locator('summary').click();
+  await condition.locator(':scope > summary').click();
   const power = page.locator('#preview-condition-0-displayedPower');
   await power.fill('110');
   await power.press('Tab');
@@ -37,7 +37,7 @@ test("S5 nature display power and conditional attacks calculate immediately with
   await page.reload();
   await expect(power).toHaveValue('110');
   await expect(base.locator('.dmg')).toHaveText('113');
-  await condition.locator('summary').click();
+  await condition.locator(':scope > summary').click();
   await power.fill('60.5');
   await power.press('Tab');
   await expect(page.locator('#preview-skill-meta-0')).toContainText('显示威力 60.5');
@@ -53,7 +53,7 @@ test("S5 nature display power and conditional attacks calculate immediately with
     own.preview.skillOverrides[own.preview.skillIds[0]] = { effectivePower: 90 };
     window.pveNatureUi.setSession(session);
   });
-  await expect(page.locator('#preview-condition-0-legacyPower')).toContainText('旧记录：最终威力 90');
+  await expect(page.locator('#preview-condition-0-legacyPower-label')).toHaveText('最终威力 90 · 已含系别与觉醒');
   await page.locator('#preview-condition-0-resetPower').click();
   await expect(page.locator('#preview-condition-0-legacyPower')).toBeHidden();
   await expect(base.locator('.dmg')).toHaveText('113');
@@ -80,7 +80,7 @@ test("S5 nature display power and conditional attacks calculate immediately with
   await expect(ground.locator('.rem b')).toHaveText('13%');
   await expect(page.locator('#preview-skill-meta-1')).toContainText('显示威力 180');
   await expect(page.locator('#preview-condition-1-displayedPower')).toHaveValue('');
-  if (await condition.evaluate(node => node.open)) await condition.locator('summary').click();
+  if (await condition.evaluate(node => node.open)) await condition.locator(':scope > summary').click();
   for (const [width, height] of [[1280, 1000], [390, 844]]) {
     await page.setViewportSize({ width, height });
     await condition.scrollIntoViewIfNeeded();
@@ -361,7 +361,7 @@ test("S5 nature compact comparison keeps paired measurements separate from highl
   await expect(damage).toHaveValue('103'); await expect(remaining).toHaveValue('77');
   // Each field individually exists, but no single nature matches this pair.
   await damage.fill('94'); await damage.press('Tab');
-  await expect(verdict).toHaveText('数值未匹配');
+  await expect(verdict).toHaveText('模型未吻合');
   await damage.fill('103'); await damage.press('Tab');
   await remaining.fill(''); await remaining.press('Tab');
   await expect(damage).toHaveValue('103'); await expect(hpAxis).toHaveText('—');
