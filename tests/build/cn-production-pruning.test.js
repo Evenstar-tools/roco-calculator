@@ -140,6 +140,25 @@ test("CN calculator dictionary pruning retains Chinese interpolation in the shar
   expect(pruneCnProductionModule(formatter, "D:/project/src/i18n/calculator-text.js")).toBeNull();
 });
 
+test("reviewed CN tool formatter keeps the exact Chinese branch and interpolation", () => {
+  const filename = "src/i18n/useToolLocale.js";
+  const code = readFileSync(filename, "utf8");
+  expect(pruneCnProductionModule(code, `D:/project/${filename}`)).toBeNull();
+  const result = pruneCnProductionModule(code, `D:/project/${filename}`, { reviewedS5: true });
+  expect(result).toBe(code.replace('if (locale === "zh-CN") return translateUi(locale, source, values);',
+    'return translateUi("zh-CN", source, values);'));
+  const format = source => new Function("translateUi", source.slice(source.indexOf("export function localizeToolText"),
+    source.indexOf("export function useToolLocale")).replace("export function", "function") + ";return localizeToolText;")(
+    (locale, text, values) => {
+      expect(locale).toBe("zh-CN");
+      return text.replace(/\{([^}]+)\}/g, (token, name) => Object.hasOwn(values, name) ? String(values[name]) : token);
+    });
+  for (const source of [null, undefined, 0, false, "", "龙骑士", "伤害{amount}，{missing}", "{amount}% × {hits}"]) {
+    const values = { amount: 130, hits: 2 };
+    expect(format(result)(source, "zh-CN", values)).toEqual(format(code)(source, "zh-CN", values));
+  }
+});
+
 test("reviewed S5 production consumes the complete transport without the old preview overlay", () => {
   const file = "src/features/s5-preview/with-web-preview.js";
   const code = readFileSync(file, "utf8");

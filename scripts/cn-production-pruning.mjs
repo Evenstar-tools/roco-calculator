@@ -69,6 +69,13 @@ export function pruneCnProductionModule(code, id, { reviewedS5 = false } = {}) {
     // CN renders the source Chinese text; this table contains only EN/JA translations.
     return "export const calculatorMessages = {};";
   }
+  if (reviewedS5 && filename.endsWith("/src/i18n/useToolLocale.js")) {
+    // Formal CN uses zh-CN. Its EN/JA catalogs are already omitted above;
+    // make the existing Chinese return unconditional so the matcher is removed.
+    const branch = 'if (locale === "zh-CN") return translateUi(locale, source, values);';
+    if (!code.includes(branch)) throw new Error("Review CN tool locale before pruning: " + id);
+    return code.replace(branch, 'return translateUi("zh-CN", source, values);');
+  }
   if (reviewedS5 && filename.endsWith("/src/features/s5-preview/mechanics.js")) {
     // The reviewed browser reducer enumerates keys only; event adapters keep their code.
     const declaration = parse(code, { sourceType: "module" }).program.body
