@@ -205,7 +205,7 @@ test("S5 nature incoming attack shows measured whale damage and matches nature",
   await picker.fill('甩水');
   await page.getByRole('option').getByText('甩水', { exact: true }).click();
   const cells = page.locator('#preview-incoming-cells-0');
-  const normal = cells.locator('[data-nature-group="physicalAttack"][data-nature-condition="base"]');
+  const normal = cells.locator('[data-nature-group="other"][data-nature-condition="base"]');
   const raised = cells.locator('[data-nature-group="magicalAttack"][data-nature-condition="base"]');
   await expect(normal.locator('.dmg')).toHaveText('41');
   await expect(raised.locator('.dmg')).toHaveText('45');
@@ -217,7 +217,7 @@ test("S5 nature incoming attack shows measured whale damage and matches nature",
   await page.locator('#preview-incoming-damage-0').press('Tab');
   await expect(raised).toHaveClass(/\bhit\b/);
   await expect(normal).toHaveClass(/\bmiss\b/);
-  await expect(page.locator('#preview-verdict .verdict-big')).toContainText('魔攻');
+  await expect(page.locator('#preview-verdict [data-stat="magicalAttack"] b')).toHaveText('加');
 
   // A skill power die must recalculate the shown incoming damage immediately.
   await page.locator('#target-dice').selectOption('manual-power-plus-40');
@@ -316,59 +316,87 @@ test("S5 nature presets share calculator configurations and preserve saved manua
 });
 
 
-test("S5 nature cell picks use remaining HP and KO only highlights the selected cell", async ({ page }) => {
+test("S5 nature compact comparison keeps paired measurements separate from highlights and KO", async ({ page }) => {
   await page.goto(toolPath);
   await expect(page.locator('#load-own-preset')).toBeEnabled();
   await chooseTarget(page, '可爱猿');
   await page.getByRole('group', { name: '野怪等级', exact: true }).getByRole('button', { name: '41', exact: true }).click();
   const cells = page.locator('#preview-cells-0');
   const hp = cells.locator('[data-nature-group="hp"][data-nature-condition="base"]');
-  const same = cells.locator('[data-nature-group="magicalDefense"][data-nature-condition="base"]');
-  await expect(hp.locator('.dmg')).toHaveText('103');
-  await expect(same.locator('.dmg')).toHaveText('103');
-  await expect(hp.locator('.rem b')).toHaveText('77%');
+  const other = cells.locator('[data-nature-group="other"][data-nature-condition="base"]');
+  const damage = page.locator('#preview-observed-0'), remaining = page.locator('#preview-remaining-0');
   const verdict = page.locator('#preview-verdict .verdict-big');
-  // Identical damage does not identify HP nature; the surviving percentage does.
-  await page.locator('#preview-observed-0').fill('103');
-  await page.locator('#preview-observed-0').press('Tab');
-  await expect(verdict).not.toHaveText('生命↑');
+  const hpAxis = page.locator('#preview-verdict [data-stat="hp"] b');
+  await expect(cells.locator('.pcell-stack')).toHaveCount(4);
+  await expect(cells.locator('.same-placeholder')).toHaveText('魔防↑同其他');
+  await expect(hp.locator('.dmg')).toHaveText('103');
+  await expect(other.locator('.dmg')).toHaveText('103');
+  await expect(hp.locator('.rem b')).toHaveText('77%');
+  await expect(other.locator('[data-hp-nature="down"] b')).toHaveText('73%');
+  // A bookmark never constitutes a measurement, including after reload.
   await hp.locator('.rem').click();
   await expect(hp).toHaveAttribute('aria-pressed', 'true');
-  await expect(cells.locator('.hit,.miss')).toHaveCount(0);
-  await expect(verdict).toHaveText('生命↑');
-  await expect(page.locator('#preview-verdict')).toContainText('余 77%');
+  await expect(verdict).toHaveText('待实测');
   await page.reload();
   await expect(hp).toHaveAttribute('aria-pressed', 'true');
-  await expect(verdict).toHaveText('生命↑');
-  await hp.locator('.rem').click();
-  await expect(cells.locator('.picked')).toHaveCount(0);
   await expect(verdict).toHaveText('待实测');
+  await damage.fill('103'); await damage.press('Tab');
+  await expect(hpAxis).toHaveText('—');
+  await remaining.fill('77'); await remaining.press('Tab');
+  await expect(hpAxis).toHaveText('加');
+  await expect(page.locator('#preview-verdict .nature-axis')).toHaveCount(5);
+  await expect(page.locator('#preview-verdict')).toContainText('伤害 103 · 余 77%');
+  // Picking a different column neither discards measurements nor changes the result.
+  await other.locator('.dmg').click();
+  await expect(other).toHaveAttribute('aria-pressed','true');
+  await expect(damage).toHaveValue('103'); await expect(remaining).toHaveValue('77');
+  await expect(hpAxis).toHaveText('加');
+  await page.reload();
+  await expect(damage).toHaveValue('103'); await expect(remaining).toHaveValue('77');
+  // Each field individually exists, but no single nature matches this pair.
+  await damage.fill('94'); await damage.press('Tab');
+  await expect(verdict).toHaveText('数值未匹配');
+  await damage.fill('103'); await damage.press('Tab');
+  await remaining.fill(''); await remaining.press('Tab');
+  await expect(damage).toHaveValue('103'); await expect(hpAxis).toHaveText('—');
+  // Previously saved percent-only records retain their unit and do not become damage.
+  await page.evaluate(() => {
+    const session=window.pveNatureUi.getSession();
+    const own=session.profiles.find(p=>p.id===session.activeProfileId);
+    own.preview.observed={0:{remainingPercent:77}}; own.preview.observedUnits={0:'percent'};
+    window.pveNatureUi.setSession(session);
+  });
+  await expect(damage).toHaveValue(''); await expect(remaining).toHaveValue('77');
+  await expect(hpAxis).toHaveText('加');
+  await damage.fill('103'); await damage.press('Tab');
+  for (const [width,height] of [[1920,1080],[390,844],[320,740]]) {
+    await page.setViewportSize({width,height});
+    await page.locator('[data-preview-row="0"]').locator('.pskill').scrollIntoViewIfNeeded();
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    await expect(damage).toBeVisible(); await expect(remaining).toBeVisible();
+    if(width<800) expect(await damage.boundingBox().then(box=>box.width)).toBeGreaterThan(60);
+    await page.screenshot({path:`output/playwright/s5-compact-${width}.png`});
+  }
+  // Undo feedback floats over the document and does not move the skill input.
+  await page.setViewportSize({width:1920,height:1080});
+  const top = await damage.evaluate(node=>node.getBoundingClientRect().top+scrollY);
+  await page.locator('#undo').click();
+  expect(await damage.evaluate(node=>node.getBoundingClientRect().top+scrollY)).toBe(top);
   await chooseTarget(page, '小翼龙');
-  const picker = page.getByRole('combobox', { name: '我方技能 1', exact: true });
-  await picker.fill('地震');
-  await page.getByRole('option').getByText('地震', { exact: true }).click();
-  await expect(hp.locator('.ko')).toHaveText('一击倒 · 0%');
+  const picker=page.getByRole('combobox',{name:'我方技能 1',exact:true});
+  await picker.fill('地震'); await page.getByRole('option').getByText('地震',{exact:true}).click();
+  await expect(hp.locator('.ko')).toHaveText('0%');
   await hp.locator('.dmg').click();
   await expect(hp).toHaveClass(/\bpicked\b/);
   await expect(verdict).toHaveText('待实测');
-  await same.locator('.dmg').click();
-  await expect(same).toHaveClass(/\bpicked\b/);
+  await other.locator('.dmg').click();
+  await expect(other).toHaveClass(/\bpicked\b/);
   await expect(cells.locator('.picked')).toHaveCount(1);
-  await expect(cells.locator('.hit,.miss')).toHaveCount(0);
+  await expect(verdict).toHaveText('待实测');
+  const koDamage=await hp.locator('.dmg').textContent();
+  await damage.fill(koDamage); await damage.press('Tab');
+  await expect(verdict).toHaveText('待实测');
+  await remaining.fill('0'); await remaining.press('Tab');
   await expect(verdict).toHaveText('待实测');
   await expect(page.locator('#preview-verdict .evidence')).toHaveCount(0);
-  await page.reload();
-  await expect(same).toHaveClass(/\bpicked\b/);
-  await expect(verdict).toHaveText('待实测');
-  for (const [width, height] of [[1280,1000],[390,844]]) {
-    await page.setViewportSize({width,height});
-    await same.scrollIntoViewIfNeeded();
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await page.screenshot({path:`output/playwright/s5-ko-selection-${width}.png`});
-  }
-  await page.locator('#preview-observed-unit-0').click();
-  await page.locator('#preview-observed-0').fill('0');
-  await page.locator('#preview-observed-0').press('Tab');
-  await expect(verdict).toHaveText('待实测');
-  await expect(cells.locator('.hit,.miss,.picked')).toHaveCount(0);
 });
