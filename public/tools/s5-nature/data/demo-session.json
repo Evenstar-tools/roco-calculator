@@ -1,0 +1,45 @@
+{
+  "targetId": "spirit_800a0042f52851cf",
+  "level": 42,
+  "profiles": [
+    {
+      "id": "luoyin",
+      "name": "罗隐（合成演示面板）",
+      "spiritId": "spirit_4e7acb9d14c8f373",
+      "level": 60,
+      "awakening": 5,
+      "panel": { "hp": 403, "physicalAttack": 312, "magicalAttack": 136, "physicalDefense": 183, "magicalDefense": 137, "speed": 176 }
+    },
+    {
+      "id": "dimo",
+      "name": "迪莫",
+      "spiritId": "spirit_db5a2cb398dc0385",
+      "level": 60,
+      "awakening": 5,
+      "panel": { "hp": null, "physicalAttack": null, "magicalAttack": null, "physicalDefense": null, "magicalDefense": null, "speed": null }
+    }
+  ],
+  "observations": [
+    {
+      "id": "demo-1", "profileId": "luoyin", "direction": "incoming",
+      "skillId": "skill_8014af7b31b97161", "damage": 61,
+      "beforePercent": null, "afterPercent": null, "percentMode": "unknown", "percentDigits": 0,
+      "context": "clean", "reduction": 1, "defeated": false,
+      "note": "合成演示：龙炮，物攻127 × 本系威力125，分子11190 ÷ 物防183，向下取整61。"
+    },
+    {
+      "id": "demo-2", "profileId": "luoyin", "direction": "incoming",
+      "skillId": "skill_73b5f31fbe72092d", "damage": 18,
+      "beforePercent": null, "afterPercent": null, "percentMode": "unknown", "percentDigits": 0,
+      "context": "clean", "reduction": 1, "defeated": false,
+      "note": "合成演示：角击，魔攻35 × 本系威力100，分子2467 ÷ 魔防137，向下取整18。"
+    },
+    {
+      "id": "demo-3", "direction": "hp", "profileId": "luoyin", "damage": 63,
+      "beforePercent": 100, "afterPercent": 83.0, "percentMode": "round", "percentDigits": 1,
+      "context": "clean", "reduction": 1, "defeated": false,
+      "note": "合成演示：奇遇最大HP370，满血实际扣63，剩307/370=82.9729…%，按一位小数四舍五入为83.0%。"
+    }
+  ],
+  "demo": true
+}

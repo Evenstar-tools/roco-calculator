@@ -1,0 +1,44 @@
+{
+  "source": "Existing CN calculator assets; copied unchanged, without network access.",
+  "reproduction": "--assets-root defaults to ../assets next to the supplied runtime data directory.",
+  "pathMapping": "./assets/<relative path> maps to <assets-root>/<relative path>; names and subdirectories are preserved.",
+  "sourceRevision": "ee68d4a020225614a679b180050ba54c78177a01",
+  "mappings": {
+    "spirits": "runtime.spirits[].asset.localUrl",
+    "skills": "src/data/wish-power-icons.js, local runtime icon/asset URLs, optional skills/manifest.json, then matching skill-ID filenames",
+    "elements": "elements/manifest.json",
+    "stats": "stats/manifest.json",
+    "season": [
+      "season/s5-dragon-treasure.webp",
+      "season/s5-abu-mascot.webp"
+    ]
+  },
+  "upstreamLicenses": {
+    "stats": "CC BY-NC-SA 4.0",
+    "wishPower": "CC BY-NC-SA 4.0",
+    "note": "Game images retain their original rights. This file records provenance, not a new license grant."
+  },
+  "missingImagePolicy": "Unavailable local avatars and skill icons are null; the UI must render its fallback.",
+  "counts": {
+    "elements": {
+      "files": 18,
+      "bytes": 146363
+    },
+    "stats": {
+      "files": 6,
+      "bytes": 31759
+    },
+    "season": {
+      "files": 2,
+      "bytes": 375386
+    },
+    "spirits": {
+      "files": 675,
+      "bytes": 9112985
+    },
+    "skills": {
+      "files": 92,
+      "bytes": 2696289
+    }
+  }
+}

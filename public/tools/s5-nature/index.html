@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>S5奇异性格检测 · 洛克计算器</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./picker.css" />
+    <link rel="stylesheet" href="./matchup.css" />
+    <link rel="stylesheet" href="./web.css" />
+    <link rel="icon" href="/assets/spirits/spirit_4e7acb9d14c8f373.png" />
+  </head>
+  <body data-workspace-mode="preview">
+    <header class="app-header">
+      <div class="web-brand">
+        <a class="web-back" href="/" aria-label="返回国服计算器">← <span>返回计算器</span></a>
+        <h1>S5奇异性格检测</h1>
+      </div>
+      <div class="header-actions">
+        <button id="new-target" type="button">新目标</button
+        ><button id="undo" type="button" disabled>撤销</button>
+        <details id="more-menu" class="more-menu">
+          <summary aria-label="更多操作">•••</summary>
+          <div>
+            <button id="toggle-validation" type="button">实测记录</button
+            ><button id="load-demo" type="button">合成演示</button
+            ><button id="export-json" type="button">导出记录</button
+            ><button id="import-json" type="button">导入记录</button>
+          </div>
+        </details>
+        <input type="file" id="import-file" accept="application/json,.json" hidden />
+      </div>
+    </header>
+    <main id="app">
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+      <div id="demo-banner" class="demo-banner" hidden>
+        <span>合成演示 · 用于验证流程</span
+        ><button id="leave-demo" type="button">返回我的记录</button>
+      </div>
+      <div class="validation-bar validation-only">
+        <strong>实测记录</strong><span>逐条记录同一只野怪的扣血与血量</span
+        ><button type="button" data-workspace-mode="preview">返回判断</button>
+      </div>
+      <div class="calculator-layout">
+        <div class="calculator-main">
+          <section class="versus-grid" id="versus-grid" data-direction="outgoing" aria-label="双方精灵">
+            <section class="side-picker" id="own-side" data-role="attack">
+              <div class="side-eyebrow">
+                <span class="side-tag">我方</span><span id="own-role" class="side-role">攻击方</span
+                ><span class="side-hint">清异色出战</span>
+                <div id="profile-tabs" class="profile-tabs" role="tablist" aria-label="常用出战档案"></div>
+              </div>
+              <div class="picker-anchor" id="own-picker">
+                <span class="search-glyph" aria-hidden="true">⌕</span
+                ><input id="own-picker-input" autocomplete="off" placeholder="选择出战精灵" /><span
+                  class="picker-caret" aria-hidden="true">⌄</span>
+              </div>
+              <div class="spirit-card" id="own-card">
+                <img id="own-image" class="spirit-image" alt="" />
+                <div>
+                  <strong id="own-name">罗隐</strong>
+                  <div id="own-tags" class="spirit-tags"></div>
+                  <p id="own-trait"></p>
+                </div>
+              </div>
+              <div class="config-rows" aria-label="我方星级、性格与个体">
+                <div class="config-row">
+                  <span class="config-key">星级</span>
+                  <div id="star-seg" class="seg" role="group" aria-label="我方星级"></div>
+                  <span id="stab-badge" class="stab-badge"></span>
+                  <select id="profile-awakening" class="compat-hidden" tabindex="-1" aria-label="我方星级">
+                    <option value="0">5 星</option><option value="1">6 星</option><option value="2">7 星</option>
+                    <option value="3">8 星</option><option value="4">9 星</option><option value="5" selected>10 星</option>
+                  </select>
+                </div>
+                <div class="config-row">
+                  <span class="config-key">性格</span>
+                  <div id="nature-picker" class="nature-picker">
+                    <button id="nature-picker-trigger" type="button">普通</button>
+                  </div>
+                </div>
+                <div class="config-row iv-line">
+                  <span class="config-key">个体</span>
+                  <div id="quick-ivs" class="quick-ivs"></div>
+                  <button id="ivs-zero" type="button" class="text-button">全 0</button
+                  ><button id="ivs-max" type="button" class="text-button">全 60</button>
+                </div>
+                <div class="config-row dice-line">
+                  <label class="config-key" for="own-dice">骰子</label><select id="own-dice" aria-label="我方骰子加成"></select>
+                </div>
+                <div id="own-dice-custom" class="dice-custom" hidden></div>
+              </div>
+              <details id="profiles-section" class="detail-panel">
+                <summary>详细面板 / 个体数值</summary>
+                <form id="profile-form">
+                  <p class="field-hint">
+                    <span id="profile-summary"></span> · <span id="profile-save-state"></span>
+                  </p>
+                  <label class="level-field">等级<input id="profile-level" type="number" min="1" max="60" value="60" aria-label="我方等级" /></label>
+                  <div class="detail-heading">成长后个体（0–60）</div>
+                  <div class="panel-fields">
+                    <label>生命<input id="profile-iv-hp" type="number" min="0" max="60" step="1" value="0" /></label
+                    ><label>物攻<input id="profile-iv-physicalAttack" type="number" min="0" max="60" step="1" value="0" /></label
+                    ><label>魔攻<input id="profile-iv-magicalAttack" type="number" min="0" max="60" step="1" value="0" /></label
+                    ><label>物防<input id="profile-iv-physicalDefense" type="number" min="0" max="60" step="1" value="0" /></label
+                    ><label>魔防<input id="profile-iv-magicalDefense" type="number" min="0" max="60" step="1" value="0" /></label
+                    ><label>速度<input id="profile-iv-speed" type="number" min="0" max="60" step="1" value="0" /></label>
+                  </div>
+                  <button id="generate-panel" type="button" class="text-button">重新按配置生成</button>
+                  <div class="detail-heading">实际面板</div>
+                  <div class="panel-fields">
+                    <label>生命<input id="panel-hp" type="number" min="1" step="1" placeholder="实际值" /></label
+                    ><label>物攻<input id="panel-physicalAttack" type="number" min="1" step="1" placeholder="实际值" /></label
+                    ><label>魔攻<input id="panel-magicalAttack" type="number" min="1" step="1" placeholder="实际值" /></label
+                    ><label>物防<input id="panel-physicalDefense" type="number" min="1" step="1" placeholder="实际值" /></label
+                    ><label>魔防<input id="panel-magicalDefense" type="number" min="1" step="1" placeholder="实际值" /></label
+                    ><label>速度<input id="panel-speed" type="number" min="1" step="1" placeholder="实际值" /></label>
+                  </div>
+                  <div class="detail-footer">
+                    <span id="profile-panel-feedback" class="field-hint" role="status"></span
+                    ><button type="submit">保存手动面板</button>
+                  </div>
+                </form>
+              </details>
+            </section>
+            <button id="swap-direction" class="swap-action" type="button" aria-label="切换攻击方向" title="切换攻击方向">
+              <span class="swap-vs">VS</span><span class="swap-arrows">⇄</span>
+            </button>
+            <section class="side-picker" id="wild-side" data-role="defense">
+              <div class="side-eyebrow">
+                <span class="side-tag">野怪</span><span id="wild-role" class="side-role">防御方</span
+                ><span class="side-hint">自动取初始形态</span>
+                <div class="eyebrow-end">
+                  <select id="target-filter" aria-label="目标范围">
+                    <option value="initial">S2 / S5 初始形态</option>
+                    <option value="priority">S2 / S5 优先</option>
+                    <option value="all">全部精灵</option>
+                    <option value="S2">S2</option>
+                    <option value="S5">S5</option>
+                  </select>
+                  <div id="level-seg" class="seg" role="group" aria-label="野怪等级"></div>
+                  <select id="target-level" class="compat-hidden" tabindex="-1" aria-label="野生目标等级">
+                    <option value="41">41 级</option><option value="42" selected>42 级</option><option value="43">43 级</option>
+                  </select>
+                </div>
+              </div>
+              <div class="picker-anchor" id="target-picker">
+                <span class="search-glyph" aria-hidden="true">⌕</span
+                ><input id="target-picker-input" autocomplete="off" placeholder="选择野生目标" /><span
+                  class="picker-caret" aria-hidden="true">⌄</span>
+              </div>
+              <div class="spirit-card">
+                <img id="target-image" class="spirit-image" alt="" />
+                <div>
+                  <strong id="target-name">翼龙</strong>
+                  <div id="target-tags" class="spirit-tags"></div>
+                  <p id="target-trait"></p>
+                  <button id="use-initial-form" type="button" class="small-button" hidden></button>
+                </div>
+              </div>
+              <div class="config-rows">
+                <div class="encounter-health preview-only">
+                  <div class="encounter-health-head"><span>奇遇血量</span><label class="shiny-toggle"><input id="target-shiny" type="checkbox" />异色 · 生命×1.5</label></div>
+                  <div id="target-hp-range" class="hp-range" aria-label="奇遇血量" aria-live="polite"></div>
+                </div>
+                <div class="config-row dice-line">
+                  <label class="config-key" for="target-dice">骰子</label><select id="target-dice" aria-label="敌方骰子加成"></select>
+                </div>
+                <div id="target-dice-custom" class="dice-custom" hidden></div>
+              </div>
+            </section>
+            <div id="trait-grid" class="trait-grid" aria-label="双方特性"></div>
+          </section>
+          <div class="target-info validation-only">
+            <span id="target-catalog-note"></span><span id="target-data-note" hidden></span>
+            <details id="season-source-details">
+              <summary>名单说明</summary>
+              <div id="season-source-notes"></div>
+            </details>
+          </div>
+          <section id="preview-workspace" class="preview-workspace preview-only" aria-label="配招判断">
+            <section class="preview-card">
+              <div class="preview-heading"><h2>我方出招</h2><p id="preview-target-label"></p></div>
+              <div id="preview-outgoing" class="preview-grid preview-grid--out"></div>
+              <div class="preview-foot">
+                <label>血量显示<select id="preview-percent-format">
+                  <option value="game0">游戏显示 · 整数</option>
+                  <option value="round0">四舍五入 · 整数</option>
+                  <option value="floor0">向下取整 · 整数</option>
+                  <option value="round1">四舍五入 · 一位小数</option>
+                </select></label>
+                <button id="preview-reset-observed" type="button" class="text-button">清空实测</button>
+              </div>
+            </section>
+            <section class="preview-card">
+              <div class="preview-heading"><h2>敌方出招</h2><p id="preview-incoming-title"></p></div>
+              <div id="preview-incoming" class="preview-grid preview-grid--in"></div>
+            </section>
+          </section>
+          <section class="observation-workspace validation-only">
+            <form id="observation-form" class="observation-form">
+              <div class="section-heading">
+                <h2 id="observation-heading">添加实测记录</h2>
+                <div
+                  class="direction-switch"
+                  role="group"
+                  aria-label="记录方向"
+                >
+                  <button
+                    type="button"
+                    data-direction="outgoing"
+                    aria-pressed="true"
+                  >
+                    我方打敌</button
+                  ><button
+                    type="button"
+                    data-direction="incoming"
+                    aria-pressed="false"
+                  >
+                    敌方打我</button
+                  ><button
+                    type="button"
+                    data-direction="hp"
+                    aria-pressed="false"
+                  >
+                    血量验证
+                  </button><button type="button" data-direction="poison" aria-pressed="false">
+                    毒伤反推
+                  </button>
+                </div>
+              </div>
+              <p id="current-matchup" class="current-matchup"></p>
+              <label id="record-profile-label" class="compat-hidden"
+                >我的出战精灵<select id="record-profile"></select
+              ></label>
+              <div id="record-skill-label" class="skill-slot">
+                <span class="skill-slot-number">1</span>
+                <div
+                  class="picker-anchor skill-picker-anchor"
+                  id="skill-picker"
+                >
+                  <input
+                    id="skill-picker-input"
+                    autocomplete="off"
+                    placeholder="选择当前技能"
+                  /><span class="picker-caret" aria-hidden="true">⌄</span>
+                </div>
+                <span id="skill-power" class="skill-power"></span
+                ><span class="skill-manual-tag">实际掉血录入</span>
+              </div>
+              <p id="skill-description" class="skill-description"></p>
+              <div id="poison-settings" class="poison-settings" hidden>
+                <div class="percent-options">
+                  <label>当前中毒总层数<input id="poison-layers" type="number" min="1" max="100" step="1" value="5" /></label>
+                  <label>毒系倍率<select id="poison-multiplier"><option value="0.25">×0.25</option><option value="0.5">×0.5</option><option value="1">×1</option><option value="2">×2</option><option value="3">×3</option><option value="4">×4（手动修正）</option></select></label>
+                </div>
+                <p id="poison-rule" class="field-hint"></p>
+                <label class="checkbox-label"><input id="poison-confirmed" type="checkbox" />已核对总层数、倍率，记录单个跳字，无额外毒伤修正</label>
+              </div>
+              <div class="damage-fields">
+                <label
+                  ><span id="damage-label">敌方实际掉血</span>
+                  <div class="input-unit">
+                    <input
+                      id="record-damage"
+                      type="number"
+                      min="1"
+                      step="1"
+                      inputmode="numeric"
+                      placeholder="选填"
+                    /><span>HP</span>
+                  </div></label
+                ><label
+                  >当回合状态<select id="record-context">
+                    <option value="unknown">未确认</option>
+                    <option value="clean">确认无强化、减伤、护盾</option>
+                  </select></label
+                >
+              </div>
+              <label id="own-defeated-label" class="checkbox-label" hidden
+                ><input
+                  id="record-own-defeated"
+                  type="checkbox"
+                />我方倒下，掉血可能被剩余生命截断</label
+              >
+              <div id="percent-section" class="percent-section">
+                <div class="percent-inputs">
+                  <label
+                    >敌方受击前
+                    <div class="input-unit">
+                      <input
+                        id="before-percent"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        placeholder="未记录"
+                      /><span>%</span>
+                    </div></label
+                  ><button id="before-full" type="button" class="small-button">
+                    满血</button
+                  ><span class="percent-arrow">→</span
+                  ><label
+                    >敌方受击后
+                    <div class="input-unit">
+                      <input
+                        id="after-percent"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        placeholder="未记录"
+                      /><span>%</span>
+                    </div></label
+                  >
+                </div>
+                <label class="checkbox-label"><input id="before-full-confirmed" type="checkbox" />确认受击前实际满血</label>
+                <details class="percent-settings">
+                  <summary>血量显示与倒下状态</summary>
+                  <div class="percent-options">
+                    <label
+                      >百分比显示<select id="percent-mode">
+                        <option value="game">游戏显示（整数）</option>
+                        <option value="unknown">规则未确认</option>
+                        <option value="round">四舍五入</option>
+                        <option value="floor">向下截断</option>
+                      </select></label
+                    ><label
+                      >显示精度<select id="percent-digits">
+                        <option value="0">整数，如 76%</option>
+                        <option value="1">一位小数，如 76.4%</option>
+                      </select></label
+                    >
+                  </div>
+                  <label class="checkbox-label"
+                    ><input
+                      id="record-defeated"
+                      type="checkbox"
+                    />已确认敌方倒下</label
+                  >
+                  <p class="field-hint" id="percent-hint"></p>
+                </details>
+              </div>
+              <div class="record-bottom">
+                <details class="record-note">
+                  <summary>备注</summary>
+                  <input
+                    id="record-note"
+                    maxlength="200"
+                    placeholder="仅供回查，不参与计算"
+                  />
+                </details>
+                <span
+                  id="record-feedback"
+                  class="form-feedback"
+                  role="status"
+                ></span
+                ><button id="cancel-edit" type="button" hidden>取消</button
+                ><button type="submit" id="add-observation" class="primary">
+                  加入记录
+                </button>
+              </div>
+            </form>
+            <section class="records-section">
+              <div class="section-heading">
+                <h3>本次记录 <span id="record-count">0</span></h3>
+                <span class="muted">按发生顺序</span>
+              </div>
+              <div id="records-list"></div>
+            </section>
+          </section>
+        </div>
+        <aside class="preview-rail preview-only" aria-label="性格判定">
+          <section id="preview-verdict" class="rail-card verdict-card" aria-live="polite" tabindex="-1"></section>
+          <section id="preview-panel" class="rail-card panel-card"></section>
+        </aside>
+        <aside class="results-section validation-only" aria-label="匹配结果">
+          <div class="results-top">
+            <div id="rail-matchup" class="rail-matchup"></div>
+            <p id="rail-skill" class="rail-skill"></p>
+            <div id="health-result" aria-live="polite" tabindex="-1"></div>
+            <div id="field-result"></div>
+          </div>
+          <details id="formula-preview" open><summary>伤害匹配结果</summary>
+            <div id="result-status" aria-live="polite" tabindex="-1"></div>
+            <div id="results-body"></div>
+          </details>
+        </aside>
+      </div>
+      <div id="preview-result-dock" class="result-dock preview-only" aria-label="当前匹配结果">
+        <span id="preview-result-brief" aria-live="polite">待录入实测</span><button type="button" data-result-target="preview-verdict">查看结果</button>
+      </div>
+      <div id="record-result-dock" class="result-dock validation-only" aria-label="当前记录匹配结果">
+        <span id="record-result-brief" aria-live="polite">待录入实测</span><button type="button" data-result-target="result-status">查看结果</button>
+      </div>
+      <div class="compat-hidden" aria-hidden="true">
+        <input id="profile-species-search" /><select
+          id="profile-species"
+          tabindex="-1"
+        ></select
+        ><span id="profile-species-note"></span
+        ><input id="target-search" /><select
+          id="target-species"
+          tabindex="-1"
+        ></select
+        ><input id="skill-search" /><select
+          id="record-skill"
+          tabindex="-1"
+        ></select
+        ><select id="profile-nature" tabindex="-1"></select>
+      </div>
+    </main>
+    <script type="module" src="./ui.mjs"></script>
+  </body>
+</html>
