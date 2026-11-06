@@ -32,8 +32,8 @@
         <input type="file" id="import-file" accept="application/json,.json" hidden />
       </div>
     </header>
+    <div id="notice" class="notice" role="status" aria-live="polite" aria-atomic="true" hidden></div>
     <main id="app">
-      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
       <div id="demo-banner" class="demo-banner" hidden>
         <span>合成演示 · 用于验证流程</span
         ><button id="leave-demo" type="button">返回我的记录</button>
@@ -47,8 +47,7 @@
           <section class="versus-grid" id="versus-grid" data-direction="outgoing" aria-label="双方精灵">
             <section class="side-picker" id="own-side" data-role="attack">
               <div class="side-eyebrow">
-                <span class="side-tag">我方</span><span id="own-role" class="side-role">攻击方</span
-                ><span class="side-hint">清异色出战</span>
+                <span class="side-tag">我方</span><span id="own-role" class="side-role">攻击方</span>
                 <div id="profile-tabs" class="profile-tabs" role="tablist" aria-label="常用出战档案"></div>
               </div>
               <div class="picker-anchor" id="own-picker">
@@ -131,7 +130,7 @@
             <section class="side-picker" id="wild-side" data-role="defense">
               <div class="side-eyebrow">
                 <span class="side-tag">野怪</span><span id="wild-role" class="side-role">防御方</span
-                ><span class="side-hint">自动取初始形态</span>
+                ><span class="side-hint">初始形态</span>
                 <div class="eyebrow-end">
                   <select id="target-filter" aria-label="目标范围">
                     <option value="initial">S2 / S5 初始形态</option>

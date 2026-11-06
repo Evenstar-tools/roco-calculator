@@ -71,10 +71,13 @@ let pickers = {};
 let fieldData = { formMappings: [], entries: [] };
 let lastHealthView = false;
 
+let noticeTimer;
 function notice(message, error = false) {
+  clearTimeout(noticeTimer);
   $("notice").textContent = message;
   $("notice").className = `notice${error ? " error" : ""}`;
   $("notice").hidden = !message;
+  if (message && !error) noticeTimer = setTimeout(() => { $("notice").hidden = true; }, 4000);
 }
 
 function remember() {
