@@ -1,0 +1,1869 @@
+{
+  "groups": [
+    {
+      "id": "S2",
+      "label": "S2奇遇异色",
+      "spiritIds": [
+        "spirit_2a9b7b8d99dba59e",
+        "spirit_db847c8849145a7c",
+        "spirit_efecf4d2f811fc11",
+        "spirit_07cdb4d4a94ac1bd",
+        "spirit_7c92f75ee0e707ea",
+        "spirit_6b6f44bd83a5f495",
+        "spirit_500f4922dfc1cb1e",
+        "spirit_0ff44d4938dbfb6d",
+        "spirit_2f24d4018a1545f7",
+        "spirit_bfe02d4281b32ae4",
+        "spirit_e9b50c26f5156efb",
+        "spirit_49ad5c69be90b5bf",
+        "spirit_70a40653ea0eee33",
+        "spirit_6aa9095643b483ba",
+        "spirit_9915319f405cd921",
+        "spirit_a23862842c04d6d4",
+        "spirit_20c4fe45219cff2b",
+        "spirit_531f78b52160b070",
+        "spirit_78f96b030afc52ad",
+        "spirit_a0dd7aaab165d94a",
+        "spirit_4009f06481c98efb",
+        "spirit_95aaf0ee94680c86",
+        "spirit_ea44560ba353ca44",
+        "spirit_07b444210032f19b",
+        "spirit_190dc8281c5049b1",
+        "spirit_9ea91035b620d764",
+        "spirit_765e2b577e6118df",
+        "spirit_72d2072cd2a176d0",
+        "spirit_a35d11156a88dcac",
+        "spirit_063422817e8deefc",
+        "spirit_faed11065c114c00",
+        "spirit_38ee49982b9585c9",
+        "spirit_1e6e7946ef781309",
+        "spirit_86bbcbdab1a84627",
+        "spirit_60f921afbc37ef1d"
+      ],
+      "families": [
+        {
+          "name": "恶魔叮",
+          "nativeFamilyRootId": 3010,
+          "spiritIds": [
+            "spirit_2a9b7b8d99dba59e",
+            "spirit_db847c8849145a7c"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_2a9b7b8d99dba59e",
+              "name": "恶魔叮",
+              "types": [
+                "恶",
+                "翼"
+              ],
+              "nativePetbaseId": 3010,
+              "nativeName": "恶魔叮",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_db847c8849145a7c",
+              "name": "叮叮恶魔",
+              "types": [
+                "恶",
+                "翼"
+              ],
+              "nativePetbaseId": 3039,
+              "nativeName": "叮叮恶魔",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "恶魔叮 → 叮叮恶魔",
+          "chainPaths": [
+            [
+              3010,
+              3039
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "小独角兽",
+          "nativeFamilyRootId": 3062,
+          "spiritIds": [
+            "spirit_efecf4d2f811fc11",
+            "spirit_07cdb4d4a94ac1bd"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_efecf4d2f811fc11",
+              "name": "小独角兽",
+              "types": [
+                "光"
+              ],
+              "nativePetbaseId": 3062,
+              "nativeName": "小独角兽",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_07cdb4d4a94ac1bd",
+              "name": "白金独角兽",
+              "types": [
+                "光"
+              ],
+              "nativePetbaseId": 3063,
+              "nativeName": "白金独角兽",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "小独角兽 → 白金独角兽",
+          "chainPaths": [
+            [
+              3062,
+              3063
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "幽影树",
+          "nativeFamilyRootId": 3064,
+          "spiritIds": [
+            "spirit_7c92f75ee0e707ea",
+            "spirit_6b6f44bd83a5f495"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_7c92f75ee0e707ea",
+              "name": "幽影树",
+              "types": [
+                "幽",
+                "草"
+              ],
+              "nativePetbaseId": 3064,
+              "nativeName": "幽影树",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "family-ordinary-form-priority"
+            },
+            {
+              "spiritId": "spirit_6b6f44bd83a5f495",
+              "name": "幽影树（突变的样子）",
+              "types": [
+                "幽",
+                "草"
+              ],
+              "nativePetbaseId": 3064,
+              "nativeName": "幽影树",
+              "nativeForm": null,
+              "calculatorVariantName": "突变的样子",
+              "mappingScope": "family-ordinary-form-priority"
+            }
+          ],
+          "chainText": "幽影树",
+          "chainPaths": [
+            [
+              3064
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "灵狐",
+          "nativeFamilyRootId": 3075,
+          "spiritIds": [
+            "spirit_500f4922dfc1cb1e",
+            "spirit_0ff44d4938dbfb6d",
+            "spirit_2f24d4018a1545f7"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_500f4922dfc1cb1e",
+              "name": "灵狐",
+              "types": [
+                "火",
+                "冰"
+              ],
+              "nativePetbaseId": 3075,
+              "nativeName": "灵狐",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_0ff44d4938dbfb6d",
+              "name": "九尾狐",
+              "types": [
+                "火",
+                "冰"
+              ],
+              "nativePetbaseId": 3076,
+              "nativeName": "九尾狐",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_2f24d4018a1545f7",
+              "name": "尖嘴狐仙",
+              "types": [
+                "火",
+                "冰"
+              ],
+              "nativePetbaseId": 3077,
+              "nativeName": "尖嘴狐仙",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "灵狐 → 九尾狐 → 尖嘴狐仙",
+          "chainPaths": [
+            [
+              3075,
+              3076,
+              3077
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "小夜",
+          "nativeFamilyRootId": 3142,
+          "spiritIds": [
+            "spirit_bfe02d4281b32ae4",
+            "spirit_e9b50c26f5156efb",
+            "spirit_49ad5c69be90b5bf"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_bfe02d4281b32ae4",
+              "name": "小夜",
+              "types": [
+                "恶"
+              ],
+              "nativePetbaseId": 3142,
+              "nativeName": "小夜",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_e9b50c26f5156efb",
+              "name": "紫夜",
+              "types": [
+                "恶"
+              ],
+              "nativePetbaseId": 3143,
+              "nativeName": "紫夜",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_49ad5c69be90b5bf",
+              "name": "朔夜伊芙",
+              "types": [
+                "恶"
+              ],
+              "nativePetbaseId": 3144,
+              "nativeName": "朔夜伊芙",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "小夜 → 紫夜 → 朔夜伊芙",
+          "chainPaths": [
+            [
+              3142,
+              3143,
+              3144
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "菊花梨",
+          "nativeFamilyRootId": 3227,
+          "spiritIds": [
+            "spirit_70a40653ea0eee33"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_70a40653ea0eee33",
+              "name": "菊花梨",
+              "types": [
+                "萌"
+              ],
+              "nativePetbaseId": 3227,
+              "nativeName": "菊花梨",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "菊花梨",
+          "chainPaths": [
+            [
+              3227
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "牵线木偶",
+          "nativeFamilyRootId": 3234,
+          "spiritIds": [
+            "spirit_6aa9095643b483ba",
+            "spirit_9915319f405cd921"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_6aa9095643b483ba",
+              "name": "牵线木偶",
+              "types": [
+                "幻"
+              ],
+              "nativePetbaseId": 3234,
+              "nativeName": "牵线木偶",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_9915319f405cd921",
+              "name": "帅帅魔偶",
+              "types": [
+                "幻"
+              ],
+              "nativePetbaseId": 3235,
+              "nativeName": "帅帅魔偶",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "牵线木偶 → 帅帅魔偶",
+          "chainPaths": [
+            [
+              3234,
+              3235
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "嘟嘟煲",
+          "nativeFamilyRootId": 3367,
+          "spiritIds": [
+            "spirit_a23862842c04d6d4",
+            "spirit_20c4fe45219cff2b"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_a23862842c04d6d4",
+              "name": "嘟嘟煲",
+              "types": [
+                "毒"
+              ],
+              "nativePetbaseId": 3367,
+              "nativeName": "嘟嘟煲",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_20c4fe45219cff2b",
+              "name": "嘟嘟锅",
+              "types": [
+                "毒"
+              ],
+              "nativePetbaseId": 3368,
+              "nativeName": "嘟嘟锅",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "嘟嘟煲 → 嘟嘟锅",
+          "chainPaths": [
+            [
+              3367,
+              3368
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "小丑豆豆",
+          "nativeFamilyRootId": 3487,
+          "spiritIds": [
+            "spirit_531f78b52160b070",
+            "spirit_78f96b030afc52ad",
+            "spirit_a0dd7aaab165d94a"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_531f78b52160b070",
+              "name": "小丑豆豆",
+              "types": [
+                "恶"
+              ],
+              "nativePetbaseId": 3487,
+              "nativeName": "小丑豆豆",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_78f96b030afc52ad",
+              "name": "小丑兔",
+              "types": [
+                "恶"
+              ],
+              "nativePetbaseId": 3488,
+              "nativeName": "小丑兔",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_a0dd7aaab165d94a",
+              "name": "小丑公爵",
+              "types": [
+                "恶"
+              ],
+              "nativePetbaseId": 3489,
+              "nativeName": "小丑公爵",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "小丑豆豆 → 小丑兔 → 小丑公爵",
+          "chainPaths": [
+            [
+              3487,
+              3488,
+              3489
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "公平鸽",
+          "nativeFamilyRootId": 3499,
+          "spiritIds": [
+            "spirit_4009f06481c98efb",
+            "spirit_95aaf0ee94680c86"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_4009f06481c98efb",
+              "name": "公平鸽",
+              "types": [
+                "普通"
+              ],
+              "nativePetbaseId": 3499,
+              "nativeName": "公平鸽",
+              "nativeForm": "本来的样子",
+              "calculatorVariantName": null,
+              "mappingScope": "family-ordinary-form-priority"
+            },
+            {
+              "spiritId": "spirit_95aaf0ee94680c86",
+              "name": "公平鸽（称量的样子）",
+              "types": [
+                "普通"
+              ],
+              "nativePetbaseId": 3499,
+              "nativeName": "公平鸽",
+              "nativeForm": "本来的样子",
+              "calculatorVariantName": "称量的样子",
+              "mappingScope": "family-ordinary-form-priority"
+            }
+          ],
+          "chainText": "公平鸽（本来的样子）",
+          "chainPaths": [
+            [
+              3499
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "加油海葵",
+          "nativeFamilyRootId": 3659,
+          "spiritIds": [
+            "spirit_ea44560ba353ca44",
+            "spirit_07b444210032f19b",
+            "spirit_190dc8281c5049b1"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_ea44560ba353ca44",
+              "name": "加油海葵",
+              "types": [
+                "水",
+                "萌"
+              ],
+              "nativePetbaseId": 3659,
+              "nativeName": "加油海葵",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_07b444210032f19b",
+              "name": "加油蟹（两只海葵的样子）",
+              "types": [
+                "水",
+                "萌"
+              ],
+              "nativePetbaseId": 3660,
+              "nativeName": "加油蟹",
+              "nativeForm": "两只海葵的样子",
+              "calculatorVariantName": "两只海葵的样子",
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_190dc8281c5049b1",
+              "name": "加油蟹（单只海葵的样子）",
+              "types": [
+                "水",
+                "萌"
+              ],
+              "nativePetbaseId": 3743,
+              "nativeName": "加油蟹",
+              "nativeForm": "单只海葵的样子",
+              "calculatorVariantName": "单只海葵的样子",
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "加油海葵 → 加油蟹（两只海葵的样子）；加油海葵 → 加油蟹（单只海葵的样子）",
+          "chainPaths": [
+            [
+              3659,
+              3660
+            ],
+            [
+              3659,
+              3743
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "烟花团",
+          "nativeFamilyRootId": 3677,
+          "spiritIds": [
+            "spirit_9ea91035b620d764",
+            "spirit_765e2b577e6118df"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_9ea91035b620d764",
+              "name": "烟花团",
+              "types": [
+                "火",
+                "毒"
+              ],
+              "nativePetbaseId": 3677,
+              "nativeName": "烟花团",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_765e2b577e6118df",
+              "name": "烟花伯爵",
+              "types": [
+                "火",
+                "毒"
+              ],
+              "nativePetbaseId": 3678,
+              "nativeName": "烟花伯爵",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "烟花团 → 烟花伯爵",
+          "chainPaths": [
+            [
+              3677,
+              3678
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "咕咕帽",
+          "nativeFamilyRootId": 3683,
+          "spiritIds": [
+            "spirit_72d2072cd2a176d0",
+            "spirit_a35d11156a88dcac"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_72d2072cd2a176d0",
+              "name": "咕咕帽",
+              "types": [
+                "幽"
+              ],
+              "nativePetbaseId": 3683,
+              "nativeName": "咕咕帽",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_a35d11156a88dcac",
+              "name": "咕德帽帽",
+              "types": [
+                "幽"
+              ],
+              "nativePetbaseId": 3684,
+              "nativeName": "咕德帽帽",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "咕咕帽 → 咕德帽帽",
+          "chainPaths": [
+            [
+              3683,
+              3684
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "小鼓象",
+          "nativeFamilyRootId": 3708,
+          "spiritIds": [
+            "spirit_063422817e8deefc",
+            "spirit_faed11065c114c00"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_063422817e8deefc",
+              "name": "小鼓象",
+              "types": [
+                "机械"
+              ],
+              "nativePetbaseId": 3708,
+              "nativeName": "小鼓象",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_faed11065c114c00",
+              "name": "巨鼓象",
+              "types": [
+                "机械"
+              ],
+              "nativePetbaseId": 3709,
+              "nativeName": "巨鼓象",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "小鼓象 → 巨鼓象",
+          "chainPaths": [
+            [
+              3708,
+              3709
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "猴麦仔",
+          "nativeFamilyRootId": 3729,
+          "spiritIds": [
+            "spirit_38ee49982b9585c9",
+            "spirit_1e6e7946ef781309"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_38ee49982b9585c9",
+              "name": "猴麦仔",
+              "types": [
+                "普通",
+                "机械"
+              ],
+              "nativePetbaseId": 3729,
+              "nativeName": "猴麦仔",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_1e6e7946ef781309",
+              "name": "音碟吼",
+              "types": [
+                "普通",
+                "机械"
+              ],
+              "nativePetbaseId": 3730,
+              "nativeName": "音碟吼",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "猴麦仔 → 音碟吼",
+          "chainPaths": [
+            [
+              3729,
+              3730
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        },
+        {
+          "name": "炫光迪迪",
+          "nativeFamilyRootId": 3736,
+          "spiritIds": [
+            "spirit_86bbcbdab1a84627",
+            "spirit_60f921afbc37ef1d"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_86bbcbdab1a84627",
+              "name": "炫光迪迪",
+              "types": [
+                "电",
+                "光"
+              ],
+              "nativePetbaseId": 3736,
+              "nativeName": "炫光迪迪",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_60f921afbc37ef1d",
+              "name": "霹雳迪迪",
+              "types": [
+                "电",
+                "光"
+              ],
+              "nativePetbaseId": 3737,
+              "nativeName": "霹雳迪迪",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "炫光迪迪 → 霹雳迪迪",
+          "chainPaths": [
+            [
+              3736,
+              3737
+            ]
+          ],
+          "evidence": {
+            "kind": "direct_game_season_encounter_shiny_preview_list",
+            "status": "confirmed_in_partial_game_configuration",
+            "gameOverlay": "v12-through-3P",
+            "sourceTable": "SEASON_TIPS_NEW_PET_CONF",
+            "rowId": 20030,
+            "sourceField": "new_shiny_pet",
+            "sourceFile": "D:\\codex\\worktrees\\roco-plugin-web-release-20261105\\output\\local-package-lists-20261105\\spirits\\game-v12-through-3P-decoded\\SEASON_TIPS_NEW_PET_CONF.json"
+          }
+        }
+      ],
+      "evidenceStatus": "confirmed-historical-game-config",
+      "sourceNote": "S2奇遇家族由真包历史可读配置明确列出。这里优先筛选对应普通形态，不改变外观，也不表示每次遭遇都是异色。"
+    },
+    {
+      "id": "S5",
+      "label": "S5奇遇异色",
+      "spiritIds": [
+        "spirit_96afa437f590cc96",
+        "spirit_d6bf08644fc68f43",
+        "spirit_d45d38fdc672b014",
+        "spirit_b7b7a4110258de78",
+        "spirit_4901e4794bd32f40",
+        "spirit_800a0042f52851cf",
+        "spirit_50b77eaae7361af5",
+        "spirit_b2f1251352d5f670",
+        "spirit_37ea034163f3e376",
+        "spirit_2663ae54113f96f0",
+        "spirit_24ff0f0e3504e1ca",
+        "spirit_05f3242dd3ab1ac6",
+        "spirit_3049dc50139f821a",
+        "spirit_a6c418b0b991f459",
+        "spirit_bf63c954e18a8852",
+        "spirit_181a3dd66ff76d4a",
+        "spirit_45095a4991f540a4",
+        "spirit_preview_s5_lele-shark",
+        "spirit_preview_s5_awa-shark-lemon",
+        "spirit_preview_s5_awa-shark-tiger",
+        "spirit_preview_s5_egg-wrap",
+        "spirit_preview_s5_chicken-mama",
+        "spirit_preview_s5_crab-coconut",
+        "spirit_preview_s5_sand-crab",
+        "spirit_preview_s5_jingyu",
+        "spirit_preview_s5_halo-jingyu",
+        "spirit_preview_s5_doulie",
+        "spirit_preview_s5_snow-shoveling-goose",
+        "spirit_preview_s5_watermelon-bug",
+        "spirit_preview_s5_winter-bug-summer-melon",
+        "spirit_preview_s5_little-scissor",
+        "spirit_preview_s5_shadow-papercut",
+        "spirit_preview_s5_diliutun",
+        "spirit_preview_s5_diniantun"
+      ],
+      "families": [
+        {
+          "name": "锤头鹳",
+          "nativeFamilyRootId": 3069,
+          "spiritIds": [
+            "spirit_96afa437f590cc96"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_96afa437f590cc96",
+              "name": "锤头鹳",
+              "types": [
+                "翼",
+                "水"
+              ],
+              "nativePetbaseId": 3069,
+              "nativeName": "锤头鹳",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "锤头鹳",
+          "chainPaths": [
+            [
+              3069
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "可爱猿",
+          "nativeFamilyRootId": 3083,
+          "spiritIds": [
+            "spirit_d6bf08644fc68f43",
+            "spirit_d45d38fdc672b014",
+            "spirit_b7b7a4110258de78"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_d6bf08644fc68f43",
+              "name": "可爱猿",
+              "types": [
+                "火"
+              ],
+              "nativePetbaseId": 3083,
+              "nativeName": "可爱猿",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_d45d38fdc672b014",
+              "name": "炽热猿",
+              "types": [
+                "火"
+              ],
+              "nativePetbaseId": 3084,
+              "nativeName": "炽热猿",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_b7b7a4110258de78",
+              "name": "火焰猿",
+              "types": [
+                "火"
+              ],
+              "nativePetbaseId": 3085,
+              "nativeName": "火焰猿",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "可爱猿 → 炽热猿 → 火焰猿",
+          "chainPaths": [
+            [
+              3083,
+              3084,
+              3085
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "小翼龙",
+          "nativeFamilyRootId": 3209,
+          "spiritIds": [
+            "spirit_4901e4794bd32f40",
+            "spirit_800a0042f52851cf"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_4901e4794bd32f40",
+              "name": "小翼龙",
+              "types": [
+                "龙",
+                "翼"
+              ],
+              "nativePetbaseId": 3209,
+              "nativeName": "小翼龙",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_800a0042f52851cf",
+              "name": "翼龙",
+              "types": [
+                "龙",
+                "翼"
+              ],
+              "nativePetbaseId": 3210,
+              "nativeName": "翼龙",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "小翼龙 → 翼龙",
+          "chainPaths": [
+            [
+              3209,
+              3210
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "伊雷龙",
+          "nativeFamilyRootId": 3211,
+          "spiritIds": [
+            "spirit_50b77eaae7361af5",
+            "spirit_b2f1251352d5f670"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_50b77eaae7361af5",
+              "name": "伊雷龙",
+              "types": [
+                "龙"
+              ],
+              "nativePetbaseId": 3211,
+              "nativeName": "伊雷龙",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_b2f1251352d5f670",
+              "name": "伊兰亚龙",
+              "types": [
+                "龙"
+              ],
+              "nativePetbaseId": 3412,
+              "nativeName": "伊兰亚龙",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "伊雷龙 → 伊兰亚龙",
+          "chainPaths": [
+            [
+              3211,
+              3412
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "深蓝鲸",
+          "nativeFamilyRootId": 3381,
+          "spiritIds": [
+            "spirit_37ea034163f3e376"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_37ea034163f3e376",
+              "name": "深蓝鲸",
+              "types": [
+                "水"
+              ],
+              "nativePetbaseId": 3381,
+              "nativeName": "深蓝鲸",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "深蓝鲸",
+          "chainPaths": [
+            [
+              3381
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "缇塔",
+          "nativeFamilyRootId": 3406,
+          "spiritIds": [
+            "spirit_2663ae54113f96f0",
+            "spirit_24ff0f0e3504e1ca"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_2663ae54113f96f0",
+              "name": "缇塔",
+              "types": [
+                "机械"
+              ],
+              "nativePetbaseId": 3406,
+              "nativeName": "缇塔",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_24ff0f0e3504e1ca",
+              "name": "声波缇塔",
+              "types": [
+                "机械"
+              ],
+              "nativePetbaseId": 3407,
+              "nativeName": "声波缇塔",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "缇塔 → 声波缇塔",
+          "chainPaths": [
+            [
+              3406,
+              3407
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "吸泥鸥",
+          "nativeFamilyRootId": 3490,
+          "spiritIds": [
+            "spirit_05f3242dd3ab1ac6",
+            "spirit_3049dc50139f821a"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_05f3242dd3ab1ac6",
+              "name": "吸泥鸥",
+              "types": [
+                "地",
+                "翼"
+              ],
+              "nativePetbaseId": 3490,
+              "nativeName": "吸泥鸥",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_3049dc50139f821a",
+              "name": "泥吼牙",
+              "types": [
+                "地",
+                "翼"
+              ],
+              "nativePetbaseId": 3491,
+              "nativeName": "泥吼牙",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "吸泥鸥 → 泥吼牙",
+          "chainPaths": [
+            [
+              3490,
+              3491
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "花怨鳗",
+          "nativeFamilyRootId": 3506,
+          "spiritIds": [
+            "spirit_a6c418b0b991f459",
+            "spirit_bf63c954e18a8852",
+            "spirit_181a3dd66ff76d4a",
+            "spirit_45095a4991f540a4"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_a6c418b0b991f459",
+              "name": "花怨鳗",
+              "types": [
+                "地",
+                "草"
+              ],
+              "nativePetbaseId": 3506,
+              "nativeName": "花怨鳗",
+              "nativeForm": "本来的样子",
+              "calculatorVariantName": null,
+              "mappingScope": "family-ordinary-form-priority"
+            },
+            {
+              "spiritId": "spirit_bf63c954e18a8852",
+              "name": "花怨鳗（果壳铃的样子）",
+              "types": [
+                "地",
+                "草"
+              ],
+              "nativePetbaseId": 3506,
+              "nativeName": "花怨鳗",
+              "nativeForm": "本来的样子",
+              "calculatorVariantName": "果壳铃的样子",
+              "mappingScope": "family-ordinary-form-priority"
+            },
+            {
+              "spiritId": "spirit_181a3dd66ff76d4a",
+              "name": "鳗尾兽",
+              "types": [
+                "地",
+                "草"
+              ],
+              "nativePetbaseId": 3507,
+              "nativeName": "鳗尾兽",
+              "nativeForm": "本来的样子",
+              "calculatorVariantName": null,
+              "mappingScope": "family-ordinary-form-priority"
+            },
+            {
+              "spiritId": "spirit_45095a4991f540a4",
+              "name": "鳗尾兽（果壳铃的样子）",
+              "types": [
+                "地",
+                "草"
+              ],
+              "nativePetbaseId": 3507,
+              "nativeName": "鳗尾兽",
+              "nativeForm": "本来的样子",
+              "calculatorVariantName": "果壳铃的样子",
+              "mappingScope": "family-ordinary-form-priority"
+            }
+          ],
+          "chainText": "花怨鳗（本来的样子） → 鳗尾兽（本来的样子）",
+          "chainPaths": [
+            [
+              3506,
+              3507
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "乐乐鲨",
+          "nativeFamilyRootId": 3805,
+          "spiritIds": [
+            "spirit_preview_s5_lele-shark",
+            "spirit_preview_s5_awa-shark-lemon",
+            "spirit_preview_s5_awa-shark-tiger"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_preview_s5_lele-shark",
+              "name": "乐乐鲨",
+              "types": [
+                "水"
+              ],
+              "nativePetbaseId": 3805,
+              "nativeName": "乐乐鲨",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_awa-shark-lemon",
+              "name": "阿瓦鲨（柠檬鲨的样子）",
+              "types": [
+                "水"
+              ],
+              "nativePetbaseId": 3806,
+              "nativeName": "阿瓦鲨",
+              "nativeForm": "柠檬鲨的样子",
+              "calculatorVariantName": "柠檬鲨的样子",
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_awa-shark-tiger",
+              "name": "阿瓦鲨（虎纹鲨的样子）",
+              "types": [
+                "水"
+              ],
+              "nativePetbaseId": 3807,
+              "nativeName": "阿瓦鲨",
+              "nativeForm": "虎纹鲨的样子",
+              "calculatorVariantName": "虎纹鲨的样子",
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "乐乐鲨 → 阿瓦鲨（柠檬鲨的样子）；乐乐鲨 → 阿瓦鲨（虎纹鲨的样子）",
+          "chainPaths": [
+            [
+              3805,
+              3806
+            ],
+            [
+              3805,
+              3807
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "蛋包蛋",
+          "nativeFamilyRootId": 3808,
+          "spiritIds": [
+            "spirit_preview_s5_egg-wrap",
+            "spirit_preview_s5_chicken-mama"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_preview_s5_egg-wrap",
+              "name": "蛋包蛋",
+              "types": [
+                "普通",
+                "萌"
+              ],
+              "nativePetbaseId": 3808,
+              "nativeName": "蛋包蛋",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_chicken-mama",
+              "name": "鸡麻麻",
+              "types": [
+                "普通",
+                "萌"
+              ],
+              "nativePetbaseId": 3809,
+              "nativeName": "鸡麻麻",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "蛋包蛋 → 鸡麻麻",
+          "chainPaths": [
+            [
+              3808,
+              3809
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "蟹蟹椰",
+          "nativeFamilyRootId": 3810,
+          "spiritIds": [
+            "spirit_preview_s5_crab-coconut",
+            "spirit_preview_s5_sand-crab"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_preview_s5_crab-coconut",
+              "name": "蟹蟹椰",
+              "types": [
+                "水",
+                "草"
+              ],
+              "nativePetbaseId": 3810,
+              "nativeName": "蟹蟹椰",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_sand-crab",
+              "name": "沙咔蟹",
+              "types": [
+                "水",
+                "草"
+              ],
+              "nativePetbaseId": 3811,
+              "nativeName": "沙咔蟹",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "蟹蟹椰 → 沙咔蟹",
+          "chainPaths": [
+            [
+              3810,
+              3811
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "鲸羽",
+          "nativeFamilyRootId": 3812,
+          "spiritIds": [
+            "spirit_preview_s5_jingyu",
+            "spirit_preview_s5_halo-jingyu"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_preview_s5_jingyu",
+              "name": "鲸羽",
+              "types": [
+                "幻",
+                "冰"
+              ],
+              "nativePetbaseId": 3812,
+              "nativeName": "鲸羽",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_halo-jingyu",
+              "name": "圆环鲸羽",
+              "types": [
+                "幻",
+                "冰"
+              ],
+              "nativePetbaseId": 3813,
+              "nativeName": "圆环鲸羽",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "鲸羽 → 圆环鲸羽",
+          "chainPaths": [
+            [
+              3812,
+              3813
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "豆粒鹅",
+          "nativeFamilyRootId": 3814,
+          "spiritIds": [
+            "spirit_preview_s5_doulie",
+            "spirit_preview_s5_snow-shoveling-goose"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_preview_s5_doulie",
+              "name": "豆粒鹅",
+              "types": [
+                "冰"
+              ],
+              "nativePetbaseId": 3814,
+              "nativeName": "豆粒鹅",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_snow-shoveling-goose",
+              "name": "刨雪鹅",
+              "types": [
+                "冰"
+              ],
+              "nativePetbaseId": 3815,
+              "nativeName": "刨雪鹅",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "豆粒鹅 → 刨雪鹅",
+          "chainPaths": [
+            [
+              3814,
+              3815
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "西瓜虫",
+          "nativeFamilyRootId": 3816,
+          "spiritIds": [
+            "spirit_preview_s5_watermelon-bug",
+            "spirit_preview_s5_winter-bug-summer-melon"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_preview_s5_watermelon-bug",
+              "name": "西瓜虫",
+              "types": [
+                "虫",
+                "草"
+              ],
+              "nativePetbaseId": 3816,
+              "nativeName": "西瓜虫",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_winter-bug-summer-melon",
+              "name": "冬虫夏瓜",
+              "types": [
+                "虫",
+                "草"
+              ],
+              "nativePetbaseId": 3817,
+              "nativeName": "冬虫夏瓜",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "西瓜虫 → 冬虫夏瓜",
+          "chainPaths": [
+            [
+              3816,
+              3817
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "小剪影",
+          "nativeFamilyRootId": 3818,
+          "spiritIds": [
+            "spirit_preview_s5_little-scissor",
+            "spirit_preview_s5_shadow-papercut"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_preview_s5_little-scissor",
+              "name": "小剪影",
+              "types": [
+                "幽"
+              ],
+              "nativePetbaseId": 3818,
+              "nativeName": "小剪影",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_shadow-papercut",
+              "name": "影子剪纸",
+              "types": [
+                "幽"
+              ],
+              "nativePetbaseId": 3819,
+              "nativeName": "影子剪纸",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "小剪影 → 影子剪纸",
+          "chainPaths": [
+            [
+              3818,
+              3819
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        },
+        {
+          "name": "滴溜豚",
+          "nativeFamilyRootId": 3820,
+          "spiritIds": [
+            "spirit_preview_s5_diliutun",
+            "spirit_preview_s5_diniantun"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_preview_s5_diliutun",
+              "name": "滴溜豚",
+              "types": [
+                "毒",
+                "幻"
+              ],
+              "nativePetbaseId": 3820,
+              "nativeName": "滴溜豚",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_diniantun",
+              "name": "滴廿豚",
+              "types": [
+                "毒",
+                "幻"
+              ],
+              "nativePetbaseId": 3821,
+              "nativeName": "滴廿豚",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "滴溜豚 → 滴廿豚",
+          "chainPaths": [
+            [
+              3820,
+              3821
+            ]
+          ],
+          "evidence": {
+            "kind": "local_have_shiny_and_belong_season_minus_official_battlepass_families",
+            "status": "cross_checked_candidate_pending_direct_encounter_pool",
+            "gameOverlay": null,
+            "sourceTable": null,
+            "rowId": null,
+            "sourceField": null,
+            "sourceFile": null
+          }
+        }
+      ],
+      "evidenceStatus": "candidate-pending-complete-game-pool-verification",
+      "sourceNote": "S5名单为助手配置与已核赛季资料交叉候选，尚缺最新完整异色池验证。这里优先筛选对应普通形态，不改变外观。"
+    }
+  ],
+  "sources": [
+    {
+      "id": "audited-local-family-list",
+      "path": "D:/codex/worktrees/roco-plugin-web-release-20261105/output/local-package-lists-20261105/spirits/combined-local-spirit-lists.json",
+      "selection": "仅 encounter_families 中明确分类为 season_encounter_shiny 的S2/S5家族；不读取battlepass_families作为目标。"
+    },
+    {
+      "id": "s2-game-season-preview",
+      "table": "SEASON_TIPS_NEW_PET_CONF",
+      "rowId": 20030,
+      "field": "new_shiny_pet",
+      "scope": "v11及v12-through-3P历史可读配置；最新后续覆盖层未完整解读。"
+    },
+    {
+      "id": "calculator-id-and-member-types",
+      "path": "D:/codex/worktrees/roco-plugin-web-release-20261105/dist/client/data/runtime.json",
+      "scope": "ID与各成员属性沿用源文件calculator_matches；最终catalog引用须经回归检查，实际显示属性以最终catalog为准。"
+    }
+  ],
+  "unresolved": [
+    {
+      "groupId": "S2",
+      "family": "幽影树",
+      "nativePetbaseId": 3064,
+      "name": "幽影树",
+      "reason": "native-template-has-multiple-calculator-ordinary-forms",
+      "spiritIds": [
+        "spirit_7c92f75ee0e707ea",
+        "spirit_6b6f44bd83a5f495"
+      ],
+      "note": "所有普通形态用于家族优先筛选；此映射不逐形态证明赛季异色投放。"
+    },
+    {
+      "groupId": "S2",
+      "family": "公平鸽",
+      "nativePetbaseId": 3499,
+      "name": "公平鸽",
+      "reason": "native-template-has-multiple-calculator-ordinary-forms",
+      "spiritIds": [
+        "spirit_4009f06481c98efb",
+        "spirit_95aaf0ee94680c86"
+      ],
+      "note": "所有普通形态用于家族优先筛选；此映射不逐形态证明赛季异色投放。"
+    },
+    {
+      "groupId": "S5",
+      "family": "花怨鳗",
+      "nativePetbaseId": 3506,
+      "name": "花怨鳗",
+      "reason": "native-template-has-multiple-calculator-ordinary-forms",
+      "spiritIds": [
+        "spirit_a6c418b0b991f459",
+        "spirit_bf63c954e18a8852"
+      ],
+      "note": "所有普通形态用于家族优先筛选；此映射不逐形态证明赛季异色投放。"
+    },
+    {
+      "groupId": "S5",
+      "family": "花怨鳗",
+      "nativePetbaseId": 3507,
+      "name": "鳗尾兽",
+      "reason": "native-template-has-multiple-calculator-ordinary-forms",
+      "spiritIds": [
+        "spirit_181a3dd66ff76d4a",
+        "spirit_45095a4991f540a4"
+      ],
+      "note": "所有普通形态用于家族优先筛选；此映射不逐形态证明赛季异色投放。"
+    }
+  ]
+}

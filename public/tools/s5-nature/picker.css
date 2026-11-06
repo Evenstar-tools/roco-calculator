@@ -1,0 +1,150 @@
+.picker-anchor,
+.nature-picker {
+  position: relative;
+  min-width: 0;
+}
+.picker-anchor {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  border: 1px solid #c8cfdd;
+  border-radius: 7px;
+  background: #f7f8fb;
+}
+.picker-anchor:focus-within {
+  border-color: #a28448;
+  outline: 2px solid #e8dcbd;
+}
+.picker-anchor > input {
+  border: 0;
+  background: transparent;
+  height: 34px;
+  min-height: 34px;
+  padding: 5px 28px 5px 10px;
+  outline: none !important;
+  box-shadow: none;
+}
+.search-glyph {
+  font-size: 22px;
+  line-height: 1;
+  margin-left: 10px;
+  color: #8b641d;
+}
+.search-glyph + input {
+  padding-left: 8px;
+}
+.picker-caret {
+  position: absolute;
+  right: 11px;
+  color: #667188;
+  pointer-events: none;
+}
+.picker-popup {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 5px);
+  width: max(100%, 280px);
+  max-width: calc(100vw - 42px);
+  z-index: 60;
+  background: #fff;
+  border: 1px solid #c4cada;
+  border-radius: 8px;
+  box-shadow: 0 10px 24px #172a4326;
+  overflow: hidden;
+}
+.picker-popup--up {
+  top: auto;
+  bottom: calc(100% + 5px);
+}
+.picker-popup[hidden] {
+  display: none;
+}
+.picker-list {
+  max-height: 300px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.picker-option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 0;
+  min-height: 52px;
+  padding: 6px 10px;
+  text-align: left;
+  background: #fff;
+}
+.picker-option:hover,
+.picker-option.is-active {
+  background: #f0ecff;
+}
+.picker-option[aria-selected="true"] {
+  background: #fbf3e3;
+}
+.picker-option img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.picker-option > span {
+  min-width: 0;
+}
+.picker-option strong {
+  display: block;
+  font-size: 13px;
+  color: #171a2b;
+}
+.picker-option small {
+  display: block;
+  color: #667188;
+  font-size: 11px;
+  white-space: normal;
+}
+.picker-check {
+  color: #8b641d;
+  margin-left: auto;
+}
+.picker-foot {
+  padding: 5px 10px;
+  margin: 0;
+  border-top: 1px solid #e0e3ea;
+  color: #778196;
+  font-size: 11px;
+  background: #fafbfc;
+}
+.picker-empty {
+  font-size: 13px;
+  color: #65718a;
+  margin: 0;
+  padding: 20px 12px;
+}
+.picker-menu-search {
+  margin: 8px;
+  width: calc(100% - 16px);
+  height: 34px;
+  min-height: 34px;
+}
+.nature-picker .picker-popup {
+  width: 300px;
+}
+.nature-picker .picker-option {
+  min-height: 42px;
+}
+.skill-picker-anchor .picker-popup {
+  width: 380px;
+}
+.skill-picker-anchor .picker-option img {
+  width: 32px;
+  height: 32px;
+}
+@media (max-width: 700px) {
+  .picker-popup {
+    max-width: calc(100vw - 42px);
+  }
+  .nature-picker .picker-popup {
+    max-width: calc(100vw - 42px);
+  }
+}

@@ -18,6 +18,7 @@ export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
   const { serverId } = useRuntime();
   const pluginUnlocked = usePluginAccess();
   const showReturnEntry = serverId === "cn" && IS_PREVIEW_BUILD;
+  const showNatureTool = serverId === "cn" && !IS_PREVIEW_BUILD && window.location.protocol !== "app:";
   const showPluginTools = pluginUnlocked && serverId === "cn" && !IS_PREVIEW_BUILD && window.location.protocol !== "app:";
   const toolGroups = groups.map(([label, entries]) => [label, label !== "查询" ? entries
     : serverId === "cn" ? [...entries, ["balanceHistory", "平衡调整回顾", <ClockCounterClockwise size={18} aria-hidden="true" />]]
@@ -67,6 +68,10 @@ export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
             style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 44, gridColumn: ["typeChart", "balanceHistory"].includes(id) ? "1 / -1" : undefined }}
             onPointerEnter={() => onWarm?.(id)} onFocus={() => onWarm?.(id)} onPointerDown={() => onWarm?.(id)}
             onClick={() => { setOpen(false); trigger.current?.focus(); actions[id](); }}>{icon}{t(title)}</button>)}
+          {label === "计算" && showNatureTool && <a className="app-menu__nature-tool" href="/tools/s5-nature/index.html"
+            onClick={() => { setOpen(false); trigger.current?.focus(); }}>
+            <MagnifyingGlass size={18} aria-hidden="true" />S5奇异性格检测
+          </a>}
         </div>
       </section>)}
       {showPluginTools && <>

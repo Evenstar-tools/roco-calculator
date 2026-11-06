@@ -1,0 +1,302 @@
+{
+  "meta": {
+    "schemaVersion": 1,
+    "version": "2026-11-06",
+    "scope": "S5 field dice parameters for the standalone manual PVE calculator",
+    "status": "partial",
+    "bothSidesIndependent": true,
+    "selectionPolicy": "每一方独立选择数值预设；不自动给另一方添加效果，不由资源面数随机生成效果。",
+    "sourceBoundary": "本地旧提取只确认7类资源；没有恢复S5正式骰面玩法配置。滴溜豚特性投骰与野外骰子分开。",
+    "supportedEffectFields": [
+      "hpMultiplier",
+      "physicalAttackMultiplier",
+      "magicalAttackMultiplier",
+      "physicalDefenseMultiplier",
+      "magicalDefenseMultiplier",
+      "speedMultiplier",
+      "powerMultiplier",
+      "skillPowerAdd",
+      "damageMultiplier",
+      "damageReductionMultiplier",
+      "critMultiplier"
+    ],
+    "effectFieldDefaults": "未给出的倍率视为1，未给出的固定值视为0；supported:false的条目整体不可应用。",
+    "unknownEffectKinds": [
+      "critical-hit",
+      "damage-reduction",
+      "unresolved-stat-multiplier"
+    ],
+    "stackingPolicy": "本资料没有证明骰面之间的叠加次序；同一方不得据此自动叠加多个同名预设。"
+  },
+  "sources": [
+    {
+      "id": "local-dice-extraction-20261105",
+      "kind": "local-static-extraction",
+      "title": "本地包骰子种类与属性提取结果",
+      "path": "D:/codex/worktrees/roco-plugin-web-release-20261105/output/local-package-lists-20261105/dice/dice-gameplay-list.json",
+      "status": "resource-types-only-no-gameplay-effects",
+      "readDate": "2026-11-06"
+    },
+    {
+      "id": "local-dice-resource-evidence-20261105",
+      "kind": "local-static-extraction",
+      "title": "骰子模型与可读配置范围",
+      "path": "D:/codex/worktrees/roco-plugin-web-release-20261105/output/local-package-lists-20261105/dice/dice-config-evidence.json",
+      "readDate": "2026-11-06"
+    },
+    {
+      "id": "comment-image-6",
+      "kind": "user-supplied-comment",
+      "title": "Vodka_Cranberry：锤头鹳打十星迪莫",
+      "path": "C:/Users/Administrator/Downloads/S5奇遇机制视频评论区.docx",
+      "extractedImage": "output/s5-comment-verification/image6.png",
+      "transcription": "output/s5-comment-verification/images-1-10-audit.json",
+      "note": "评论明确提到威力加40的buff；未提供其正式骰面名称、ID或完整触发过程。"
+    },
+    {
+      "id": "comment-image-14",
+      "kind": "user-supplied-comment",
+      "title": "尹仙子：伊兰亚龙打十星罗隐",
+      "path": "C:/Users/Administrator/Downloads/S5奇遇机制视频评论区.docx",
+      "extractedImage": "output/s5-comment-verification/image14.png",
+      "transcription": "output/s5-comment-verification/images-11-20-audit.md",
+      "note": "评论称全属性加30%骰子；未定义全属性作用范围、实际防御或面板/伤害乘区。"
+    }
+  ],
+  "dice": [
+    {
+      "id": "none",
+      "name": "无骰子加成",
+      "description": "本次所选一方没有骰子额外属性或威力加成。",
+      "supported": true,
+      "effectKinds": [],
+      "effects": {},
+      "evidenceStatus": "explicit-neutral-input",
+      "sourceIds": [],
+      "requiresConfirmation": false
+    },
+    {
+      "id": "manual-power-plus-40",
+      "name": "技能威力 +40（按实际效果填写）",
+      "description": "评论记录出现威力加40的buff；这是数值输入预设，非已确认的正式骰子名称。",
+      "supported": true,
+      "effectKinds": [
+        "skill-power-flat"
+      ],
+      "effects": {
+        "skillPowerAdd": 40
+      },
+      "evidenceStatus": "reported-parameter-not-official-dice-config",
+      "sourceIds": [
+        "comment-image-6"
+      ],
+      "requiresConfirmation": true,
+      "applicationNote": "仅对所选一方的技能基础威力增加40；用户须确认本场确实出现此项效果且没有其他骰面效果。不是最终伤害+40，也不是伤害乘1.4；与其他固定威力增益的叠加阶段尚待实测。"
+    },
+    {
+      "id": "unresolved-all-stats-plus-30",
+      "name": "全属性 +30%（范围待核对）",
+      "description": "评论提到全属性加30%，但没有确认是否涵盖生命/速度以及与面板的结算顺序，暂不自动应用。",
+      "supported": false,
+      "effectKinds": [
+        "unresolved-stat-multiplier"
+      ],
+      "effects": {},
+      "knownParameters": [
+        {
+          "kind": "stat-multiplier",
+          "multiplier": 1.3,
+          "stats": null
+        }
+      ],
+      "evidenceStatus": "reported-ambiguous-scope",
+      "sourceIds": [
+        "comment-image-14"
+      ],
+      "requiresConfirmation": true,
+      "unsupportedReason": "缺少具体受影响属性与结算阶段；不能把该说法自动扩成六维、HP或最终伤害统一乘1.3。"
+    },
+    {
+      "id": "resource-dice-1100012",
+      "name": "四面骰外观（效果未提取）",
+      "description": "仅确认模型/资源类别，无法从面数或模型尺寸推导战斗加成。",
+      "supported": false,
+      "effectKinds": [
+        "unknown"
+      ],
+      "effects": {},
+      "evidenceStatus": "resource-appearance-only",
+      "sourceIds": [
+        "local-dice-extraction-20261105",
+        "local-dice-resource-evidence-20261105"
+      ],
+      "requiresConfirmation": true,
+      "gameDiceId": null,
+      "idKind": "local-reference-id-not-game-item-id",
+      "modelId": 1100012,
+      "diceType": {
+        "enum": "BonusDiceType",
+        "value": 1
+      },
+      "faceCount": 4,
+      "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_4.BP_NPC_S5_Dice_4_C'",
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+    },
+    {
+      "id": "resource-dice-1100013",
+      "name": "六面骰外观（效果未提取）",
+      "description": "仅确认模型/资源类别，无法从面数或模型尺寸推导战斗加成。",
+      "supported": false,
+      "effectKinds": [
+        "unknown"
+      ],
+      "effects": {},
+      "evidenceStatus": "resource-appearance-only",
+      "sourceIds": [
+        "local-dice-extraction-20261105",
+        "local-dice-resource-evidence-20261105"
+      ],
+      "requiresConfirmation": true,
+      "gameDiceId": null,
+      "idKind": "local-reference-id-not-game-item-id",
+      "modelId": 1100013,
+      "diceType": {
+        "enum": "BonusDiceType",
+        "value": 2
+      },
+      "faceCount": 6,
+      "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_6.BP_NPC_S5_Dice_6_C'",
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+    },
+    {
+      "id": "resource-dice-1100014",
+      "name": "八面骰外观（效果未提取）",
+      "description": "仅确认模型/资源类别，无法从面数或模型尺寸推导战斗加成。",
+      "supported": false,
+      "effectKinds": [
+        "unknown"
+      ],
+      "effects": {},
+      "evidenceStatus": "resource-appearance-only",
+      "sourceIds": [
+        "local-dice-extraction-20261105",
+        "local-dice-resource-evidence-20261105"
+      ],
+      "requiresConfirmation": true,
+      "gameDiceId": null,
+      "idKind": "local-reference-id-not-game-item-id",
+      "modelId": 1100014,
+      "diceType": {
+        "enum": "BonusDiceType",
+        "value": 3
+      },
+      "faceCount": 8,
+      "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_8.BP_NPC_S5_Dice_8_C'",
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+    },
+    {
+      "id": "resource-dice-1100015",
+      "name": "十面骰外观（效果未提取）",
+      "description": "仅确认模型/资源类别，无法从面数或模型尺寸推导战斗加成。",
+      "supported": false,
+      "effectKinds": [
+        "unknown"
+      ],
+      "effects": {},
+      "evidenceStatus": "resource-appearance-only",
+      "sourceIds": [
+        "local-dice-extraction-20261105",
+        "local-dice-resource-evidence-20261105"
+      ],
+      "requiresConfirmation": true,
+      "gameDiceId": null,
+      "idKind": "local-reference-id-not-game-item-id",
+      "modelId": 1100015,
+      "diceType": {
+        "enum": "BonusDiceType",
+        "value": 4
+      },
+      "faceCount": 10,
+      "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_10.BP_NPC_S5_Dice_10_C'",
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+    },
+    {
+      "id": "resource-dice-1100016",
+      "name": "YiSe（异色相关）骰外观（效果未提取）",
+      "description": "仅确认模型/资源类别，无法从面数或模型尺寸推导战斗加成。",
+      "supported": false,
+      "effectKinds": [
+        "unknown"
+      ],
+      "effects": {},
+      "evidenceStatus": "resource-appearance-only",
+      "sourceIds": [
+        "local-dice-extraction-20261105",
+        "local-dice-resource-evidence-20261105"
+      ],
+      "requiresConfirmation": true,
+      "gameDiceId": null,
+      "idKind": "local-reference-id-not-game-item-id",
+      "modelId": 1100016,
+      "diceType": {
+        "enum": "PreciousDiceType",
+        "value": 1
+      },
+      "faceCount": null,
+      "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_YiSe.BP_NPC_S5_Dice_YiSe_C'",
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+    },
+    {
+      "id": "resource-dice-1100017",
+      "name": "EMeng（噩梦相关）骰外观（效果未提取）",
+      "description": "仅确认模型/资源类别，无法从面数或模型尺寸推导战斗加成。",
+      "supported": false,
+      "effectKinds": [
+        "unknown"
+      ],
+      "effects": {},
+      "evidenceStatus": "resource-appearance-only",
+      "sourceIds": [
+        "local-dice-extraction-20261105",
+        "local-dice-resource-evidence-20261105"
+      ],
+      "requiresConfirmation": true,
+      "gameDiceId": null,
+      "idKind": "local-reference-id-not-game-item-id",
+      "modelId": 1100017,
+      "diceType": {
+        "enum": "PreciousDiceType",
+        "value": 2
+      },
+      "faceCount": null,
+      "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_EMeng.BP_NPC_S5_Dice_EMeng_C'",
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+    },
+    {
+      "id": "resource-dice-1100018",
+      "name": "QiYi（奇异相关）骰外观（效果未提取）",
+      "description": "仅确认模型/资源类别，无法从面数或模型尺寸推导战斗加成。",
+      "supported": false,
+      "effectKinds": [
+        "unknown"
+      ],
+      "effects": {},
+      "evidenceStatus": "resource-appearance-only",
+      "sourceIds": [
+        "local-dice-extraction-20261105",
+        "local-dice-resource-evidence-20261105"
+      ],
+      "requiresConfirmation": true,
+      "gameDiceId": null,
+      "idKind": "local-reference-id-not-game-item-id",
+      "modelId": 1100018,
+      "diceType": {
+        "enum": "PreciousDiceType",
+        "value": 3
+      },
+      "faceCount": null,
+      "resourcePath": "Blueprint'/Game/NewRoco/Modules/Core/NPC/SeasonNPC/S5/Dice/BP_NPC_S5_Dice_QiYi.BP_NPC_S5_Dice_QiYi_C'",
+      "unsupportedReason": "未提取正式骰面名称、效果数值、触发条件、叠加规则或概率，不参与计算。"
+    }
+  ]
+}

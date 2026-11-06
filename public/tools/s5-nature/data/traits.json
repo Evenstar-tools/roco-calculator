@@ -1,0 +1,3164 @@
+{
+  "meta": {
+    "source": "src/domain/trait-effects.js",
+    "sourceRoot": "D:/codex/worktrees/roco-pve-nature-20261106/output/cn-source-ee68d4a020225614a679b180050ba54c78177a01-4tUa16",
+    "sourceRevision": "ee68d4a020225614a679b180050ba54c78177a01",
+    "identitySource": "scripts/s5-bwiki-runtime.mjs#buildS5BwikiSnapshot",
+    "scope": "己方特性；野怪特性只展示不计伤害",
+    "counts": {
+      "applied": 58,
+      "none": 142,
+      "unsupported": 66
+    }
+  },
+  "traits": {
+    "最好的伙伴": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "触发层数",
+          "min": 0,
+          "max": null
+        }
+      },
+      "defender": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "触发层数",
+          "min": 0,
+          "max": null
+        }
+      },
+      "sourceTraitIds": [
+        "trait_102e1d7085a2c40b"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "裁决": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "触发层数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "触发层数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "sourceTraitIds": [
+        "trait_17cabf4a1e921ed5"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "滋养": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "触发层数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "触发层数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "sourceTraitIds": [
+        "trait_ab2898ecf2366fc1"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "点燃": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "触发层数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "触发层数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "sourceTraitIds": [
+        "trait_90a574eda10c8675"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "净化": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "触发层数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "触发层数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "sourceTraitIds": [
+        "trait_8b28a4b70c393a47"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "氧循环": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_825ed63e44cea866"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "深层氧循环": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_4542254ec518fded"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "草木苏醒时": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 20,
+        "effectLabel": "每点双攻",
+        "stack": {
+          "label": "本次攻击前回复能量",
+          "min": 0,
+          "max": null
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_0832c661dfd016a0"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "助燃": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 20,
+        "effectLabel": "每层双攻",
+        "stack": {
+          "label": "火系技能使用次数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_7ed1e76d8ca5f1b6"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "爆燃": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 30,
+        "effectLabel": "每层双攻",
+        "stack": {
+          "label": "火系技能使用次数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_8730f13eb7bfc229"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "浸润": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_3acbc4fcc1b2fd44"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "浪潮": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_6f20f84a18f42efb"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "挺起胸脯": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_9167525cc599ce80"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "“国王”的威严": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_9053614884437d35"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "缩壳": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_a781530d17a5644a"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "碰瓷": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_2e31fa91026b6a0e"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "顺风": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_eda3ec47525c9d74"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "破空": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_156e9995a8170af2"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "毒蘑菇": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_53a3fdfbeb6de38e"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "刺肤": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_f1a6868d0fe7b2c4"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "地脉": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_73f46b34cb2ebe9b"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "地脉馈赠": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_f3f7497cc9d16d1a"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "渴求": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_36774458de2319a8"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "贪得无厌": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_b9a54a7321caeae4"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "化茧": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_b042027ddc2f57f1"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "小偷小摸": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_e475a00cfa43d795"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "大捞一笔": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_7dbd92ac8df1d7c8"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "保守派": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "defense_percent",
+        "effect": 80,
+        "effectLabel": "双防加成",
+        "condition": {
+          "label": "总技能能耗小于4"
+        }
+      },
+      "defender": {
+        "kind": "defense_percent",
+        "effect": 80,
+        "effectLabel": "双防加成",
+        "condition": {
+          "label": "总技能能耗小于4"
+        }
+      },
+      "sourceTraitIds": [
+        "trait_20aaad382b5c0e46"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "偏振": {
+      "damage": "applied",
+      "attacker": null,
+      "defender": {
+        "kind": "damage_reduction_percent",
+        "effect": 40,
+        "effectLabel": "减伤比例"
+      },
+      "sourceTraitIds": [
+        "trait_e41ac97a6aa03865"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "完全偏振": {
+      "damage": "applied",
+      "attacker": null,
+      "defender": {
+        "kind": "damage_reduction_percent",
+        "effect": 50,
+        "effectLabel": "减伤比例"
+      },
+      "sourceTraitIds": [
+        "trait_70099d6ceef2ea92"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "养分重吸收": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_0d9b6974d54c51d4"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "养分内循环": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_380641f602f80edf"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "诈死": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_abb43466da58cdc9"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "专注力": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 100,
+        "effectLabel": "物攻加成",
+        "categories": [
+          "physical"
+        ],
+        "condition": {
+          "label": "入场首回合"
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_0109a0ad7c38a2ce"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "全神贯注": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "decay_attack_percent",
+        "effect": 20,
+        "effectLabel": "每次衰减",
+        "baseEffect": 100,
+        "categories": [
+          "physical"
+        ],
+        "stack": {
+          "label": "已行动次数",
+          "min": 0,
+          "max": 5
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_c8a4ef85bf5106aa"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "囤积": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "defense_percent",
+        "effect": 10,
+        "effectLabel": "每点双防",
+        "stack": {
+          "label": "当前能量",
+          "min": 0,
+          "max": 99
+        }
+      },
+      "defender": {
+        "kind": "defense_percent",
+        "effect": 10,
+        "effectLabel": "每点双防",
+        "stack": {
+          "label": "当前能量",
+          "min": 0,
+          "max": 99
+        }
+      },
+      "sourceTraitIds": [
+        "trait_33ae72e80c389cdb"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "复方汤剂": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_9525b09edffa387f"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "惊吓": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_b11d238c83b39a36"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "做噩梦": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_25f4a03c3e4923cb"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "稀兽花宝": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_04caae19a6519f30"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "壮胆": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 50,
+        "effectLabel": "双攻加成",
+        "condition": {
+          "label": "队伍存在虫系精灵"
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_44c6238e4014f81d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "生物碱": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_776798e696294969"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "高浓生物碱": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_632d5defc31b16ee"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "快充": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_200e9959ad60cb6e"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "勇敢": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_cdbfaed82e01a4e2"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "腐植循环": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_dbd7a597db1715dd"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "慢热型": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_a9af0be15bd8c4f8"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "溶解扩散": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_3438b7113f85c321"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "溶解腐蚀": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_40aa89d1be037fd7"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "无忧无虑": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_3a40b7fc19fa0a60"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "电流刺激": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_29bd15f9c360dcd6"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "虫群鼓舞": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_defense_percent",
+        "effect": 10,
+        "effectLabel": "每层攻防速",
+        "stack": {
+          "label": "其他虫系精灵数",
+          "min": 0,
+          "max": 8
+        }
+      },
+      "defender": {
+        "kind": "attack_defense_percent",
+        "effect": 10,
+        "effectLabel": "每层攻防速",
+        "stack": {
+          "label": "其他虫系精灵数",
+          "min": 0,
+          "max": 8
+        }
+      },
+      "sourceTraitIds": [
+        "trait_639e6004a3f0df4a"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "虫群突袭": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_defense_percent",
+        "effect": 15,
+        "effectLabel": "每层攻防速",
+        "stack": {
+          "label": "其他虫系精灵数",
+          "min": 0,
+          "max": 8
+        }
+      },
+      "defender": {
+        "kind": "attack_defense_percent",
+        "effect": 15,
+        "effectLabel": "每层攻防速",
+        "stack": {
+          "label": "其他虫系精灵数",
+          "min": 0,
+          "max": 8
+        }
+      },
+      "sourceTraitIds": [
+        "trait_b3fb0e1b618b82ee"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "嫁祸": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_6bc6d191b788658d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "洁癖": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_de2cc07c88e01c34"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "孤傲": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_4a1e4ed6c9730781"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "快锤": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_709dd11b933dc111"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "木桶戏法": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_1854eda8ca3519f4"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "不移": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "power_percent",
+        "effect": 30,
+        "effectLabel": "触发加成",
+        "condition": {
+          "label": "技能无额外效果"
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_2575c4b075ff56b9"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "咔咔冲刺": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_bbb937babda20271"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "花精灵": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_ba90d690036139b3"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "自由飘": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_2d0084a448c118ff"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "石头大餐": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_f22c7f88b657413b"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "盛宴": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_a6b6e38b279ee229"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "水翼推进": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_07143d22261e7e55"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "水翼飞升": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_fc5aea0dff9f0d8e"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "石天平": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_41b18ce5ff2f388c"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "观星": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "power_percent",
+        "effect": 20,
+        "effectLabel": "每层威力",
+        "types": [
+          "地"
+        ],
+        "stack": {
+          "label": "敌方星陨层数",
+          "min": 0,
+          "max": 99
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_72eba1c1d6943b87"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "坠星": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "power_percent",
+        "effect": 20,
+        "effectLabel": "每层威力",
+        "stack": {
+          "label": "敌方星陨层数",
+          "min": 0,
+          "max": 99
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_3a5d0e1e9a6f2b6b"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "目空": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_c942891884d1855c"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "夺目": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_ce949faa7ce3280f"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "共鸣": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_367ac5fe6cb017d4"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "齐鸣": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_4910ba2ca1615aef"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "预警": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_80cf15f507c74acb"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "先知": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 50,
+        "effectLabel": "每层双攻",
+        "stack": {
+          "label": "触发层数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_7251ee843cd40243"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "下黑手": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_1fd81158bdc2c8c7"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "毒牙": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_a36b1876608b1144"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "吸积盘": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_ba531623e0af2e2d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "悲悯": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 30,
+        "effectLabel": "每层双攻",
+        "stack": {
+          "label": "己方力竭数",
+          "min": 0,
+          "max": 5
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_72b7699e2c594e2b"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "悼亡": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 30,
+        "effectLabel": "每层双攻",
+        "stack": {
+          "label": "双方力竭数",
+          "min": 0,
+          "max": 99
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_c94a72f9978ba590"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "超负荷": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_be7f37f5a17edad6"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "结晶水": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_6b61e878a4ab5c62"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "冻土": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "power_percent",
+        "effect": 10,
+        "effectLabel": "每层威力",
+        "types": [
+          "地"
+        ],
+        "stack": {
+          "label": "携带冰系技能数",
+          "min": 0,
+          "max": 4
+        },
+        "automaticStack": {
+          "label": "携带冰系技能数",
+          "skillTypes": [
+            "冰"
+          ]
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_cb7e69b95d68e4cd"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "冰封": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_15d62976d08e02d4"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "捉迷藏": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_7a5d5f3451a645a7"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "抓到你了": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_6926b12f65ae49d3"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "机械变式": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_af929287e195bbe5"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "灵魂灼伤": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_3e52ddcaa16ba452"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "飓风": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_508df371cc3ff55f"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "野性感官": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_4ef798225a4f1262"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "圣火骑士": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_940ef791ac59e4c7"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "思维之盾": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_5a12a5593fc64289"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "衡量": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_dd3a6fc02889bbe9"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "威慑": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 30,
+        "effectLabel": "双攻加成",
+        "condition": {
+          "label": "已打断敌方技能"
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_c1611e0f2ee58193"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "乘风连击": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_b8b64454f2badbf1"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "毒腺": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_f1cf55e1134082f6"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "消波块": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_e91fb0bd759b0be3"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "多人宿舍": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_070dc47c3a228e5e"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "逐魂鸟": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_aaa4816e731707c2"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "得寸进尺": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_43bd62cc6f0c44ea"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "身经百练": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "power_percent",
+        "effect": 20,
+        "effectLabel": "每层威力",
+        "types": [
+          "水",
+          "武"
+        ],
+        "stack": {
+          "label": "应对成功次数",
+          "min": 0,
+          "max": null
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_8c0f8bbeb48e0156"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "泛音列": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_bdbba20bbbd9216d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "守护者": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_f63bbc862cd0badf"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "腾挪": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_e40700c4d1b32596"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "御驾亲征": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_71e6645f0560e7cb"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "保卫": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_568e7368c8c69a76"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "好象坏象": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_20ae7ab3b2ef1e9c"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "渗透": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_defense_percent",
+        "effect": 5,
+        "effectLabel": "每层双攻双防",
+        "stack": {
+          "label": "已使用武/地技能次数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": {
+        "kind": "attack_defense_percent",
+        "effect": 5,
+        "effectLabel": "每层双攻双防",
+        "stack": {
+          "label": "已使用武/地技能次数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "sourceTraitIds": [
+        "trait_d8245de26c287e7b"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "奔波命": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_5f078f0a14ae635d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "营养液泡": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_815c30e3a2c3e39e"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "鼓气": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "能耗3技能使用次数",
+          "min": 0,
+          "max": null
+        }
+      },
+      "defender": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "能耗3技能使用次数",
+          "min": 0,
+          "max": null
+        }
+      },
+      "sourceTraitIds": [
+        "trait_5b5f3097136cd6af"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "三鼓作气": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "累计触发次数",
+          "min": 0,
+          "max": null
+        }
+      },
+      "defender": {
+        "kind": "attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "累计触发次数",
+          "min": 0,
+          "max": null
+        }
+      },
+      "sourceTraitIds": [
+        "trait_6f0891936e934711"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "铃兰晚钟": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_b89317bc847673e7"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "嫉妒": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_207cdd024741d018"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "游弋": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "defense_percent",
+        "effect": 100,
+        "effectLabel": "双防加成",
+        "condition": {
+          "label": "正在蓄力"
+        }
+      },
+      "defender": {
+        "kind": "defense_percent",
+        "effect": 100,
+        "effectLabel": "双防加成",
+        "condition": {
+          "label": "正在蓄力"
+        }
+      },
+      "sourceTraitIds": [
+        "trait_1b54f9208d25f5dd"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "噼啪！": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_eab7640202c05c97"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "噼啪噼啪！": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_0f1cbd17edc7f650"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "防过载保护": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_f99e16a36eef3cc2"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "虚假宝箱": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_2c1e253a1be8fabf"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "拨浪鼓": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "fixed_power",
+        "effect": 10,
+        "effectLabel": "每层威力",
+        "types": [
+          "毒",
+          "萌"
+        ],
+        "stack": {
+          "label": "己方状态技能次数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_279b8d2f02a561da"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "振奋虫心": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_9db3b18df406efa5"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "蒸汽膨胀": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "fixed_power",
+        "effect": 10,
+        "effectLabel": "每层威力",
+        "stack": {
+          "label": "己方火系技能次数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_63d753438506d245"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "吟游之弦": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_222ed572ccd278a9"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "珊瑚骨": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_2b01267d47cf4b92"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "定向精炼": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "power_percent",
+        "effect": 10,
+        "effectLabel": "每层威力",
+        "types": [
+          "机械",
+          "地"
+        ],
+        "stack": {
+          "label": "己方防御技能次数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_843f0284d0407874"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "暴食": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_c8dc59001b1eaf55"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "蓄电池": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 30,
+        "effectLabel": "每层双攻",
+        "stack": {
+          "label": "入场次数",
+          "min": 0,
+          "max": null
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_ba5c839f5bda3f0d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "超级电池": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 40,
+        "effectLabel": "每层双攻",
+        "stack": {
+          "label": "入场次数",
+          "min": 0,
+          "max": null
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_d35044e05d731fe9"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "向心力": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_57da98775aecea79"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "起飞加速": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_39fb93ef4943bf7e"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "相争": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_6f2139b2d297e32c"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "加个雪球": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_b9cecb1b9fecc46f"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "耐活王": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_961d8b1f9d0d07ed"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "洄游": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_9eeffb3baed24dea"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "生物电": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_85c72eb0067c94ce"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "扩散侵蚀": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_536385ba60386c67"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "蚀刻": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_461fb8b32099688b"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "散热": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_5ea89d34c13ae7af"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "冰钻": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_6a7f811eb72ea1ce"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "仁心": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_002b61bce0b1de5f"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "恶魔的晚宴": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 50,
+        "effectLabel": "每层双攻",
+        "stack": {
+          "label": "击败精灵数",
+          "min": 0,
+          "max": 5
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_bb27bf26c633616a"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "翼轴": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_9eede2917008226c"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "盲拧": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_235c9133ff215d54"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "斗技": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "fixed_power",
+        "effect": 30,
+        "effectLabel": "每层威力",
+        "stack": {
+          "label": "应对成功次数",
+          "min": 0,
+          "max": null
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_0bf7668e47c102e3"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "指挥家": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 30,
+        "effectLabel": "每层双攻",
+        "stack": {
+          "label": "应对成功次数",
+          "min": 0,
+          "max": null
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_dece590aadb9e522"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "哨兵": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_fd02a3235d32a28d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "连续负荷": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_d8f4daa5c833e4ab"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "倾轧": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_228f7095061a962f"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "生长": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_4c1a950b7200f574"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "警惕": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_8908aabcf0d7cc59"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "涂鸦": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_b5979083bbc6df55"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "绝对秩序": {
+      "damage": "applied",
+      "attacker": null,
+      "defender": {
+        "kind": "damage_reduction_percent",
+        "effect": 50,
+        "effectLabel": "减伤比例"
+      },
+      "sourceTraitIds": [
+        "trait_ba48267865da0c6f"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "坚韧铠甲": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_398b934d2956800b"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "正位宝剑": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_aeac0357a7a1b9a0"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "宝剑王牌": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_d396ed76f72b488d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "无差别过滤": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_a60600ffd3f86b58"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "强制过滤": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_4dba4c9d0030dd78"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "不朽": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_a36b331d5e1e78dd"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "侵蚀": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_6243ae6fe9f2f978"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "付给恶魔的赎价": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_b0b9d0d7a734d0bc"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "扫拖一体": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_a63e1e1f1674854a"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "特殊清洁场景": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_73f5e504c84fad24"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "灰色肖像": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_b69af12ec1862e49"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "变形活画": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_e7ae3fb03a60b742"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "图书守卫者": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 100,
+        "effectLabel": "双攻加成",
+        "condition": {
+          "label": "入场时魔力为1"
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_e3ea9935dcf2108c"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "构装契约者": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "defense_percent",
+        "effect": 100,
+        "effectLabel": "双防加成",
+        "condition": {
+          "label": "敌方魔力为1"
+        }
+      },
+      "defender": {
+        "kind": "defense_percent",
+        "effect": 100,
+        "effectLabel": "双防加成",
+        "condition": {
+          "label": "敌方魔力为1"
+        }
+      },
+      "sourceTraitIds": [
+        "trait_348c34b9606162d9"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "绒粉星光": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "power_percent",
+        "effect": 100,
+        "effectLabel": "触发加成",
+        "condition": {
+          "label": "敌方为非本系血脉"
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_975a6c354f368691"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "月光审判": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "power_percent",
+        "effect": 100,
+        "effectLabel": "触发加成",
+        "condition": {
+          "label": "敌方为首领血脉"
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_399a39b8ef770bdb"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "茶多酚": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_d083e0f204df9c04"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "吉利丁片": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_bef8d961ca8d7981"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "美拉德反应": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_a6b21f8752c2be97"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "契约的形状": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_3892542271c11647"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "对流": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_e542ca62f155a51b"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "月牙雪糕": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_03f608df26069077"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "血型吸引": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "fixed_power",
+        "effect": 10,
+        "effectLabel": "每层威力",
+        "stack": {
+          "label": "敌方技能系别数",
+          "min": 0,
+          "max": 18
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_3404ad1421894f34"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "煤渣草": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_f699505d0fca8d1e"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "搜刮": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 20,
+        "effectLabel": "每层魔攻",
+        "categories": [
+          "magical"
+        ],
+        "stack": {
+          "label": "敌方聚能或换宠次数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_e3f79cceb9580ecc"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "扫荡": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "split_attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层魔攻",
+        "defenseEffect": 10,
+        "categories": [
+          "magical"
+        ],
+        "stack": {
+          "label": "敌方聚能或换宠次数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": {
+        "kind": "split_attack_defense_percent",
+        "effect": 20,
+        "effectLabel": "每层魔攻",
+        "defenseEffect": 10,
+        "categories": [
+          "magical"
+        ],
+        "stack": {
+          "label": "敌方聚能或换宠次数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "sourceTraitIds": [
+        "trait_fe6e986b534c7c24"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "星地善良": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_856d18d7c1b872a8"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "贪心算法": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_e40dfef1f7ed8cb2"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "双向光速": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_90679dcfe0fa13c4"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "陨落": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_74a843e47805b79e"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "张弛有度": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_a46247a24f8370da"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "天通地明": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "power_percent",
+        "effect": 100,
+        "effectLabel": "触发加成",
+        "condition": {
+          "label": "敌方为污染血脉"
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_8ba6bcad16353d3d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "系统发育": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_35c7e95d1e324416"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "守望星": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_df07c5c316290e24"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "狂欢开始": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_a6f6bceb6b733e21"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "展翅": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_dbcf8cadeb3d4989"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "大雪球": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_b7d63d4abf49503f"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "大火球": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_61f7bdfd0dda3318"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "换碟": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "fixed_power",
+        "effect": 15,
+        "effectLabel": "固定基础威力",
+        "fixedPowerBySkillName": {
+          "音波弹": 15,
+          "音爆": 20,
+          "金属噪音": 20,
+          "午夜噪音": 5
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_57afe553a26a273d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "拉拉队长": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_3b96266fa3c1687b"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "戏耍": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_0fd18e7799ab760e"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "焰色反应": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_d9a08fb184d1ef5c"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "魔术帽": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_8b462855179241dd"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "安可": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_91f83eb633d59a4a"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "合拍": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_defense_percent",
+        "effect": 10,
+        "effectLabel": "每项物攻物防",
+        "categories": [
+          "physical"
+        ],
+        "stack": {
+          "label": "累计相同项数",
+          "min": 0,
+          "max": 30
+        }
+      },
+      "defender": {
+        "kind": "attack_defense_percent",
+        "effect": 10,
+        "effectLabel": "每项物攻物防",
+        "categories": [
+          "physical"
+        ],
+        "stack": {
+          "label": "累计相同项数",
+          "min": 0,
+          "max": 30
+        }
+      },
+      "sourceTraitIds": [
+        "trait_cddb79180437b4c9"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "盲从": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_17ad646f9f7fb661"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "留学生": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_731c315f1c469260"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "不死鸟": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_e8c61c550abefa0d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "上锁": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_1e52c367a184112a"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "流沙统治者": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_cf060dc6a92a0dc7"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "盘根木": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_3376e31b5b398d2e"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "电子音乐": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_70e6adf9fb775856"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "冰雪魂魄": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_69acba3c65243d59"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "淬炼火": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_defense_percent",
+        "effect": 10,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "己方火系技能次数",
+          "min": 0,
+          "max": 10
+        }
+      },
+      "defender": {
+        "kind": "attack_defense_percent",
+        "effect": 10,
+        "effectLabel": "每层攻防",
+        "stack": {
+          "label": "己方火系技能次数",
+          "min": 0,
+          "max": 10
+        }
+      },
+      "sourceTraitIds": [
+        "trait_8d1d20656dd4169f"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "友谊之果": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_23394c87876d718c"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "莫比乌斯": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_df69c971b6807b58"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "瞳中倒影": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_36fe89fbaf0a0030"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "异类": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_1998c4375b11d069"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "滴眼液": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_6f178063da05ea08"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "与星星同行": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_8f8a1acf02a4bf18"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "迎宾": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_50c865423cdeaf66"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "整点报时": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_4651e3e91db71923"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "有求必应": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_3337f06b287f1149"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "一意孤行": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_c1df1d8c8edf84a6"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "守护之心": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "physical_defense_percent",
+        "effect": 20,
+        "effectLabel": "每种物防",
+        "stack": {
+          "label": "不同增益种类",
+          "min": 0,
+          "max": 50
+        }
+      },
+      "defender": {
+        "kind": "physical_defense_percent",
+        "effect": 20,
+        "effectLabel": "每种物防",
+        "stack": {
+          "label": "不同增益种类",
+          "min": 0,
+          "max": 50
+        }
+      },
+      "sourceTraitIds": [
+        "trait_f736a280d9cc3a05"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "和弦共振": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 50,
+        "effectLabel": "每种魔攻",
+        "categories": [
+          "magical"
+        ],
+        "stack": {
+          "label": "场上印记种类",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_055bf83a2f3aab10"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "猫精灵的礼物": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 40,
+        "effectLabel": "每层物攻",
+        "categories": [
+          "physical"
+        ],
+        "stack": {
+          "label": "完整选择次数",
+          "min": 0,
+          "max": null
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_6601a195a0b3f119"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "爆裂玉米": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_e63e2935442bc580"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "王子的诺言": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_06e590fc298033cc"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "诅咒": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_e2295a051dffd60d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "光度换算": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "fixed_power",
+        "effect": 30,
+        "effectLabel": "每层威力",
+        "types": [
+          "光"
+        ],
+        "stack": {
+          "label": "已使用火系技能次数",
+          "min": 0,
+          "max": 20
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_08e5bbe852abacdc"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "长久保存制法": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_c6decc38d831e692"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "守望者": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_8e6b0c960c5d1796"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "扎手": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_611872cdf7f65b6a"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "安眠": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_1ee789a922229e40"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "博物": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_ba4ac1cdf7e7fb85"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "风速仪": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_d862968341c319f7"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "基因编辑": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_9fdea85da03a48c7"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "乌龟塔理论": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_3f60f8c74595a2b1"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "盗魂铃": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_b88bc7ddbcb5ae1d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "正模标本": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_d07c936ee4450c1d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "翻垃圾桶": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_9d7575e48d45e8b0"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "旧玩具": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "attack_percent",
+        "effect": 10,
+        "effectLabel": "每种双攻",
+        "stack": {
+          "label": "己方已使用不同技能系别数",
+          "min": 0,
+          "max": 18
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_d5ded02eb4c3fd86"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "宇宙之眼": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "physical_defense_percent",
+        "effect": 10,
+        "effectLabel": "每层物防",
+        "stack": {
+          "label": "敌方星陨层数",
+          "min": 0,
+          "max": 99
+        }
+      },
+      "defender": {
+        "kind": "physical_defense_percent",
+        "effect": 10,
+        "effectLabel": "每层物防",
+        "stack": {
+          "label": "敌方星陨层数",
+          "min": 0,
+          "max": 99
+        }
+      },
+      "sourceTraitIds": [
+        "trait_6ba076fbd4176fb4"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "冷光源": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_5d01beeccb28c649"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "热成像": {
+      "damage": "unsupported",
+      "sourceTraitIds": [
+        "trait_41260da8ad27d64d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "铭记于月亮": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_01037a4de731139c"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "蒸汽革命": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "fixed_power_physical_defense",
+        "effect": 10,
+        "effectLabel": "每层威力",
+        "defenseEffect": 5,
+        "stack": {
+          "label": "入场前己方火系技能次数",
+          "min": 0,
+          "max": 99
+        }
+      },
+      "defender": {
+        "kind": "fixed_power_physical_defense",
+        "effect": 10,
+        "effectLabel": "每层威力",
+        "defenseEffect": 5,
+        "stack": {
+          "label": "入场前己方火系技能次数",
+          "min": 0,
+          "max": 99
+        }
+      },
+      "sourceTraitIds": [
+        "trait_3df3463f49a42796"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "月相": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_a6c9142bc1f647cd"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "秋收": {
+      "damage": "applied",
+      "attacker": {
+        "kind": "power_percent",
+        "effect": 50,
+        "effectLabel": "机械系威力",
+        "types": [
+          "机械"
+        ],
+        "condition": {
+          "label": "处于草系环境中"
+        }
+      },
+      "defender": null,
+      "sourceTraitIds": [
+        "trait_463d651f93769f8d"
+      ],
+      "sourcePreviewIdentities": []
+    },
+    "恶龙的奢望": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_little-ming-dragon",
+        "trait_preview_s5_minggulong"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "little-ming-dragon",
+          "formalIdPending": true,
+          "mechanicKey": "minggulong"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "minggulong",
+          "formalIdPending": true,
+          "mechanicKey": "minggulong"
+        }
+      ]
+    },
+    "圣龙的心愿": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_abu"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-candymo-20261101",
+          "key": "abu",
+          "formalIdPending": false,
+          "mechanicKey": "abu"
+        }
+      ]
+    },
+    "银头寸": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_silver-chain",
+        "trait_preview_s5_underground-silver-scale",
+        "trait_preview_s5_underground-silver-dragon"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "silver-chain",
+          "formalIdPending": true,
+          "mechanicKey": "underground-silver-dragon"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "underground-silver-scale",
+          "formalIdPending": true,
+          "mechanicKey": "underground-silver-dragon"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "underground-silver-dragon",
+          "formalIdPending": true,
+          "mechanicKey": "underground-silver-dragon"
+        }
+      ]
+    },
+    "储备金": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_sinking-gold-beast",
+        "trait_preview_s5_dragonhead-gold",
+        "trait_preview_s5_gold-vein-dragon"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "sinking-gold-beast",
+          "formalIdPending": true,
+          "mechanicKey": "gold-vein-dragon"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "dragonhead-gold",
+          "formalIdPending": true,
+          "mechanicKey": "gold-vein-dragon"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "gold-vein-dragon",
+          "formalIdPending": true,
+          "mechanicKey": "gold-vein-dragon"
+        }
+      ]
+    },
+    "烈冰钻": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_boss-ice-bruce"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "boss-ice-bruce",
+          "formalIdPending": true,
+          "mechanicKey": "boss-ice-bruce"
+        }
+      ]
+    },
+    "深层侵蚀": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_boss-glass-jellyfish"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "boss-glass-jellyfish",
+          "formalIdPending": true,
+          "mechanicKey": "boss-glass-jellyfish"
+        }
+      ]
+    },
+    "环天顶弧": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_jingyu",
+        "trait_preview_s5_halo-jingyu"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "jingyu",
+          "formalIdPending": true,
+          "mechanicKey": "jingyu"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "halo-jingyu",
+          "formalIdPending": true,
+          "mechanicKey": "jingyu"
+        }
+      ]
+    },
+    "高吹雪": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_doulie",
+        "trait_preview_s5_snow-shoveling-goose"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "doulie",
+          "formalIdPending": true,
+          "mechanicKey": "doulie"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "snow-shoveling-goose",
+          "formalIdPending": true,
+          "mechanicKey": "doulie"
+        }
+      ]
+    },
+    "虫草多糖": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_watermelon-bug",
+        "trait_preview_s5_winter-bug-summer-melon"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "watermelon-bug",
+          "formalIdPending": true,
+          "mechanicKey": "watermelon-bug"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "winter-bug-summer-melon",
+          "formalIdPending": true,
+          "mechanicKey": "watermelon-bug"
+        }
+      ]
+    },
+    "游戏的本质": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_diliutun",
+        "trait_preview_s5_diniantun"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "diliutun",
+          "formalIdPending": true,
+          "mechanicKey": "diliutun"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "diniantun",
+          "formalIdPending": true,
+          "mechanicKey": "diliutun"
+        }
+      ]
+    },
+    "换牙": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_lele-shark",
+        "trait_preview_s5_awa-shark-lemon",
+        "trait_preview_s5_awa-shark-tiger"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "lele-shark",
+          "formalIdPending": true,
+          "mechanicKey": "lele-shark"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "awa-shark-lemon",
+          "formalIdPending": true,
+          "mechanicKey": "lele-shark"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "awa-shark-tiger",
+          "formalIdPending": true,
+          "mechanicKey": "lele-shark"
+        }
+      ]
+    },
+    "护犊": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_egg-wrap",
+        "trait_preview_s5_chicken-mama"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "egg-wrap",
+          "formalIdPending": true,
+          "mechanicKey": "egg-wrap"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "chicken-mama",
+          "formalIdPending": true,
+          "mechanicKey": "egg-wrap"
+        }
+      ]
+    },
+    "沙滩节拍": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_crab-coconut",
+        "trait_preview_s5_sand-crab"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "crab-coconut",
+          "formalIdPending": true,
+          "mechanicKey": "crab-coconut"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "sand-crab",
+          "formalIdPending": true,
+          "mechanicKey": "crab-coconut"
+        }
+      ]
+    },
+    "剪影": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_little-scissor",
+        "trait_preview_s5_shadow-papercut"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "little-scissor",
+          "formalIdPending": true,
+          "mechanicKey": "little-scissor"
+        },
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "shadow-papercut",
+          "formalIdPending": true,
+          "mechanicKey": "little-scissor"
+        }
+      ]
+    },
+    "幸福铃音": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_lily-of-valley",
+        "trait_preview_s5_daidailing",
+        "trait_preview_s5_tiaotiaoling"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-candymo-20261101",
+          "key": "lily-of-valley",
+          "formalIdPending": false,
+          "mechanicKey": "lily-of-valley"
+        },
+        {
+          "catalogId": "s5-candymo-20261101",
+          "key": "daidailing",
+          "mechanicKey": "lily-of-valley",
+          "formalIdPending": false
+        },
+        {
+          "catalogId": "s5-candymo-20261101",
+          "key": "tiaotiaoling",
+          "mechanicKey": "lily-of-valley",
+          "formalIdPending": false
+        }
+      ]
+    },
+    "前瞻特性": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_boss-abu"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-video-BV1qqnS6XETF-20261027",
+          "key": "boss-abu",
+          "formalIdPending": true,
+          "mechanicKey": "abu"
+        }
+      ]
+    },
+    "圣龙的守护": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_super-abu"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "s5-candymo-20261101",
+          "key": "super-abu",
+          "formalIdPending": false,
+          "mechanicKey": "super-abu"
+        }
+      ]
+    },
+    "间歇式训练": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_hidden-3217",
+        "trait_preview_s5_hidden-3218",
+        "trait_preview_s5_hidden-3219"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3217",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3218",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3219",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        }
+      ]
+    },
+    "四轴机床": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_hidden-3408",
+        "trait_preview_s5_hidden-3409"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3408",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3409",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        }
+      ]
+    },
+    "格斗小五(待定)": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_hidden-3416"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3416",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        }
+      ]
+    },
+    "格斗小六(待定)": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_hidden-3417"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3417",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        }
+      ]
+    },
+    "格斗小八": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_hidden-3418"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3418",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        }
+      ]
+    },
+    "特性待确认": {
+      "damage": "unsupported",
+      "reason": "需要前瞻特性的专用上下文，未接入普通层数／开关结算。",
+      "sourceTraitIds": [
+        "trait_preview_s5_hidden-3825",
+        "trait_preview_s5_hidden-3826",
+        "trait_preview_s5_hidden-5070",
+        "trait_preview_s5_hidden-3849",
+        "trait_preview_s5_hidden-3850",
+        "trait_preview_s5_hidden-3851",
+        "trait_preview_s5_hidden-3863",
+        "trait_preview_s5_hidden-3864",
+        "trait_preview_s5_hidden-3865",
+        "trait_preview_s5_hidden-5069",
+        "trait_preview_s5_hidden-3640",
+        "trait_preview_s5_hidden-3641",
+        "trait_preview_s5_hidden-3642",
+        "trait_preview_s5_hidden-3643",
+        "trait_preview_s5_hidden-3644",
+        "trait_preview_s5_hidden-3645",
+        "trait_preview_s5_hidden-3646",
+        "trait_preview_s5_hidden-3647",
+        "trait_preview_s5_hidden-3648"
+      ],
+      "sourcePreviewIdentities": [
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3825",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3826",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-5070",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3849",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3850",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3851",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3863",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3864",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3865",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-5069",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3640",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3641",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3642",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3643",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3644",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3645",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3646",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3647",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        },
+        {
+          "catalogId": "candymo-hidden-20261101",
+          "key": "hidden-3648",
+          "formalIdPending": true,
+          "mechanicKey": "unreleased"
+        }
+      ]
+    },
+    "吐水": {
+      "damage": "none",
+      "sourceTraitIds": [
+        "trait_12d32f74c877cdf0"
+      ],
+      "sourcePreviewIdentities": []
+    }
+  }
+}

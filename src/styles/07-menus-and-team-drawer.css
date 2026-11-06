@@ -865,3 +865,23 @@
     animation: none;
   }
 }
+
+.app-menu a.app-menu__nature-tool {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 3px;
+  border: 1px solid #d7ac55;
+  border-radius: 7px;
+  color: #74501b;
+  background: #fbf1d9;
+  font-weight: 700;
+}
+
+.app-menu a.app-menu__nature-tool:hover,
+.app-menu a.app-menu__nature-tool:focus-visible {
+  color: #583a0d;
+  background: #f5e3b6;
+}
