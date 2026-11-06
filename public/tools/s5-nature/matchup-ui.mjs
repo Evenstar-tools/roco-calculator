@@ -26,6 +26,26 @@ const powerNumber = value => Number.isFinite(value) ? String(Number(value.toFixe
 const diceDescription = row => [19,33].includes(row?.gameEffectId)
   ? `双攻、双防、速度 +${row.gameEffectId===19?30:100}%（不含生命）` : row?.description ?? '';
 
+export function skillPreviewNotices(row, skill) {
+  if (row?.status !== 'estimated') return [];
+  const incoming = row.direction === 'incoming';
+  const parts = [incoming ? '野怪攻击按模型估算' : '野怪防御按模型估算'];
+  const type = row.typeInteraction;
+  if (type?.formulaVerified === false && Number.isFinite(type.correctionMultiplier)) {
+    parts[0] = incoming ? '攻击模型' : '防御模型';
+    parts.push(type.baseMultiplier === 1
+      ? '双系抵消按等倍估算'
+      : `${incoming ? '钝化' : '极化'}修正×${powerNumber(type.correctionMultiplier)}（估算）`);
+  }
+  const notices = [parts.join(' · ')];
+  // A buff callback alone does not establish that this hit consumed burst.
+  // Keep the existing explicit power input; never silently add 30.
+  if (skill?.name === '天旋地转' && row.powerMode === 'auto') {
+    notices.push('迸发不自动识别；已触发时请在“条件”核对本次显示威力。');
+  }
+  return notices;
+}
+
 export function validatePreviewSettings(session) {
   const fail = () => { throw new Error('配招判断的配置或实测格式无效，请核对导入文件。'); };
   const overrides = value => {
@@ -383,7 +403,8 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const skill = skills.get(row?.skillId);
     if (!skill) return;
     const mode = row.powerMode === 'displayed' ? '（手填）' : '';
-    $(metaId).innerHTML = `${html(skill.type)} · ${category(skill)} · 显示威力 ${powerNumber(row.displayedPower)}${mode}${row.hitCount > 1 ? ` · ${row.hitCount}连击` : ''}`;
+    $(metaId).innerHTML = `${html(skill.type)} · ${category(skill)} · 显示威力 ${powerNumber(row.displayedPower)}${mode}${row.hitCount > 1 ? ` · ${row.hitCount}连击` : ''}`
+      + skillPreviewNotices(row, skill).map(note=>`<span class="preview-model-note">${html(note)}</span>`).join('');
   }
   function cellsMarkup(row, columns, incoming, obs, format, pickedKey) {
     if(!row) return `<div class="pcell-note">选择技能</div>`;

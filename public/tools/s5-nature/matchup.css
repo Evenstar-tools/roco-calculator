@@ -120,6 +120,7 @@ body[data-workspace-mode="validation"] .versus-grid .trait-grid { display:none; 
 .pskill-body { flex:1; min-width:0; }
 .pskill .picker-anchor input { padding-left:9px; font-size:14px; font-weight:700; }
 .pskill-meta { font-size:11.5px; color:var(--muted); margin:3px 0 0 2px; }
+.preview-model-note { display:block; margin-top:4px; font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
 .stab-tag { font-size:10.5px; color:var(--gold-ink); background:var(--gold-soft); border-radius:4px; padding:0 5px; margin-left:5px; font-weight:700; }
 .preview-condition { margin:2px 0 0 2px; color:var(--muted); font-size:11.5px; }
 .preview-condition > summary { width:fit-content; }

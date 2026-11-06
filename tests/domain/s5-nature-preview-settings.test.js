@@ -1,9 +1,30 @@
 import { test, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { incomingSkillOptions, natureAxisState, observationMatch, readOutgoingObservations, splitNatureConditions, validatePreviewSettings } from '../../public/tools/s5-nature/matchup-ui.mjs';
+import { incomingSkillOptions, natureAxisState, observationMatch, readOutgoingObservations, skillPreviewNotices, splitNatureConditions, validatePreviewSettings } from '../../public/tools/s5-nature/matchup-ui.mjs';
 
 const sessionWith = override => ({ profiles: [{ preview: { skillOverrides: { skill: override } } }],
   preview: { incomingOverridesList: [override] } });
+
+test('skill result notices expose empirical corrections and never assume a burst trigger', () => {
+  const row = { status: 'estimated', direction: 'incoming', powerMode: 'auto',
+    typeInteraction: { formulaVerified: false, correctionMultiplier: .6, model: 's5-dulling-sample-fit' } };
+  const burst = { name: '天旋地转' };
+  expect(skillPreviewNotices(row, burst)).toEqual([
+    '攻击模型 · 钝化修正×0.6（估算）',
+    '迸发不自动识别；已触发时请在“条件”核对本次显示威力。',
+  ]);
+  expect(skillPreviewNotices({ ...row, powerMode: 'displayed' }, burst)).toEqual([
+    '攻击模型 · 钝化修正×0.6（估算）',
+  ]);
+  expect(skillPreviewNotices({ ...row, direction: 'outgoing',
+    typeInteraction: { formulaVerified: false, correctionMultiplier: 1.8 } }, {}))
+    .toEqual(['防御模型 · 极化修正×1.8（估算）']);
+  expect(skillPreviewNotices({ ...row, powerMode: 'final', typeInteraction: null }, burst))
+    .toEqual(['野怪攻击按模型估算']);
+  expect(skillPreviewNotices({ ...row, typeInteraction: { formulaVerified: true, correctionMultiplier: 1 } }, {}))
+    .toEqual(['野怪攻击按模型估算']);
+  expect(skillPreviewNotices({ status: 'unsupported' }, burst)).toEqual([]);
+});
 
 test('preview settings preserve fractional displayed power and legacy final power separately', () => {
   for (const override of [{ displayedPower: 60.5 }, { displayedPower: 0 }, { effectivePower: 137.5 }]) {
