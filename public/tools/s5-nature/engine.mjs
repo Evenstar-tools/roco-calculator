@@ -24,10 +24,17 @@ function checkNature(nature) {
   }
 }
 
-/** HP keeps the selected form; attacks take the supplied stage-3 race stats. */
+/** HP and attacks use the selected form; the legacy attack mapping gates data availability. */
 export function wildPanel(raceStats, level, nature, options = {}) {
   if (![41, 42, 43].includes(level)) throw new RangeError('野生等级仅支持41、42、43。');
   checkNature(nature);
+  // Preserve the mapping completeness gate even though its evolved race values
+  // are retained only as provenance. Missing mappings must not silently acquire
+  // attacks from the selected form; HP/defense remain independently available.
+  if (options.attackRaceStats != null && !['physicalAttack', 'magicalAttack']
+    .every(stat => integer(options.attackRaceStats[stat], 1, 1000))) {
+    throw new RangeError('攻击种族值来源资料缺失或超出范围。');
+  }
   const panel = {};
   for (const stat of STATS) {
     const race = raceStats?.[stat];
@@ -37,8 +44,8 @@ export function wildPanel(raceStats, level, nature, options = {}) {
       continue;
     }
     if (stat === 'physicalAttack' || stat === 'magicalAttack') {
-      panel[stat] = options.attackRaceStats === null ? null
-        : calculateWildAttack(options.attackRaceStats === undefined ? race : options.attackRaceStats[stat], level, nature, stat);
+      panel[stat] = options.attackRaceStats == null || ![1, 2, 3].includes(options.strengthStage) ? null
+        : calculateWildAttack(race, level, nature, stat, options.strengthStage);
       continue;
     }
     if (['physicalDefense', 'magicalDefense'].includes(stat) && options.defenseRaceStats !== undefined) {
@@ -138,7 +145,8 @@ function damageContext(prepared, obs) {
     return { error: '该技能尚未纳入简单单击白名单，暂不参与反推。' };
   }
   if (obs.direction === 'outgoing' && target.wildDefenseRaceStats === null) return { error: '该精灵的三阶段双防资料缺失。' };
-  if (obs.direction === 'incoming' && target.wildAttackRaceStats === null) return { error: '该精灵的三阶段双攻资料缺失。' };
+  if (obs.direction === 'incoming' && target.wildAttackRaceStats == null) return { error: '该精灵的三阶段双攻资料缺失。' };
+  if (obs.direction === 'incoming' && ![1, 2, 3].includes(target.wildStrengthStage)) return { error: '野怪强度阶段缺失或无效，双攻计算需要明确的1至3阶段。' };
   const requiredStat = obs.direction === 'incoming'
     ? skill.category === 'physical' ? 'physicalDefense' : 'magicalDefense'
     : skill.category === 'physical' ? 'physicalAttack' : 'magicalAttack';

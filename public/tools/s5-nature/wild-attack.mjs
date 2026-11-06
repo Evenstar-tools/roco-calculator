@@ -1,24 +1,25 @@
-// User-authorized empirical S5 incoming-attack model from the stage-3 handoff.
-// The caller supplies the matching family's strength-stage-3 attack race stat.
+// User-authorized empirical S5 attack fit across the three strength stages.
+// The caller supplies the selected form's own race stat and explicit stage.
 // This is a field-sample fit, not a recovered original-game calculation.
 export const WILD_ATTACK_MODEL = Object.freeze({
-  id: 's5-stage3-attack-v2',
-  source: 'user-authorized-stage3-attack-handoff',
-  evidence: 'output/pve-stage3-form-fit-20261106/',
+  id: 's5-strength-stage-attack-v3',
+  source: 'user-authorized-stage-attack-crosscheck',
+  evidence: 'data/field-samples.json',
   kind: 'empirical-formula',
-  strengthStage: 3,
+  raceSource: 'selected-form',
   baseTail: 11,
-  attackMultiplier: 2,
+  stageMultipliers: Object.freeze({ 1: 2.8, 2: 2.4, 3: 2 }),
   shinyMultiplier: 1,
   baseRounding: 'round-half-up',
   natureRounding: 'round-half-up',
+  finalRounding: 'round-half-up',
   originalGameFormulaRecovered: false,
 });
 
 const STATS = ['hp', 'physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense', 'speed'];
 const ATTACK_STATS = ['physicalAttack', 'magicalAttack'];
 
-export function calculateWildAttack(raceAttack, level, nature, stat) {
+export function calculateWildAttack(raceAttack, level, nature, stat, strengthStage) {
   if (!Number.isInteger(raceAttack) || raceAttack < 1 || raceAttack > 1000) {
     throw new RangeError('攻击种族值缺失或超出范围。');
   }
@@ -27,11 +28,15 @@ export function calculateWildAttack(raceAttack, level, nature, stat) {
   if (!STATS.includes(nature?.upStat) || !STATS.includes(nature?.downStat) || nature.upStat === nature.downStat) {
     throw new RangeError('性格的增强项和削弱项必须是不同的六维属性。');
   }
+  if (![1, 2, 3].includes(strengthStage)) throw new RangeError('野怪强度阶段缺失或无效，双攻计算需要明确的1至3阶段。');
 
   const base = Math.floor((1000 + raceAttack * (level + 50) + 50) / 100);
   const naturePercent = nature.upStat === stat ? 110 : nature.downStat === stat ? 90 : 100;
   // Round the nature-adjusted base before adding the growth tail. The whale
   // author table distinguishes this order in three sonic-boom observations.
   const adjustedBase = Math.floor((base * naturePercent + 50) / 100);
-  return (adjustedBase + WILD_ATTACK_MODEL.baseTail) * WILD_ATTACK_MODEL.attackMultiplier;
+  // Stage 1/2 samples distinguish rounding after the stage multiplier. Keep
+  // integer tenths through this step; later combat/dice multipliers stay intact.
+  const multiplierTenths = WILD_ATTACK_MODEL.stageMultipliers[strengthStage] * 10;
+  return Math.floor(((adjustedBase + WILD_ATTACK_MODEL.baseTail) * multiplierTenths + 5) / 10);
 }

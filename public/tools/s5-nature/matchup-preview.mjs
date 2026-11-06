@@ -207,6 +207,7 @@ function damageEntry(skillId, overrideValue, direction, context) {
     const incoming = direction === 'incoming';
     if (!incoming && target.wildDefenseRaceStats == null) throw new RangeError('该精灵的三阶段双防资料缺失。');
     if (incoming && target.wildAttackRaceStats == null) throw new RangeError('该精灵的三阶段双攻资料缺失。');
+    if (incoming && ![1, 2, 3].includes(target.wildStrengthStage)) throw new RangeError('野怪强度阶段缺失或无效，双攻计算需要明确的1至3阶段。');
     const attacker = incoming ? target : ownSpirit;
     const defender = incoming ? ownSpirit : target;
     const attackerDice = incoming ? targetDice : ownDice;

@@ -28,16 +28,21 @@
       "skills": 628
     },
     "wildAttackModel": {
-      "id": "s5-stage3-attack-v2",
-      "source": "user-authorized-stage3-attack-handoff",
-      "evidence": "output/pve-stage3-form-fit-20261106/",
+      "id": "s5-strength-stage-attack-v3",
+      "source": "user-authorized-stage-attack-crosscheck",
+      "evidence": "data/field-samples.json",
       "kind": "empirical-formula",
-      "strengthStage": 3,
+      "raceSource": "selected-form",
       "baseTail": 11,
-      "attackMultiplier": 2,
+      "stageMultipliers": {
+        "1": 2.8,
+        "2": 2.4,
+        "3": 2
+      },
       "shinyMultiplier": 1,
       "baseRounding": "round-half-up",
       "natureRounding": "round-half-up",
+      "finalRounding": "round-half-up",
       "originalGameFormulaRecovered": false
     },
     "wildDefenseModel": {

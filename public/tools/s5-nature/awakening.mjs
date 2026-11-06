@@ -66,7 +66,7 @@ export function resolveAwakeningType(baseMultiplier, attackerAwakening, defender
   // Incoming dulling is a measured approximation, not an exact solved rule.
   const dullingFit = attackerAwakening === 0 && defenderAwakening >= 3 && baseMultiplier !== 0 && baseMultiplier !== 1;
   const correctionMultiplier = baseMultiplier === 0 || baseMultiplier === 1 ? 1
-    : dullingFit ? (baseMultiplier > 1 ? .72 : .59) : Math.max(.6, Math.min(1.8, ratio));
+    : dullingFit ? (baseMultiplier > 1 ? .72 : .6) : Math.max(.6, Math.min(1.8, ratio));
   const multiplier = baseMultiplier * correctionMultiplier;
   return {
     multiplier, baseMultiplier, correctionMultiplier,

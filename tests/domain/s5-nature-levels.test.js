@@ -75,7 +75,7 @@ test('only the all-level selection aggregates differences within the same nature
 // Neutral single-hit fixtures use explicitly supplied stage-3 attacks to isolate
 // the level term from type/trait mechanics.
 const recordCatalog = { natures: catalog.natures,
-  spirits: [{ id: 'target', name: 'Target', types: ['x'], wildAttackRaceStats: { physicalAttack: 116, magicalAttack: 92 }, raceStats: { hp: 125, physicalAttack: 116, magicalAttack: 92, physicalDefense: 88, magicalDefense: 79, speed: 55 } }, { id: 'own', types: ['x'] }],
+  spirits: [{ id: 'target', name: 'Target', types: ['x'], wildStrengthStage: 3, wildAttackRaceStats: { physicalAttack: 116, magicalAttack: 92 }, raceStats: { hp: 125, physicalAttack: 116, magicalAttack: 92, physicalDefense: 88, magicalDefense: 79, speed: 55 } }, { id: 'own', types: ['x'] }],
   skills: [{ id: 'p', supported: true, category: 'physical', basePower: 100, type: 'x' }, { id: 'm', supported: true, category: 'magical', basePower: 100, type: 'x' }],
   learnsets: [{ spiritId: 'target', skillIds: ['p', 'm'] }], typeChart: { types: ['x'], matrix: [[1]] } };
 const recordProfile = { ...profile, id: 'profile', spiritId: 'own', awakening: 0,

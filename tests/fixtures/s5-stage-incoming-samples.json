@@ -1,0 +1,162 @@
+{
+  "source": "pve_damage_lab/analysis/metal-damage-confirm-20261107/candidate-stage-attack.json",
+  "originalFormulaRecovered": false,
+  "scope": "Saved incoming hits. Runtime enemy target power is absent; conditional static power and burst assumptions are retained.",
+  "rows": [
+    {
+      "id": "20261107-003806-000353/encounter-0001/E3/P1",
+      "pointer": "/events/2/data/perform_cmd/perform_info/1",
+      "sourcePetbaseId": 3444,
+      "species": "噼啪鸟",
+      "level": 42,
+      "nature": "勇敢",
+      "skill": "天旋地转",
+      "observed": 29,
+      "newAttack": 280,
+      "observedDynamicPower": null,
+      "previewInput": {
+        "targetId": "spirit_99f5d4bc7811d4a1",
+        "level": 42,
+        "profile": {
+          "spiritId": "spirit_4e7acb9d14c8f373",
+          "level": 60,
+          "awakening": 5,
+          "panel": {
+            "hp": 403,
+            "physicalAttack": 312,
+            "magicalAttack": 136,
+            "physicalDefense": 183,
+            "magicalDefense": 137,
+            "speed": 289
+          }
+        },
+        "skillIds": [],
+        "incomingSkillIds": [
+          "skill_6099c491f526105a"
+        ],
+        "incomingOverridesList": [
+          {
+            "displayedPower": 45,
+            "note": "Observed burst trigger; static+30 inference, not received target power."
+          }
+        ]
+      },
+      "assumptions": [
+        "Wild attack formula and dulling remain candidate models.",
+        "Enemy target-specific dynamic power was not received; static power and same-type1.25 are conditional.",
+        "Burst+30 assumed active for this hit; validate against the raw event chain."
+      ]
+    },
+    {
+      "id": "20261107-003806-000353/encounter-0002/E11/P1",
+      "pointer": "/events/3/data/perform_cmd/perform_info/1",
+      "sourcePetbaseId": 3444,
+      "species": "噼啪鸟",
+      "level": 43,
+      "nature": "温顺",
+      "skill": "交叉闪电",
+      "observed": 37,
+      "newAttack": 258,
+      "observedDynamicPower": null,
+      "previewInput": {
+        "targetId": "spirit_99f5d4bc7811d4a1",
+        "level": 43,
+        "profile": {
+          "spiritId": "spirit_4e7acb9d14c8f373",
+          "level": 60,
+          "awakening": 5,
+          "panel": {
+            "hp": 403,
+            "physicalAttack": 312,
+            "magicalAttack": 136,
+            "physicalDefense": 183,
+            "magicalDefense": 137,
+            "speed": 239
+          }
+        },
+        "skillIds": [],
+        "incomingSkillIds": [
+          "skill_0456e96011ecd42f"
+        ]
+      },
+      "assumptions": [
+        "Wild attack formula and dulling remain candidate models.",
+        "Enemy target-specific dynamic power was not received; static power and same-type1.25 are conditional."
+      ]
+    },
+    {
+      "id": "20261107-003806-000353/encounter-0007/E45/P1",
+      "pointer": "/events/3/data/perform_cmd/perform_info/1",
+      "sourcePetbaseId": 3802,
+      "species": "沉金兽",
+      "level": 43,
+      "nature": "踏实",
+      "skill": "撞鬼",
+      "observed": 37,
+      "newAttack": 263,
+      "observedDynamicPower": null,
+      "previewInput": {
+        "targetId": "spirit_preview_s5_sinking-gold-beast",
+        "level": 43,
+        "profile": {
+          "spiritId": "spirit_4e7acb9d14c8f373",
+          "level": 60,
+          "awakening": 5,
+          "panel": {
+            "hp": 403,
+            "physicalAttack": 312,
+            "magicalAttack": 136,
+            "physicalDefense": 183,
+            "magicalDefense": 137,
+            "speed": 151
+          }
+        },
+        "skillIds": [],
+        "incomingSkillIds": [
+          "skill_dfe7184d14b2edcb"
+        ]
+      },
+      "assumptions": [
+        "Wild attack formula and dulling remain candidate models.",
+        "Enemy target-specific dynamic power was not received; static power and same-type1.25 are conditional."
+      ]
+    },
+    {
+      "id": "20261107-003806-000353/encounter-0007/E48/P1",
+      "pointer": "/events/6/data/perform_cmd/perform_info/1",
+      "sourcePetbaseId": 3802,
+      "species": "沉金兽",
+      "level": 43,
+      "nature": "踏实",
+      "skill": "通电",
+      "observed": 32,
+      "newAttack": 263,
+      "observedDynamicPower": null,
+      "previewInput": {
+        "targetId": "spirit_preview_s5_sinking-gold-beast",
+        "level": 43,
+        "profile": {
+          "spiritId": "spirit_4e7acb9d14c8f373",
+          "level": 60,
+          "awakening": 5,
+          "panel": {
+            "hp": 403,
+            "physicalAttack": 312,
+            "magicalAttack": 136,
+            "physicalDefense": 183,
+            "magicalDefense": 137,
+            "speed": 151
+          }
+        },
+        "skillIds": [],
+        "incomingSkillIds": [
+          "skill_354b8bd3c3973b4e"
+        ]
+      },
+      "assumptions": [
+        "Wild attack formula and dulling remain candidate models.",
+        "Enemy target-specific dynamic power was not received; static power and same-type1.25 are conditional."
+      ]
+    }
+  ]
+}
