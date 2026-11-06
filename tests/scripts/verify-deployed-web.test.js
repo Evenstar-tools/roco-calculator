@@ -51,6 +51,21 @@ describe("deployed Web resource verification", () => {
     expect(site.requests).not.toContain("/assets/spirits/not-crawled.png");
   });
 
+  test("rejects the standalone tool when its ES module is served as a download", async () => {
+    const site = await fixture({
+      "/tools/s5-nature/index.html": { type: "text/html", body: '<script type="module" src="./ui.mjs"></script>' },
+      "/tools/s5-nature/ui.mjs": { type: "application/octet-stream", body: 'export const ready = true;' },
+    });
+    const result = await verifyDeployedWeb({ origin: site.origin });
+    expect(result.ok).toBe(false);
+    expect(result.failures).toContainEqual(expect.objectContaining({
+      url: `${site.origin}/tools/s5-nature/ui.mjs`,
+      reason: "expected js content type, received application/octet-stream",
+    }));
+    site.files["/tools/s5-nature/ui.mjs"].type = "text/javascript";
+    expect((await verifyDeployedWeb({ origin: site.origin })).ok).toBe(true);
+  });
+
   test("reports a missing dynamic chunk together with its importer", async () => {
     const site = await fixture({ "/assets/tool.js": undefined });
     const result = await verifyDeployedWeb({ origin: site.origin });
