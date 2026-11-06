@@ -2,6 +2,7 @@ import { restoreS5RuntimeRelations } from "./vendor/s5-runtime-relations.js";
 import { createMatchupUi, validatePreviewSettings } from "./matchup-ui.mjs";
 import { solve } from "./engine.mjs";
 import { calculateOwnPanel } from "./own-panel.mjs";
+import { resolveOwnPreset } from "./own-presets.mjs";
 import { createPicker } from "./picker.mjs";
 import { analyzeHealth, compareFieldSamples, poisonMultiplier } from "./calibration.mjs";
 import { getAwakeningBonuses } from "./awakening.mjs";
@@ -65,6 +66,7 @@ let workspaceMode = "preview";
 let matchupUi;
 let diceCatalog = { dice: [] };
 let traitCatalog = { traits: {} };
+let presetLibrary = { entries: [] };
 let pickers = {};
 let fieldData = { formMappings: [], entries: [] };
 let lastHealthView = false;
@@ -298,6 +300,22 @@ function generatedProfile(profile, overrides = {}) {
   };
 }
 
+function presetProfile(profile, spirit = spiritMap.get(profile.spiritId)) {
+  const preset = resolveOwnPreset(spirit.id, catalog, presetLibrary, traitCatalog);
+  const next = {
+    ...profile, spiritId: spirit.id, name: spirit.name, level: 60,
+    awakening: preset?.awakening ?? profile.awakening ?? 5,
+    natureId: preset?.natureId ?? "neutral",
+    displayIvs: preset?.displayIvs ?? Object.fromEntries(Object.keys(STATS).map(key => [key, 60])),
+    preview: preset ? {
+      speciesId: spirit.id, skillIds: preset.skillIds,
+      trait: preset.trait, skillOverrides: {}, observed: {}, picked: {},
+    } : {},
+  };
+  try { return generatedProfile(next); }
+  catch { return { ...next, panel: Object.fromEntries(Object.keys(STATS).map(key => [key, null])), panelSource: "pvp-five-star" }; }
+}
+
 function autoGenerateProfile() {
   const profile = session.profiles.find((row) => row.id === activeProfile);
   try {
@@ -417,6 +435,7 @@ function renderProfiles() {
   );
   $("profile-species-note").textContent =
     `${count} 项可选${hasCompleteRaceStats(profileSpecies) ? "" : " · 种族值资料不足，仍可登记实际面板"}`;
+  $("load-own-preset").disabled = !resolveOwnPreset(profile.spiritId, catalog, presetLibrary, traitCatalog);
   $("profile-level").value = profile.level ?? "";
   $("profile-awakening").value = profile.awakening ?? 5;
   $("star-seg").innerHTML = [0, 1, 2, 3, 4, 5]
@@ -940,6 +959,22 @@ function attachEvents() {
     render();
   });
   $("generate-panel").addEventListener("click", autoGenerateProfile);
+  $("load-own-preset").addEventListener("click", () => {
+    const profile = session.profiles.find(row => row.id === activeProfile);
+    remember();
+    Object.assign(profile, presetProfile(profile));
+    session.observations = session.observations.filter(row => row.profileId !== profile.id);
+    // The same target now faces a different own panel; clear its old observations.
+    if (session.preview) {
+      session.preview.incomingDamages = [];
+      session.preview.incomingPicks = [];
+    }
+    persist();
+    renderProfiles();
+    clearEditor();
+    render();
+    notice("已载入预设，可撤销。");
+  });
   for (const key of Object.keys(STATS))
     $(`panel-${key}`).addEventListener("input", () => {
       $("profile-panel-feedback").textContent = "手动改动尚未保存。";
@@ -954,24 +989,7 @@ function attachEvents() {
       (row) => row.profileId === profile.id,
     );
     if (hadRecords) session.observations = [];
-    const next = {
-      ...profile,
-      spiritId: spirit.id,
-      name: spirit.name,
-      level: profile.level ?? 60,
-      natureId: profile.natureId ?? "neutral",
-      displayIvs:
-        profile.displayIvs ??
-        Object.fromEntries(Object.keys(STATS).map((key) => [key, 0])),
-    };
-    try {
-      Object.assign(profile, generatedProfile(next));
-    } catch {
-      Object.assign(profile, next, {
-        panel: Object.fromEntries(Object.keys(STATS).map((key) => [key, null])),
-        panelSource: "pvp-five-star",
-      });
-    }
+    Object.assign(profile, presetProfile(profile, spirit));
     persist();
     renderProfiles();
     clearEditor();
@@ -1311,6 +1329,10 @@ try {
   if (diceResponse.ok) diceCatalog = await diceResponse.json();
   const traitResponse = await fetch("./data/traits.json");
   if (traitResponse.ok) traitCatalog = await traitResponse.json();
+  try {
+    const presetResponse = await fetch("/data/presets/pvp-popular-configs.json");
+    if (presetResponse.ok) presetLibrary = await presetResponse.json();
+  } catch { /* Local CN and the two built-in presets remain available offline. */ }
   skillMap = new Map(catalog.skills.map((skill) => [skill.id, skill]));
   spiritMap = new Map(catalog.spirits.map((spirit) => [spirit.id, spirit]));
   seasonGroups = Array.isArray(catalog.targetGroups)
@@ -1348,7 +1370,7 @@ try {
       Object.values(profile.panel ?? {}).every((value) => value == null)
     ) {
       try {
-        Object.assign(profile, generatedProfile(profile));
+        Object.assign(profile, presetProfile(profile));
       } catch {
         /* Missing species data stays explicit. */
       }

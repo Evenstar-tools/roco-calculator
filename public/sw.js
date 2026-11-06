@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.3.17-20261106-conditional-power";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.17-20261106-presets";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 const APP_SHELL = [
   "/manifest.webmanifest",

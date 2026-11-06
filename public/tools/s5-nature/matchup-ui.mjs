@@ -2,6 +2,7 @@ import { createPicker } from './picker.mjs';
 import { previewMatchup, canPreviewBasePower, defaultSkillHitCount } from './matchup-preview.mjs';
 import { traitControls, traitPanelPercents } from './own-trait.mjs';
 import { formatGamePercent } from './hp-inverse.mjs';
+import { getOwnSkillIds } from './own-presets.mjs';
 
 const $ = id => document.getElementById(id);
 const html = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -122,6 +123,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   const pickers = [];
   let currentPreview;
   const learnset = id => (catalog.learnsets.find(row => row.spiritId === id)?.skillIds ?? []).map(id => skills.get(id)).filter(Boolean);
+  const ownLearnset = id => getOwnSkillIds(catalog, id).map(id => skills.get(id)).filter(Boolean);
   const automatic = canPreviewBasePower;
   const category = skill => skill?.category === 'physical' ? '物攻' : skill?.category === 'magical' ? '魔攻' : '变化';
   const typeFactor = (skill, target) => (target?.types ?? []).reduce((product, type) => product * (catalog.typeChart.matrix[catalog.typeChart.types.indexOf(skill.type)]?.[catalog.typeChart.types.indexOf(type)] ?? 1), 1);
@@ -145,7 +147,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   }
   function state() {
     const session = getSession(), profile = getProfile();
-    const available = learnset(profile.spiritId);
+    const available = ownLearnset(profile.spiritId);
     if (!object(profile.preview)) profile.preview = {};
     const own = profile.preview;
     if (!Array.isArray(own.skillIds) || own.speciesId !== profile.spiritId) {
@@ -235,7 +237,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const id = incoming ? `preview-incoming-skill-${index}` : `preview-skill-${index}`;
     const anchor = incoming ? `preview-incoming-picker-${index}` : `preview-skill-picker-${index}`;
     pickers.push(createPicker({anchor,trigger:`${id}-input`,source:id,label:incoming?`敌方技能 ${index+1}`:`我方技能 ${index+1}`,rows:()=>{
-      const {profile,session}=state(); return learnset(incoming?session.targetId:profile.spiritId);
+      const {profile,session}=state(); return incoming ? learnset(session.targetId) : ownLearnset(profile.spiritId);
     },image:s=>s.iconUrl ?? catalog.assets?.elements?.[s.type],describe:s=>`${s.type} · ${category(s)} · 威力 ${s.basePower ?? '—'}`}));
     $(id).addEventListener('change',()=>commit(()=>{
       const {own,encounter}=state();
@@ -483,7 +485,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   function render() {
     const {session,profile,own,encounter}=state();
     const ownSpirit = spirits.get(profile.spiritId), target = spirits.get(session.targetId);
-    const ownRows=learnset(profile.spiritId),enemyRows=learnset(session.targetId);
+    const ownRows=ownLearnset(profile.spiritId),enemyRows=learnset(session.targetId);
     const format = encounter.percentFormat ?? 'game0';
     for(let i=0;i<4;i++) {
       renderSkillControl(`preview-skill-${i}`,`preview-skill-meta-${i}`,`preview-condition-${i}`,ownRows,own.skillIds[i],own.skillOverrides[own.skillIds[i]]);
