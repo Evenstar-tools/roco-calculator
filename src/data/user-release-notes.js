@@ -237,6 +237,18 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.18",
+    date: "2026.11.06",
+    seasonId: "S5",
+    title: "S5 桌面工具补全",
+    whatsNew: S5_FEATURE_INTRO,
+    fixes: [
+      "桌面版恢复插件彩蛋：搜索框输入原口令并回车后，工具箱显示野生精灵检测器入口；刷新后重新隐藏。",
+      "S5奇异性格计算继续独立提供奇遇野怪计算；电鹿保留过充电未强化65与已强化95威力两行。",
+      "本次仅更正国服桌面版；国际服S3季中沿用原版。",
+    ],
+  }),
+  createRelease({
     version: "v2.3.17",
     date: "2026.11.06",
     seasonId: "S5",

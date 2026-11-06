@@ -66,11 +66,8 @@ export function prepareDesktopClient(projectRoot) {
   // 独立暂存桌面资源，不改动用于网页发布的 dist/client。
   const clientRoot = mkdtempSync(path.join(output, "desktop-client-"));
   const webRoot = path.resolve(projectRoot, "dist/client");
-  // The root plugin introductions are Web-only; other plugin-named assets remain bundled.
-  cpSync(webRoot, clientRoot, {
-    recursive: true,
-    filter: (source) => source !== path.join(webRoot, "plugins"),
-  });
+  // The CN introduction remains behind the same one-use Easter egg gate offline.
+  cpSync(webRoot, clientRoot, { recursive: true });
   for (const channel of clientChannels(clientRoot)) {
     // 网页底部导航只用于网站发现；桌面副本从加载前移除，避免闪现。
     for (const relativePath of channel.catalog ? [] : ["index.html", "dianlu/index.html"]) {

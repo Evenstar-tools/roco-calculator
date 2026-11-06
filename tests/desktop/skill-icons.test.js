@@ -23,7 +23,8 @@ test("桌面暂存内置图标并保留网页产物，两端均无额外页脚",
   mkdirSync(path.join(web, "assets/skills"), { recursive: true });
   mkdirSync(path.join(root, "data/desktop-skill-icons"), { recursive: true });
   mkdirSync(path.join(web, "plugins/wild-spirit-detector"), { recursive: true });
-  writeFileSync(path.join(web, "plugins/wild-spirit-detector/index.html"), "CN Web plugin page", "utf8");
+  writeFileSync(path.join(web, "plugins/wild-spirit-detector/index.html"), "CN gated plugin page", "utf8");
+  writeFileSync(path.join(web, "plugins/wild-spirit-detector/entry-gate.js"), "one-use entry guard", "utf8");
   mkdirSync(path.join(web, "assets/plugins"), { recursive: true });
   writeFileSync(path.join(web, "assets/plugins/keep.txt"), "shared plugin-named resource", "utf8");
   const pages = ["index.html", "dianlu/index.html"];
@@ -45,8 +46,9 @@ test("桌面暂存内置图标并保留网页产物，两端均无额外页脚",
   writeFileSync(path.join(root, `data/desktop-skill-icons/${remoteId}.png`), png);
   const staged = prepareDesktopClient(root);
   expect(verifyDesktopSkillIcons(staged)).toBe(2);
-  expect(existsSync(path.join(staged, "plugins"))).toBe(false);
-  expect(readFileSync(path.join(web, "plugins/wild-spirit-detector/index.html"), "utf8")).toBe("CN Web plugin page");
+  expect(existsSync(path.join(staged, "plugins"))).toBe(true);
+  expect(readFileSync(path.join(staged, "plugins/wild-spirit-detector/entry-gate.js"), "utf8")).toBe("one-use entry guard");
+  expect(readFileSync(path.join(web, "plugins/wild-spirit-detector/index.html"), "utf8")).toBe("CN gated plugin page");
   expect(readFileSync(path.join(staged, "assets/plugins/keep.txt"), "utf8")).toBe("shared plugin-named resource");
   for (const page of pages) {
     const webHtml = readFileSync(path.join(web, page), "utf8");
