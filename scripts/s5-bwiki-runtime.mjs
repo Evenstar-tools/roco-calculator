@@ -127,8 +127,19 @@ export function s5BwikiRuntimePlugin() {
       // Formal CN and /pre both serve CN-only packages. Global has its independent release.
       const outDir = path.resolve(options.dir);
       if (outDir !== path.resolve(ROOT, "dist/client")) throw new Error("Unexpected S5 output directory");
-      const unused = path.join(outDir, "data/global-runtime.json");
-      if (existsSync(unused) && statSync(unused).isFile()) await unlink(unused);
+      for (const entry of ["data/global-runtime.json", "data/global/skill-query/catalog.json"]) {
+        const unused = path.join(outDir, entry);
+        if (existsSync(unused) && statSync(unused).isFile()) await unlink(unused);
+      }
+      // Reuse the calculator's lossless relation transport for the optional CN tool.
+      // Source data stays readable; only the deployed JSON is compacted.
+      const toolData = path.join(outDir, "tools/s5-nature/data");
+      for (const name of ["catalog", "demo-session", "dice", "field-samples", "season-targets", "traits"]) {
+        const file = path.join(toolData, `${name}.json`);
+        if (!existsSync(file)) continue;
+        const data = await readJson(file);
+        await writeFile(file, JSON.stringify(name === "catalog" ? packS5RuntimeRelations(data) : data), "utf8");
+      }
     },
   };
 }

@@ -1,3 +1,4 @@
+import { restoreS5RuntimeRelations } from "./vendor/s5-runtime-relations.js";
 import { createMatchupUi, validatePreviewSettings } from "./matchup-ui.mjs";
 import { solve } from "./engine.mjs";
 import { calculateOwnPanel } from "./own-panel.mjs";
@@ -1303,7 +1304,7 @@ function attachEvents() {
 try {
   const response = await fetch("./data/catalog.json");
   if (!response.ok) throw new Error("技能数据加载失败，请刷新页面重试。");
-  catalog = await response.json();
+  catalog = restoreS5RuntimeRelations(await response.json());
   const fieldResponse = await fetch("./data/field-samples.json");
   if (fieldResponse.ok) fieldData = await fieldResponse.json();
   const diceResponse = await fetch("./data/dice.json");

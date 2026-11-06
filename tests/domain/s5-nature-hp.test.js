@@ -103,3 +103,12 @@ test('target HP summary is independent of valid moves and matches shiny/dice fin
     assert.equal(row.remainingPercent,Math.max(0,row.hpMax-row.damage)*100/row.hpMax);
   }
 });
+
+
+test('browser catalog transport preserves every spirit, skill and learning relation', async () => {
+  const { packS5RuntimeRelations } = await import('../../src/data/s5-runtime-relations.js');
+  const { restoreS5RuntimeRelations } = await import('../../public/tools/s5-nature/vendor/s5-runtime-relations.js');
+  const source = JSON.parse(readFileSync('public/tools/s5-nature/data/catalog.json', 'utf8'));
+  const restored = restoreS5RuntimeRelations(JSON.parse(JSON.stringify(packS5RuntimeRelations(source))));
+  assert.deepEqual(restored, source);
+});
