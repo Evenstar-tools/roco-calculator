@@ -691,6 +691,7 @@ function resolveStackScaled(skill, context) {
   const stackCount = triggered
     ? Math.max(0, Math.floor(Number(rawStackCount)))
     : 0;
+  const appliedStackCount = Math.min(stackCount, skill.ruleParams?.maxStacks ?? Number.POSITIVE_INFINITY);
   const perStack = Number(skill.ruleParams?.perStack ?? 0);
   const flatBonusKey = skill.ruleParams?.flatBonusContextKey;
   const flatBonus = flatBonusKey
@@ -698,7 +699,7 @@ function resolveStackScaled(skill, context) {
     : 0;
   const value = Math.max(
     0,
-    Math.round(Number(skill.basePower) + stackCount * perStack + flatBonus),
+    Math.round(Number(skill.basePower) + appliedStackCount * perStack + flatBonus),
   );
   return exact(value, [
     {

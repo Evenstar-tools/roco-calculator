@@ -8,44 +8,35 @@ import { DeerWorkspace } from "../../src/features/deer/DeerPage.jsx";
 const snapshot = withCalculatorExtras(JSON.parse(readFileSync("public/data/runtime.json", "utf8")));
 const skillRow = (name) => screen.getByRole("button", { name, exact: true }).closest("tr");
 
-test("S5过充电首行按聚能次数连续加威，伤害和最低层数同步且不改变其他技能", () => {
+test("S5过充电顶部两行分别展示65与95威力，不再输入聚能次数", () => {
   render(<DeerWorkspace snapshot={withWebPreview(snapshot)} />);
-  const control = screen.getByRole("spinbutton", { name: "聚能次数" });
-  expect(control).toHaveValue(0);
-  expect(control).not.toHaveAttribute("max");
-  expect(skillRow("过充电")).toBe(screen.getAllByRole("row")[1]);
-  const threshold = () => skillRow("过充电").querySelector(".deer-threshold").textContent;
-  const before = threshold();
+  expect(screen.queryByRole("spinbutton", { name: "聚能次数" })).not.toBeInTheDocument();
+  const normal = skillRow("过充电 · 未强化");
+  const charged = skillRow("过充电 · 已强化");
+  expect(normal).toBe(screen.getAllByRole("row")[1]);
+  expect(charged).toBe(screen.getAllByRole("row")[2]);
+  expect(charged).toHaveTextContent("已聚能至少1次");
   const arc = skillRow("电弧 · 普通").textContent;
-  fireEvent.click(screen.getByRole("button", { name: "查看过充电详情" }));
+  fireEvent.click(screen.getByRole("button", { name: "查看过充电 · 未强化详情" }));
   expect(screen.getByText(/实际威力 65/)).toBeInTheDocument();
-  fireEvent.change(control, { target: { value: "1" } });
-  expect(control).toHaveValue(1);
+  fireEvent.click(screen.getByRole("button", { name: "查看过充电 · 已强化详情" }));
   expect(screen.getByText(/实际威力 95/)).toBeInTheDocument();
-  expect(threshold()).not.toBe(before);
+  expect(screen.getByText("聚能后永久＋30威力，仅强化一次。")).toBeInTheDocument();
+  expect(charged.querySelector(".deer-damage").textContent).not.toBe(normal.querySelector(".deer-damage").textContent);
   expect(skillRow("电弧 · 普通")).toHaveTextContent(arc);
-  fireEvent.change(control, { target: { value: "2" } });
-  expect(screen.getByText(/实际威力 125/)).toBeInTheDocument();
-  fireEvent.change(control, { target: { value: "1000" } });
-  expect(control).toHaveValue(1000);
-  expect(screen.getByText(/实际威力 30065/)).toBeInTheDocument();
-  fireEvent.change(control, { target: { value: "0" } });
-  expect(control).toHaveValue(0);
-  expect(screen.getByText(/实际威力 65/)).toBeInTheDocument();
-  expect(threshold()).toBe(before);
 });
 
-test("S5两种电鹿均保留过充电与聚能状态，旧资料不显示缺失技能", () => {
+test("S5两种电鹿均展示未强化和已强化两行，旧资料不显示缺失技能", () => {
   const { unmount } = render(<DeerWorkspace snapshot={snapshot} />);
-  expect(screen.queryByRole("button", { name: "过充电", exact: true })).toBeNull();
+  expect(screen.queryByRole("button", { name: /过充电/, exact: false })).toBeNull();
   unmount();
   render(<DeerWorkspace snapshot={withWebPreview(snapshot)} />);
-  fireEvent.change(screen.getByRole("spinbutton", { name: "聚能次数" }), { target: { value: "2" } });
   fireEvent.change(screen.getByLabelText("攻击方精灵"), { target: { value: "爵士鹿" } });
   fireEvent.click(screen.getByRole("option", { name: /爵士鹿/ }));
-  expect(screen.getByRole("spinbutton", { name: "聚能次数" })).toHaveValue(2);
-  fireEvent.click(screen.getByRole("button", { name: "查看过充电详情" }));
-  expect(screen.getByText(/实际威力 125/)).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "过充电 · 未强化", exact: true })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "过充电 · 已强化", exact: true })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "查看过充电 · 已强化详情" }));
+  expect(screen.getByText(/实际威力 95/)).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "愿力冲击", exact: true })).toBeInTheDocument();
 });
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.3.11-20261106-deer-overcharge";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.13-20261106-overcharge-once";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 const APP_SHELL = [
   "/manifest.webmanifest",

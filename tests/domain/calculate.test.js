@@ -2500,7 +2500,7 @@ describe("calculateMatchup", () => {
     expect(result.forward.results).toMatchObject([
       { skillCost: 3, skillPower: 115, status: "exact" },
       { skillCost: 5, skillPower: 170, status: "exact" },
-      { skillCost: 2, skillPower: 125, status: "exact" },
+      { skillCost: 2, skillPower: 95, status: "exact" },
       { skillCost: 2, skillPower: 125, status: "exact" },
     ]);
     expect(result.forward.results.every(entry => entry.totalDamage > 0)).toBe(true);
@@ -2519,7 +2519,7 @@ describe("calculateMatchup", () => {
 
   test.each([
     ["碎银", "underground-silver-dragon", 170, 10, "EnergySpent", "SettledEnergySpent", "s5EnergySpentBeforeUse", 10, 5, 170],
-    ...[0, 1, 2, 10].map(count => ["过充电", "gold-vein-dragon", 65, 2, "ChargeCount", "SettledChargeCount", "s5OverchargeChargeCount", count, 2, 65 + 30 * count]),
+    ...[0, 1, 2, 10].map(count => ["过充电", "gold-vein-dragon", 65, 2, "ChargeCount", "SettledChargeCount", "s5OverchargeChargeCount", count, 2, count > 0 ? 95 : 65]),
   ])("S5 %s优先沿用攻击方实际计数，兼容旧结算字段并隔离对手", (name, mechanicKey, basePower, cost, countSuffix, settledSuffix, skillKey, count, expectedCost, expectedPower) => {
     const skill = { id: "s5-owner-condition", name, basePower, cost, type: "普通", category: name === "碎银" ? "magical" : "physical" };
     const trait = { id: "s5-owner-condition-trait", name: "候选特性", previewIdentity: { catalogId: "s5-skill-condition-fixture", key: mechanicKey, mechanicKey } };
@@ -2556,7 +2556,7 @@ describe("calculateMatchup", () => {
     expect(calculateMatchup(inherited, zero).forward.selectedResult).toMatchObject({ skillCost: expectedCost, skillPower: expectedPower });
   });
 
-  test("S5 储备金的聚能次数正反向各用自身实际次数，手调基数仍叠加每次30", () => {
+  test("S5 储备金的聚能次数正反向各用自身实际次数，过充电和手调基数仅强化一次", () => {
     const skill = { id: "s5-overcharge-directions", name: "过充电", basePower: 65, cost: 2, type: "电", category: "physical" };
     const trait = { id: "s5-overcharge-owner", name: "储备金", previewIdentity: { catalogId: "s5-overcharge-directions", mechanicKey: "gold-vein-dragon" } };
     const count = getTraitEffectInputs(trait, "attacker").find(control => control.contextKey === "attackerTraitS5ChargeCount");
@@ -2572,8 +2572,8 @@ describe("calculateMatchup", () => {
       reverse: { context: { [count.id]: 10, [enemyCount.id]: 200 } },
     } });
     const result = calculateMatchup(fixture, current);
-    expect(result.forward.selectedResult).toMatchObject({ status: "exact", skillPower: 160 });
-    expect(result.reverse.selectedResult).toMatchObject({ status: "exact", skillPower: 365 });
+    expect(result.forward.selectedResult).toMatchObject({ status: "exact", skillPower: 130 });
+    expect(result.reverse.selectedResult).toMatchObject({ status: "exact", skillPower: 95 });
     expect(current.sides.attacker.skills.four[0].context[skillCount.id]).toBe(999);
   });
 
