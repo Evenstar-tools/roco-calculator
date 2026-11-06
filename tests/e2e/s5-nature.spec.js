@@ -243,6 +243,43 @@ test("S5 nature incoming attack shows measured whale damage and matches nature",
   expect(flood.manualPower).toBe(false);
 });
 
+test("S5 nature incoming damage above own HP still identifies unchanged magical attack", async ({ page }) => {
+  await page.goto(toolPath);
+  await page.locator('[data-profile="luoyin"]').click();
+  await page.locator('#load-own-preset').click();
+  await page.locator('#star-seg').getByRole('button', { name: '10★', exact: true }).click();
+  await chooseTarget(page, '伊雷龙');
+  await page.getByRole('group', { name: '野怪等级', exact: true })
+    .getByRole('button', { name: '43', exact: true }).click();
+  await page.locator('#target-dice').selectOption('custom');
+  await page.locator('#target-dice-magicalAttackMultiplier').fill('1.3');
+  await page.locator('#target-dice-magicalAttackMultiplier').press('Tab');
+  const picker = page.getByRole('combobox', { name: '敌方技能 1', exact: true });
+  await picker.fill('升龙咆哮');
+  await page.getByRole('option').getByText('升龙咆哮', { exact: true }).click();
+  const cells = page.locator('#preview-incoming-cells-0');
+  const normal = cells.locator('[data-nature-group="other"][data-nature-condition="base"]');
+  await expect(normal.locator('.dmg')).toHaveText('660');
+  const preview = await page.evaluate(() => window.pveNatureUi.getPreview());
+  expect(preview.ownPanel.hp).toBe(403);
+  expect(preview.ownPanel.magicalDefense).toBe(137);
+  expect(660).toBeGreaterThan(preview.ownPanel.hp);
+
+  // Displayed incoming damage can exceed HP; it still constrains enemy attack.
+  // The separate outgoing-KO test retains the target-HP ambiguity behavior.
+  const damage = page.locator('#preview-incoming-damage-0');
+  await damage.fill('660');
+  await damage.press('Tab');
+  await expect(normal).toHaveClass(/\bhit\b/);
+  const verdict = page.locator('#preview-verdict');
+  await expect(verdict.locator('.verdict-big')).toHaveText(/^\d+ 个模型候选$/);
+  await expect(verdict.locator('[data-stat="magicalAttack"] b')).toHaveText('不变');
+  await expect(verdict.locator('.evidence')).toContainText('升龙咆哮 掉血 660');
+  await page.reload();
+  await expect(damage).toHaveValue('660');
+  await expect(verdict.locator('[data-stat="magicalAttack"] b')).toHaveText('不变');
+});
+
 test("S5 nature presets share calculator configurations and preserve saved manual edits", async ({ page }) => {
   await page.goto(toolPath);
   await expect(page.locator('#load-own-preset')).toBeEnabled();
@@ -377,11 +414,22 @@ test("S5 nature compact comparison keeps paired measurements separate from highl
   await damage.fill('103'); await damage.press('Tab');
   for (const [width,height] of [[1920,1080],[390,844],[320,740]]) {
     await page.setViewportSize({width,height});
+    // Fallback glyph metrics exposed the rail's implicit min-content width.
+    const fallbackFont = width === 320
+      ? await page.addStyleTag({ content: ':root { font-family: SimSun, serif; }' }) : null;
     await page.locator('[data-preview-row="0"]').locator('.pskill').scrollIntoViewIfNeeded();
-    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    const layout = await page.evaluate(() => ({
+      viewport: innerWidth, scrollWidth: document.documentElement.scrollWidth,
+      overflow: [...document.querySelectorAll('body *')].filter(node => {
+        const rect = node.getBoundingClientRect();
+        return rect.width > 0 && rect.right > innerWidth + 0.5;
+      }).map(node => ({ id: node.id, className: node.className, right: node.getBoundingClientRect().right })).slice(0, 12),
+    }));
+    expect(layout.scrollWidth, JSON.stringify(layout)).toBeLessThanOrEqual(layout.viewport);
     await expect(damage).toBeVisible(); await expect(remaining).toBeVisible();
     if(width<800) expect(await damage.boundingBox().then(box=>box.width)).toBeGreaterThan(60);
     await page.screenshot({path:`output/playwright/s5-compact-${width}.png`});
+    if (fallbackFont) await fallbackFont.evaluate(node => node.remove());
   }
   // Undo feedback floats over the document and does not move the skill input.
   await page.setViewportSize({width:1920,height:1080});
