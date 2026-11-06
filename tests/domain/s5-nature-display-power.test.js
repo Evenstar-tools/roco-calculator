@@ -37,19 +37,36 @@ test('game display power keeps PVE polarization outside, reproducing monkey and 
 
 test('automatic display tracks attack/defense dice once and keeps fractional power', () => {
   const x = input();
-  x.skillIds = [skill('火焰切割').id];
-  x.skillOverrides = { [skill('火焰切割').id]: { powerMultiplier: .55 } };
+  x.skillIds = [skill('先发制人').id];
   x.ownDiceEffects = { physicalAttackMultiplier: 1.1 };
   const boosted = preview(x).outgoing[0];
   assert.equal(boosted.displayedPower, 60.5);
   x.targetDiceEffects = { physicalDefenseMultiplier: 1.25 };
   const defended = preview(x).outgoing[0];
   assert.equal(defended.displayedPower, 48.4);
-  x.skillOverrides = { [skill('火焰切割').id]: { displayedPower: 48.4 } };
+  x.skillOverrides = { [skill('先发制人').id]: { displayedPower: 48.4 } };
   const manual = preview(x).outgoing[0];
   assert.deepEqual(manual.predictions.map(p => p.damage), defended.predictions.map(p => p.damage));
   assert.equal(manual.powerMode, 'displayed');
   assert(natureRow(defended).damage < natureRow(boosted).damage);
+});
+
+test('conditional damage previews use base power and base hits before optional conditions', () => {
+  const x = input('伊雷龙');
+  x.skillIds = ['先发制人', '地刺', '连续爪击'].map(name => skill(name).id);
+  const result = preview(x);
+  assert.deepEqual(result.outgoing.map(row => row.status), ['estimated', 'estimated', 'estimated']);
+  assert.deepEqual(result.outgoing.map(row => row.displayedPower), [55, 180, 30]);
+  assert.deepEqual(result.outgoing.map(row => row.hitCount), [1, 1, 2]);
+  assert.deepEqual(result.outgoing.map(row => natureRow(row).damage), [111, 364, 120]);
+  x.skillOverrides = { [skill('连续爪击').id]: { hitCount: 4 } };
+  assert.equal(natureRow(preview(x).outgoing[2]).damage, 240);
+  x.skillOverrides = { [skill('连续爪击').id]: { effectivePower: 30 } };
+  assert.equal(preview(x).outgoing[2].hitCount, 1, 'legacy final-power records keep their old count');
+  x.skillIds = [skill('魔能爆').id, skill('严霜').id];
+  assert.deepEqual(preview(x).outgoing.map(row => row.status), ['unsupported', 'unsupported']);
+  x.skillOverrides = { [skill('魔能爆').id]: { displayedPower: 80 } };
+  assert.equal(preview(x).outgoing[0].status, 'estimated');
 });
 
 test('incoming display overrides keep base attacks and skip already encoded dice and own trait defense', () => {

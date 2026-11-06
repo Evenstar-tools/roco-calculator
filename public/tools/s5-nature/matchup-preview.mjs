@@ -106,12 +106,23 @@ function readOverride(value) {
   return value;
 }
 
+// The catalog uses power 1 as a placeholder for four variable-power moves.
+// Their actual displayed power can still be entered explicitly.
+export const canPreviewBasePower = skill => ['physical', 'magical'].includes(skill?.category)
+  && finite(skill.basePower) && skill.basePower > 1;
+
+export function defaultSkillHitCount(skill) {
+  const count = Number(skill?.description?.match(/造成(?:物理伤害|魔法伤害|物伤|魔伤)[，,]\s*(\d+)连击/)?.[1] ?? 1);
+  return integer(count, 1, 100) ? count : 1;
+}
+
 function resolvePower(skill, override, attacker, defender, attackerAwakening, defenderAwakening, dice, catalog, trait = {}) {
   const powerMode = has(override, 'displayedPower') ? 'displayed' : has(override, 'effectivePower') ? 'final' : 'auto';
   const manual = powerMode !== 'auto';
   if (!['physical', 'magical'].includes(skill.category)) throw new RangeError('该技能没有明确的物理／魔法直接命中。');
-  if (!manual && skill.supported !== true) throw new RangeError('该技能含条件、状态或多段机制；请填写本次显示威力与命中次数。');
-  if (!manual && (!finite(skill.basePower) || skill.basePower <= 0)) throw new RangeError('技能基础威力资料不足。');
+  // supported is the legacy record filter, not a gate on base-power preview.
+  // Resolve the current direct hit; optional power/count overrides model triggers.
+  if (!manual && !canPreviewBasePower(skill)) throw new RangeError('该技能威力随战况变化，请填写本次显示威力。');
   let displayedPower = null, typeInteraction = null, typeMultiplier = null, stab = null, power;
   if (powerMode === 'final') {
     // Preserve old saved overrides. Never reinterpret them as skill-bar power.
@@ -136,7 +147,7 @@ function resolvePower(skill, override, attacker, defender, attackerAwakening, de
   power *= extra;
   if (displayedPower !== null) displayedPower *= extra;
   if (!finite(power) || power < 0 || power > 10000000) throw new RangeError('本次威力超出可核算范围。');
-  return { power, displayedPower, powerMode, typeMultiplier, typeInteraction, stab, hitCount: override.hitCount ?? 1, manual, notes: [
+  return { power, displayedPower, powerMode, typeMultiplier, typeInteraction, stab, hitCount: override.hitCount ?? (powerMode === 'final' ? 1 : defaultSkillHitCount(skill)), manual, notes: [
     ...(powerMode === 'displayed' ? ['按手填显示威力结算，已包含的特性及骰子攻防、威力加成不重复叠加。'] : []),
     ...(powerMode === 'final' ? ['旧记录保留最终威力口径；恢复自动后使用显示威力。'] : []),
   ] };

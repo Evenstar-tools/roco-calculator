@@ -1,5 +1,5 @@
 import { createPicker } from './picker.mjs';
-import { previewMatchup } from './matchup-preview.mjs';
+import { previewMatchup, canPreviewBasePower, defaultSkillHitCount } from './matchup-preview.mjs';
 import { traitControls, traitPanelPercents } from './own-trait.mjs';
 import { formatGamePercent } from './hp-inverse.mjs';
 
@@ -108,7 +108,6 @@ const levelLabel = level => level === 'all' ? '41–43' : level;
 const caseId = prediction => `${prediction.targetLevel}:${prediction.natureId}`;
 
 function shortReason(reason='') {
-  if (/条件、状态或多段/.test(reason)) return '条件技能 · 在「条件」填显示威力';
   if (/没有明确的物理／魔法/.test(reason)) return '变化技能，无直接伤害';
   if (/骰子/.test(reason)) return '该骰子效果未接入，请改用自填数值';
   if (/种族|资料/.test(reason)) return '该精灵资料不足';
@@ -123,6 +122,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   const pickers = [];
   let currentPreview;
   const learnset = id => (catalog.learnsets.find(row => row.spiritId === id)?.skillIds ?? []).map(id => skills.get(id)).filter(Boolean);
+  const automatic = canPreviewBasePower;
   const category = skill => skill?.category === 'physical' ? '物攻' : skill?.category === 'magical' ? '魔攻' : '变化';
   const typeFactor = (skill, target) => (target?.types ?? []).reduce((product, type) => product * (catalog.typeChart.matrix[catalog.typeChart.types.indexOf(skill.type)]?.[catalog.typeChart.types.indexOf(type)] ?? 1), 1);
   const ownTraitInfo = spirit => {
@@ -137,7 +137,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
 
   // 默认敌方技能：一物一魔，优先对我方属性中性的招式，便于对照不同星级。
   function defaultIncoming(targetId, ownSpirit) {
-    const rows = learnset(targetId).filter(skill => skill.supported && ['physical','magical'].includes(skill.category));
+    const rows = learnset(targetId).filter(automatic);
     const neutral = skill => typeFactor(skill, ownSpirit) === 1;
     const pick = kind => rows.filter(skill => skill.category === kind)
       .sort((a,b) => Number(neutral(b)) - Number(neutral(a)) || (b.basePower ?? 0) - (a.basePower ?? 0))[0]?.id ?? '';
@@ -150,7 +150,6 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const own = profile.preview;
     if (!Array.isArray(own.skillIds) || own.speciesId !== profile.spiritId) {
       const preferred = profile.name === '迪莫' ? 'magical' : 'physical';
-      const automatic = skill => skill.supported && ['physical','magical'].includes(skill.category);
       const sorted = [...available].sort((a,b) => Number(Boolean(automatic(b) && b.category === preferred)) - Number(Boolean(automatic(a) && a.category === preferred)) || Number(Boolean(automatic(b))) - Number(Boolean(automatic(a))));
       own.skillIds = Array.from({length:4},(_,index) => sorted[index]?.id ?? '');
       own.speciesId = profile.spiritId;
@@ -211,7 +210,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     return `<div class="pskill"><span class="pskill-slot">${slotLabel}</span><div class="pskill-body"><div class="picker-anchor" id="${pickerId}"><input id="${id}-input" autocomplete="off" placeholder="选择技能"/><span class="picker-caret" aria-hidden="true">⌄</span></div><select id="${id}" class="compat-hidden" tabindex="-1" aria-hidden="true"></select><div id="${metaId}" class="pskill-meta"></div>${conditionControl(prefix)}</div></div>`;
   }
   function conditionControl(prefix) {
-    return `<div id="${prefix}-legacyPower" class="preview-legacy-power" hidden><span id="${prefix}-legacyPower-label"></span><button id="${prefix}-resetPower" type="button">恢复自动</button></div><details class="preview-condition"><summary>条件</summary><div class="preview-conditions-grid"><label>威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>显示威力<input id="${prefix}-displayedPower" type="number" min="0" max="100000" step="any" placeholder="自动"/></label></div><p>留空按已选特性、骰子自动计算；手填已含这些加成，极化／钝化另算。支持小数。</p></details>`;
+    return `<div id="${prefix}-legacyPower" class="preview-legacy-power" hidden><span id="${prefix}-legacyPower-label"></span><button id="${prefix}-resetPower" type="button">恢复自动</button></div><details class="preview-condition"><summary>条件</summary><div class="preview-conditions-grid"><label>威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>显示威力<input id="${prefix}-displayedPower" type="number" min="0" max="100000" step="any" placeholder="自动"/></label></div><p>默认按当前威力和基础连击数计算；触发后可调整威力、命中次数。显示威力留空自动计算，手填已含特性和骰子加成；极化／钝化另算，支持小数。</p></details>`;
   }
   const heading = (columns, last) => `<div class="pth pth-skill">技能</div>${columns.map(([key,label])=>`<div class="pth">${catalog.assets?.stats?.[key]?`<img src="${html(catalog.assets.stats[key])}" alt=""/>`:''}${label}<span class="up-arrow">↑</span></div>`).join('')}<div class="pth">${last}</div>`;
   $('preview-outgoing').innerHTML = heading(OUT_COLUMNS,'实测') + Array.from({length:4},(_,i) =>
@@ -318,13 +317,14 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     if(!skill) { $(metaId).innerHTML='<span class="muted">未选技能</span>'; $(metaId).title=''; return; }
     $(metaId).innerHTML=`${html(skill.type)} · ${category(skill)} · 显示威力 —`;
     $(metaId).title=skill.description ?? '';
+    $(`${prefix}-hitCount`).placeholder = String(legacy ? 1 : defaultSkillHitCount(skill));
   }
   function renderDisplayedPower(metaId, row) {
     const skill = skills.get(row?.skillId);
     if (!skill) return;
     const mode = row.powerMode === 'displayed' ? '（手填）' : '';
     const dulling = row.typeInteraction?.formulaVerified === false && row.typeInteraction?.model?.includes('dulling');
-    $(metaId).innerHTML = `${html(skill.type)} · ${category(skill)} · 显示威力 ${powerNumber(row.displayedPower)}${mode}${dulling ? '<span class="power-model-note">钝化按实测折扣计算</span>' : ''}`;
+    $(metaId).innerHTML = `${html(skill.type)} · ${category(skill)} · 显示威力 ${powerNumber(row.displayedPower)}${mode}${row.hitCount > 1 ? ` · ${row.hitCount}连击` : ''}${dulling ? '<span class="power-model-note">钝化按实测折扣计算</span>' : ''}`;
   }
   // 某列包含的性格：该属性增益；“同其他”列另含不在三列中的其余性格。
   const inColumn = (p, key, columns, same) => p.upStat === key || (key === same && !columns.some(([stat]) => stat === p.upStat));

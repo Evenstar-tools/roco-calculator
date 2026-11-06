@@ -18,12 +18,10 @@ const inputFor = (name, level) => ({ targetId: species(name).id, level,
     panel: { hp: 403, physicalAttack: 312, magicalAttack: 136, physicalDefense: 216, magicalDefense: 163, speed: 143 } },
   skillIds: [skill('火焰切割').id], ownDiceIds: [], targetDiceIds: [] });
 
-test('whale author table replays all 30 readings through automatic and explicit-condition preview paths', () => {
+test('whale author table replays all 30 readings automatically including conditional damage skills', () => {
   // BV1WE4a6eE8p author table, transcribed in whale-dimo-cli.mjs/.txt.
   // Water cannon/Heavenly Flood only change energy cost after this hit. Spring
-  // uses its unchanged-energy-cost case. These retain the explicit-power path;
-  // their unsupported flags are never promoted by this test.
-  const conditionalPower = { 水炮: 137.5, 天洪: 187.5, 涌泉: 112.5 };
+  // uses its unchanged-energy-cost case. No manual power is required.
   const groups = [
     [41, 'neutral', { 甩水: 41, 水弹枪: 111, 音爆: 144, 水炮: 153, 激流: 167, 天洪: 209 }],
     [41, 'up', { 甩水: 45, 水弹枪: 121, 音爆: 158, 激流: 182 }],
@@ -33,26 +31,21 @@ test('whale author table replays all 30 readings through automatic and explicit-
     [43, 'up', { 甩水: 48, 气泡: 160, 音爆: 166 }],
     [43, 'down', { 气泡: 133, 音爆: 139 }],
   ];
-  let count = 0, automatic = 0;
+  let count = 0;
   for (const [level, direction, observations] of groups) for (const [name, observed] of Object.entries(observations)) {
     const input = inputFor('深蓝鲸', level), selected = skill(name);
     input.profile.spiritId = species('迪莫').id;
     input.profile.awakening = 5;
     input.incomingSkillId = selected.id;
-    const manual = Object.hasOwn(conditionalPower, name);
-    assert.equal(selected.supported, !manual, name);
-    if (manual) input.incomingOverrides = { effectivePower: conditionalPower[name] };
     const entry = previewMatchup(input, catalog, dice).incoming;
     assert.equal(entry.status, 'estimated', `${level}/${direction}/${name}`);
-    assert.equal(entry.manualPower, manual);
+    assert.equal(entry.manualPower, false);
     const row = entry.predictions.find(row => row.natureId === natureFor('magicalAttack', direction).id);
     assert.equal(row.damage, observed, `${level}/${direction}/${name}`);
     if (name === '甩水') assert.equal(entry.effectivePower, 37.5);
     count++;
-    if (!manual) automatic++;
   }
   assert.equal(count, 30);
-  assert.equal(automatic, 23);
   assert.equal(WILD_ATTACK_MODEL.natureRounding, 'round-half-up');
   assert.equal(WILD_ATTACK_MODEL.originalGameFormulaRecovered, false);
   assert.deepEqual(catalog.meta.wildAttackModel, WILD_ATTACK_MODEL);
