@@ -15,6 +15,7 @@ import {
 } from "./external-navigation.mjs";
 import {
   buildBundledAssetHeaders,
+  getBundledAssetMimeType,
   resolveOfflineAssetPath,
 } from "./offline-paths.mjs";
 
@@ -47,28 +48,6 @@ function getAppIconPath() {
   return path.join(app.getAppPath(), "desktop", "icon.png");
 }
 
-function getMimeType(filePath) {
-  const extension = path.extname(filePath).toLowerCase();
-  return (
-    {
-      ".css": "text/css",
-      ".html": "text/html",
-      ".ico": "image/x-icon",
-      ".jpeg": "image/jpeg",
-      ".jpg": "image/jpeg",
-      ".js": "text/javascript",
-      ".json": "application/json",
-      ".png": "image/png",
-      ".svg": "image/svg+xml",
-      ".webmanifest": "application/manifest+json",
-      ".webp": "image/webp",
-      ".wasm": "application/wasm",
-      ".woff": "font/woff",
-      ".woff2": "font/woff2",
-    }[extension] ?? "application/octet-stream"
-  );
-}
-
 async function readBundledAsset(requestUrl) {
   const clientRoot = getClientRoot();
   let assetPath = resolveOfflineAssetPath(requestUrl, clientRoot);
@@ -86,7 +65,7 @@ async function readBundledAsset(requestUrl) {
       assetPath = path.join(assetPath, "index.html");
     }
     const body = await readFile(assetPath);
-    const mimeType = getMimeType(assetPath);
+    const mimeType = getBundledAssetMimeType(assetPath);
     return {
       data: body,
       headers: buildBundledAssetHeaders(mimeType),
@@ -97,7 +76,7 @@ async function readBundledAsset(requestUrl) {
     try {
       const fallbackPath = path.join(clientRoot, "index.html");
       const body = await readFile(fallbackPath);
-      const mimeType = getMimeType(fallbackPath);
+      const mimeType = getBundledAssetMimeType(fallbackPath);
       return {
         data: body,
         headers: buildBundledAssetHeaders(mimeType),
