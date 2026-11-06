@@ -18,7 +18,7 @@ async function expectHp(page, values) {
 
 test("S5 nature CN toolbox opens encounter HP with shiny and responsive assets", async ({ page }) => {
   await resetUiuxStorage(page);
-  await page.goto("/");
+  await page.goto("/cn/");
   await waitForAppReady(page);
   await page.getByRole("button", { name: "工具箱", exact: true }).click();
   const calculations = page.getByRole("navigation", { name: "工具箱", exact: true })
