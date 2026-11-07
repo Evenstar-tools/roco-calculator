@@ -3,6 +3,7 @@ import { previewMatchup, canPreviewBasePower, defaultSkillHitCount } from './mat
 import { traitControls, traitPanelPercents } from './own-trait.mjs';
 import { formatGamePercent } from './hp-inverse.mjs';
 import { getOwnSkillIds } from './own-presets.mjs';
+import { WILD_DEFENSE_MODEL } from './wild-defense.mjs';
 
 const $ = id => document.getElementById(id);
 const html = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -18,13 +19,14 @@ const diceFields = [
 ];
 // 分组只用于展示，实测始终对完整性格集合求交集。
 const OUT_COLUMNS = [['hp','生命'],['physicalDefense','物防'],['magicalDefense','魔防']];
-const IN_COLUMNS = [['physicalAttack','物攻'],['magicalAttack','魔攻'],['other','其他增益']];
 export const INCOMING_SLOTS = 2;
 const number = input => input.value.trim() === '' ? null : Number(input.value);
 const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const powerNumber = value => Number.isFinite(value) ? String(Number(value.toFixed(6))) : '—';
 const diceDescription = row => [19,33].includes(row?.gameEffectId)
   ? `双攻、双防、速度 +${row.gameEffectId===19?30:100}%（不含生命）` : row?.description ?? '';
+const validDiceId = value => ['none','manual-power-plus-40','custom','unresolved-all-stats-plus-30'].includes(value)
+  || typeof value === 'string' && /^game-dice-effect-(?:[1-9]|[1-3][0-9]|40)$/.test(value);
 
 export function skillPreviewNotices(row, skill) {
   if (row?.status !== 'estimated') return [];
@@ -41,7 +43,7 @@ export function skillPreviewNotices(row, skill) {
   // A buff callback alone does not establish that this hit consumed burst.
   // Keep the existing explicit power input; never silently add 30.
   if (skill?.name === '天旋地转' && row.powerMode === 'auto') {
-    notices.push('迸发不自动识别；已触发时请在“条件”核对本次显示威力。');
+    notices.push('迸发不自动识别；已触发时请点齿轮核对本次显示威力。');
   }
   return notices;
 }
@@ -91,8 +93,7 @@ export function validatePreviewSettings(session) {
       for (const value of holder.incomingOverridesList) overrides(value);
     }
     if (holder.incomingDamages!==undefined && (!Array.isArray(holder.incomingDamages)||holder.incomingDamages.length>4||holder.incomingDamages.some(v=>v!=null&&(!Number.isInteger(v)||v<0||v>1000000)))) fail();
-    if(holder.diceId!==undefined && !['none','manual-power-plus-40','custom','unresolved-all-stats-plus-30'].includes(holder.diceId)
-      && !(typeof holder.diceId === 'string' && /^game-dice-effect-(?:[1-9]|[1-3][0-9]|40)$/.test(holder.diceId))) fail();
+    for (const key of ['diceId','diceLast']) if(holder[key]!==undefined && !validDiceId(holder[key])) fail();
     if(holder.panelIncludesDice!==undefined && typeof holder.panelIncludesDice!=='boolean') fail();
     if(holder.diceEffects!==undefined) {
       if(!object(holder.diceEffects)) fail();
@@ -193,6 +194,8 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   const learnset = id => (catalog.learnsets.find(row => row.spiritId === id)?.skillIds ?? []).map(id => skills.get(id)).filter(Boolean);
   const ownLearnset = id => getOwnSkillIds(catalog, id).map(id => skills.get(id)).filter(Boolean);
   const automatic = canPreviewBasePower;
+  const damaging = skill => skill?.category === 'physical' || skill?.category === 'magical';
+  let koCache = new Map();
   const category = skill => skill?.category === 'physical' ? '物攻' : skill?.category === 'magical' ? '魔攻' : '变化';
   const typeFactor = (skill, target) => (target?.types ?? []).reduce((product, type) => product * (catalog.typeChart.matrix[catalog.typeChart.types.indexOf(skill.type)]?.[catalog.typeChart.types.indexOf(type)] ?? 1), 1);
   const ownTraitInfo = spirit => {
@@ -277,17 +280,21 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
 
   const skillOptions = rows => '<option value="">选择技能</option>' + rows.map(s => `<option value="${html(s.id)}">${html(s.name)}</option>`).join('');
   function skillControl(id, pickerId, metaId, prefix, slotLabel) {
-    return `<div class="pskill"><span class="pskill-slot">${slotLabel}</span><div class="pskill-body"><div class="picker-anchor" id="${pickerId}"><input id="${id}-input" autocomplete="off" placeholder="选择技能"/><span class="picker-caret" aria-hidden="true">⌄</span></div><select id="${id}" class="compat-hidden" tabindex="-1" aria-hidden="true"></select><div id="${metaId}" class="pskill-meta"></div>${conditionControl(prefix)}</div></div>`;
+    return `<div class="pskill"><span class="pskill-slot">${slotLabel}</span><div class="pskill-body"><div class="pskill-line"><div class="picker-anchor" id="${pickerId}"><input id="${id}-input" autocomplete="off" placeholder="选择技能"/><span class="picker-caret" aria-hidden="true">⌄</span></div><button type="button" id="${prefix}-gear" class="pskill-gear" aria-label="本招条件" aria-expanded="false" aria-controls="${prefix}-pop">⚙</button></div><select id="${id}" class="compat-hidden" tabindex="-1" aria-hidden="true"></select><div id="${metaId}" class="pskill-meta"></div>${conditionControl(prefix)}</div></div>`;
   }
+  // 常用条件保持三项；已知最终威力保留为展开项。
   function conditionControl(prefix) {
-    return `<div id="${prefix}-legacyPower" class="preview-legacy-power" hidden><span id="${prefix}-legacyPower-label"></span><button id="${prefix}-resetPower" type="button">恢复自动</button></div><details class="preview-condition"><summary>条件</summary><div class="preview-conditions-grid"><label>额外威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>显示威力<input id="${prefix}-displayedPower" type="number" min="0" max="100000" step="any" placeholder="自动"/></label></div><p>留空自动。手填显示威力时不重复叠加攻防、威力骰子；已包含的额外倍率填 1。</p><details class="preview-final-power"><summary>已知最终威力</summary><label>最终威力<input id="${prefix}-effectivePower" type="number" min="0" max="100000" step="any" placeholder="未填写"/></label><p>仅填已知且包含系别、极化/钝化的威力；不含面板攻防。与显示威力互斥，原存档沿用此口径。</p></details></details>`;
+    return `<div id="${prefix}-pop" class="pskill-pop" role="dialog" aria-label="本招条件" hidden><div class="pskill-pop-grid"><label>显示威力<input id="${prefix}-displayedPower" type="number" min="0" max="100000" step="any" placeholder="自动"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label></div><div class="pskill-pop-foot"><span id="${prefix}-auto" class="pskill-auto"></span><span id="${prefix}-legacyPower" class="preview-legacy-power" hidden><span id="${prefix}-legacyPower-label"></span></span><button id="${prefix}-resetPower" type="button" class="text-button">恢复自动</button></div><details class="preview-final-power"><summary>已知最终威力</summary><label>最终威力<input id="${prefix}-effectivePower" type="number" min="0" max="100000" step="any" placeholder="未填写"/></label><p>已含系别与极化/钝化，不含面板攻防；与显示威力互斥。</p></details></div>`;
   }
   const heading = (columns, last) => `<div class="pth pth-skill">技能</div>${columns.map(([key,label])=>`<div class="pth">${catalog.assets?.stats?.[key]?`<img src="${html(catalog.assets.stats[key])}" alt=""/>`:''}${label}${key==='other'?'':'<span class="up-arrow">↑</span>'}</div>`).join('')}<div class="pth">${last}</div>`;
-  $('preview-outgoing').innerHTML = heading(OUT_COLUMNS,'实测') + Array.from({length:4},(_,i) =>
+  $('preview-outgoing').innerHTML = heading(OUT_COLUMNS,'实测<button id="preview-reset-observed" type="button" class="text-button pth-action">清空</button>') + Array.from({length:4},(_,i) =>
     `<div class="prow" data-preview-row="${i}">${skillControl(`preview-skill-${i}`,`preview-skill-picker-${i}`,`preview-skill-meta-${i}`,`preview-condition-${i}`,i+1)}<div class="pcells" id="preview-cells-${i}"></div><div class="pobservations"><label class="pobs"><span>伤害</span><input id="preview-observed-${i}" inputmode="numeric" autocomplete="off" aria-label="技能 ${i+1} 实测伤害"/></label><label class="pobs"><span>剩余 %</span><input id="preview-remaining-${i}" inputmode="decimal" autocomplete="off" aria-label="技能 ${i+1} 实测剩余百分比"/></label></div></div>`).join('');
-  $('preview-incoming').innerHTML = heading(IN_COLUMNS,'我方掉血') + Array.from({length:INCOMING_SLOTS},(_,k) =>
-    `<div class="prow" data-incoming-row="${k}">${skillControl(`preview-incoming-skill-${k}`,`preview-incoming-picker-${k}`,`preview-incoming-meta-${k}`,`preview-incoming-condition-${k}`,'敌')}<div class="pcells" id="preview-incoming-cells-${k}"></div><div class="pobs"><input id="preview-incoming-damage-${k}" type="number" min="0" max="1000000" step="1" inputmode="numeric" aria-label="敌方技能 ${k+1} 我方掉血"/><span class="unit-label">HP</span></div></div>`).join('');
+  $('preview-incoming').innerHTML = Array.from({length:INCOMING_SLOTS},(_,k) =>
+    `<div class="prow" data-incoming-row="${k}">${skillControl(`preview-incoming-skill-${k}`,`preview-incoming-picker-${k}`,`preview-incoming-meta-${k}`,`preview-incoming-condition-${k}`,'敌')}<div class="pcells" id="preview-incoming-cells-${k}"></div><label class="pobs"><span>掉血</span><input id="preview-incoming-damage-${k}" type="number" min="0" max="1000000" step="1" inputmode="numeric" aria-label="敌方技能 ${k+1} 我方掉血"/></label></div>`).join('');
 
+  const diceHolder = side => { const {own,encounter}=state(); return side==='own'?own:encounter; };
+  const diceSummary = effects => diceFields.filter(([key,,fallback]) => Number.isFinite(effects?.[key]) && effects[key] !== fallback)
+    .map(([key,label]) => key === 'skillPowerAdd' ? `威力 +${effects[key]}` : `${label.replace('倍率','')} ×${effects[key]}`).join(' · ');
   function configureDice(side) {
     const records = (diceCatalog?.dice ?? []).filter(row => Number.isInteger(row.gameEffectId));
     const group = (label, rows) => rows.length ? `<optgroup label="${label}">${rows.map(row=>`<option value="${html(row.id)}">${html(row.name)} · ${html(diceDescription(row))}</option>`).join('')}</optgroup>` : '';
@@ -299,7 +306,9 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       + (diceCatalog?.dice ?? []).filter(row=>['manual-power-plus-40','unresolved-all-stats-plus-30'].includes(row.id)).map(row=>`<option value="${row.id}" hidden>${html(row.name)}（旧配置）</option>`).join('');
     $(`${side}-dice-custom`).innerHTML = '<p>倍率 1.30 即 +30%；留空不额外加成。面板已含属性时勾选下方标记。</p><div class="dice-values">' + diceFields.map(([key,label,value,max,step])=>`<label>${label}<input id="${side}-dice-${key}" type="number" placeholder="${value}" min="${key === 'skillPowerAdd' ? -10000 : 0.001}" max="${max}" step="${step}" /></label>`).join('') + '</div>';
     $(`${side}-dice`).addEventListener('change',()=>commit(()=> {
-      const {own,encounter}=state(); (side==='own'?own:encounter).diceId=$(`${side}-dice`).value;
+      const holder=diceHolder(side);
+      holder.diceId=$(`${side}-dice`).value;
+      if(holder.diceId!=='none') holder.diceLast=holder.diceId;
     }));
     for (const [key] of diceFields) $(`${side}-dice-${key}`).addEventListener('change',()=>commit(()=>{
       const {own,encounter}=state(), holder=side==='own'?own:encounter;
@@ -307,6 +316,28 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       const value=number($(`${side}-dice-${key}`));
       if(value===null) delete holder.diceEffects[key]; else holder.diceEffects[key]=value;
     }));
+    // 开关关着即“无”；打开后沿用上次选的骰子。
+    $(`${side}-dice-ui`).addEventListener('change',event=>{
+      if(!event.target.matches('[data-dice-switch]')) return;
+      commit(()=>{ const holder=diceHolder(side);
+        if(event.target.checked) holder.diceId=validDiceId(holder.diceLast) && holder.diceLast!=='none' ? holder.diceLast : 'game-dice-effect-1';
+        else { if(holder.diceId && holder.diceId!=='none') holder.diceLast=holder.diceId; holder.diceId='none'; } });
+    });
+    $(`${side}-dice-ui`).addEventListener('click',event=>{
+      const pick=event.target.closest('[data-dice-pick]'); if(!pick) return;
+      commit(()=>{ const holder=diceHolder(side); holder.diceId=pick.dataset.dicePick; holder.diceLast=holder.diceId; });
+    });
+  }
+  function renderDiceUi(side, holder) {
+    const id = holder.diceId ?? 'none';
+    const on = id !== 'none', summary = diceSummary(holder.diceEffects);
+    const pick = (value, label) => `<button type="button" class="dice-chip" data-dice-pick="${value}" aria-pressed="${id===value}">${html(label)}</button>`;
+    $(`${side}-dice-ui`).innerHTML = `<label class="switch-label"><input type="checkbox" class="switch" data-dice-switch aria-label="${side==='own'?'我方':'敌方'}骰子" ${on?'checked':''}/></label>`
+      + (on ? pick('game-dice-effect-1','双攻 ×1.1') + pick('game-dice-effect-17','威力 +40') + pick('custom', id==='custom' && summary ? summary : '自填') : '<span class="dice-off">无</span>');
+    const select=$(`${side}-dice`);
+    select.classList.toggle('compat-hidden',!on);
+    select.classList.add('dice-selector');
+    select.tabIndex=on?0:-1;
   }
   configureDice('own'); configureDice('target');
   $('own-dice-panel-included').addEventListener('change',()=>commit(()=>{
@@ -318,8 +349,12 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const id = incoming ? `preview-incoming-skill-${index}` : `preview-skill-${index}`;
     const anchor = incoming ? `preview-incoming-picker-${index}` : `preview-skill-picker-${index}`;
     pickers.push(createPicker({anchor,trigger:`${id}-input`,source:id,label:incoming?`敌方技能 ${index+1}`:`我方技能 ${index+1}`,rows:()=>{
-      const {profile,session}=state(); return incoming ? incomingSkillOptions(catalog, session.targetId) : ownLearnset(profile.spiritId);
-    },image:s=>s.iconUrl ?? catalog.assets?.elements?.[s.type],describe:s=>`${s.type} · ${category(s)} · 威力 ${s.basePower ?? '—'}`}));
+      const {profile,session}=state(), rows = incoming ? incomingSkillOptions(catalog, session.targetId) : ownLearnset(profile.spiritId);
+      return rows.filter(s => damaging(s) || s.id === $(id).value);
+    },image:s=>s.iconUrl ?? catalog.assets?.elements?.[s.type],describe:s=>{
+      const {profile,session}=state(), user=spirits.get(incoming?session.targetId:profile.spiritId);
+      return [category(s), `威力 ${s.basePower ?? '—'}`, user?.types?.includes(s.type) ? '本系' : '', !incoming && knockout(index, s.id) ? '一击倒' : ''].filter(Boolean).join(' · ');
+    }}));
     $(id).addEventListener('change',()=>commit(()=>{
       const {own,encounter}=state();
       if(incoming) {encounter.incomingSkillIds[index]=$(id).value;encounter.incomingOverridesList[index]={};encounter.incomingDamages[index]=null;encounter.incomingPicks[index]=null;}
@@ -336,9 +371,24 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     $(`${prefix}-resetPower`).addEventListener('click',()=>commit(()=>{
       const {own,encounter}=state();
       const holder=incoming?encounter.incomingOverridesList[index]:own.skillOverrides[own.skillIds[index]];
-      if (holder) { delete holder.effectivePower; delete holder.displayedPower; }
+      if (holder) for (const key of ['effectivePower','displayedPower','powerMultiplier','hitCount']) delete holder[key];
     }));
+    $(`${prefix}-gear`).addEventListener('click',event=>{
+      event.stopPropagation();
+      const pop=$(`${prefix}-pop`), open=pop.hidden;
+      closePops();
+      pop.hidden=!open; $(`${prefix}-gear`).setAttribute('aria-expanded',String(open));
+      if(open) pop.querySelector('input')?.focus();
+    });
   }
+  function closePops() {
+    for (const pop of document.querySelectorAll('.pskill-pop:not([hidden])')) {
+      pop.hidden = true;
+      document.getElementById(pop.id.replace(/-pop$/,'-gear'))?.setAttribute('aria-expanded','false');
+    }
+  }
+  document.addEventListener('click',event=>{ if(!event.target.closest('.pskill-pop,.pskill-gear')) closePops(); });
+  document.addEventListener('keydown',event=>{ if(event.key==='Escape') closePops(); });
   for(let i=0;i<4;i++) configureSkill(i,false);
   for(let k=0;k<INCOMING_SLOTS;k++) configureSkill(k,true);
   for(let i=0;i<4;i++) {
@@ -376,15 +426,16 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   $('target-shiny').addEventListener('change',()=>commit(()=>{state().encounter.shiny=$('target-shiny').checked;}));
   $('preview-percent-format').addEventListener('change',()=>commit(()=>{state().encounter.percentFormat=$('preview-percent-format').value;}));
   $('preview-reset-observed').addEventListener('click',()=>commit(()=>{const {own,encounter}=state();own.observed={};own.picked={};encounter.incomingDamages=Array(INCOMING_SLOTS).fill(null);encounter.incomingPicks=Array(INCOMING_SLOTS).fill(null);}));
-  $('trait-grid').addEventListener('click',event=>{
+  $('own-trait-row').addEventListener('click',event=>{
     const step=event.target.closest('[data-trait-step]'); if(!step) return;
     commit(()=>{const {own,profile}=state(); own.trait.stacks=limitTraitStacks((own.trait.stacks ?? 0)+Number(step.dataset.traitStep),ownTraitInfo(spirits.get(profile.spiritId)));});
   });
-  $('trait-grid').addEventListener('change',event=>{
+  $('own-trait-row').addEventListener('change',event=>{
     if(event.target.id==='own-trait-stacks') commit(()=>{const {own,profile}=state(); own.trait.stacks=limitTraitStacks(number(event.target),ownTraitInfo(spirits.get(profile.spiritId)));});
     if(event.target.id==='own-trait-active') commit(()=>{state().own.trait.active=event.target.checked;});
   });
 
+  const typeIcon = skill => catalog.assets?.elements?.[skill.type] ? `<img class="type-icon" src="${html(catalog.assets.elements[skill.type])}" alt="${html(skill.type)}" title="${html(skill.type)}"/>` : `${html(skill.type)} · `;
   function renderSkillControl(id, metaId, prefix, rows, skillId, overrides) {
     if (!object(overrides)) overrides={};
     $(id).innerHTML=skillOptions(rows); $(id).value=skillId ?? '';
@@ -393,18 +444,50 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     $(`${prefix}-legacyPower`).hidden = !legacy;
     $(`${prefix}-legacyPower-label`).textContent = legacy ? `最终威力 ${powerNumber(overrides.effectivePower)} · 已含系别与觉醒` : '';
     $(`${prefix}-displayedPower`).placeholder = legacy ? '最终威力生效中' : '自动';
+    $(`${prefix}-gear`).classList.toggle('is-set', Object.keys(overrides).length > 0);
     const skill=skills.get(skillId);
-    if(!skill) { $(metaId).innerHTML='<span class="muted">未选技能</span>'; $(metaId).title=''; return; }
-    $(metaId).innerHTML=`${html(skill.type)} · ${category(skill)} · 显示威力 —`;
+    $(`${prefix}-gear`).hidden = !skill;
+    if(!skill) { $(metaId).innerHTML=''; $(metaId).title=''; return; }
+    $(metaId).innerHTML=`${typeIcon(skill)}${category(skill)} · 显示威力 —`;
     $(metaId).title=skill.description ?? '';
     $(`${prefix}-hitCount`).placeholder = String(legacy ? 1 : defaultSkillHitCount(skill));
   }
-  function renderDisplayedPower(metaId, row) {
+  function renderDisplayedPower(metaId, prefix, row, autoRow) {
     const skill = skills.get(row?.skillId);
     if (!skill) return;
-    const mode = row.powerMode === 'displayed' ? '（手填）' : '';
-    $(metaId).innerHTML = `${html(skill.type)} · ${category(skill)} · 显示威力 ${powerNumber(row.displayedPower)}${mode}${row.hitCount > 1 ? ` · ${row.hitCount}连击` : ''}`
+    const manual = row.powerMode === 'displayed';
+    const power = `<b class="pw${manual?' manual':''}">${powerNumber(row.displayedPower)}${manual?' 手填':''}</b>`;
+    $(metaId).innerHTML = `${typeIcon(skill)}${category(skill)} · 显示威力 ${power}${row.hitCount > 1 ? ` · ${row.hitCount}连击` : ''}`
       + skillPreviewNotices(row, skill).map(note=>`<span class="preview-model-note">${html(note)}</span>`).join('');
+    const auto = autoRow?.skillId === row.skillId && Number.isFinite(autoRow.displayedPower) ? autoRow.displayedPower : null;
+    $(`${prefix}-auto`).textContent = auto === null ? '' : `自动 ${powerNumber(auto)}`;
+    $(`${prefix}-displayedPower`).placeholder = row.powerMode === 'final' ? '最终威力生效中' : auto === null ? '自动' : powerNumber(auto);
+  }
+  // 敌方出招只看攻击方性格：减 / 不变 / 加三格。
+  function axisGroups(row) {
+    const skill = skills.get(row.skillId), rel = skill?.category === 'physical' ? 'physicalAttack' : 'magicalAttack', name = statNames[rel];
+    return [
+      { key:'down', label:`减${name}`, group:rel, condition:'down', items: row.predictions.filter(p => p.downStat === rel) },
+      { key:'neutral', label:`${name}不变`, group:'other', condition:'base', items: row.predictions.filter(p => p.upStat !== rel && p.downStat !== rel) },
+      { key:'up', label:`加${name}`, group:rel, condition:'base', items: row.predictions.filter(p => p.upStat === rel) },
+    ];
+  }
+  function axisMarkup(row, obs, pickedKey) {
+    if(!row) return `<div class="pcell-note">选择技能</div>`;
+    if(row.status!=='estimated' || !row.predictions?.length) return `<div class="pcell-note">${html(shortReason(row.reason))}</div>`;
+    const picked = pickedKey ? pickedKey.split(':').slice(0,2).join(':').replace(/^([^:]+)$/,'$1:base') : null;
+    return axisGroups(row).map(({key,label,group,condition,items}) => {
+      const mark = obs ? (items.some(p => observationMatch(p, obs)) ? ' hit' : ' miss') : '';
+      const on = picked === `${group}:${condition}`;
+      return `<div class="pcell paxis paxis--${key}${mark}${on?' picked':''}" data-nature-group="${group}" data-nature-condition="${condition}" role="button" tabindex="0" aria-pressed="${on}"><strong class="dmg">${range(items.map(p=>p.damage))}</strong><span class="axis-label">${label}</span></div>`;
+    }).join('');
+  }
+  function axisEvidence(row, obs) {
+    const groups = axisGroups(row), hits = groups.filter(g => g.items.some(p => observationMatch(p, obs)));
+    if (!hits.length) return { text: '模型未吻合', tone: 'bad' };
+    if (hits.length === 1) return { text: `${hits[0].label}（参考）`, tone: 'good' };
+    if (hits.length < groups.length) return { text: `模型未匹配${groups.filter(g => !hits.includes(g)).map(g => g.label).join('/')}`, tone: 'cut' };
+    return { text: '无区分', tone: 'flat' };
   }
   function cellsMarkup(row, columns, incoming, obs, format, pickedKey) {
     if(!row) return `<div class="pcell-note">选择技能</div>`;
@@ -469,7 +552,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       candidates = new Set([...candidates].filter(id => ids.has(id))); used++;
       const values = [obs.damage == null ? '' : `${incoming ? '掉血' : '伤害'} ${obs.damage}`,
         obs.remainingPercent == null ? '' : `余 ${obs.remainingPercent}%`].filter(Boolean).join(' · ');
-      evidence.push({ label: `${row.skillName} ${values}`, ...evidenceTag(row, incoming ? IN_COLUMNS : OUT_COLUMNS, incoming, obs, format) });
+      evidence.push({ label: `${row.skillName} ${values}`, ...(incoming ? axisEvidence(row, obs) : evidenceTag(row, OUT_COLUMNS, false, obs, format)) });
     };
     for (let i=0;i<4;i++) addEvidence(result.outgoing?.[i], observed[i], false);
     for (let k=0;k<INCOMING_SLOTS;k++) addEvidence(result.incomingList?.[k], incomingObservation(encounter,k), true);
@@ -481,7 +564,23 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       return `<div class="nature-axis" data-stat="${key}"><span class="axis-name">${catalog.assets?.stats?.[key]?`<img src="${html(catalog.assets.stats[key])}" alt=""/>`:''}${statNames[key]}</span><b class="${value==='加'?'up':value==='减'?'down':value==='—'?'empty':''}">${value}</b></div>`;
     }).join('');
     const chips = ready ? `<details class="nature-details" ${matching.length <= 5 ? 'open' : ''}><summary>模型候选 · ${matching.length}</summary><div class="nature-chips">${matching.map(n=>`<span>${html(n.name)}<em>${statNames[n.upStat]}↑ ${statNames[n.downStat]}↓</em></span>`).join('')}</div></details>` : '';
-    $('preview-verdict').innerHTML = `<div class="rail-cap"><span>性格计算</span><span>${html(target?.name ?? '')} · ${levelLabel(encounter.level)} 级</span></div><div class="verdict-big${invalid || (used && !matching.length) ? ' bad' : !used ? ' empty' : ''}">${summary}</div><p id="preview-comparison" class="verdict-note">经验模型，未吻合不能排除性格</p><div class="nature-axes">${axes}</div>${chips}${evidence.length?`<div class="evidence">${evidence.map(e=>`<div><i class="dot ${e.tone}"></i><span>${html(e.label)}</span><b class="${e.tone}">${html(e.text)}</b></div>`).join('')}</div>`:''}`;
+    const calibration=WILD_DEFENSE_MODEL.sourceFormCalibrations[target?.wildDefenseRaceStats?.sourcePetbaseId];
+    const measured=calibration?.measuredLevels ?? [];
+    const matchedLevels=[...new Set([...candidates].map(id=>Number(id.split(':')[0])))];
+    // A single selected level cannot establish the level: compare all levels,
+    // with at least two distinct physical observations in the measured bands.
+    const physicalRows=(result.outgoing ?? []).filter((row,i)=>row.status==='estimated'
+      && skills.get(row.skillId)?.category==='physical' && observed[i]?.damage!=null
+      && !observed[i].invalid && row.predictions.some(p=>observationMatch(p,observed[i],format)&&p.damage<p.hpMax));
+    const distinctPhysical=new Set(physicalRows.map(row=>`${row.skillId}:${row.displayedPower}`)).size;
+    const calibratedBands=calibration?.measuredPhysicalDefenseNatures ?? [];
+    const measuredNatures=matching.every(n=>calibratedBands.includes(n.upStat==='physicalDefense'?'up':n.downStat==='physicalDefense'?'down':'neutral'));
+    const levelMatched=ready && levels.length===3 && distinctPhysical>=2 && matchedLevels.length===1
+      && matchedLevels[0]===42 && measured.includes(42) && measuredNatures;
+    const levelValue=levelMatched?'42 ✓':levelLabel(encounter.level);
+    const levelNote=levelMatched?'与 42 级实测校准相符':measured.includes(encounter.level)?'该等级有物防校准；等级按游戏选择':'按游戏显示选择等级';
+    const levelRow=`<div class="verdict-level"><span>等级</span><b${levelMatched?' class="up-ok"':''}>${html(levelValue)}</b><em>${html(levelNote)}</em></div>`;
+    $('preview-verdict').innerHTML = `<div class="rail-cap"><span>性格计算</span><span>${html(target?.name ?? '')}</span></div>${levelRow}<div class="verdict-big${invalid || (used && !matching.length) ? ' bad' : !used ? ' empty' : ''}">${summary}</div><p id="preview-comparison" class="verdict-note">经验模型，未吻合不能排除性格</p><div class="nature-axes">${axes}</div>${chips}${evidence.length?`<div class="evidence">${evidence.map(e=>`<div><i class="dot ${e.tone}"></i><span>${html(e.label)}</span><b class="${e.tone}">${html(e.text)}</b></div>`).join('')}</div>`:''}`;
     $('preview-result-brief').textContent = ready && matching.length === 1 ? `${matching[0].name}（参考）` : summary;
     return { matching, used, invalid };
   }
@@ -515,8 +614,10 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       const summary = traitSummary(info, own.trait, skillTypes);
       if (summary) inner += `<span class="trait-sum">${html(summary)}</span>`;
     }
-    const card = (cls, head, spirit, body) => `<article class="trait-card ${cls}"><header>${head}</header><div class="trait-body"><div class="trait-text"><strong>${html(spirit?.traitName ?? '无特性')}</strong><p>${html(spirit?.traitDescription ?? '')}</p></div>${body}</div></article>`;
-    $('trait-grid').innerHTML = card('trait-card--own','我方特性',ownSpirit,inner ? `<div class="trait-controls">${inner}</div>` : '') + card('trait-card--wild','野怪特性',target,'');
+    $('own-trait-row').innerHTML = `<strong>${html(ownSpirit?.traitName ?? '无特性')}</strong>${inner}`;
+    $('own-trait-row').title = ownSpirit?.traitDescription ?? '';
+    $('wild-trait-row').innerHTML = `<strong>${html(target?.traitName ?? '无特性')}</strong><span class="trait-desc">${html(target?.traitDescription ?? '')}</span>`;
+    $('wild-trait-row').title = target?.traitDescription ?? '';
     return info;
   }
   function renderPanel(profile, ownSpirit, info, own) {
@@ -529,6 +630,28 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     $('preview-panel').innerHTML = `<div class="rail-cap"><span>${head}</span></div><div class="panel-stats">${Object.entries(statNames).map(([key,label])=>`<div class="${nature?.upStat===key?'up':nature?.downStat===key?'down':''}"><span>${label}</span><b>${powerNumber(panel?.[key])}${pct[key]?`<em>+${pct[key]}%</em>`:''}</b></div>`).join('')}</div>`;
   }
 
+  function matchupInput(session, profile, own, encounter, skillIds = own.skillIds) {
+    return {targetId:session.targetId,wildStatFormId:session.wildStatFormId,level:session.level,profile:{...profile,panelIncludesDice:own.panelIncludesDice===true},skillIds,skillOverrides:own.skillOverrides,
+      incomingSkillIds:encounter.incomingSkillIds,incomingOverridesList:encounter.incomingOverridesList,ownTrait:own.trait,targetShiny:encounter.shiny,
+      ownDiceIds:own.diceId==='custom'?[]:[own.diceId ?? 'none'],targetDiceIds:encounter.diceId==='custom'?[]:[encounter.diceId ?? 'none'],
+      ownDiceEffects:own.diceId==='custom'?(own.diceEffects ?? {}):{},targetDiceEffects:encounter.diceId==='custom'?(encounter.diceEffects ?? {}):{}};
+  }
+  // 换上这招后，所有性格、所选等级都满血一发打死，才标“一击倒”。
+  function knockout(index, skillId) {
+    const key = `${index}:${skillId}`;
+    if (koCache.has(key)) return koCache.get(key);
+    let ko = false;
+    try {
+      const {session,profile,own,encounter}=state(), skill=skills.get(skillId);
+      if (automatic(skill)) {
+        const ids = own.skillIds.map((id,i) => i === index ? skillId : id);
+        const row = previewMatchup({...matchupInput(session,profile,own,encounter,ids), incomingSkillIds:[]},catalog,diceCatalog,traitCatalog).outgoing?.[index];
+        ko = row?.status === 'estimated' && row.predictions.length > 0 && row.predictions.every(p => p.damage >= p.hpMax);
+      }
+    } catch { ko = false; }
+    koCache.set(key, ko);
+    return ko;
+  }
   function render() {
     const {session,profile,own,encounter}=state();
     const ownSpirit = spirits.get(profile.spiritId), target = spirits.get(session.targetId);
@@ -556,6 +679,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       note.textContent=id==='custom'?'按手填合计试算；组合与取整仍需实测。'
         : row ? `${diceDescription(row)} ${row.typeCoefficient?'与双系、极化/钝化的组合待校验，非中性关系暂停自动试算。':row.supported?'按原配置试算，取整与叠加待实测。':row.unsupportedReason ?? '当前仅展示资料，未接入结算。'}`
           : '骰子资料缺失，请重新选择。';
+      renderDiceUi(side, holder);
     }
     const includedAllowed=profile.panelSource==='manual';
     if(!includedAllowed) own.panelIncludesDice=false;
@@ -565,16 +689,18 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     $('own-dice-panel-note').textContent=includedAllowed?'已包含时不再叠加骰子属性；技能威力加值仍单独处理。':'配置面板不含骰子；手填面板后可标记已包含。';
     $('preview-percent-format').value=format;
     $('target-shiny').checked=encounter.shiny;
+    koCache = new Map();
     for(const picker of pickers) picker.refresh();
-    const input={targetId:session.targetId,level:session.level,profile:{...profile,panelIncludesDice:own.panelIncludesDice===true},skillIds:own.skillIds,skillOverrides:own.skillOverrides,
-      incomingSkillIds:encounter.incomingSkillIds,incomingOverridesList:encounter.incomingOverridesList,ownTrait:own.trait,targetShiny:encounter.shiny,
-      ownDiceIds:own.diceId==='custom'?[]:[own.diceId ?? 'none'],targetDiceIds:encounter.diceId==='custom'?[]:[encounter.diceId ?? 'none'],
-      ownDiceEffects:own.diceId==='custom'?(own.diceEffects ?? {}):{},targetDiceEffects:encounter.diceId==='custom'?(encounter.diceEffects ?? {}):{}};
+    const input=matchupInput(session,profile,own,encounter);
     try {currentPreview=previewMatchup(input,catalog,diceCatalog,traitCatalog);} catch(error) {currentPreview={outgoing:[],incoming:null,incomingList:[],warnings:[error.message]};}
+    // 手填过的招，另算一份自动值给 ⚙ 弹层对照。
+    const anyOverride = own.skillIds.some(id => id && Object.keys(own.skillOverrides[id] ?? {}).length) || encounter.incomingOverridesList.some(o => Object.keys(o ?? {}).length);
+    let autoPreview = currentPreview;
+    if (anyOverride) try { autoPreview = previewMatchup({...input, skillOverrides:{}, incomingOverridesList:input.incomingOverridesList.map(()=>({}))},catalog,diceCatalog,traitCatalog); } catch { autoPreview = {}; }
     const { observed } = readOutgoingObservations(own, format);
     for(let i=0;i<4;i++) {
       const obs = observed[i]?.invalid ? null : observed[i];
-      renderDisplayedPower(`preview-skill-meta-${i}`, currentPreview.outgoing?.[i]);
+      renderDisplayedPower(`preview-skill-meta-${i}`, `preview-condition-${i}`, currentPreview.outgoing?.[i], autoPreview.outgoing?.[i]);
       $(`preview-cells-${i}`).innerHTML=cellsMarkup(own.skillIds[i]?currentPreview.outgoing?.[i]:null,OUT_COLUMNS,false,obs,format,own.picked[i]);
       for (const prefix of ['preview-observed','preview-remaining']) {
         const field = $(`${prefix}-${i}`);
@@ -584,12 +710,12 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     }
     for(let k=0;k<INCOMING_SLOTS;k++) {
       const obs = incomingObservation(encounter, k);
-      renderDisplayedPower(`preview-incoming-meta-${k}`, currentPreview.incomingList?.[k]);
-      $(`preview-incoming-cells-${k}`).innerHTML=cellsMarkup(encounter.incomingSkillIds[k]?currentPreview.incomingList?.[k]:null,IN_COLUMNS,true,obs,format,encounter.incomingPicks[k]);
+      renderDisplayedPower(`preview-incoming-meta-${k}`, `preview-incoming-condition-${k}`, currentPreview.incomingList?.[k], autoPreview.incomingList?.[k]);
+      $(`preview-incoming-cells-${k}`).innerHTML=axisMarkup(encounter.incomingSkillIds[k]?currentPreview.incomingList?.[k]:null,obs,encounter.incomingPicks[k]);
       $(`preview-incoming-damage-${k}`).classList.toggle('filled',obs?.damage != null);
     }
     const targetHp = currentPreview.targetHpByNature;
-    $('target-hp-range').innerHTML = [['neutral','奇遇普通'],['up','奇遇加生命'],['down','奇遇减生命']].map(([key,label]) => `<div data-hp-nature="${key}"><span>${label}</span><b>${typeof targetHp?.[key] === 'object' ? range([targetHp[key].min,targetHp[key].max]) : targetHp?.[key] ?? '—'}</b></div>`).join('');
+    $('target-hp-range').innerHTML = [['down','减生命'],['neutral','普通'],['up','加生命']].map(([key,label]) => `<span data-hp-nature="${key}">${label} <b>${typeof targetHp?.[key] === 'object' ? range([targetHp[key].min,targetHp[key].max]) : targetHp?.[key] ?? '—'}</b></span>`).join('');
     $('preview-target-label').textContent=`${profile.name} → ${target?.name ?? '野生目标'} ${levelLabel(session.level)} 级 · 满血单发`;
     $('preview-incoming-title').textContent=`${target?.name ?? '敌方'} → ${profile.name}`;
     const info = renderTraits(ownSpirit, target, own);

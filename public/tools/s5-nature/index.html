@@ -27,6 +27,12 @@
             ><button id="load-demo" type="button">合成演示</button
             ><button id="export-json" type="button">导出记录</button
             ><button id="import-json" type="button">导入记录</button>
+            <label class="menu-select preview-only">血量显示<select id="preview-percent-format">
+              <option value="game0">游戏显示 · 整数</option>
+              <option value="round0">四舍五入 · 整数</option>
+              <option value="floor0">向下取整 · 整数</option>
+              <option value="round1">四舍五入 · 一位小数</option>
+            </select></label>
           </div>
         </details>
         <input type="file" id="import-file" accept="application/json,.json" hidden />
@@ -46,28 +52,26 @@
         <div class="calculator-main">
           <section class="versus-grid" id="versus-grid" data-direction="outgoing" aria-label="双方精灵">
             <section class="side-picker" id="own-side" data-role="attack">
-              <div class="side-eyebrow">
+              <div class="side-head">
+                <img id="own-image" class="side-avatar" alt="" />
                 <span class="side-tag">我方</span><span id="own-role" class="side-role">攻击方</span>
+                <div class="picker-anchor side-pick" id="own-picker">
+                  <input id="own-picker-input" autocomplete="off" placeholder="选择出战精灵" /><span
+                    class="picker-caret" aria-hidden="true">⌄</span>
+                </div>
                 <div id="profile-tabs" class="profile-tabs" role="tablist" aria-label="常用出战档案"></div>
               </div>
-              <div class="picker-anchor" id="own-picker">
-                <span class="search-glyph" aria-hidden="true">⌕</span
-                ><input id="own-picker-input" autocomplete="off" placeholder="选择出战精灵" /><span
-                  class="picker-caret" aria-hidden="true">⌄</span>
-              </div>
-              <div class="spirit-card" id="own-card">
-                <img id="own-image" class="spirit-image" alt="" />
-                <div>
-                  <strong id="own-name">罗隐</strong>
-                  <div id="own-tags" class="spirit-tags"></div>
-                  <p id="own-trait"></p>
-                </div>
+              <div class="spirit-card compat-hidden" id="own-card" aria-hidden="true">
+                <strong id="own-name">罗隐</strong>
+                <div id="own-tags" class="spirit-tags"></div>
+                <p id="own-trait"></p>
               </div>
               <div class="config-rows" aria-label="我方星级、性格与个体">
                 <div class="config-row">
                   <span class="config-key">星级</span>
                   <div id="star-seg" class="seg" role="group" aria-label="我方星级"></div>
                   <span id="stab-badge" class="stab-badge"></span>
+                  <button id="load-own-preset" type="button" class="text-button row-end">载入预设</button>
                   <select id="profile-awakening" class="compat-hidden" tabindex="-1" aria-label="我方星级">
                     <option value="0">5 星</option><option value="1">6 星</option><option value="2">7 星</option>
                     <option value="3">8 星</option><option value="4">9 星</option><option value="5" selected>10 星</option>
@@ -78,22 +82,23 @@
                   <div id="nature-picker" class="nature-picker">
                     <button id="nature-picker-trigger" type="button">普通</button>
                   </div>
-                  <button id="load-own-preset" type="button" class="text-button">载入预设</button>
-                </div>
-                <div class="config-row iv-line">
-                  <span class="config-key">个体</span>
+                  <span class="config-key config-key--inline">个体</span>
                   <div id="quick-ivs" class="quick-ivs"></div>
-                  <button id="ivs-zero" type="button" class="text-button">全 0</button
-                  ><button id="ivs-max" type="button" class="text-button">全 60</button>
+                  <button id="ivs-zero" type="button" class="compat-hidden" tabindex="-1">全 0</button
+                  ><button id="ivs-max" type="button" class="compat-hidden" tabindex="-1">全 60</button>
                 </div>
                 <div class="config-row dice-line">
-                  <label class="config-key" for="own-dice">骰子</label><select id="own-dice" aria-label="我方骰子加成"></select>
+                  <span class="config-key">骰子</span><div id="own-dice-ui" class="dice-ui"></div>
+                  <select id="own-dice" class="compat-hidden" tabindex="-1" aria-label="我方骰子加成"></select>
                 </div>
                 <div id="own-dice-custom" class="dice-custom" hidden></div>
                 <p id="own-dice-note" class="dice-note" role="status" hidden></p>
                 <div class="dice-panel-source">
                   <label><input id="own-dice-panel-included" type="checkbox" />战斗面板已含骰子属性</label>
                   <p id="own-dice-panel-note"></p>
+                </div>
+                <div class="config-row">
+                  <span class="config-key">特性</span><div id="own-trait-row" class="trait-row trait-row--own"></div>
                 </div>
               </div>
               <details id="profiles-section" class="detail-panel">
@@ -133,9 +138,13 @@
               <span class="swap-vs">VS</span><span class="swap-arrows">⇄</span>
             </button>
             <section class="side-picker" id="wild-side" data-role="defense">
-              <div class="side-eyebrow">
-                <span class="side-tag">野怪</span><span id="wild-role" class="side-role">防御方</span
-                ><span class="side-hint">初始形态</span>
+              <div class="side-head">
+                <img id="target-image" class="side-avatar" alt="" />
+                <span class="side-tag">野怪</span><span id="wild-role" class="side-role">防御方</span>
+                <div class="picker-anchor side-pick" id="target-picker">
+                  <input id="target-picker-input" autocomplete="off" placeholder="选择野生目标" /><span
+                    class="picker-caret" aria-hidden="true">⌄</span>
+                </div>
                 <div class="eyebrow-end">
                   <select id="target-filter" aria-label="目标范围">
                     <option value="initial">S2 / S5 初始形态</option>
@@ -150,33 +159,32 @@
                   </select>
                 </div>
               </div>
-              <div class="picker-anchor" id="target-picker">
-                <span class="search-glyph" aria-hidden="true">⌕</span
-                ><input id="target-picker-input" autocomplete="off" placeholder="选择野生目标" /><span
-                  class="picker-caret" aria-hidden="true">⌄</span>
+              <div class="spirit-card compat-hidden" aria-hidden="true">
+                <strong id="target-name">翼龙</strong>
+                <div id="target-tags" class="spirit-tags"></div>
+                <p id="target-trait"></p>
               </div>
-              <div class="spirit-card">
-                <img id="target-image" class="spirit-image" alt="" />
-                <div>
-                  <strong id="target-name">翼龙</strong>
-                  <div id="target-tags" class="spirit-tags"></div>
-                  <p id="target-trait"></p>
-                  <button id="use-initial-form" type="button" class="small-button" hidden></button>
-                </div>
-              </div>
+              <button id="use-initial-form" type="button" class="small-button initial-form-button" hidden></button>
               <div class="config-rows">
-                <div class="encounter-health preview-only">
-                  <div class="encounter-health-head"><span>奇遇血量</span><label class="shiny-toggle"><input id="target-shiny" type="checkbox" />异色 · 生命×1.5</label></div>
-                  <div id="target-hp-range" class="hp-range" aria-label="奇遇血量" aria-live="polite"></div>
+                <div id="target-wild-form-row" class="config-row" hidden>
+                  <label class="config-key" for="target-wild-form">防御分支</label>
+                  <select id="target-wild-form" aria-label="野怪防御分支"></select>
+                </div>
+                <div class="config-row preview-only">
+                  <span class="config-key">血量</span><div id="target-hp-range" class="hp-line" aria-label="奇遇血量" aria-live="polite"></div>
+                  <label class="switch-label"><input id="target-shiny" type="checkbox" class="switch" aria-label="异色 · 生命×1.5" />异色</label>
                 </div>
                 <div class="config-row dice-line">
-                  <label class="config-key" for="target-dice">骰子</label><select id="target-dice" aria-label="敌方骰子加成"></select>
+                  <span class="config-key">骰子</span><div id="target-dice-ui" class="dice-ui"></div>
+                  <select id="target-dice" class="compat-hidden" tabindex="-1" aria-label="敌方骰子加成"></select>
                 </div>
                 <div id="target-dice-custom" class="dice-custom" hidden></div>
                 <p id="target-dice-note" class="dice-note" role="status" hidden></p>
+                <div class="config-row">
+                  <span class="config-key">特性</span><div id="wild-trait-row" class="trait-row trait-row--wild"></div>
+                </div>
               </div>
             </section>
-            <div id="trait-grid" class="trait-grid" aria-label="双方特性"></div>
           </section>
           <div class="target-info validation-only">
             <span id="target-catalog-note"></span><span id="target-data-note" hidden></span>
@@ -189,15 +197,6 @@
             <section class="preview-card">
               <div class="preview-heading"><h2>我方出招</h2><p id="preview-target-label"></p></div>
               <div id="preview-outgoing" class="preview-grid preview-grid--out"></div>
-              <div class="preview-foot">
-                <label>血量显示<select id="preview-percent-format">
-                  <option value="game0">游戏显示 · 整数</option>
-                  <option value="round0">四舍五入 · 整数</option>
-                  <option value="floor0">向下取整 · 整数</option>
-                  <option value="round1">四舍五入 · 一位小数</option>
-                </select></label>
-                <button id="preview-reset-observed" type="button" class="text-button">清空实测</button>
-              </div>
             </section>
             <section class="preview-card">
               <div class="preview-heading"><h2>敌方出招</h2><p id="preview-incoming-title"></p></div>

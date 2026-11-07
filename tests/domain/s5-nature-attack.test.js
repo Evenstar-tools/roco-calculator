@@ -195,11 +195,12 @@ test('evolved attack mappings remain explicit provenance, without replacing sele
 
 test('missing or partial attack mappings never fall back to initial-form attacks', () => {
   const target = species('乐乐鲨'), input = inputFor(target.name, 'all');
-  assert.equal(target.wildAttackRaceStats, null);
+  const missingCatalog = structuredClone(catalog);
+  missingCatalog.spirits.find(row => row.id === target.id).wildAttackRaceStats = null;
   input.incomingSkillId = skill('甩水').id;
-  const preview = previewMatchup(input, catalog, dice);
+  const preview = previewMatchup(input, missingCatalog, dice);
   assert.equal(preview.incoming.status, 'unsupported');
-  assert.match(preview.incoming.reason, /三阶段双攻资料缺失/);
+  assert.match(preview.incoming.reason, /攻击来源资料缺失/);
   assert.equal(preview.outgoing[0].status, 'estimated');
   assert.equal(preview.targetHpByLevel.length, 3);
   const nature = natureFor('magicalAttack', 'up');
@@ -208,9 +209,9 @@ test('missing or partial attack mappings never fall back to initial-form attacks
   assert.equal(panel.magicalAttack, null);
   assert(panel.hp > 0 && panel.physicalDefense > 0);
   const observation = { id: 'incoming', skillId: input.incomingSkillId, profileId: 'own', direction: 'incoming', damage: 1, context: 'clean', reduction: 1 };
-  const record = predictObservation({ targetId: target.id, level: 41, profiles: [input.profile] }, observation, nature, catalog);
+  const record = predictObservation({ targetId: target.id, level: 41, profiles: [input.profile] }, observation, nature, missingCatalog);
   assert.equal(record.status, 'blocked');
-  assert.match(record.reason, /三阶段双攻资料缺失/);
+  assert.match(record.reason, /攻击来源资料缺失/);
   assert.throws(() => wildPanel(target.raceStats, 41, nature, { attackRaceStats: { physicalAttack: 114 } }), /攻击种族值/);
 });
 

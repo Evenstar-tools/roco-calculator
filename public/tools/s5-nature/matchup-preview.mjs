@@ -1,6 +1,7 @@
 import { calculateDamage } from './vendor/damage.mjs';
 import { getAwakeningBonuses, resolveAwakeningType } from './awakening.mjs';
 import { wildPanel, targetLevels } from './engine.mjs';
+import { resolveWildTarget, missingWildRaceReason } from './wild-forms.mjs';
 import { WILD_HP_MODEL, wildTargetShiny } from './wild-hp.mjs';
 export { SHINY_HP_MULTIPLIER } from './wild-hp.mjs';
 import { traitInfo, resolveOwnTrait, applyAttackStage, applyDefenseStage } from './own-trait.mjs';
@@ -205,8 +206,8 @@ function damageEntry(skillId, overrideValue, direction, context) {
     if (!skill) throw new RangeError('请选择已收录的技能。');
     const override = readOverride(overrideValue);
     const incoming = direction === 'incoming';
-    if (!incoming && target.wildDefenseRaceStats == null) throw new RangeError('该精灵的三阶段双防资料缺失。');
-    if (incoming && target.wildAttackRaceStats == null) throw new RangeError('该精灵的三阶段双攻资料缺失。');
+    if (!incoming && target.wildDefenseRaceStats == null) throw new RangeError(missingWildRaceReason(target, 'defense'));
+    if (incoming && target.wildAttackRaceStats == null) throw new RangeError(missingWildRaceReason(target, 'attack'));
     if (incoming && ![1, 2, 3].includes(target.wildStrengthStage)) throw new RangeError('野怪强度阶段缺失或无效，双攻计算需要明确的1至3阶段。');
     const attacker = incoming ? target : ownSpirit;
     const defender = incoming ? ownSpirit : target;
@@ -248,6 +249,7 @@ function damageEntry(skillId, overrideValue, direction, context) {
       return {
         status: 'estimated',
         natureId: candidate.nature.id, natureName: candidate.nature.name, targetLevel: input.level,
+        ...(target.wildStatFormId ? { wildStatFormId: target.wildStatFormId } : {}),
         upStat: candidate.nature.upStat, downStat: candidate.nature.downStat,
         damage, actualLossFromFull: Math.min(hpMax, damage), hpMax, remainingHp,
         remainingPercent: remainingHp * 100 / hpMax, fromFull: true,
@@ -311,7 +313,7 @@ export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
     if (has(input.profile, 'panelIncludesDice') && typeof input.profile.panelIncludesDice !== 'boolean') throw new RangeError('profile.panelIncludesDice 须为布尔值，表示我方面板是否已含骰子属性加成。');
     if (catalog.natures.length !== 30 || new Set(catalog.natures.map(row => row?.id)).size !== 30) throw new RangeError('需要完整且不重复的30种性格资料。');
     const ownSpirit = catalog.spirits.find(row => row.id === input.profile.spiritId);
-    const target = catalog.spirits.find(row => row.id === input.targetId);
+    const target = resolveWildTarget(catalog.spirits.find(row => row.id === input.targetId), input.wildStatFormId);
     if (!ownSpirit || !target) throw new RangeError('请选择目录中的双方精灵。');
     const ownDice = diceForSide(input.ownDiceIds, input.ownDiceEffects, diceCatalog, '我方');
     const targetDice = diceForSide(input.targetDiceIds, input.targetDiceEffects, diceCatalog, '敌方');
@@ -346,6 +348,7 @@ export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
       diceApplication: { ownPanel: panelIncludesDice ? 'already-included' : 'apply-selected-effects',
         targetPanel: 'apply-selected-effects', typeCoefficientEffects: [...ownDice.typeCoefficientEffects, ...targetDice.typeCoefficientEffects] },
       targetId: target.id, ownSpiritId: ownSpirit.id, targetLevel: input.level, targetLevels: [input.level], hpModel: WILD_HP_MODEL,
+      ...(target.wildStatFormId ? { wildStatFormId: target.wildStatFormId, wildStatFormName: target.wildStatFormName } : {}),
       targetHpByNature, targetHpRange, targetHpByLevel: [{ level: input.level, ...targetHpByNature }] };
   } catch (error) {
     const reason = error.message || '当前输入无法预估。';

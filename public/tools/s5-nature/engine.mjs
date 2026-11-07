@@ -3,6 +3,7 @@ import { getAwakeningBonuses } from './awakening.mjs';
 import { calculateWildHp, wildTargetShiny } from './wild-hp.mjs';
 import { calculateWildAttack } from './wild-attack.mjs';
 import { calculateWildDefense } from './wild-defense.mjs';
+import { resolveWildTarget, missingWildRaceReason } from './wild-forms.mjs';
 
 const STATS = ['hp', 'physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense', 'speed'];
 const STAT_NAMES = { hp: '生命', physicalAttack: '物攻', magicalAttack: '魔攻', physicalDefense: '物防', magicalDefense: '魔防', speed: '速度' };
@@ -66,7 +67,7 @@ function prepare(session, catalog) {
   if (!session || typeof session !== 'object') throw new RangeError('请建立一组观测记录。');
   if (![41, 42, 43].includes(session.level)) throw new RangeError('野生等级仅支持41、42、43。');
   if (!catalog || !Array.isArray(catalog.spirits) || !Array.isArray(catalog.natures)) throw new RangeError('精灵或性格数据未就绪。');
-  const target = catalog.spirits.find(row => row.id === session.targetId);
+  const target = resolveWildTarget(catalog.spirits.find(row => row.id === session.targetId), session.wildStatFormId);
   if (!target) throw new RangeError('请选择数据中已收录的野生精灵。');
   const missingStats = STATS.filter(stat => !integer(target.raceStats?.[stat], 1, 1000));
   if (missingStats.length) throw new RangeError(`${target.name || '该精灵'}种族资料不足（${missingStats.map(stat => STAT_NAMES[stat]).join('、')}），请补齐后计算野怪面板。`);
@@ -144,8 +145,8 @@ function damageContext(prepared, obs) {
   if (!skill || skill.supported !== true || !['physical', 'magical'].includes(skill.category) || !isNumber(skill.basePower) || skill.basePower <= 0 || skill.basePower > 10000) {
     return { error: '该技能尚未纳入简单单击白名单，暂不参与反推。' };
   }
-  if (obs.direction === 'outgoing' && target.wildDefenseRaceStats == null) return { error: '该精灵的三阶段双防资料缺失。' };
-  if (obs.direction === 'incoming' && target.wildAttackRaceStats == null) return { error: '该精灵的三阶段双攻资料缺失。' };
+  if (obs.direction === 'outgoing' && target.wildDefenseRaceStats == null) return { error: missingWildRaceReason(target, 'defense') };
+  if (obs.direction === 'incoming' && target.wildAttackRaceStats == null) return { error: missingWildRaceReason(target, 'attack') };
   if (obs.direction === 'incoming' && ![1, 2, 3].includes(target.wildStrengthStage)) return { error: '野怪强度阶段缺失或无效，双攻计算需要明确的1至3阶段。' };
   const requiredStat = obs.direction === 'incoming'
     ? skill.category === 'physical' ? 'physicalDefense' : 'magicalDefense'
@@ -231,6 +232,7 @@ function calculatePrediction(prepared, obs, nature, context, beforeStates) {
   return {
     prediction: {
       natureId: nature.id, targetLevel: prepared.session.level, damage, hpMax: panel.hp, actualDamage: obs.damage ?? null,
+      ...(prepared.target.wildStatFormId ? { wildStatFormId: prepared.target.wildStatFormId } : {}),
       compatible: nextStates.size > 0, remainingHp: hpRange(nextStates),
       warnings: context.traitWarnings || [],
       estimated: prepared.catalog.meta?.calibrationStatus === 'unverified' || Boolean(context.traitWarnings?.length),

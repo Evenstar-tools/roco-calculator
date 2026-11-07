@@ -178,6 +178,13 @@
           "formulaVerified": false
         }
       }
+    },
+    "wildRaceCompletion": {
+      "source": "PETBASE_CONF",
+      "evidence": "data/reviewed/s5-wild-race-completion-20261107.json",
+      "available": 666,
+      "branchSelectable": 24,
+      "unavailable": 28
     }
   },
   "spirits": [
@@ -3533,9 +3540,94 @@
       "prioritySeasons": [],
       "traitName": "化茧",
       "traitDescription": "受到致命伤害时，获得1层萌化，并免疫此次伤害。（最多触发2次）",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3136,
+        "attackPetbaseId": 3136,
+        "attackFormName": "毛毛",
+        "physicalAttack": 28,
+        "magicalAttack": 28,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 1
+      "wildStrengthStage": 1,
+      "wildStatForms": [
+        {
+          "id": "petbase-3138",
+          "name": "化蝶（平常的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3136,
+            "attackPetbaseId": 3136,
+            "attackFormName": "毛毛",
+            "physicalAttack": 28,
+            "magicalAttack": 28,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3136,
+            "defensePetbaseId": 3138,
+            "defenseFormName": "化蝶（平常的样子）",
+            "physicalDefense": 66,
+            "magicalDefense": 66
+          }
+        },
+        {
+          "id": "petbase-3470",
+          "name": "化蝶（幽冥眼的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3136,
+            "attackPetbaseId": 3136,
+            "attackFormName": "毛毛",
+            "physicalAttack": 28,
+            "magicalAttack": 28,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3136,
+            "defensePetbaseId": 3470,
+            "defenseFormName": "化蝶（幽冥眼的样子）",
+            "physicalDefense": 67,
+            "magicalDefense": 70
+          }
+        },
+        {
+          "id": "petbase-3471",
+          "name": "化蝶（喵喵的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3136,
+            "attackPetbaseId": 3136,
+            "attackFormName": "毛毛",
+            "physicalAttack": 28,
+            "magicalAttack": 28,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3136,
+            "defensePetbaseId": 3471,
+            "defenseFormName": "化蝶（喵喵的样子）",
+            "physicalDefense": 67,
+            "magicalDefense": 67
+          }
+        },
+        {
+          "id": "petbase-3472",
+          "name": "化蝶（奇丽花的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3136,
+            "attackPetbaseId": 3136,
+            "attackFormName": "毛毛",
+            "physicalAttack": 28,
+            "magicalAttack": 28,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3136,
+            "defensePetbaseId": 3472,
+            "defenseFormName": "化蝶（奇丽花的样子）",
+            "physicalDefense": 62,
+            "magicalDefense": 65
+          }
+        }
+      ]
     },
     {
       "id": "spirit_552a95c89d0867e1",
@@ -3572,9 +3664,94 @@
       "prioritySeasons": [],
       "traitName": "化茧",
       "traitDescription": "受到致命伤害时，获得1层萌化，并免疫此次伤害。（最多触发2次）",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3137,
+        "attackPetbaseId": 3137,
+        "attackFormName": "爬爬",
+        "physicalAttack": 37,
+        "magicalAttack": 37,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3138",
+          "name": "化蝶（平常的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3137,
+            "attackPetbaseId": 3137,
+            "attackFormName": "爬爬",
+            "physicalAttack": 37,
+            "magicalAttack": 37,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3137,
+            "defensePetbaseId": 3138,
+            "defenseFormName": "化蝶（平常的样子）",
+            "physicalDefense": 66,
+            "magicalDefense": 66
+          }
+        },
+        {
+          "id": "petbase-3470",
+          "name": "化蝶（幽冥眼的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3137,
+            "attackPetbaseId": 3137,
+            "attackFormName": "爬爬",
+            "physicalAttack": 37,
+            "magicalAttack": 37,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3137,
+            "defensePetbaseId": 3470,
+            "defenseFormName": "化蝶（幽冥眼的样子）",
+            "physicalDefense": 67,
+            "magicalDefense": 70
+          }
+        },
+        {
+          "id": "petbase-3471",
+          "name": "化蝶（喵喵的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3137,
+            "attackPetbaseId": 3137,
+            "attackFormName": "爬爬",
+            "physicalAttack": 37,
+            "magicalAttack": 37,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3137,
+            "defensePetbaseId": 3471,
+            "defenseFormName": "化蝶（喵喵的样子）",
+            "physicalDefense": 67,
+            "magicalDefense": 67
+          }
+        },
+        {
+          "id": "petbase-3472",
+          "name": "化蝶（奇丽花的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3137,
+            "attackPetbaseId": 3137,
+            "attackFormName": "爬爬",
+            "physicalAttack": 37,
+            "magicalAttack": 37,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3137,
+            "defensePetbaseId": 3472,
+            "defenseFormName": "化蝶（奇丽花的样子）",
+            "physicalDefense": 62,
+            "magicalDefense": 65
+          }
+        }
+      ]
     },
     {
       "id": "spirit_9dd866cafbbf24f3",
@@ -4048,9 +4225,132 @@
       "prioritySeasons": [],
       "traitName": "偏振",
       "traitDescription": "受到自己携带技能系别的攻击伤害-40%。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3307,
+        "attackPetbaseId": 3307,
+        "attackFormName": "矿晶虫",
+        "physicalAttack": 77,
+        "magicalAttack": 81,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3308",
+          "name": "晶石蜗（西瓜碧玺的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3307,
+            "attackPetbaseId": 3307,
+            "attackFormName": "矿晶虫",
+            "physicalAttack": 77,
+            "magicalAttack": 81,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3307,
+            "defensePetbaseId": 3308,
+            "defenseFormName": "晶石蜗（西瓜碧玺的样子）",
+            "physicalDefense": 128,
+            "magicalDefense": 94
+          }
+        },
+        {
+          "id": "petbase-3448",
+          "name": "晶石蜗（莲花刚玉的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3307,
+            "attackPetbaseId": 3307,
+            "attackFormName": "矿晶虫",
+            "physicalAttack": 77,
+            "magicalAttack": 81,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3307,
+            "defensePetbaseId": 3448,
+            "defenseFormName": "晶石蜗（莲花刚玉的样子）",
+            "physicalDefense": 137,
+            "magicalDefense": 91
+          }
+        },
+        {
+          "id": "petbase-3449",
+          "name": "晶石蜗（星彩榴石的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3307,
+            "attackPetbaseId": 3307,
+            "attackFormName": "矿晶虫",
+            "physicalAttack": 77,
+            "magicalAttack": 81,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3307,
+            "defensePetbaseId": 3449,
+            "defenseFormName": "晶石蜗（星彩榴石的样子）",
+            "physicalDefense": 128,
+            "magicalDefense": 91
+          }
+        },
+        {
+          "id": "petbase-3450",
+          "name": "晶石蜗（火山琉璃的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3307,
+            "attackPetbaseId": 3307,
+            "attackFormName": "矿晶虫",
+            "physicalAttack": 77,
+            "magicalAttack": 81,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3307,
+            "defensePetbaseId": 3450,
+            "defenseFormName": "晶石蜗（火山琉璃的样子）",
+            "physicalDefense": 132,
+            "magicalDefense": 91
+          }
+        },
+        {
+          "id": "petbase-3451",
+          "name": "晶石蜗（蓝锥矿的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3307,
+            "attackPetbaseId": 3307,
+            "attackFormName": "矿晶虫",
+            "physicalAttack": 77,
+            "magicalAttack": 81,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3307,
+            "defensePetbaseId": 3451,
+            "defenseFormName": "晶石蜗（蓝锥矿的样子）",
+            "physicalDefense": 124,
+            "magicalDefense": 91
+          }
+        },
+        {
+          "id": "petbase-3486",
+          "name": "晶石蜗（烧蓝黄金的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3307,
+            "attackPetbaseId": 3307,
+            "attackFormName": "矿晶虫",
+            "physicalAttack": 77,
+            "magicalAttack": 81,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3307,
+            "defensePetbaseId": 3486,
+            "defenseFormName": "晶石蜗（烧蓝黄金的样子）",
+            "physicalDefense": 130,
+            "magicalDefense": 91
+          }
+        }
+      ]
     },
     {
       "id": "spirit_8daefb99ffb3a3b8",
@@ -5789,9 +6089,56 @@
       "prioritySeasons": [],
       "traitName": "惊吓",
       "traitDescription": "能量等于0的精灵，无法对自己造成伤害。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3060,
+        "attackPetbaseId": 3060,
+        "attackFormName": "小灵面",
+        "physicalAttack": 30,
+        "magicalAttack": 72,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 1
+      "wildStrengthStage": 1,
+      "wildStatForms": [
+        {
+          "id": "petbase-3405",
+          "name": "幽冥眼（睁眼的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3060,
+            "attackPetbaseId": 3060,
+            "attackFormName": "小灵面",
+            "physicalAttack": 30,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3060,
+            "defensePetbaseId": 3405,
+            "defenseFormName": "幽冥眼（睁眼的样子）",
+            "physicalDefense": 98,
+            "magicalDefense": 135
+          }
+        },
+        {
+          "id": "petbase-3482",
+          "name": "幽冥眼（闭眼的样子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3060,
+            "attackPetbaseId": 3060,
+            "attackFormName": "小灵面",
+            "physicalAttack": 30,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3060,
+            "defensePetbaseId": 3482,
+            "defenseFormName": "幽冥眼（闭眼的样子）",
+            "physicalDefense": 104,
+            "magicalDefense": 110
+          }
+        }
+      ]
     },
     {
       "id": "spirit_95b3e83d81371f98",
@@ -6945,8 +7292,24 @@
       "prioritySeasons": [],
       "traitName": "高浓生物碱",
       "traitDescription": "使用草系技能时，敌方获得3层中毒。",
-      "wildAttackRaceStats": null,
-      "wildDefenseRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 5004,
+        "attackPetbaseId": 5004,
+        "attackFormName": "蹦蹦果",
+        "physicalAttack": 107,
+        "magicalAttack": 110,
+        "resolution": "boss-parent-stage3",
+        "ordinaryParentPetbaseId": 3019
+      },
+      "wildDefenseRaceStats": {
+        "sourcePetbaseId": 5004,
+        "defensePetbaseId": 3019,
+        "defenseFormName": "蹦蹦花（海神球形态）",
+        "physicalDefense": 73,
+        "magicalDefense": 105,
+        "resolution": "boss-parent-stage3",
+        "ordinaryParentPetbaseId": 3019
+      },
       "wildStrengthStage": 1
     },
     {
@@ -6980,8 +7343,24 @@
       "prioritySeasons": [],
       "traitName": "高浓生物碱",
       "traitDescription": "使用草系技能时，敌方获得3层中毒。",
-      "wildAttackRaceStats": null,
-      "wildDefenseRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 5033,
+        "attackPetbaseId": 5033,
+        "attackFormName": "蹦蹦果",
+        "physicalAttack": 101,
+        "magicalAttack": 109,
+        "resolution": "boss-parent-stage3",
+        "ordinaryParentPetbaseId": 3303
+      },
+      "wildDefenseRaceStats": {
+        "sourcePetbaseId": 5033,
+        "defensePetbaseId": 3303,
+        "defenseFormName": "蹦蹦花（彩玉球形态）",
+        "physicalDefense": 73,
+        "magicalDefense": 105,
+        "resolution": "boss-parent-stage3",
+        "ordinaryParentPetbaseId": 3303
+      },
       "wildStrengthStage": 1
     },
     {
@@ -7015,8 +7394,24 @@
       "prioritySeasons": [],
       "traitName": "高浓生物碱",
       "traitDescription": "使用草系技能时，敌方获得3层中毒。",
-      "wildAttackRaceStats": null,
-      "wildDefenseRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 5034,
+        "attackPetbaseId": 5034,
+        "attackFormName": "蹦蹦果",
+        "physicalAttack": 103,
+        "magicalAttack": 109,
+        "resolution": "boss-parent-stage3",
+        "ordinaryParentPetbaseId": 3304
+      },
+      "wildDefenseRaceStats": {
+        "sourcePetbaseId": 5034,
+        "defensePetbaseId": 3304,
+        "defenseFormName": "蹦蹦花（短毛球形态）",
+        "physicalDefense": 80,
+        "magicalDefense": 112,
+        "resolution": "boss-parent-stage3",
+        "ordinaryParentPetbaseId": 3304
+      },
       "wildStrengthStage": 1
     },
     {
@@ -7050,8 +7445,24 @@
       "prioritySeasons": [],
       "traitName": "高浓生物碱",
       "traitDescription": "使用草系技能时，敌方获得3层中毒。",
-      "wildAttackRaceStats": null,
-      "wildDefenseRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 5035,
+        "attackPetbaseId": 5035,
+        "attackFormName": "蹦蹦果",
+        "physicalAttack": 100,
+        "magicalAttack": 110,
+        "resolution": "boss-parent-stage3",
+        "ordinaryParentPetbaseId": 3305
+      },
+      "wildDefenseRaceStats": {
+        "sourcePetbaseId": 5035,
+        "defensePetbaseId": 3305,
+        "defenseFormName": "蹦蹦花（象牙球形态）",
+        "physicalDefense": 73,
+        "magicalDefense": 106,
+        "resolution": "boss-parent-stage3",
+        "ordinaryParentPetbaseId": 3305
+      },
       "wildStrengthStage": 1
     },
     {
@@ -8495,9 +8906,56 @@
       "prioritySeasons": [],
       "traitName": "洁癖",
       "traitDescription": "离场后，自己的增益和减益会被更换入场的精灵继承。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3344,
+        "attackPetbaseId": 3344,
+        "attackFormName": "乖乖鹄",
+        "physicalAttack": 57,
+        "magicalAttack": 52,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 1
+      "wildStrengthStage": 1,
+      "wildStatForms": [
+        {
+          "id": "petbase-3346",
+          "name": "翠顶夫人",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3344,
+            "attackPetbaseId": 3344,
+            "attackFormName": "乖乖鹄",
+            "physicalAttack": 57,
+            "magicalAttack": 52,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3344,
+            "defensePetbaseId": 3346,
+            "defenseFormName": "翠顶夫人",
+            "physicalDefense": 138,
+            "magicalDefense": 97
+          }
+        },
+        {
+          "id": "petbase-3571",
+          "name": "黑羽夫人",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3344,
+            "attackPetbaseId": 3344,
+            "attackFormName": "乖乖鹄",
+            "physicalAttack": 57,
+            "magicalAttack": 52,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3344,
+            "defensePetbaseId": 3571,
+            "defenseFormName": "黑羽夫人",
+            "physicalDefense": 130,
+            "magicalDefense": 90
+          }
+        }
+      ]
     },
     {
       "id": "spirit_e62f0702d019bbff",
@@ -8530,9 +8988,56 @@
       "prioritySeasons": [],
       "traitName": "洁癖",
       "traitDescription": "离场后，自己的增益和减益会被更换入场的精灵继承。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3345,
+        "attackPetbaseId": 3345,
+        "attackFormName": "蓝珠天鹅",
+        "physicalAttack": 76,
+        "magicalAttack": 69,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3346",
+          "name": "翠顶夫人",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3345,
+            "attackPetbaseId": 3345,
+            "attackFormName": "蓝珠天鹅",
+            "physicalAttack": 76,
+            "magicalAttack": 69,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3345,
+            "defensePetbaseId": 3346,
+            "defenseFormName": "翠顶夫人",
+            "physicalDefense": 138,
+            "magicalDefense": 97
+          }
+        },
+        {
+          "id": "petbase-3571",
+          "name": "黑羽夫人",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3345,
+            "attackPetbaseId": 3345,
+            "attackFormName": "蓝珠天鹅",
+            "physicalAttack": 76,
+            "magicalAttack": 69,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3345,
+            "defensePetbaseId": 3571,
+            "defenseFormName": "黑羽夫人",
+            "physicalDefense": 130,
+            "magicalDefense": 90
+          }
+        }
+      ]
     },
     {
       "id": "spirit_b40543f05ede5824",
@@ -14030,9 +14535,94 @@
       "prioritySeasons": [],
       "traitName": "腾挪",
       "traitDescription": "攻击技能应对1次后，回满能量和生命，变为棋绮后。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3550,
+        "attackPetbaseId": 3550,
+        "attackFormName": "棋棋",
+        "physicalAttack": 100,
+        "magicalAttack": 36,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3551",
+          "name": "棋骑士（白子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3550,
+            "attackPetbaseId": 3550,
+            "attackFormName": "棋棋",
+            "physicalAttack": 100,
+            "magicalAttack": 36,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3550,
+            "defensePetbaseId": 3551,
+            "defenseFormName": "棋骑士（白子）",
+            "physicalDefense": 88,
+            "magicalDefense": 69
+          }
+        },
+        {
+          "id": "petbase-3552",
+          "name": "棋绮后（白子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3550,
+            "attackPetbaseId": 3550,
+            "attackFormName": "棋棋",
+            "physicalAttack": 100,
+            "magicalAttack": 36,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3550,
+            "defensePetbaseId": 3552,
+            "defenseFormName": "棋绮后（白子）",
+            "physicalDefense": 82,
+            "magicalDefense": 75
+          }
+        },
+        {
+          "id": "petbase-3553",
+          "name": "棋齐垒（白子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3550,
+            "attackPetbaseId": 3550,
+            "attackFormName": "棋棋",
+            "physicalAttack": 100,
+            "magicalAttack": 36,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3550,
+            "defensePetbaseId": 3553,
+            "defenseFormName": "棋齐垒（白子）",
+            "physicalDefense": 116,
+            "magicalDefense": 77
+          }
+        },
+        {
+          "id": "petbase-3554",
+          "name": "棋祈督（白子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3550,
+            "attackPetbaseId": 3550,
+            "attackFormName": "棋棋",
+            "physicalAttack": 100,
+            "magicalAttack": 36,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3550,
+            "defensePetbaseId": 3554,
+            "defenseFormName": "棋祈督（白子）",
+            "physicalDefense": 90,
+            "magicalDefense": 72
+          }
+        }
+      ]
     },
     {
       "id": "spirit_28e59ee92341bf43",
@@ -14065,9 +14655,94 @@
       "prioritySeasons": [],
       "traitName": "腾挪",
       "traitDescription": "攻击技能应对1次后，回满能量和生命，变为棋绮后。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3555,
+        "attackPetbaseId": 3555,
+        "attackFormName": "棋棋",
+        "physicalAttack": 97,
+        "magicalAttack": 35,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3556",
+          "name": "棋骑士（黑子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3555,
+            "attackPetbaseId": 3555,
+            "attackFormName": "棋棋",
+            "physicalAttack": 97,
+            "magicalAttack": 35,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3555,
+            "defensePetbaseId": 3556,
+            "defenseFormName": "棋骑士（黑子）",
+            "physicalDefense": 84,
+            "magicalDefense": 66
+          }
+        },
+        {
+          "id": "petbase-3557",
+          "name": "棋绮后（黑子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3555,
+            "attackPetbaseId": 3555,
+            "attackFormName": "棋棋",
+            "physicalAttack": 97,
+            "magicalAttack": 35,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3555,
+            "defensePetbaseId": 3557,
+            "defenseFormName": "棋绮后（黑子）",
+            "physicalDefense": 82,
+            "magicalDefense": 75
+          }
+        },
+        {
+          "id": "petbase-3558",
+          "name": "棋齐垒（黑子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3555,
+            "attackPetbaseId": 3555,
+            "attackFormName": "棋棋",
+            "physicalAttack": 97,
+            "magicalAttack": 35,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3555,
+            "defensePetbaseId": 3558,
+            "defenseFormName": "棋齐垒（黑子）",
+            "physicalDefense": 116,
+            "magicalDefense": 77
+          }
+        },
+        {
+          "id": "petbase-3559",
+          "name": "棋祈督（黑子）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3555,
+            "attackPetbaseId": 3555,
+            "attackFormName": "棋棋",
+            "physicalAttack": 97,
+            "magicalAttack": 35,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3555,
+            "defensePetbaseId": 3559,
+            "defenseFormName": "棋祈督（黑子）",
+            "physicalDefense": 90,
+            "magicalDefense": 72
+          }
+        }
+      ]
     },
     {
       "id": "spirit_de999044bdf8e8c1",
@@ -17492,9 +18167,189 @@
       "prioritySeasons": [],
       "traitName": "加个雪球",
       "traitDescription": "使敌方获得冻结时，也会使其获得2层冻结。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3124,
+        "attackPetbaseId": 3124,
+        "attackFormName": "脆筒甜甜",
+        "physicalAttack": 67,
+        "magicalAttack": 72,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 1
+      "wildStrengthStage": 1,
+      "wildStatForms": [
+        {
+          "id": "petbase-3126",
+          "name": "圣代甜甜（樱桃巧克力口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3124,
+            "attackPetbaseId": 3124,
+            "attackFormName": "脆筒甜甜",
+            "physicalAttack": 67,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3124,
+            "defensePetbaseId": 3126,
+            "defenseFormName": "圣代甜甜（樱桃巧克力口味）",
+            "physicalDefense": 70,
+            "magicalDefense": 92
+          }
+        },
+        {
+          "id": "petbase-3458",
+          "name": "圣代甜甜（樱桃草莓口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3124,
+            "attackPetbaseId": 3124,
+            "attackFormName": "脆筒甜甜",
+            "physicalAttack": 67,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3124,
+            "defensePetbaseId": 3458,
+            "defenseFormName": "圣代甜甜（樱桃草莓口味）",
+            "physicalDefense": 81,
+            "magicalDefense": 96
+          }
+        },
+        {
+          "id": "petbase-3459",
+          "name": "圣代甜甜（樱桃抹茶口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3124,
+            "attackPetbaseId": 3124,
+            "attackFormName": "脆筒甜甜",
+            "physicalAttack": 67,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3124,
+            "defensePetbaseId": 3459,
+            "defenseFormName": "圣代甜甜（樱桃抹茶口味）",
+            "physicalDefense": 79,
+            "magicalDefense": 92
+          }
+        },
+        {
+          "id": "petbase-3460",
+          "name": "圣代甜甜（蓝莓巧克力口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3124,
+            "attackPetbaseId": 3124,
+            "attackFormName": "脆筒甜甜",
+            "physicalAttack": 67,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3124,
+            "defensePetbaseId": 3460,
+            "defenseFormName": "圣代甜甜（蓝莓巧克力口味）",
+            "physicalDefense": 79,
+            "magicalDefense": 92
+          }
+        },
+        {
+          "id": "petbase-3461",
+          "name": "圣代甜甜（蓝莓草莓口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3124,
+            "attackPetbaseId": 3124,
+            "attackFormName": "脆筒甜甜",
+            "physicalAttack": 67,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3124,
+            "defensePetbaseId": 3461,
+            "defenseFormName": "圣代甜甜（蓝莓草莓口味）",
+            "physicalDefense": 90,
+            "magicalDefense": 96
+          }
+        },
+        {
+          "id": "petbase-3462",
+          "name": "圣代甜甜（蓝莓抹茶口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3124,
+            "attackPetbaseId": 3124,
+            "attackFormName": "脆筒甜甜",
+            "physicalAttack": 67,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3124,
+            "defensePetbaseId": 3462,
+            "defenseFormName": "圣代甜甜（蓝莓抹茶口味）",
+            "physicalDefense": 86,
+            "magicalDefense": 92
+          }
+        },
+        {
+          "id": "petbase-3463",
+          "name": "圣代甜甜（杨桃巧克力口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3124,
+            "attackPetbaseId": 3124,
+            "attackFormName": "脆筒甜甜",
+            "physicalAttack": 67,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3124,
+            "defensePetbaseId": 3463,
+            "defenseFormName": "圣代甜甜（杨桃巧克力口味）",
+            "physicalDefense": 73,
+            "magicalDefense": 96
+          }
+        },
+        {
+          "id": "petbase-3464",
+          "name": "圣代甜甜（杨桃草莓口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3124,
+            "attackPetbaseId": 3124,
+            "attackFormName": "脆筒甜甜",
+            "physicalAttack": 67,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3124,
+            "defensePetbaseId": 3464,
+            "defenseFormName": "圣代甜甜（杨桃草莓口味）",
+            "physicalDefense": 84,
+            "magicalDefense": 99
+          }
+        },
+        {
+          "id": "petbase-3465",
+          "name": "圣代甜甜（杨桃抹茶口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3124,
+            "attackPetbaseId": 3124,
+            "attackFormName": "脆筒甜甜",
+            "physicalAttack": 67,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3124,
+            "defensePetbaseId": 3465,
+            "defenseFormName": "圣代甜甜（杨桃抹茶口味）",
+            "physicalDefense": 82,
+            "magicalDefense": 96
+          }
+        }
+      ]
     },
     {
       "id": "spirit_219690deb9569dc6",
@@ -17526,9 +18381,75 @@
       "prioritySeasons": [],
       "traitName": "加个雪球",
       "traitDescription": "使敌方获得冻结时，也会使其获得2层冻结。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3125,
+        "attackPetbaseId": 3125,
+        "attackFormName": "香草甜甜",
+        "physicalAttack": 90,
+        "magicalAttack": 95,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3126",
+          "name": "圣代甜甜（樱桃巧克力口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3125,
+            "attackPetbaseId": 3125,
+            "attackFormName": "香草甜甜",
+            "physicalAttack": 90,
+            "magicalAttack": 95,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3125,
+            "defensePetbaseId": 3126,
+            "defenseFormName": "圣代甜甜（樱桃巧克力口味）",
+            "physicalDefense": 70,
+            "magicalDefense": 92
+          }
+        },
+        {
+          "id": "petbase-3458",
+          "name": "圣代甜甜（樱桃草莓口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3125,
+            "attackPetbaseId": 3125,
+            "attackFormName": "香草甜甜",
+            "physicalAttack": 90,
+            "magicalAttack": 95,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3125,
+            "defensePetbaseId": 3458,
+            "defenseFormName": "圣代甜甜（樱桃草莓口味）",
+            "physicalDefense": 81,
+            "magicalDefense": 96
+          }
+        },
+        {
+          "id": "petbase-3459",
+          "name": "圣代甜甜（樱桃抹茶口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3125,
+            "attackPetbaseId": 3125,
+            "attackFormName": "香草甜甜",
+            "physicalAttack": 90,
+            "magicalAttack": 95,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3125,
+            "defensePetbaseId": 3459,
+            "defenseFormName": "圣代甜甜（樱桃抹茶口味）",
+            "physicalDefense": 79,
+            "magicalDefense": 92
+          }
+        }
+      ]
     },
     {
       "id": "spirit_f034858d5c81a2ae",
@@ -17560,9 +18481,75 @@
       "prioritySeasons": [],
       "traitName": "加个雪球",
       "traitDescription": "使敌方获得冻结时，也会使其获得2层冻结。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3478,
+        "attackPetbaseId": 3478,
+        "attackFormName": "香草甜甜",
+        "physicalAttack": 92,
+        "magicalAttack": 96,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3463",
+          "name": "圣代甜甜（杨桃巧克力口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3478,
+            "attackPetbaseId": 3478,
+            "attackFormName": "香草甜甜",
+            "physicalAttack": 92,
+            "magicalAttack": 96,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3478,
+            "defensePetbaseId": 3463,
+            "defenseFormName": "圣代甜甜（杨桃巧克力口味）",
+            "physicalDefense": 73,
+            "magicalDefense": 96
+          }
+        },
+        {
+          "id": "petbase-3464",
+          "name": "圣代甜甜（杨桃草莓口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3478,
+            "attackPetbaseId": 3478,
+            "attackFormName": "香草甜甜",
+            "physicalAttack": 92,
+            "magicalAttack": 96,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3478,
+            "defensePetbaseId": 3464,
+            "defenseFormName": "圣代甜甜（杨桃草莓口味）",
+            "physicalDefense": 84,
+            "magicalDefense": 99
+          }
+        },
+        {
+          "id": "petbase-3465",
+          "name": "圣代甜甜（杨桃抹茶口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3478,
+            "attackPetbaseId": 3478,
+            "attackFormName": "香草甜甜",
+            "physicalAttack": 92,
+            "magicalAttack": 96,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3478,
+            "defensePetbaseId": 3465,
+            "defenseFormName": "圣代甜甜（杨桃抹茶口味）",
+            "physicalDefense": 82,
+            "magicalDefense": 96
+          }
+        }
+      ]
     },
     {
       "id": "spirit_29b708f908c0d8a9",
@@ -17594,9 +18581,75 @@
       "prioritySeasons": [],
       "traitName": "加个雪球",
       "traitDescription": "使敌方获得冻结时，也会使其获得2层冻结。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3479,
+        "attackPetbaseId": 3479,
+        "attackFormName": "香草甜甜",
+        "physicalAttack": 94,
+        "magicalAttack": 88,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3460",
+          "name": "圣代甜甜（蓝莓巧克力口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3479,
+            "attackPetbaseId": 3479,
+            "attackFormName": "香草甜甜",
+            "physicalAttack": 94,
+            "magicalAttack": 88,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3479,
+            "defensePetbaseId": 3460,
+            "defenseFormName": "圣代甜甜（蓝莓巧克力口味）",
+            "physicalDefense": 79,
+            "magicalDefense": 92
+          }
+        },
+        {
+          "id": "petbase-3461",
+          "name": "圣代甜甜（蓝莓草莓口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3479,
+            "attackPetbaseId": 3479,
+            "attackFormName": "香草甜甜",
+            "physicalAttack": 94,
+            "magicalAttack": 88,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3479,
+            "defensePetbaseId": 3461,
+            "defenseFormName": "圣代甜甜（蓝莓草莓口味）",
+            "physicalDefense": 90,
+            "magicalDefense": 96
+          }
+        },
+        {
+          "id": "petbase-3462",
+          "name": "圣代甜甜（蓝莓抹茶口味）",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3479,
+            "attackPetbaseId": 3479,
+            "attackFormName": "香草甜甜",
+            "physicalAttack": 94,
+            "magicalAttack": 88,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3479,
+            "defensePetbaseId": 3462,
+            "defenseFormName": "圣代甜甜（蓝莓抹茶口味）",
+            "physicalDefense": 86,
+            "magicalDefense": 92
+          }
+        }
+      ]
     },
     {
       "id": "spirit_41869713b59c286d",
@@ -19636,9 +20689,56 @@
       "prioritySeasons": [],
       "traitName": "斗技",
       "traitDescription": "应对成功后，获得全技能威力永久+30。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3086,
+        "attackPetbaseId": 3086,
+        "attackFormName": "可立鸡",
+        "physicalAttack": 72,
+        "magicalAttack": 72,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 1
+      "wildStrengthStage": 1,
+      "wildStatForms": [
+        {
+          "id": "petbase-3088",
+          "name": "绅士鸡",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3086,
+            "attackPetbaseId": 3086,
+            "attackFormName": "可立鸡",
+            "physicalAttack": 72,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3086,
+            "defensePetbaseId": 3088,
+            "defenseFormName": "绅士鸡",
+            "physicalDefense": 102,
+            "magicalDefense": 87
+          }
+        },
+        {
+          "id": "petbase-3089",
+          "name": "武者鸡",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3086,
+            "attackPetbaseId": 3086,
+            "attackFormName": "可立鸡",
+            "physicalAttack": 72,
+            "magicalAttack": 72,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3086,
+            "defensePetbaseId": 3089,
+            "defenseFormName": "武者鸡",
+            "physicalDefense": 111,
+            "magicalDefense": 70
+          }
+        }
+      ]
     },
     {
       "id": "spirit_aab6e4b6314a2035",
@@ -19670,9 +20770,56 @@
       "prioritySeasons": [],
       "traitName": "斗技",
       "traitDescription": "应对成功后，获得全技能威力永久+30。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3087,
+        "attackPetbaseId": 3087,
+        "attackFormName": "晕晕鸡",
+        "physicalAttack": 96,
+        "magicalAttack": 96,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3088",
+          "name": "绅士鸡",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3087,
+            "attackPetbaseId": 3087,
+            "attackFormName": "晕晕鸡",
+            "physicalAttack": 96,
+            "magicalAttack": 96,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3087,
+            "defensePetbaseId": 3088,
+            "defenseFormName": "绅士鸡",
+            "physicalDefense": 102,
+            "magicalDefense": 87
+          }
+        },
+        {
+          "id": "petbase-3089",
+          "name": "武者鸡",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3087,
+            "attackPetbaseId": 3087,
+            "attackFormName": "晕晕鸡",
+            "physicalAttack": 96,
+            "magicalAttack": 96,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3087,
+            "defensePetbaseId": 3089,
+            "defenseFormName": "武者鸡",
+            "physicalDefense": 111,
+            "magicalDefense": 70
+          }
+        }
+      ]
     },
     {
       "id": "spirit_38995924fb931da3",
@@ -20403,9 +21550,56 @@
       "prioritySeasons": [],
       "traitName": "涂鸦",
       "traitDescription": "使用非本系技能时威力+50%。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3577,
+        "attackPetbaseId": 3577,
+        "attackFormName": "墨鱿士",
+        "physicalAttack": 97,
+        "magicalAttack": 42,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3578",
+          "name": "混乱鱿彩",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3577,
+            "attackPetbaseId": 3577,
+            "attackFormName": "墨鱿士",
+            "physicalAttack": 97,
+            "magicalAttack": 42,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3577,
+            "defensePetbaseId": 3578,
+            "defenseFormName": "混乱鱿彩",
+            "physicalDefense": 131,
+            "magicalDefense": 99
+          }
+        },
+        {
+          "id": "petbase-3579",
+          "name": "秩序鱿墨",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3577,
+            "attackPetbaseId": 3577,
+            "attackFormName": "墨鱿士",
+            "physicalAttack": 97,
+            "magicalAttack": 42,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3577,
+            "defensePetbaseId": 3579,
+            "defenseFormName": "秩序鱿墨",
+            "physicalDefense": 117,
+            "magicalDefense": 106
+          }
+        }
+      ]
     },
     {
       "id": "spirit_3247e9dd6602e72c",
@@ -21237,9 +22431,56 @@
       "prioritySeasons": [],
       "traitName": "扫拖一体",
       "traitDescription": "回合结束时驱散敌方1层印记，且驱散后己方队伍获得1次随机奉献。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3603,
+        "attackPetbaseId": 3603,
+        "attackFormName": "毛头小蛛",
+        "physicalAttack": 80,
+        "magicalAttack": 27,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3604",
+          "name": "捕尘长绒",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3603,
+            "attackPetbaseId": 3603,
+            "attackFormName": "毛头小蛛",
+            "physicalAttack": 80,
+            "magicalAttack": 27,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3603,
+            "defensePetbaseId": 3604,
+            "defenseFormName": "捕尘长绒",
+            "physicalDefense": 116,
+            "magicalDefense": 99
+          }
+        },
+        {
+          "id": "petbase-3605",
+          "name": "食尘短绒",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3603,
+            "attackPetbaseId": 3603,
+            "attackFormName": "毛头小蛛",
+            "physicalAttack": 80,
+            "magicalAttack": 27,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3603,
+            "defensePetbaseId": 3605,
+            "defenseFormName": "食尘短绒",
+            "physicalDefense": 113,
+            "magicalDefense": 97
+          }
+        }
+      ]
     },
     {
       "id": "spirit_7c5218a85eac0018",
@@ -21368,9 +22609,56 @@
       "prioritySeasons": [],
       "traitName": "灰色肖像",
       "traitDescription": "攻击会使敌方已有的减益层数+3。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3606,
+        "attackPetbaseId": 3606,
+        "attackFormName": "画精灵",
+        "physicalAttack": 32,
+        "magicalAttack": 78,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 1
+      "wildStrengthStage": 1,
+      "wildStatForms": [
+        {
+          "id": "petbase-3608",
+          "name": "画间法师手",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3606,
+            "attackPetbaseId": 3606,
+            "attackFormName": "画精灵",
+            "physicalAttack": 32,
+            "magicalAttack": 78,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3606,
+            "defensePetbaseId": 3608,
+            "defenseFormName": "画间法师手",
+            "physicalDefense": 94,
+            "magicalDefense": 120
+          }
+        },
+        {
+          "id": "petbase-3609",
+          "name": "画间沉铁兽",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3606,
+            "attackPetbaseId": 3606,
+            "attackFormName": "画精灵",
+            "physicalAttack": 32,
+            "magicalAttack": 78,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3606,
+            "defensePetbaseId": 3609,
+            "defenseFormName": "画间沉铁兽",
+            "physicalDefense": 100,
+            "magicalDefense": 76
+          }
+        }
+      ]
     },
     {
       "id": "spirit_6eefcea5a4902052",
@@ -21402,9 +22690,56 @@
       "prioritySeasons": [],
       "traitName": "灰色肖像",
       "traitDescription": "攻击会使敌方已有的减益层数+3。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3607,
+        "attackPetbaseId": 3607,
+        "attackFormName": "画像守护",
+        "physicalAttack": 42,
+        "magicalAttack": 104,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3608",
+          "name": "画间法师手",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3607,
+            "attackPetbaseId": 3607,
+            "attackFormName": "画像守护",
+            "physicalAttack": 42,
+            "magicalAttack": 104,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3607,
+            "defensePetbaseId": 3608,
+            "defenseFormName": "画间法师手",
+            "physicalDefense": 94,
+            "magicalDefense": 120
+          }
+        },
+        {
+          "id": "petbase-3609",
+          "name": "画间沉铁兽",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3607,
+            "attackPetbaseId": 3607,
+            "attackFormName": "画像守护",
+            "physicalAttack": 42,
+            "magicalAttack": 104,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3607,
+            "defensePetbaseId": 3609,
+            "defenseFormName": "画间沉铁兽",
+            "physicalDefense": 100,
+            "magicalDefense": 76
+          }
+        }
+      ]
     },
     {
       "id": "spirit_5d306a78398c4bcd",
@@ -21530,9 +22865,56 @@
       "prioritySeasons": [],
       "traitName": "图书守卫者",
       "traitDescription": "入场时，若自己魔力值为1，自己获得双攻+100%。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3610,
+        "attackPetbaseId": 3610,
+        "attackFormName": "书魔虫",
+        "physicalAttack": 69,
+        "magicalAttack": 69,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 1
+      "wildStrengthStage": 1,
+      "wildStatForms": [
+        {
+          "id": "petbase-3612",
+          "name": "古卷执政官",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3610,
+            "attackPetbaseId": 3610,
+            "attackFormName": "书魔虫",
+            "physicalAttack": 69,
+            "magicalAttack": 69,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3610,
+            "defensePetbaseId": 3612,
+            "defenseFormName": "古卷执政官",
+            "physicalDefense": 80,
+            "magicalDefense": 122
+          }
+        },
+        {
+          "id": "petbase-3613",
+          "name": "古卷匣魔像",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3610,
+            "attackPetbaseId": 3610,
+            "attackFormName": "书魔虫",
+            "physicalAttack": 69,
+            "magicalAttack": 69,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3610,
+            "defensePetbaseId": 3613,
+            "defenseFormName": "古卷匣魔像",
+            "physicalDefense": 130,
+            "magicalDefense": 86
+          }
+        }
+      ]
     },
     {
       "id": "spirit_35c4507102bacd52",
@@ -21564,9 +22946,56 @@
       "prioritySeasons": [],
       "traitName": "图书守卫者",
       "traitDescription": "入场时，若自己魔力值为1，自己获得双攻+100%。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3611,
+        "attackPetbaseId": 3611,
+        "attackFormName": "书卷守护",
+        "physicalAttack": 92,
+        "magicalAttack": 92,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3612",
+          "name": "古卷执政官",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3611,
+            "attackPetbaseId": 3611,
+            "attackFormName": "书卷守护",
+            "physicalAttack": 92,
+            "magicalAttack": 92,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3611,
+            "defensePetbaseId": 3612,
+            "defenseFormName": "古卷执政官",
+            "physicalDefense": 80,
+            "magicalDefense": 122
+          }
+        },
+        {
+          "id": "petbase-3613",
+          "name": "古卷匣魔像",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3611,
+            "attackPetbaseId": 3611,
+            "attackFormName": "书卷守护",
+            "physicalAttack": 92,
+            "magicalAttack": 92,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3611,
+            "defensePetbaseId": 3613,
+            "defenseFormName": "古卷匣魔像",
+            "physicalDefense": 130,
+            "magicalDefense": 86
+          }
+        }
+      ]
     },
     {
       "id": "spirit_b75ef6a541e92530",
@@ -21973,9 +23402,75 @@
       "prioritySeasons": [],
       "traitName": "茶多酚",
       "traitDescription": "离场后，更换入场的精灵回复20%生命且免疫寄生。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3118,
+        "attackPetbaseId": 3118,
+        "attackFormName": "果冻",
+        "physicalAttack": 26,
+        "magicalAttack": 81,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3526",
+          "name": "抹茶布丁",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3118,
+            "attackPetbaseId": 3118,
+            "attackFormName": "果冻",
+            "physicalAttack": 26,
+            "magicalAttack": 81,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3118,
+            "defensePetbaseId": 3526,
+            "defenseFormName": "抹茶布丁",
+            "physicalDefense": 94,
+            "magicalDefense": 98
+          }
+        },
+        {
+          "id": "petbase-3527",
+          "name": "椰浆布丁",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3118,
+            "attackPetbaseId": 3118,
+            "attackFormName": "果冻",
+            "physicalAttack": 26,
+            "magicalAttack": 81,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3118,
+            "defensePetbaseId": 3527,
+            "defenseFormName": "椰浆布丁",
+            "physicalDefense": 81,
+            "magicalDefense": 105
+          }
+        },
+        {
+          "id": "petbase-3528",
+          "name": "熔岩布丁",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3118,
+            "attackPetbaseId": 3118,
+            "attackFormName": "果冻",
+            "physicalAttack": 26,
+            "magicalAttack": 81,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3118,
+            "defensePetbaseId": 3528,
+            "defenseFormName": "熔岩布丁",
+            "physicalDefense": 112,
+            "magicalDefense": 84
+          }
+        }
+      ]
     },
     {
       "id": "spirit_6aa27664c730f95a",
@@ -23042,9 +24537,56 @@
       "prioritySeasons": [],
       "traitName": "双向光速",
       "traitDescription": "在场时，双方回合结束时的效果会额外触发1次。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3319,
+        "attackPetbaseId": 3319,
+        "attackFormName": "粉星仔",
+        "physicalAttack": 63,
+        "magicalAttack": 119,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3320",
+          "name": "粉耳星兔",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3319,
+            "attackPetbaseId": 3319,
+            "attackFormName": "粉星仔",
+            "physicalAttack": 63,
+            "magicalAttack": 119,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3319,
+            "defensePetbaseId": 3320,
+            "defenseFormName": "粉耳星兔",
+            "physicalDefense": 73,
+            "magicalDefense": 127
+          }
+        },
+        {
+          "id": "petbase-3485",
+          "name": "落陨星兔",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3319,
+            "attackPetbaseId": 3319,
+            "attackFormName": "粉星仔",
+            "physicalAttack": 63,
+            "magicalAttack": 119,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3319,
+            "defensePetbaseId": 3485,
+            "defenseFormName": "落陨星兔",
+            "physicalDefense": 87,
+            "magicalDefense": 141
+          }
+        }
+      ]
     },
     {
       "id": "spirit_8508bbff0538ba3e",
@@ -24196,7 +25738,14 @@
       ],
       "traitName": "拉拉队长",
       "traitDescription": "若自己在萌化状态下再获得萌化会解除萌化。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3659,
+        "attackPetbaseId": 3659,
+        "attackFormName": "加油海葵",
+        "physicalAttack": 73,
+        "magicalAttack": 73,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": {
         "sourcePetbaseId": 3659,
         "defensePetbaseId": 3660,
@@ -26794,9 +28343,56 @@
       "prioritySeasons": [],
       "traitName": "有求必应",
       "traitDescription": "使用「选择」技能后，会额外使用1次另一种「选择」效果。使用任意技能后，该技能冷却1回合。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3230,
+        "attackPetbaseId": 3230,
+        "attackFormName": "加灵",
+        "physicalAttack": 22,
+        "magicalAttack": 57,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 1
+      "wildStrengthStage": 1,
+      "wildStatForms": [
+        {
+          "id": "petbase-3232",
+          "name": "加尔",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3230,
+            "attackPetbaseId": 3230,
+            "attackFormName": "加灵",
+            "physicalAttack": 22,
+            "magicalAttack": 57,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3230,
+            "defensePetbaseId": 3232,
+            "defenseFormName": "加尔",
+            "physicalDefense": 84,
+            "magicalDefense": 124
+          }
+        },
+        {
+          "id": "petbase-3233",
+          "name": "黑化加尔",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3230,
+            "attackPetbaseId": 3230,
+            "attackFormName": "加灵",
+            "physicalAttack": 22,
+            "magicalAttack": 57,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3230,
+            "defensePetbaseId": 3233,
+            "defenseFormName": "黑化加尔",
+            "physicalDefense": 94,
+            "magicalDefense": 124
+          }
+        }
+      ]
     },
     {
       "id": "spirit_e1507f26b7fe0fd7",
@@ -26829,9 +28425,56 @@
       "prioritySeasons": [],
       "traitName": "有求必应",
       "traitDescription": "使用「选择」技能后，会额外使用1次另一种「选择」效果。使用任意技能后，该技能冷却1回合。",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3231,
+        "attackPetbaseId": 3231,
+        "attackFormName": "加益",
+        "physicalAttack": 29,
+        "magicalAttack": 75,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": 2
+      "wildStrengthStage": 2,
+      "wildStatForms": [
+        {
+          "id": "petbase-3232",
+          "name": "加尔",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3231,
+            "attackPetbaseId": 3231,
+            "attackFormName": "加益",
+            "physicalAttack": 29,
+            "magicalAttack": 75,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3231,
+            "defensePetbaseId": 3232,
+            "defenseFormName": "加尔",
+            "physicalDefense": 84,
+            "magicalDefense": 124
+          }
+        },
+        {
+          "id": "petbase-3233",
+          "name": "黑化加尔",
+          "attackRaceStats": {
+            "sourcePetbaseId": 3231,
+            "attackPetbaseId": 3231,
+            "attackFormName": "加益",
+            "physicalAttack": 29,
+            "magicalAttack": 75,
+            "resolution": "selected-form"
+          },
+          "defenseRaceStats": {
+            "sourcePetbaseId": 3231,
+            "defensePetbaseId": 3233,
+            "defenseFormName": "黑化加尔",
+            "physicalDefense": 94,
+            "magicalDefense": 124
+          }
+        }
+      ]
     },
     {
       "id": "spirit_837f83264c04abe9",
@@ -30176,7 +31819,14 @@
       ],
       "traitName": "换牙",
       "traitDescription": "驱散1次自己的减益后，获得物攻永久+50%。（最多触发1次）",
-      "wildAttackRaceStats": null,
+      "wildAttackRaceStats": {
+        "sourcePetbaseId": 3805,
+        "attackPetbaseId": 3805,
+        "attackFormName": "乐乐鲨",
+        "physicalAttack": 94,
+        "magicalAttack": 37,
+        "resolution": "selected-form"
+      },
       "wildDefenseRaceStats": {
         "sourcePetbaseId": 3805,
         "defensePetbaseId": 3806,
@@ -30476,7 +32126,8 @@
           "skill_preview_s5_dragon-eye-dotting",
           "skill_794ee1751d9411e8"
         ]
-      }
+      },
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_super-abu",
@@ -30988,7 +32639,8 @@
       "traitDescription": "释放武系技能后，物攻永久提升20%，速度永久-10。",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3218",
@@ -31013,7 +32665,8 @@
       "traitDescription": "释放武系技能后，物攻永久提升20%，速度永久-10。",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3219",
@@ -31038,7 +32691,8 @@
       "traitDescription": "释放武系技能后，物攻永久提升20%，速度永久-10。",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3408",
@@ -31063,7 +32717,8 @@
       "traitDescription": "若释放的4号位技能为该精灵未使用过的技能，能耗-3。",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3409",
@@ -31088,7 +32743,8 @@
       "traitDescription": "若释放的4号位技能为该精灵未使用过的技能，能耗-3。",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3416",
@@ -31113,7 +32769,8 @@
       "traitDescription": "攻击技能应对成功时，回复25%生命。",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3417",
@@ -31138,7 +32795,8 @@
       "traitDescription": "状态技能应对成功时，获得10点能量。",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3418",
@@ -31163,7 +32821,8 @@
       "traitDescription": "入场时，若敌方本回合换宠，全属性提升100%",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3825",
@@ -31188,7 +32847,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3826",
@@ -31213,7 +32873,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-5070",
@@ -31238,7 +32899,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3849",
@@ -31264,7 +32926,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3850",
@@ -31290,7 +32953,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3851",
@@ -31316,7 +32980,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3863",
@@ -31342,7 +33007,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3864",
@@ -31368,7 +33034,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3865",
@@ -31394,7 +33061,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-5069",
@@ -31419,7 +33087,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3640",
@@ -31444,7 +33113,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3641",
@@ -31469,7 +33139,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3642",
@@ -31494,7 +33165,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3643",
@@ -31519,7 +33191,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3644",
@@ -31544,7 +33217,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3645",
@@ -31569,7 +33243,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3646",
@@ -31594,7 +33269,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3647",
@@ -31619,7 +33295,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_preview_s5_hidden-3648",
@@ -31644,7 +33321,8 @@
       "traitDescription": "特性待确认",
       "wildAttackRaceStats": null,
       "wildDefenseRaceStats": null,
-      "wildStrengthStage": null
+      "wildStrengthStage": null,
+      "wildDataStatus": "unavailable"
     },
     {
       "id": "spirit_42e0cf61b04cb1ab",

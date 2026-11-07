@@ -1,0 +1,4249 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-07",
+  "source": {
+    "table": "PETBASE_CONF",
+    "kind": "decoded-game-configuration",
+    "catalogSourceRevision": "ee68d4a020225614a679b180050ba54c78177a01"
+  },
+  "policy": {
+    "attackRace": "selected-form",
+    "defenseRaceStrengthStage": 3,
+    "coefficientStrengthStage": "source-form",
+    "branches": "explicit-defense-only-selection",
+    "unreleased": "unavailable"
+  },
+  "counts": {
+    "spirits": 694,
+    "available": 666,
+    "branchSelectable": 24,
+    "bossParentMapped": 4,
+    "unavailable": 28,
+    "attack": {
+      "spirits": 694,
+      "completeSpecies": 667,
+      "mapped": 666,
+      "missing": 28,
+      "missingByReason": {
+        "package-record-not-matched": 1,
+        "incomplete-race-stats": 27
+      },
+      "branchSelectable": 0,
+      "available": 666
+    },
+    "defense": {
+      "spirits": 694,
+      "mapped": 642,
+      "missing": 28,
+      "missingByReason": {
+        "package-record-not-matched": 1,
+        "incomplete-race-stats": 27
+      },
+      "branchSelectable": 24,
+      "available": 666
+    }
+  },
+  "branches": [
+    {
+      "spiritId": "spirit_0aa69ad38f66402d",
+      "name": "毛毛",
+      "source": {
+        "id": 3136,
+        "name": "毛毛",
+        "stage": 1,
+        "strengthStage": 1,
+        "raceStats": {
+          "hp": 32,
+          "physicalAttack": 28,
+          "magicalAttack": 28,
+          "physicalDefense": 40,
+          "magicalDefense": 40,
+          "speed": 60
+        },
+        "evolutionPetbaseIds": [
+          3137
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "化蝶（平常的样子）",
+          "id": 3138,
+          "name": "化蝶",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 53,
+            "physicalAttack": 46,
+            "magicalAttack": 46,
+            "physicalDefense": 66,
+            "magicalDefense": 66,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3137,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "化蝶（幽冥眼的样子）",
+          "id": 3470,
+          "name": "化蝶",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 43,
+            "physicalAttack": 42,
+            "magicalAttack": 42,
+            "physicalDefense": 67,
+            "magicalDefense": 70,
+            "speed": 105
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3137,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "化蝶（喵喵的样子）",
+          "id": 3471,
+          "name": "化蝶",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 49,
+            "physicalAttack": 47,
+            "magicalAttack": 41,
+            "physicalDefense": 67,
+            "magicalDefense": 67,
+            "speed": 95
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3137,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "化蝶（奇丽花的样子）",
+          "id": 3472,
+          "name": "化蝶",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 55,
+            "physicalAttack": 46,
+            "magicalAttack": 44,
+            "physicalDefense": 62,
+            "magicalDefense": 65,
+            "speed": 90
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3137,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_552a95c89d0867e1",
+      "name": "爬爬",
+      "source": {
+        "id": 3137,
+        "name": "爬爬",
+        "stage": 2,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 42,
+          "physicalAttack": 37,
+          "magicalAttack": 37,
+          "physicalDefense": 53,
+          "magicalDefense": 53,
+          "speed": 80
+        },
+        "evolutionPetbaseIds": [
+          3138,
+          3470,
+          3471,
+          3472
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": 3136,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "化蝶（平常的样子）",
+          "id": 3138,
+          "name": "化蝶",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 53,
+            "physicalAttack": 46,
+            "magicalAttack": 46,
+            "physicalDefense": 66,
+            "magicalDefense": 66,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3137,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "化蝶（幽冥眼的样子）",
+          "id": 3470,
+          "name": "化蝶",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 43,
+            "physicalAttack": 42,
+            "magicalAttack": 42,
+            "physicalDefense": 67,
+            "magicalDefense": 70,
+            "speed": 105
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3137,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "化蝶（喵喵的样子）",
+          "id": 3471,
+          "name": "化蝶",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 49,
+            "physicalAttack": 47,
+            "magicalAttack": 41,
+            "physicalDefense": 67,
+            "magicalDefense": 67,
+            "speed": 95
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3137,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "化蝶（奇丽花的样子）",
+          "id": 3472,
+          "name": "化蝶",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 55,
+            "physicalAttack": 46,
+            "magicalAttack": 44,
+            "physicalDefense": 62,
+            "magicalDefense": 65,
+            "speed": 90
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3137,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_671f6866e48a615e",
+      "name": "矿晶虫",
+      "source": {
+        "id": 3307,
+        "name": "矿晶虫",
+        "stage": 1,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 79,
+          "physicalAttack": 77,
+          "magicalAttack": 81,
+          "physicalDefense": 102,
+          "magicalDefense": 75,
+          "speed": 52
+        },
+        "evolutionPetbaseIds": [
+          3486,
+          3451,
+          3308,
+          3448,
+          3449,
+          3450
+        ],
+        "bossPetbaseIds": [
+          3308
+        ],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "晶石蜗（西瓜碧玺的样子）",
+          "id": 3308,
+          "name": "晶石蜗",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 99,
+            "physicalAttack": 96,
+            "magicalAttack": 101,
+            "physicalDefense": 128,
+            "magicalDefense": 94,
+            "speed": 65
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5001
+          ],
+          "degeneratePetbaseId": 3307,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "晶石蜗（莲花刚玉的样子）",
+          "id": 3448,
+          "name": "晶石蜗",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 94,
+            "physicalAttack": 97,
+            "magicalAttack": 101,
+            "physicalDefense": 137,
+            "magicalDefense": 91,
+            "speed": 65
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5047
+          ],
+          "degeneratePetbaseId": 3307,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "晶石蜗（星彩榴石的样子）",
+          "id": 3449,
+          "name": "晶石蜗",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 97,
+            "physicalAttack": 101,
+            "magicalAttack": 101,
+            "physicalDefense": 128,
+            "magicalDefense": 91,
+            "speed": 65
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5048
+          ],
+          "degeneratePetbaseId": 3307,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "晶石蜗（火山琉璃的样子）",
+          "id": 3450,
+          "name": "晶石蜗",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 97,
+            "physicalAttack": 97,
+            "magicalAttack": 101,
+            "physicalDefense": 132,
+            "magicalDefense": 91,
+            "speed": 65
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5049
+          ],
+          "degeneratePetbaseId": 3307,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "晶石蜗（蓝锥矿的样子）",
+          "id": 3451,
+          "name": "晶石蜗",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 99,
+            "physicalAttack": 97,
+            "magicalAttack": 107,
+            "physicalDefense": 124,
+            "magicalDefense": 91,
+            "speed": 65
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5050
+          ],
+          "degeneratePetbaseId": 3307,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "晶石蜗（烧蓝黄金的样子）",
+          "id": 3486,
+          "name": "晶石蜗",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 95,
+            "physicalAttack": 97,
+            "magicalAttack": 102,
+            "physicalDefense": 130,
+            "magicalDefense": 91,
+            "speed": 70
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5051
+          ],
+          "degeneratePetbaseId": 3307,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_a4a37b0f3ab65804",
+      "name": "小灵面",
+      "source": {
+        "id": 3060,
+        "name": "小灵面",
+        "stage": 1,
+        "strengthStage": 1,
+        "raceStats": {
+          "hp": 55,
+          "physicalAttack": 30,
+          "magicalAttack": 72,
+          "physicalDefense": 59,
+          "magicalDefense": 81,
+          "speed": 69
+        },
+        "evolutionPetbaseIds": [
+          3061,
+          3481
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "幽冥眼（睁眼的样子）",
+          "id": 3405,
+          "name": "幽冥眼",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 92,
+            "physicalAttack": 50,
+            "magicalAttack": 120,
+            "physicalDefense": 98,
+            "magicalDefense": 135,
+            "speed": 115
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3061,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "幽冥眼（闭眼的样子）",
+          "id": 3482,
+          "name": "幽冥眼",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 105,
+            "physicalAttack": 38,
+            "magicalAttack": 120,
+            "physicalDefense": 104,
+            "magicalDefense": 110,
+            "speed": 115
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3481,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_cf5102684c14c331",
+      "name": "乖乖鹄",
+      "source": {
+        "id": 3344,
+        "name": "乖乖鹄",
+        "stage": 1,
+        "strengthStage": 1,
+        "raceStats": {
+          "hp": 75,
+          "physicalAttack": 57,
+          "magicalAttack": 52,
+          "physicalDefense": 83,
+          "magicalDefense": 58,
+          "speed": 69
+        },
+        "evolutionPetbaseIds": [
+          3345
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "翠顶夫人",
+          "id": 3346,
+          "name": "翠顶夫人",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 125,
+            "physicalAttack": 95,
+            "magicalAttack": 86,
+            "physicalDefense": 138,
+            "magicalDefense": 97,
+            "speed": 115
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3345,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "黑羽夫人",
+          "id": 3571,
+          "name": "黑羽夫人",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 132,
+            "physicalAttack": 93,
+            "magicalAttack": 87,
+            "physicalDefense": 130,
+            "magicalDefense": 90,
+            "speed": 120
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3345,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_e62f0702d019bbff",
+      "name": "蓝珠天鹅",
+      "source": {
+        "id": 3345,
+        "name": "蓝珠天鹅",
+        "stage": 2,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 100,
+          "physicalAttack": 76,
+          "magicalAttack": 69,
+          "physicalDefense": 110,
+          "magicalDefense": 78,
+          "speed": 92
+        },
+        "evolutionPetbaseIds": [
+          3571,
+          3346
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": 3344,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "翠顶夫人",
+          "id": 3346,
+          "name": "翠顶夫人",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 125,
+            "physicalAttack": 95,
+            "magicalAttack": 86,
+            "physicalDefense": 138,
+            "magicalDefense": 97,
+            "speed": 115
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3345,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "黑羽夫人",
+          "id": 3571,
+          "name": "黑羽夫人",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 132,
+            "physicalAttack": 93,
+            "magicalAttack": 87,
+            "physicalDefense": 130,
+            "magicalDefense": 90,
+            "speed": 120
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3345,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_4e1344e0cfd82bf9",
+      "name": "棋棋（白子）",
+      "source": {
+        "id": 3550,
+        "name": "棋棋",
+        "stage": 1,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 72,
+          "physicalAttack": 100,
+          "magicalAttack": 36,
+          "physicalDefense": 70,
+          "magicalDefense": 56,
+          "speed": 100
+        },
+        "evolutionPetbaseIds": [
+          3551,
+          3552,
+          3553,
+          3554
+        ],
+        "bossPetbaseIds": [
+          3551
+        ],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "棋骑士（白子）",
+          "id": 3551,
+          "name": "棋骑士",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 90,
+            "physicalAttack": 126,
+            "magicalAttack": 45,
+            "physicalDefense": 88,
+            "magicalDefense": 69,
+            "speed": 125
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5023
+          ],
+          "degeneratePetbaseId": 3550,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "棋绮后（白子）",
+          "id": 3552,
+          "name": "棋绮后",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 93,
+            "physicalAttack": 84,
+            "magicalAttack": 84,
+            "physicalDefense": 82,
+            "magicalDefense": 75,
+            "speed": 90
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5040
+          ],
+          "degeneratePetbaseId": 3550,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "棋齐垒（白子）",
+          "id": 3553,
+          "name": "棋齐垒",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 89,
+            "physicalAttack": 94,
+            "magicalAttack": 38,
+            "physicalDefense": 116,
+            "magicalDefense": 77,
+            "speed": 75
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5041
+          ],
+          "degeneratePetbaseId": 3550,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "棋祈督（白子）",
+          "id": 3554,
+          "name": "棋祈督",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 126,
+            "physicalAttack": 87,
+            "magicalAttack": 87,
+            "physicalDefense": 90,
+            "magicalDefense": 72,
+            "speed": 85
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5042
+          ],
+          "degeneratePetbaseId": 3550,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_28e59ee92341bf43",
+      "name": "棋棋（黑子）",
+      "source": {
+        "id": 3555,
+        "name": "棋棋",
+        "stage": 1,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 66,
+          "physicalAttack": 97,
+          "magicalAttack": 35,
+          "physicalDefense": 67,
+          "magicalDefense": 53,
+          "speed": 100
+        },
+        "evolutionPetbaseIds": [
+          3556,
+          3557,
+          3558,
+          3559
+        ],
+        "bossPetbaseIds": [
+          3556
+        ],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "棋骑士（黑子）",
+          "id": 3556,
+          "name": "棋骑士",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 83,
+            "physicalAttack": 121,
+            "magicalAttack": 43,
+            "physicalDefense": 84,
+            "magicalDefense": 66,
+            "speed": 125
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5043
+          ],
+          "degeneratePetbaseId": 3555,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "棋绮后（黑子）",
+          "id": 3557,
+          "name": "棋绮后",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 93,
+            "physicalAttack": 84,
+            "magicalAttack": 84,
+            "physicalDefense": 82,
+            "magicalDefense": 75,
+            "speed": 90
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5044
+          ],
+          "degeneratePetbaseId": 3555,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "棋齐垒（黑子）",
+          "id": 3558,
+          "name": "棋齐垒",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 89,
+            "physicalAttack": 94,
+            "magicalAttack": 38,
+            "physicalDefense": 116,
+            "magicalDefense": 77,
+            "speed": 75
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5045
+          ],
+          "degeneratePetbaseId": 3555,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "棋祈督（黑子）",
+          "id": 3559,
+          "name": "棋祈督",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 126,
+            "physicalAttack": 87,
+            "magicalAttack": 87,
+            "physicalDefense": 90,
+            "magicalDefense": 72,
+            "speed": 85
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [
+            5046
+          ],
+          "degeneratePetbaseId": 3555,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_3f805b382fb6670a",
+      "name": "脆筒甜甜",
+      "source": {
+        "id": 3124,
+        "name": "脆筒甜甜",
+        "stage": 1,
+        "strengthStage": 1,
+        "raceStats": {
+          "hp": 72,
+          "physicalAttack": 67,
+          "magicalAttack": 72,
+          "physicalDefense": 42,
+          "magicalDefense": 55,
+          "speed": 60
+        },
+        "evolutionPetbaseIds": [
+          3125,
+          3478,
+          3479
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "圣代甜甜（樱桃巧克力口味）",
+          "id": 3126,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 119,
+            "physicalAttack": 112,
+            "magicalAttack": 119,
+            "physicalDefense": 70,
+            "magicalDefense": 92,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3125,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（樱桃草莓口味）",
+          "id": 3458,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 107,
+            "physicalAttack": 120,
+            "magicalAttack": 110,
+            "physicalDefense": 81,
+            "magicalDefense": 96,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3125,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（樱桃抹茶口味）",
+          "id": 3459,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 113,
+            "physicalAttack": 112,
+            "magicalAttack": 110,
+            "physicalDefense": 79,
+            "magicalDefense": 92,
+            "speed": 105
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3125,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（蓝莓巧克力口味）",
+          "id": 3460,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 114,
+            "physicalAttack": 117,
+            "magicalAttack": 110,
+            "physicalDefense": 79,
+            "magicalDefense": 92,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3479,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（蓝莓草莓口味）",
+          "id": 3461,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 113,
+            "physicalAttack": 109,
+            "magicalAttack": 100,
+            "physicalDefense": 90,
+            "magicalDefense": 96,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3479,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（蓝莓抹茶口味）",
+          "id": 3462,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 121,
+            "physicalAttack": 100,
+            "magicalAttack": 101,
+            "physicalDefense": 86,
+            "magicalDefense": 92,
+            "speed": 105
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3479,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（杨桃巧克力口味）",
+          "id": 3463,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 110,
+            "physicalAttack": 116,
+            "magicalAttack": 120,
+            "physicalDefense": 73,
+            "magicalDefense": 96,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3478,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（杨桃草莓口味）",
+          "id": 3464,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 108,
+            "physicalAttack": 110,
+            "magicalAttack": 110,
+            "physicalDefense": 84,
+            "magicalDefense": 99,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3478,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（杨桃抹茶口味）",
+          "id": 3465,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 110,
+            "physicalAttack": 107,
+            "magicalAttack": 110,
+            "physicalDefense": 82,
+            "magicalDefense": 96,
+            "speed": 105
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3478,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_219690deb9569dc6",
+      "name": "香草甜甜（樱桃饰品）",
+      "source": {
+        "id": 3125,
+        "name": "香草甜甜",
+        "stage": 2,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 96,
+          "physicalAttack": 90,
+          "magicalAttack": 95,
+          "physicalDefense": 56,
+          "magicalDefense": 74,
+          "speed": 80
+        },
+        "evolutionPetbaseIds": [
+          3126,
+          3458,
+          3459
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": 3124,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "圣代甜甜（樱桃巧克力口味）",
+          "id": 3126,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 119,
+            "physicalAttack": 112,
+            "magicalAttack": 119,
+            "physicalDefense": 70,
+            "magicalDefense": 92,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3125,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（樱桃草莓口味）",
+          "id": 3458,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 107,
+            "physicalAttack": 120,
+            "magicalAttack": 110,
+            "physicalDefense": 81,
+            "magicalDefense": 96,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3125,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（樱桃抹茶口味）",
+          "id": 3459,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 113,
+            "physicalAttack": 112,
+            "magicalAttack": 110,
+            "physicalDefense": 79,
+            "magicalDefense": 92,
+            "speed": 105
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3125,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_f034858d5c81a2ae",
+      "name": "香草甜甜（杨桃饰品）",
+      "source": {
+        "id": 3478,
+        "name": "香草甜甜",
+        "stage": 2,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 88,
+          "physicalAttack": 92,
+          "magicalAttack": 96,
+          "physicalDefense": 58,
+          "magicalDefense": 77,
+          "speed": 80
+        },
+        "evolutionPetbaseIds": [
+          3463,
+          3464,
+          3465
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": 3124,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "圣代甜甜（杨桃巧克力口味）",
+          "id": 3463,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 110,
+            "physicalAttack": 116,
+            "magicalAttack": 120,
+            "physicalDefense": 73,
+            "magicalDefense": 96,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3478,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（杨桃草莓口味）",
+          "id": 3464,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 108,
+            "physicalAttack": 110,
+            "magicalAttack": 110,
+            "physicalDefense": 84,
+            "magicalDefense": 99,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3478,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（杨桃抹茶口味）",
+          "id": 3465,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 110,
+            "physicalAttack": 107,
+            "magicalAttack": 110,
+            "physicalDefense": 82,
+            "magicalDefense": 96,
+            "speed": 105
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3478,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_29b708f908c0d8a9",
+      "name": "香草甜甜（蓝莓饰品）",
+      "source": {
+        "id": 3479,
+        "name": "香草甜甜",
+        "stage": 2,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 91,
+          "physicalAttack": 94,
+          "magicalAttack": 88,
+          "physicalDefense": 63,
+          "magicalDefense": 74,
+          "speed": 80
+        },
+        "evolutionPetbaseIds": [
+          3460,
+          3461,
+          3462
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": 3124,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "圣代甜甜（蓝莓巧克力口味）",
+          "id": 3460,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 114,
+            "physicalAttack": 117,
+            "magicalAttack": 110,
+            "physicalDefense": 79,
+            "magicalDefense": 92,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3479,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（蓝莓草莓口味）",
+          "id": 3461,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 113,
+            "physicalAttack": 109,
+            "magicalAttack": 100,
+            "physicalDefense": 90,
+            "magicalDefense": 96,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3479,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "圣代甜甜（蓝莓抹茶口味）",
+          "id": 3462,
+          "name": "圣代甜甜",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 121,
+            "physicalAttack": 100,
+            "magicalAttack": 101,
+            "physicalDefense": 86,
+            "magicalDefense": 92,
+            "speed": 105
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3479,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_73e11369a58445a9",
+      "name": "可立鸡",
+      "source": {
+        "id": 3086,
+        "name": "可立鸡",
+        "stage": 1,
+        "strengthStage": 1,
+        "raceStats": {
+          "hp": 67,
+          "physicalAttack": 72,
+          "magicalAttack": 72,
+          "physicalDefense": 61,
+          "magicalDefense": 52,
+          "speed": 66
+        },
+        "evolutionPetbaseIds": [
+          3087
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "绅士鸡",
+          "id": 3088,
+          "name": "绅士鸡",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 112,
+            "physicalAttack": 120,
+            "magicalAttack": 120,
+            "physicalDefense": 102,
+            "magicalDefense": 87,
+            "speed": 110
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3087,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "武者鸡",
+          "id": 3089,
+          "name": "武者鸡",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 116,
+            "physicalAttack": 137,
+            "magicalAttack": 66,
+            "physicalDefense": 111,
+            "magicalDefense": 70,
+            "speed": 95
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3087,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_aab6e4b6314a2035",
+      "name": "晕晕鸡",
+      "source": {
+        "id": 3087,
+        "name": "晕晕鸡",
+        "stage": 2,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 89,
+          "physicalAttack": 96,
+          "magicalAttack": 96,
+          "physicalDefense": 82,
+          "magicalDefense": 70,
+          "speed": 88
+        },
+        "evolutionPetbaseIds": [
+          3089,
+          3088
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": 3086,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "绅士鸡",
+          "id": 3088,
+          "name": "绅士鸡",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 112,
+            "physicalAttack": 120,
+            "magicalAttack": 120,
+            "physicalDefense": 102,
+            "magicalDefense": 87,
+            "speed": 110
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3087,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "武者鸡",
+          "id": 3089,
+          "name": "武者鸡",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 116,
+            "physicalAttack": 137,
+            "magicalAttack": 66,
+            "physicalDefense": 111,
+            "magicalDefense": 70,
+            "speed": 95
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3087,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_d218885988b9c5a0",
+      "name": "墨鱿士",
+      "source": {
+        "id": 3577,
+        "name": "墨鱿士",
+        "stage": 1,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 103,
+          "physicalAttack": 97,
+          "magicalAttack": 42,
+          "physicalDefense": 105,
+          "magicalDefense": 79,
+          "speed": 56
+        },
+        "evolutionPetbaseIds": [
+          3578,
+          3579
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "混乱鱿彩",
+          "id": 3578,
+          "name": "混乱鱿彩",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 129,
+            "physicalAttack": 122,
+            "magicalAttack": 53,
+            "physicalDefense": 131,
+            "magicalDefense": 99,
+            "speed": 70
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3577,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "秩序鱿墨",
+          "id": 3579,
+          "name": "秩序鱿墨",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 96,
+            "physicalAttack": 120,
+            "magicalAttack": 40,
+            "physicalDefense": 117,
+            "magicalDefense": 106,
+            "speed": 130
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3577,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_cd5a04a9d9f170f9",
+      "name": "毛头小蛛",
+      "source": {
+        "id": 3603,
+        "name": "毛头小蛛",
+        "stage": 1,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 85,
+          "physicalAttack": 80,
+          "magicalAttack": 27,
+          "physicalDefense": 93,
+          "magicalDefense": 79,
+          "speed": 88
+        },
+        "evolutionPetbaseIds": [
+          3604,
+          3605
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "捕尘长绒",
+          "id": 3604,
+          "name": "捕尘长绒",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 106,
+            "physicalAttack": 100,
+            "magicalAttack": 34,
+            "physicalDefense": 116,
+            "magicalDefense": 99,
+            "speed": 110
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3603,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "食尘短绒",
+          "id": 3605,
+          "name": "食尘短绒",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 109,
+            "physicalAttack": 105,
+            "magicalAttack": 37,
+            "physicalDefense": 113,
+            "magicalDefense": 97,
+            "speed": 115
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3603,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_50b9ea1cf5a9f06c",
+      "name": "画精灵",
+      "source": {
+        "id": 3606,
+        "name": "画精灵",
+        "stage": 1,
+        "strengthStage": 1,
+        "raceStats": {
+          "hp": 61,
+          "physicalAttack": 32,
+          "magicalAttack": 78,
+          "physicalDefense": 56,
+          "magicalDefense": 72,
+          "speed": 72
+        },
+        "evolutionPetbaseIds": [
+          3607
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "画间法师手",
+          "id": 3608,
+          "name": "画间法师手",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 101,
+            "physicalAttack": 53,
+            "magicalAttack": 131,
+            "physicalDefense": 94,
+            "magicalDefense": 120,
+            "speed": 120
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3607,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "画间沉铁兽",
+          "id": 3609,
+          "name": "画间沉铁兽",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 126,
+            "physicalAttack": 147,
+            "magicalAttack": 63,
+            "physicalDefense": 100,
+            "magicalDefense": 76,
+            "speed": 92
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3607,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_6eefcea5a4902052",
+      "name": "画像守护",
+      "source": {
+        "id": 3607,
+        "name": "画像守护",
+        "stage": 2,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 81,
+          "physicalAttack": 42,
+          "magicalAttack": 104,
+          "physicalDefense": 75,
+          "magicalDefense": 96,
+          "speed": 96
+        },
+        "evolutionPetbaseIds": [
+          3608,
+          3609
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": 3606,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "画间法师手",
+          "id": 3608,
+          "name": "画间法师手",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 101,
+            "physicalAttack": 53,
+            "magicalAttack": 131,
+            "physicalDefense": 94,
+            "magicalDefense": 120,
+            "speed": 120
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3607,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "画间沉铁兽",
+          "id": 3609,
+          "name": "画间沉铁兽",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 126,
+            "physicalAttack": 147,
+            "magicalAttack": 63,
+            "physicalDefense": 100,
+            "magicalDefense": 76,
+            "speed": 92
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3607,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_595b959db1b3bdec",
+      "name": "书魔虫",
+      "source": {
+        "id": 3610,
+        "name": "书魔虫",
+        "stage": 1,
+        "strengthStage": 1,
+        "raceStats": {
+          "hp": 67,
+          "physicalAttack": 69,
+          "magicalAttack": 69,
+          "physicalDefense": 48,
+          "magicalDefense": 73,
+          "speed": 57
+        },
+        "evolutionPetbaseIds": [
+          3611
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "古卷执政官",
+          "id": 3612,
+          "name": "古卷执政官",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 111,
+            "physicalAttack": 115,
+            "magicalAttack": 115,
+            "physicalDefense": 80,
+            "magicalDefense": 122,
+            "speed": 95
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3611,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "古卷匣魔像",
+          "id": 3613,
+          "name": "古卷匣魔像",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 109,
+            "physicalAttack": 109,
+            "magicalAttack": 109,
+            "physicalDefense": 130,
+            "magicalDefense": 86,
+            "speed": 95
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3611,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_35c4507102bacd52",
+      "name": "书卷守护",
+      "source": {
+        "id": 3611,
+        "name": "书卷守护",
+        "stage": 2,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 89,
+          "physicalAttack": 92,
+          "magicalAttack": 92,
+          "physicalDefense": 64,
+          "magicalDefense": 98,
+          "speed": 76
+        },
+        "evolutionPetbaseIds": [
+          3612,
+          3613
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": 3610,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "古卷执政官",
+          "id": 3612,
+          "name": "古卷执政官",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 111,
+            "physicalAttack": 115,
+            "magicalAttack": 115,
+            "physicalDefense": 80,
+            "magicalDefense": 122,
+            "speed": 95
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3611,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "古卷匣魔像",
+          "id": 3613,
+          "name": "古卷匣魔像",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 109,
+            "physicalAttack": 109,
+            "magicalAttack": 109,
+            "physicalDefense": 130,
+            "magicalDefense": 86,
+            "speed": 95
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3611,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_5c4297c8c8eab600",
+      "name": "果冻",
+      "source": {
+        "id": 3118,
+        "name": "果冻",
+        "stage": 1,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 81,
+          "physicalAttack": 26,
+          "magicalAttack": 81,
+          "physicalDefense": 75,
+          "magicalDefense": 78,
+          "speed": 96
+        },
+        "evolutionPetbaseIds": [
+          3526,
+          3527,
+          3528
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "抹茶布丁",
+          "id": 3526,
+          "name": "抹茶布丁",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 101,
+            "physicalAttack": 32,
+            "magicalAttack": 101,
+            "physicalDefense": 94,
+            "magicalDefense": 98,
+            "speed": 120
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3118,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "椰浆布丁",
+          "id": 3527,
+          "name": "椰浆布丁",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 133,
+            "physicalAttack": 34,
+            "magicalAttack": 89,
+            "physicalDefense": 81,
+            "magicalDefense": 105,
+            "speed": 120
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3118,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "熔岩布丁",
+          "id": 3528,
+          "name": "熔岩布丁",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 128,
+            "physicalAttack": 87,
+            "magicalAttack": 33,
+            "physicalDefense": 112,
+            "magicalDefense": 84,
+            "speed": 120
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3118,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_3e28ee2df02a761f",
+      "name": "粉星仔",
+      "source": {
+        "id": 3319,
+        "name": "粉星仔",
+        "stage": 1,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 80,
+          "physicalAttack": 63,
+          "magicalAttack": 119,
+          "physicalDefense": 58,
+          "magicalDefense": 102,
+          "speed": 92
+        },
+        "evolutionPetbaseIds": [
+          3485,
+          3320
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "粉耳星兔",
+          "id": 3320,
+          "name": "粉耳星兔",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 100,
+            "physicalAttack": 79,
+            "magicalAttack": 148,
+            "physicalDefense": 73,
+            "magicalDefense": 127,
+            "speed": 115
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3319,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "落陨星兔",
+          "id": 3485,
+          "name": "落陨星兔",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 93,
+            "physicalAttack": 61,
+            "magicalAttack": 125,
+            "physicalDefense": 87,
+            "magicalDefense": 141,
+            "speed": 130
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3319,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_ea44560ba353ca44",
+      "name": "加油海葵",
+      "source": {
+        "id": 3659,
+        "name": "加油海葵",
+        "stage": 1,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 92,
+          "physicalAttack": 73,
+          "magicalAttack": 73,
+          "physicalDefense": 103,
+          "magicalDefense": 103,
+          "speed": 80
+        },
+        "evolutionPetbaseIds": [
+          3660,
+          3743
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "加油蟹（两只海葵的样子）",
+          "id": 3660,
+          "name": "加油蟹",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 116,
+            "physicalAttack": 92,
+            "magicalAttack": 92,
+            "physicalDefense": 128,
+            "magicalDefense": 128,
+            "speed": 100
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3659,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "加油蟹（单只海葵的样子）",
+          "id": 3743,
+          "name": "加油蟹",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 116,
+            "physicalAttack": 130,
+            "magicalAttack": 58,
+            "physicalDefense": 128,
+            "magicalDefense": 128,
+            "speed": 95
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3659,
+          "legalPetbase": 1
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_58d9e599a25aa153",
+      "name": "加灵",
+      "source": {
+        "id": 3230,
+        "name": "加灵",
+        "stage": 1,
+        "strengthStage": 1,
+        "raceStats": {
+          "hp": 39,
+          "physicalAttack": 22,
+          "magicalAttack": 57,
+          "physicalDefense": 50,
+          "magicalDefense": 74,
+          "speed": 66
+        },
+        "evolutionPetbaseIds": [
+          3231
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": null
+      },
+      "forms": [
+        {
+          "displayName": "加尔",
+          "id": 3232,
+          "name": "加尔",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 103,
+            "physicalAttack": 36,
+            "magicalAttack": 94,
+            "physicalDefense": 84,
+            "magicalDefense": 124,
+            "speed": 110
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3231,
+          "legalPetbase": null
+        },
+        {
+          "displayName": "黑化加尔",
+          "id": 3233,
+          "name": "黑化加尔",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 84,
+            "physicalAttack": 35,
+            "magicalAttack": 104,
+            "physicalDefense": 94,
+            "magicalDefense": 124,
+            "speed": 110
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3231,
+          "legalPetbase": null
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_e1507f26b7fe0fd7",
+      "name": "加益",
+      "source": {
+        "id": 3231,
+        "name": "加益",
+        "stage": 2,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 52,
+          "physicalAttack": 29,
+          "magicalAttack": 75,
+          "physicalDefense": 67,
+          "magicalDefense": 99,
+          "speed": 88
+        },
+        "evolutionPetbaseIds": [
+          3232,
+          3233
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": 3230,
+        "legalPetbase": null
+      },
+      "forms": [
+        {
+          "displayName": "加尔",
+          "id": 3232,
+          "name": "加尔",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 103,
+            "physicalAttack": 36,
+            "magicalAttack": 94,
+            "physicalDefense": 84,
+            "magicalDefense": 124,
+            "speed": 110
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3231,
+          "legalPetbase": null
+        },
+        {
+          "displayName": "黑化加尔",
+          "id": 3233,
+          "name": "黑化加尔",
+          "stage": 3,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 84,
+            "physicalAttack": 35,
+            "magicalAttack": 104,
+            "physicalDefense": 94,
+            "magicalDefense": 124,
+            "speed": 110
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3231,
+          "legalPetbase": null
+        }
+      ]
+    },
+    {
+      "spiritId": "spirit_preview_s5_lele-shark",
+      "name": "乐乐鲨",
+      "source": {
+        "id": 3805,
+        "name": "乐乐鲨",
+        "stage": 1,
+        "strengthStage": 2,
+        "raceStats": {
+          "hp": 98,
+          "physicalAttack": 94,
+          "magicalAttack": 37,
+          "physicalDefense": 96,
+          "magicalDefense": 70,
+          "speed": 76
+        },
+        "evolutionPetbaseIds": [
+          3806,
+          3807
+        ],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": 1
+      },
+      "forms": [
+        {
+          "displayName": "阿瓦鲨（柠檬鲨的样子）",
+          "id": 3806,
+          "name": "阿瓦鲨",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 123,
+            "physicalAttack": 117,
+            "magicalAttack": 46,
+            "physicalDefense": 120,
+            "magicalDefense": 88,
+            "speed": 95
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3805,
+          "legalPetbase": 1
+        },
+        {
+          "displayName": "阿瓦鲨（虎纹鲨的样子）",
+          "id": 3807,
+          "name": "阿瓦鲨",
+          "stage": 2,
+          "strengthStage": 3,
+          "raceStats": {
+            "hp": 90,
+            "physicalAttack": 146,
+            "magicalAttack": 57,
+            "physicalDefense": 120,
+            "magicalDefense": 88,
+            "speed": 95
+          },
+          "evolutionPetbaseIds": [],
+          "bossPetbaseIds": [],
+          "degeneratePetbaseId": 3805,
+          "legalPetbase": 1
+        }
+      ]
+    }
+  ],
+  "bossParents": [
+    {
+      "spiritId": "spirit_2e19e8edb2a60bc2",
+      "name": "蹦蹦果（海神球形态）",
+      "source": {
+        "id": 5004,
+        "name": "蹦蹦果",
+        "stage": 4,
+        "strengthStage": 1,
+        "raceStats": {
+          "hp": 100,
+          "physicalAttack": 107,
+          "magicalAttack": 110,
+          "physicalDefense": 73,
+          "magicalDefense": 105,
+          "speed": 85
+        },
+        "evolutionPetbaseIds": [],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": null
+      },
+      "parent": {
+        "id": 3019,
+        "name": "蹦蹦花",
+        "stage": 3,
+        "strengthStage": 3,
+        "raceStats": {
+          "hp": 100,
+          "physicalAttack": 107,
+          "magicalAttack": 110,
+          "physicalDefense": 73,
+          "magicalDefense": 105,
+          "speed": 85
+        },
+        "evolutionPetbaseIds": [],
+        "bossPetbaseIds": [
+          5004
+        ],
+        "degeneratePetbaseId": 3018,
+        "legalPetbase": 1
+      }
+    },
+    {
+      "spiritId": "spirit_f52c89e7811d8af3",
+      "name": "蹦蹦果（彩玉球形态）",
+      "source": {
+        "id": 5033,
+        "name": "蹦蹦果",
+        "stage": 4,
+        "strengthStage": 1,
+        "raceStats": {
+          "hp": 103,
+          "physicalAttack": 101,
+          "magicalAttack": 109,
+          "physicalDefense": 73,
+          "magicalDefense": 105,
+          "speed": 85
+        },
+        "evolutionPetbaseIds": [],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": null
+      },
+      "parent": {
+        "id": 3303,
+        "name": "蹦蹦花",
+        "stage": 3,
+        "strengthStage": 3,
+        "raceStats": {
+          "hp": 103,
+          "physicalAttack": 101,
+          "magicalAttack": 109,
+          "physicalDefense": 73,
+          "magicalDefense": 105,
+          "speed": 85
+        },
+        "evolutionPetbaseIds": [],
+        "bossPetbaseIds": [
+          5033
+        ],
+        "degeneratePetbaseId": 3300,
+        "legalPetbase": 1
+      }
+    },
+    {
+      "spiritId": "spirit_ad6e62ee903dc2fe",
+      "name": "蹦蹦果（短毛球形态）",
+      "source": {
+        "id": 5034,
+        "name": "蹦蹦果",
+        "stage": 4,
+        "strengthStage": 1,
+        "raceStats": {
+          "hp": 95,
+          "physicalAttack": 103,
+          "magicalAttack": 109,
+          "physicalDefense": 80,
+          "magicalDefense": 112,
+          "speed": 80
+        },
+        "evolutionPetbaseIds": [],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": null
+      },
+      "parent": {
+        "id": 3304,
+        "name": "蹦蹦花",
+        "stage": 3,
+        "strengthStage": 3,
+        "raceStats": {
+          "hp": 95,
+          "physicalAttack": 103,
+          "magicalAttack": 109,
+          "physicalDefense": 80,
+          "magicalDefense": 112,
+          "speed": 80
+        },
+        "evolutionPetbaseIds": [],
+        "bossPetbaseIds": [
+          5034
+        ],
+        "degeneratePetbaseId": 3301,
+        "legalPetbase": 1
+      }
+    },
+    {
+      "spiritId": "spirit_49cd0386a45b533d",
+      "name": "蹦蹦果（象牙球形态）",
+      "source": {
+        "id": 5035,
+        "name": "蹦蹦果",
+        "stage": 4,
+        "strengthStage": 1,
+        "raceStats": {
+          "hp": 99,
+          "physicalAttack": 100,
+          "magicalAttack": 110,
+          "physicalDefense": 73,
+          "magicalDefense": 106,
+          "speed": 90
+        },
+        "evolutionPetbaseIds": [],
+        "bossPetbaseIds": [],
+        "degeneratePetbaseId": null,
+        "legalPetbase": null
+      },
+      "parent": {
+        "id": 3305,
+        "name": "蹦蹦花",
+        "stage": 3,
+        "strengthStage": 3,
+        "raceStats": {
+          "hp": 99,
+          "physicalAttack": 100,
+          "magicalAttack": 110,
+          "physicalDefense": 73,
+          "magicalDefense": 106,
+          "speed": 90
+        },
+        "evolutionPetbaseIds": [],
+        "bossPetbaseIds": [
+          5035
+        ],
+        "degeneratePetbaseId": 3302,
+        "legalPetbase": 1
+      }
+    }
+  ],
+  "pending": [
+    {
+      "spiritId": "spirit_preview_s5_boss-abu",
+      "name": "圣龙阿布",
+      "reason": "unconfirmed-race-placeholder"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3217",
+      "name": "呼拉猫",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3218",
+      "name": "增肌猫",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3219",
+      "name": "健猫教练",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3408",
+      "name": "齿轮小子",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3409",
+      "name": "机甲小子",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3416",
+      "name": "格斗小五",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3417",
+      "name": "格斗小六",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3418",
+      "name": "格斗小八",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3825",
+      "name": "鹭灯",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3826",
+      "name": "光怪鹭",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-5070",
+      "name": "失光迷鹭",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3849",
+      "name": "藻龙骨",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3850",
+      "name": "藻目舟",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3851",
+      "name": "腐木船",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3863",
+      "name": "红顶剑龙",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3864",
+      "name": "赤顶翼龙",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3865",
+      "name": "幻晶龙炎",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-5069",
+      "name": "古齿帝牙",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3640",
+      "name": "菌宝",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3641",
+      "name": "竹笙仔",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3642",
+      "name": "鬼笔伯爵",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3643",
+      "name": "芝芝酥",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3644",
+      "name": "药尾灵螈",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3645",
+      "name": "三坛枞",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3646",
+      "name": "六月星菌",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3647",
+      "name": "小红侍",
+      "reason": "unreleased-race-stats"
+    },
+    {
+      "spiritId": "spirit_preview_s5_hidden-3648",
+      "name": "红膏女爵",
+      "reason": "unreleased-race-stats"
+    }
+  ],
+  "packageRecords": [
+    {
+      "id": 3019,
+      "name": "蹦蹦花",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 107,
+        "magicalAttack": 110,
+        "physicalDefense": 73,
+        "magicalDefense": 105,
+        "speed": 85
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5004
+      ],
+      "degeneratePetbaseId": 3018,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3060,
+      "name": "小灵面",
+      "stage": 1,
+      "strengthStage": 1,
+      "raceStats": {
+        "hp": 55,
+        "physicalAttack": 30,
+        "magicalAttack": 72,
+        "physicalDefense": 59,
+        "magicalDefense": 81,
+        "speed": 69
+      },
+      "evolutionPetbaseIds": [
+        3061,
+        3481
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3061,
+      "name": "暗影灵面",
+      "stage": 2,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 74,
+        "physicalAttack": 40,
+        "magicalAttack": 96,
+        "physicalDefense": 78,
+        "magicalDefense": 108,
+        "speed": 92
+      },
+      "evolutionPetbaseIds": [
+        3405
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3060,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3086,
+      "name": "可立鸡",
+      "stage": 1,
+      "strengthStage": 1,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 72,
+        "magicalAttack": 72,
+        "physicalDefense": 61,
+        "magicalDefense": 52,
+        "speed": 66
+      },
+      "evolutionPetbaseIds": [
+        3087
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3087,
+      "name": "晕晕鸡",
+      "stage": 2,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 96,
+        "magicalAttack": 96,
+        "physicalDefense": 82,
+        "magicalDefense": 70,
+        "speed": 88
+      },
+      "evolutionPetbaseIds": [
+        3089,
+        3088
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3086,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3088,
+      "name": "绅士鸡",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 112,
+        "physicalAttack": 120,
+        "magicalAttack": 120,
+        "physicalDefense": 102,
+        "magicalDefense": 87,
+        "speed": 110
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3087,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3089,
+      "name": "武者鸡",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 116,
+        "physicalAttack": 137,
+        "magicalAttack": 66,
+        "physicalDefense": 111,
+        "magicalDefense": 70,
+        "speed": 95
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3087,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3118,
+      "name": "果冻",
+      "stage": 1,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 81,
+        "physicalAttack": 26,
+        "magicalAttack": 81,
+        "physicalDefense": 75,
+        "magicalDefense": 78,
+        "speed": 96
+      },
+      "evolutionPetbaseIds": [
+        3526,
+        3527,
+        3528
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3124,
+      "name": "脆筒甜甜",
+      "stage": 1,
+      "strengthStage": 1,
+      "raceStats": {
+        "hp": 72,
+        "physicalAttack": 67,
+        "magicalAttack": 72,
+        "physicalDefense": 42,
+        "magicalDefense": 55,
+        "speed": 60
+      },
+      "evolutionPetbaseIds": [
+        3125,
+        3478,
+        3479
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3125,
+      "name": "香草甜甜",
+      "stage": 2,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 96,
+        "physicalAttack": 90,
+        "magicalAttack": 95,
+        "physicalDefense": 56,
+        "magicalDefense": 74,
+        "speed": 80
+      },
+      "evolutionPetbaseIds": [
+        3126,
+        3458,
+        3459
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3124,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3126,
+      "name": "圣代甜甜",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 119,
+        "physicalAttack": 112,
+        "magicalAttack": 119,
+        "physicalDefense": 70,
+        "magicalDefense": 92,
+        "speed": 100
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3125,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3136,
+      "name": "毛毛",
+      "stage": 1,
+      "strengthStage": 1,
+      "raceStats": {
+        "hp": 32,
+        "physicalAttack": 28,
+        "magicalAttack": 28,
+        "physicalDefense": 40,
+        "magicalDefense": 40,
+        "speed": 60
+      },
+      "evolutionPetbaseIds": [
+        3137
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3137,
+      "name": "爬爬",
+      "stage": 2,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 42,
+        "physicalAttack": 37,
+        "magicalAttack": 37,
+        "physicalDefense": 53,
+        "magicalDefense": 53,
+        "speed": 80
+      },
+      "evolutionPetbaseIds": [
+        3138,
+        3470,
+        3471,
+        3472
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3136,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3138,
+      "name": "化蝶",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 53,
+        "physicalAttack": 46,
+        "magicalAttack": 46,
+        "physicalDefense": 66,
+        "magicalDefense": 66,
+        "speed": 100
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3137,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3230,
+      "name": "加灵",
+      "stage": 1,
+      "strengthStage": 1,
+      "raceStats": {
+        "hp": 39,
+        "physicalAttack": 22,
+        "magicalAttack": 57,
+        "physicalDefense": 50,
+        "magicalDefense": 74,
+        "speed": 66
+      },
+      "evolutionPetbaseIds": [
+        3231
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": null
+    },
+    {
+      "id": 3231,
+      "name": "加益",
+      "stage": 2,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 52,
+        "physicalAttack": 29,
+        "magicalAttack": 75,
+        "physicalDefense": 67,
+        "magicalDefense": 99,
+        "speed": 88
+      },
+      "evolutionPetbaseIds": [
+        3232,
+        3233
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3230,
+      "legalPetbase": null
+    },
+    {
+      "id": 3232,
+      "name": "加尔",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 36,
+        "magicalAttack": 94,
+        "physicalDefense": 84,
+        "magicalDefense": 124,
+        "speed": 110
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3231,
+      "legalPetbase": null
+    },
+    {
+      "id": 3233,
+      "name": "黑化加尔",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 84,
+        "physicalAttack": 35,
+        "magicalAttack": 104,
+        "physicalDefense": 94,
+        "magicalDefense": 124,
+        "speed": 110
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3231,
+      "legalPetbase": null
+    },
+    {
+      "id": 3303,
+      "name": "蹦蹦花",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 101,
+        "magicalAttack": 109,
+        "physicalDefense": 73,
+        "magicalDefense": 105,
+        "speed": 85
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5033
+      ],
+      "degeneratePetbaseId": 3300,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3304,
+      "name": "蹦蹦花",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 95,
+        "physicalAttack": 103,
+        "magicalAttack": 109,
+        "physicalDefense": 80,
+        "magicalDefense": 112,
+        "speed": 80
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5034
+      ],
+      "degeneratePetbaseId": 3301,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3305,
+      "name": "蹦蹦花",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 100,
+        "magicalAttack": 110,
+        "physicalDefense": 73,
+        "magicalDefense": 106,
+        "speed": 90
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5035
+      ],
+      "degeneratePetbaseId": 3302,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3307,
+      "name": "矿晶虫",
+      "stage": 1,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 79,
+        "physicalAttack": 77,
+        "magicalAttack": 81,
+        "physicalDefense": 102,
+        "magicalDefense": 75,
+        "speed": 52
+      },
+      "evolutionPetbaseIds": [
+        3486,
+        3451,
+        3308,
+        3448,
+        3449,
+        3450
+      ],
+      "bossPetbaseIds": [
+        3308
+      ],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3308,
+      "name": "晶石蜗",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 96,
+        "magicalAttack": 101,
+        "physicalDefense": 128,
+        "magicalDefense": 94,
+        "speed": 65
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5001
+      ],
+      "degeneratePetbaseId": 3307,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3319,
+      "name": "粉星仔",
+      "stage": 1,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 80,
+        "physicalAttack": 63,
+        "magicalAttack": 119,
+        "physicalDefense": 58,
+        "magicalDefense": 102,
+        "speed": 92
+      },
+      "evolutionPetbaseIds": [
+        3485,
+        3320
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3320,
+      "name": "粉耳星兔",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 79,
+        "magicalAttack": 148,
+        "physicalDefense": 73,
+        "magicalDefense": 127,
+        "speed": 115
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3319,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3344,
+      "name": "乖乖鹄",
+      "stage": 1,
+      "strengthStage": 1,
+      "raceStats": {
+        "hp": 75,
+        "physicalAttack": 57,
+        "magicalAttack": 52,
+        "physicalDefense": 83,
+        "magicalDefense": 58,
+        "speed": 69
+      },
+      "evolutionPetbaseIds": [
+        3345
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3345,
+      "name": "蓝珠天鹅",
+      "stage": 2,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 76,
+        "magicalAttack": 69,
+        "physicalDefense": 110,
+        "magicalDefense": 78,
+        "speed": 92
+      },
+      "evolutionPetbaseIds": [
+        3571,
+        3346
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3344,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3346,
+      "name": "翠顶夫人",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 125,
+        "physicalAttack": 95,
+        "magicalAttack": 86,
+        "physicalDefense": 138,
+        "magicalDefense": 97,
+        "speed": 115
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3345,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3405,
+      "name": "幽冥眼",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 50,
+        "magicalAttack": 120,
+        "physicalDefense": 98,
+        "magicalDefense": 135,
+        "speed": 115
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3061,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3448,
+      "name": "晶石蜗",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 94,
+        "physicalAttack": 97,
+        "magicalAttack": 101,
+        "physicalDefense": 137,
+        "magicalDefense": 91,
+        "speed": 65
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5047
+      ],
+      "degeneratePetbaseId": 3307,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3449,
+      "name": "晶石蜗",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 101,
+        "magicalAttack": 101,
+        "physicalDefense": 128,
+        "magicalDefense": 91,
+        "speed": 65
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5048
+      ],
+      "degeneratePetbaseId": 3307,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3450,
+      "name": "晶石蜗",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 97,
+        "physicalAttack": 97,
+        "magicalAttack": 101,
+        "physicalDefense": 132,
+        "magicalDefense": 91,
+        "speed": 65
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5049
+      ],
+      "degeneratePetbaseId": 3307,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3451,
+      "name": "晶石蜗",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 97,
+        "magicalAttack": 107,
+        "physicalDefense": 124,
+        "magicalDefense": 91,
+        "speed": 65
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5050
+      ],
+      "degeneratePetbaseId": 3307,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3458,
+      "name": "圣代甜甜",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 107,
+        "physicalAttack": 120,
+        "magicalAttack": 110,
+        "physicalDefense": 81,
+        "magicalDefense": 96,
+        "speed": 100
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3125,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3459,
+      "name": "圣代甜甜",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 113,
+        "physicalAttack": 112,
+        "magicalAttack": 110,
+        "physicalDefense": 79,
+        "magicalDefense": 92,
+        "speed": 105
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3125,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3460,
+      "name": "圣代甜甜",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 114,
+        "physicalAttack": 117,
+        "magicalAttack": 110,
+        "physicalDefense": 79,
+        "magicalDefense": 92,
+        "speed": 100
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3479,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3461,
+      "name": "圣代甜甜",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 113,
+        "physicalAttack": 109,
+        "magicalAttack": 100,
+        "physicalDefense": 90,
+        "magicalDefense": 96,
+        "speed": 100
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3479,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3462,
+      "name": "圣代甜甜",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 121,
+        "physicalAttack": 100,
+        "magicalAttack": 101,
+        "physicalDefense": 86,
+        "magicalDefense": 92,
+        "speed": 105
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3479,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3463,
+      "name": "圣代甜甜",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 110,
+        "physicalAttack": 116,
+        "magicalAttack": 120,
+        "physicalDefense": 73,
+        "magicalDefense": 96,
+        "speed": 100
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3478,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3464,
+      "name": "圣代甜甜",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 108,
+        "physicalAttack": 110,
+        "magicalAttack": 110,
+        "physicalDefense": 84,
+        "magicalDefense": 99,
+        "speed": 100
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3478,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3465,
+      "name": "圣代甜甜",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 110,
+        "physicalAttack": 107,
+        "magicalAttack": 110,
+        "physicalDefense": 82,
+        "magicalDefense": 96,
+        "speed": 105
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3478,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3470,
+      "name": "化蝶",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 43,
+        "physicalAttack": 42,
+        "magicalAttack": 42,
+        "physicalDefense": 67,
+        "magicalDefense": 70,
+        "speed": 105
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3137,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3471,
+      "name": "化蝶",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 49,
+        "physicalAttack": 47,
+        "magicalAttack": 41,
+        "physicalDefense": 67,
+        "magicalDefense": 67,
+        "speed": 95
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3137,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3472,
+      "name": "化蝶",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 55,
+        "physicalAttack": 46,
+        "magicalAttack": 44,
+        "physicalDefense": 62,
+        "magicalDefense": 65,
+        "speed": 90
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3137,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3478,
+      "name": "香草甜甜",
+      "stage": 2,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 88,
+        "physicalAttack": 92,
+        "magicalAttack": 96,
+        "physicalDefense": 58,
+        "magicalDefense": 77,
+        "speed": 80
+      },
+      "evolutionPetbaseIds": [
+        3463,
+        3464,
+        3465
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3124,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3479,
+      "name": "香草甜甜",
+      "stage": 2,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 91,
+        "physicalAttack": 94,
+        "magicalAttack": 88,
+        "physicalDefense": 63,
+        "magicalDefense": 74,
+        "speed": 80
+      },
+      "evolutionPetbaseIds": [
+        3460,
+        3461,
+        3462
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3124,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3481,
+      "name": "暗影灵面",
+      "stage": 2,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 84,
+        "physicalAttack": 30,
+        "magicalAttack": 96,
+        "physicalDefense": 83,
+        "magicalDefense": 88,
+        "speed": 92
+      },
+      "evolutionPetbaseIds": [
+        3482
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3060,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3482,
+      "name": "幽冥眼",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 105,
+        "physicalAttack": 38,
+        "magicalAttack": 120,
+        "physicalDefense": 104,
+        "magicalDefense": 110,
+        "speed": 115
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3481,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3485,
+      "name": "落陨星兔",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 61,
+        "magicalAttack": 125,
+        "physicalDefense": 87,
+        "magicalDefense": 141,
+        "speed": 130
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3319,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3486,
+      "name": "晶石蜗",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 95,
+        "physicalAttack": 97,
+        "magicalAttack": 102,
+        "physicalDefense": 130,
+        "magicalDefense": 91,
+        "speed": 70
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5051
+      ],
+      "degeneratePetbaseId": 3307,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3526,
+      "name": "抹茶布丁",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 101,
+        "physicalAttack": 32,
+        "magicalAttack": 101,
+        "physicalDefense": 94,
+        "magicalDefense": 98,
+        "speed": 120
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3118,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3527,
+      "name": "椰浆布丁",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 133,
+        "physicalAttack": 34,
+        "magicalAttack": 89,
+        "physicalDefense": 81,
+        "magicalDefense": 105,
+        "speed": 120
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3118,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3528,
+      "name": "熔岩布丁",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 128,
+        "physicalAttack": 87,
+        "magicalAttack": 33,
+        "physicalDefense": 112,
+        "magicalDefense": 84,
+        "speed": 120
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3118,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3550,
+      "name": "棋棋",
+      "stage": 1,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 72,
+        "physicalAttack": 100,
+        "magicalAttack": 36,
+        "physicalDefense": 70,
+        "magicalDefense": 56,
+        "speed": 100
+      },
+      "evolutionPetbaseIds": [
+        3551,
+        3552,
+        3553,
+        3554
+      ],
+      "bossPetbaseIds": [
+        3551
+      ],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3551,
+      "name": "棋骑士",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 126,
+        "magicalAttack": 45,
+        "physicalDefense": 88,
+        "magicalDefense": 69,
+        "speed": 125
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5023
+      ],
+      "degeneratePetbaseId": 3550,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3552,
+      "name": "棋绮后",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 84,
+        "magicalAttack": 84,
+        "physicalDefense": 82,
+        "magicalDefense": 75,
+        "speed": 90
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5040
+      ],
+      "degeneratePetbaseId": 3550,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3553,
+      "name": "棋齐垒",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 94,
+        "magicalAttack": 38,
+        "physicalDefense": 116,
+        "magicalDefense": 77,
+        "speed": 75
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5041
+      ],
+      "degeneratePetbaseId": 3550,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3554,
+      "name": "棋祈督",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 87,
+        "magicalAttack": 87,
+        "physicalDefense": 90,
+        "magicalDefense": 72,
+        "speed": 85
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5042
+      ],
+      "degeneratePetbaseId": 3550,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3555,
+      "name": "棋棋",
+      "stage": 1,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 66,
+        "physicalAttack": 97,
+        "magicalAttack": 35,
+        "physicalDefense": 67,
+        "magicalDefense": 53,
+        "speed": 100
+      },
+      "evolutionPetbaseIds": [
+        3556,
+        3557,
+        3558,
+        3559
+      ],
+      "bossPetbaseIds": [
+        3556
+      ],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3556,
+      "name": "棋骑士",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 83,
+        "physicalAttack": 121,
+        "magicalAttack": 43,
+        "physicalDefense": 84,
+        "magicalDefense": 66,
+        "speed": 125
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5043
+      ],
+      "degeneratePetbaseId": 3555,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3557,
+      "name": "棋绮后",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 93,
+        "physicalAttack": 84,
+        "magicalAttack": 84,
+        "physicalDefense": 82,
+        "magicalDefense": 75,
+        "speed": 90
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5044
+      ],
+      "degeneratePetbaseId": 3555,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3558,
+      "name": "棋齐垒",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 94,
+        "magicalAttack": 38,
+        "physicalDefense": 116,
+        "magicalDefense": 77,
+        "speed": 75
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5045
+      ],
+      "degeneratePetbaseId": 3555,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3559,
+      "name": "棋祈督",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 87,
+        "magicalAttack": 87,
+        "physicalDefense": 90,
+        "magicalDefense": 72,
+        "speed": 85
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [
+        5046
+      ],
+      "degeneratePetbaseId": 3555,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3571,
+      "name": "黑羽夫人",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 132,
+        "physicalAttack": 93,
+        "magicalAttack": 87,
+        "physicalDefense": 130,
+        "magicalDefense": 90,
+        "speed": 120
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3345,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3577,
+      "name": "墨鱿士",
+      "stage": 1,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 97,
+        "magicalAttack": 42,
+        "physicalDefense": 105,
+        "magicalDefense": 79,
+        "speed": 56
+      },
+      "evolutionPetbaseIds": [
+        3578,
+        3579
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3578,
+      "name": "混乱鱿彩",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 129,
+        "physicalAttack": 122,
+        "magicalAttack": 53,
+        "physicalDefense": 131,
+        "magicalDefense": 99,
+        "speed": 70
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3577,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3579,
+      "name": "秩序鱿墨",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 96,
+        "physicalAttack": 120,
+        "magicalAttack": 40,
+        "physicalDefense": 117,
+        "magicalDefense": 106,
+        "speed": 130
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3577,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3603,
+      "name": "毛头小蛛",
+      "stage": 1,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 85,
+        "physicalAttack": 80,
+        "magicalAttack": 27,
+        "physicalDefense": 93,
+        "magicalDefense": 79,
+        "speed": 88
+      },
+      "evolutionPetbaseIds": [
+        3604,
+        3605
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3604,
+      "name": "捕尘长绒",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 106,
+        "physicalAttack": 100,
+        "magicalAttack": 34,
+        "physicalDefense": 116,
+        "magicalDefense": 99,
+        "speed": 110
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3603,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3605,
+      "name": "食尘短绒",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 109,
+        "physicalAttack": 105,
+        "magicalAttack": 37,
+        "physicalDefense": 113,
+        "magicalDefense": 97,
+        "speed": 115
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3603,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3606,
+      "name": "画精灵",
+      "stage": 1,
+      "strengthStage": 1,
+      "raceStats": {
+        "hp": 61,
+        "physicalAttack": 32,
+        "magicalAttack": 78,
+        "physicalDefense": 56,
+        "magicalDefense": 72,
+        "speed": 72
+      },
+      "evolutionPetbaseIds": [
+        3607
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3607,
+      "name": "画像守护",
+      "stage": 2,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 81,
+        "physicalAttack": 42,
+        "magicalAttack": 104,
+        "physicalDefense": 75,
+        "magicalDefense": 96,
+        "speed": 96
+      },
+      "evolutionPetbaseIds": [
+        3608,
+        3609
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3606,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3608,
+      "name": "画间法师手",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 101,
+        "physicalAttack": 53,
+        "magicalAttack": 131,
+        "physicalDefense": 94,
+        "magicalDefense": 120,
+        "speed": 120
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3607,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3609,
+      "name": "画间沉铁兽",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 126,
+        "physicalAttack": 147,
+        "magicalAttack": 63,
+        "physicalDefense": 100,
+        "magicalDefense": 76,
+        "speed": 92
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3607,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3610,
+      "name": "书魔虫",
+      "stage": 1,
+      "strengthStage": 1,
+      "raceStats": {
+        "hp": 67,
+        "physicalAttack": 69,
+        "magicalAttack": 69,
+        "physicalDefense": 48,
+        "magicalDefense": 73,
+        "speed": 57
+      },
+      "evolutionPetbaseIds": [
+        3611
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3611,
+      "name": "书卷守护",
+      "stage": 2,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 89,
+        "physicalAttack": 92,
+        "magicalAttack": 92,
+        "physicalDefense": 64,
+        "magicalDefense": 98,
+        "speed": 76
+      },
+      "evolutionPetbaseIds": [
+        3612,
+        3613
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3610,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3612,
+      "name": "古卷执政官",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 111,
+        "physicalAttack": 115,
+        "magicalAttack": 115,
+        "physicalDefense": 80,
+        "magicalDefense": 122,
+        "speed": 95
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3611,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3613,
+      "name": "古卷匣魔像",
+      "stage": 3,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 109,
+        "physicalAttack": 109,
+        "magicalAttack": 109,
+        "physicalDefense": 130,
+        "magicalDefense": 86,
+        "speed": 95
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3611,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3659,
+      "name": "加油海葵",
+      "stage": 1,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 92,
+        "physicalAttack": 73,
+        "magicalAttack": 73,
+        "physicalDefense": 103,
+        "magicalDefense": 103,
+        "speed": 80
+      },
+      "evolutionPetbaseIds": [
+        3660,
+        3743
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3660,
+      "name": "加油蟹",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 116,
+        "physicalAttack": 92,
+        "magicalAttack": 92,
+        "physicalDefense": 128,
+        "magicalDefense": 128,
+        "speed": 100
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3659,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3743,
+      "name": "加油蟹",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 116,
+        "physicalAttack": 130,
+        "magicalAttack": 58,
+        "physicalDefense": 128,
+        "magicalDefense": 128,
+        "speed": 95
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3659,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3805,
+      "name": "乐乐鲨",
+      "stage": 1,
+      "strengthStage": 2,
+      "raceStats": {
+        "hp": 98,
+        "physicalAttack": 94,
+        "magicalAttack": 37,
+        "physicalDefense": 96,
+        "magicalDefense": 70,
+        "speed": 76
+      },
+      "evolutionPetbaseIds": [
+        3806,
+        3807
+      ],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3806,
+      "name": "阿瓦鲨",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 123,
+        "physicalAttack": 117,
+        "magicalAttack": 46,
+        "physicalDefense": 120,
+        "magicalDefense": 88,
+        "speed": 95
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3805,
+      "legalPetbase": 1
+    },
+    {
+      "id": 3807,
+      "name": "阿瓦鲨",
+      "stage": 2,
+      "strengthStage": 3,
+      "raceStats": {
+        "hp": 90,
+        "physicalAttack": 146,
+        "magicalAttack": 57,
+        "physicalDefense": 120,
+        "magicalDefense": 88,
+        "speed": 95
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": 3805,
+      "legalPetbase": 1
+    },
+    {
+      "id": 5004,
+      "name": "蹦蹦果",
+      "stage": 4,
+      "strengthStage": 1,
+      "raceStats": {
+        "hp": 100,
+        "physicalAttack": 107,
+        "magicalAttack": 110,
+        "physicalDefense": 73,
+        "magicalDefense": 105,
+        "speed": 85
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": null
+    },
+    {
+      "id": 5033,
+      "name": "蹦蹦果",
+      "stage": 4,
+      "strengthStage": 1,
+      "raceStats": {
+        "hp": 103,
+        "physicalAttack": 101,
+        "magicalAttack": 109,
+        "physicalDefense": 73,
+        "magicalDefense": 105,
+        "speed": 85
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": null
+    },
+    {
+      "id": 5034,
+      "name": "蹦蹦果",
+      "stage": 4,
+      "strengthStage": 1,
+      "raceStats": {
+        "hp": 95,
+        "physicalAttack": 103,
+        "magicalAttack": 109,
+        "physicalDefense": 80,
+        "magicalDefense": 112,
+        "speed": 80
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": null
+    },
+    {
+      "id": 5035,
+      "name": "蹦蹦果",
+      "stage": 4,
+      "strengthStage": 1,
+      "raceStats": {
+        "hp": 99,
+        "physicalAttack": 100,
+        "magicalAttack": 110,
+        "physicalDefense": 73,
+        "magicalDefense": 106,
+        "speed": 90
+      },
+      "evolutionPetbaseIds": [],
+      "bossPetbaseIds": [],
+      "degeneratePetbaseId": null,
+      "legalPetbase": null
+    }
+  ]
+}

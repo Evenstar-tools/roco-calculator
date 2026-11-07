@@ -13,7 +13,7 @@ test("S5 nature display power and conditional attacks calculate immediately with
   await page.locator('#nature-picker-trigger').click();
   await page.getByRole('textbox', { name: '搜索性格', exact: true }).fill('固执');
   await page.locator('[data-nature-id="adamant"]').click();
-  await page.locator('#ivs-zero').click();
+  await clearOwnIvs(page);
   for (const stat of ['hp', 'physicalAttack', 'magicalDefense']) await page.locator(`[data-iv-stat="${stat}"]`).click();
   const skillPicker = page.getByRole('combobox', { name: '我方技能 1', exact: true });
   await skillPicker.fill('火焰切割');
@@ -22,13 +22,13 @@ test("S5 nature display power and conditional attacks calculate immediately with
   await expect(base.locator('.dmg')).toHaveText('103');
   await expect(base.locator('.rem b')).toHaveText('77%');
   await expect(page.locator('#preview-skill-meta-0')).toContainText('显示威力 100');
-  await page.locator('#own-dice').selectOption('custom');
+  await setDice(page, 'own', 'custom');
   await page.locator('#own-dice-physicalAttackMultiplier').fill('1.1');
   await page.locator('#own-dice-physicalAttackMultiplier').press('Tab');
   await expect(page.locator('#preview-skill-meta-0')).toContainText('显示威力 110');
   await expect(base.locator('.dmg')).toHaveText('113');
-  const condition = page.locator('[data-preview-row="0"] .preview-condition');
-  await condition.locator(':scope > summary').click();
+  const condition = page.locator('#preview-condition-0-gear');
+  await condition.click();
   const power = page.locator('#preview-condition-0-displayedPower');
   await power.fill('110');
   await power.press('Tab');
@@ -37,7 +37,7 @@ test("S5 nature display power and conditional attacks calculate immediately with
   await page.reload();
   await expect(power).toHaveValue('110');
   await expect(base.locator('.dmg')).toHaveText('113');
-  await condition.locator(':scope > summary').click();
+  await condition.click();
   await power.fill('60.5');
   await power.press('Tab');
   await expect(page.locator('#preview-skill-meta-0')).toContainText('显示威力 60.5');
@@ -57,7 +57,7 @@ test("S5 nature display power and conditional attacks calculate immediately with
   await page.locator('#preview-condition-0-resetPower').click();
   await expect(page.locator('#preview-condition-0-legacyPower')).toBeHidden();
   await expect(base.locator('.dmg')).toHaveText('113');
-  await page.locator('#own-dice').selectOption('none');
+  await setDice(page, 'own', 'none');
   await chooseTarget(page, '伊雷龙');
   await expect(base.locator('.dmg')).toHaveText('182');
   await expect(base.locator('.rem b')).toHaveText('57%');
@@ -80,7 +80,7 @@ test("S5 nature display power and conditional attacks calculate immediately with
   await expect(ground.locator('.rem b')).toHaveText('13%');
   await expect(page.locator('#preview-skill-meta-1')).toContainText('显示威力 180');
   await expect(page.locator('#preview-condition-1-displayedPower')).toHaveValue('');
-  if (await condition.evaluate(node => node.open)) await condition.locator(':scope > summary').click();
+  await page.keyboard.press('Escape');
   for (const [width, height] of [[1280, 1000], [390, 844]]) {
     await page.setViewportSize({ width, height });
     await condition.scrollIntoViewIfNeeded();
@@ -88,6 +88,22 @@ test("S5 nature display power and conditional attacks calculate immediately with
     await page.screenshot({ path: `output/playwright/s5-conditional-power-${width}.png` });
   }
 });
+
+async function clearOwnIvs(page) {
+  for (const stat of ['hp', 'physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense', 'speed']) {
+    const button = page.locator(`[data-iv-stat="${stat}"]`);
+    if (await button.getAttribute('aria-pressed') === 'true') await button.click();
+  }
+}
+
+async function setDice(page, side, id) {
+  const toggle = page.locator(`#${side}-dice-ui [data-dice-switch]`);
+  if (id === 'none') await toggle.uncheck();
+  else {
+    await toggle.check();
+    await page.locator(`#${side}-dice`).selectOption(id);
+  }
+}
 
 async function chooseTarget(page, name) {
   const picker = page.getByRole("combobox", { name: "选择野生目标", exact: true });
@@ -191,13 +207,13 @@ test("S5 nature incoming attack shows measured whale damage and matches nature",
   await page.locator('#nature-picker-trigger').click();
   await page.getByRole('textbox', { name: '搜索性格', exact: true }).fill('莽撞');
   await page.locator('[data-nature-id="rash"]').click();
-  await page.locator('#ivs-zero').click();
+  await clearOwnIvs(page);
   for (const stat of ['physicalAttack', 'magicalAttack', 'speed']) {
     await page.locator(`[data-iv-stat="${stat}"]`).click();
   }
   await page.locator('#own-trait-stacks').fill('0');
   await page.locator('#own-trait-stacks').press('Tab');
-  await page.locator('#own-dice').selectOption('none');
+  await setDice(page, 'own', 'none');
   await chooseTarget(page, '深蓝鲸');
   await page.getByRole('group', { name: '野怪等级', exact: true })
     .getByRole('button', { name: '41', exact: true }).click();
@@ -209,6 +225,7 @@ test("S5 nature incoming attack shows measured whale damage and matches nature",
   const raised = cells.locator('[data-nature-group="magicalAttack"][data-nature-condition="base"]');
   await expect(normal.locator('.dmg')).toHaveText('41');
   await expect(raised.locator('.dmg')).toHaveText('45');
+  await expect(cells.locator('.axis-label')).toHaveText(['减魔攻', '魔攻不变', '加魔攻']);
   const result = await page.evaluate(() => window.pveNatureUi.getPreview());
   expect(result.ownPanel.magicalDefense).toBe(163);
   expect(result.incomingList[0].effectivePower).toBe(37.5);
@@ -220,9 +237,9 @@ test("S5 nature incoming attack shows measured whale damage and matches nature",
   await expect(page.locator('#preview-verdict [data-stat="magicalAttack"] b')).toHaveText('加');
 
   // A skill power die must recalculate the shown incoming damage immediately.
-  await page.locator('#target-dice').selectOption('manual-power-plus-40');
+  await setDice(page, 'target', 'game-dice-effect-17');
   await expect(raised.locator('.dmg')).toHaveText('106');
-  await page.locator('#target-dice').selectOption('none');
+  await setDice(page, 'target', 'none');
   await expect(raised.locator('.dmg')).toHaveText('45');
   await page.locator('#preview-incoming-damage-0').click();
   for (const [width, height] of [[1280, 1000], [390, 844]]) {
@@ -243,6 +260,66 @@ test("S5 nature incoming attack shows measured whale damage and matches nature",
   expect(flood.manualPower).toBe(false);
 });
 
+test("S5 nature defense branch selection preserves HP and incoming, clears measurements and supports undo", async ({ page }) => {
+  await page.goto(toolPath);
+  await page.locator('#target-filter').selectOption('all');
+  await chooseTarget(page, '毛毛');
+  const branch = page.getByRole('combobox', { name: '野怪防御分支', exact: true });
+  await expect(branch).toBeVisible();
+  await expect(page.locator('#preview-cells-0')).toContainText('防御分支');
+  const incoming = page.getByRole('combobox', { name: '敌方技能 1', exact: true });
+  await incoming.fill('抓挠');
+  await page.getByRole('option').getByText('抓挠', { exact: true }).click();
+  await expect(page.locator('#preview-incoming-cells-0 .axis-label')).toHaveText(['减物攻', '物攻不变', '加物攻']);
+  const baseline = await page.evaluate(() => window.pveNatureUi.getPreview());
+  expect(baseline.incomingList[0].status).toBe('estimated');
+  const forms = await branch.locator('option').evaluateAll(nodes => nodes.map(node => node.value).filter(Boolean));
+  expect(forms.length).toBeGreaterThan(1);
+  await branch.selectOption(forms[0]);
+  await expect(page.locator('#preview-cells-0 .dmg').first()).toHaveText(/^\d+$/);
+  const selected = await page.evaluate(() => window.pveNatureUi.getPreview());
+  const incomingValues = result => result.incomingList[0].predictions.map(row =>
+    [row.natureId, row.damage, row.attackerStat, row.targetHpMax]);
+  expect(incomingValues(selected)).toEqual(incomingValues(baseline));
+  await page.locator('#preview-incoming-damage-0').fill('10');
+  await page.locator('#preview-incoming-damage-0').press('Tab');
+  await branch.selectOption(forms[1]);
+  await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('');
+  await page.locator('#undo').click();
+  await expect(branch).toHaveValue(forms[0]);
+  await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('10');
+  await page.reload();
+  await expect(branch).toHaveValue(forms[0]);
+  await chooseTarget(page, '深蓝鲸');
+  await expect(branch).toBeHidden();
+  expect(await page.evaluate(() => window.pveNatureUi.getSession().wildStatFormId)).toBe('');
+  const rejected = await page.evaluate(formId => {
+    const session = window.pveNatureUi.getSession();
+    session.wildStatFormId = formId;
+    try { window.pveNatureUi.setSession(session); return false; } catch { return true; }
+  }, forms[0]);
+  expect(rejected).toBe(true);
+});
+
+test("S5 nature level evidence does not confirm a fixed level or a single matching attack", async ({ page }) => {
+  await page.goto(toolPath);
+  await chooseTarget(page, '小翼龙');
+  const levels = page.getByRole('group', { name: '野怪等级', exact: true });
+  await levels.getByRole('button', { name: '42', exact: true }).click();
+  const picker = page.getByRole('combobox', { name: '我方技能 1', exact: true });
+  await picker.fill('先发制人');
+  await page.getByRole('option').getByText('先发制人', { exact: true }).click();
+  const damage = await page.locator('#preview-cells-0 [data-nature-group="hp"][data-nature-condition="base"] .dmg').textContent();
+  await page.locator('#preview-observed-0').fill(damage);
+  await page.locator('#preview-observed-0').press('Tab');
+  await expect(page.locator('.verdict-level')).not.toContainText('✓');
+  await levels.getByRole('button', { name: '41–43级全部', exact: true }).click();
+  await page.locator('#preview-observed-0').fill(damage);
+  await page.locator('#preview-observed-0').press('Tab');
+  await expect(page.locator('.verdict-level')).not.toContainText('✓');
+  await expect(page.locator('#preview-comparison')).toContainText('经验模型');
+});
+
 test("S5 nature incoming damage above own HP still identifies unchanged magical attack", async ({ page }) => {
   await page.goto(toolPath);
   await page.locator('[data-profile="luoyin"]').click();
@@ -251,7 +328,7 @@ test("S5 nature incoming damage above own HP still identifies unchanged magical 
   await chooseTarget(page, '伊雷龙');
   await page.getByRole('group', { name: '野怪等级', exact: true })
     .getByRole('button', { name: '43', exact: true }).click();
-  await page.locator('#target-dice').selectOption('custom');
+  await setDice(page, 'target', 'custom');
   await page.locator('#target-dice-magicalAttackMultiplier').fill('1.3');
   await page.locator('#target-dice-magicalAttackMultiplier').press('Tab');
   const picker = page.getByRole('combobox', { name: '敌方技能 1', exact: true });
@@ -341,7 +418,7 @@ test("S5 nature presets share calculator configurations and preserve saved manua
   await page.reload();
   await expect(picker).toHaveValue('恶魔狼王');
   expect((await active()).natureId).toBe('rash');
-  for (const name of ['圆号鱼', '圣龙阿布']) {
+  for (const name of ['圆号鱼', '圣光迪莫']) {
     const spirit = catalog.spirits.find(row => row.name === name);
     const expected = library.entries.find(row => row.spiritId === spirit.id);
     await picker.click();

@@ -197,10 +197,10 @@ test('catalog preserves package strength stage separately from displayed evoluti
     assert(Object.hasOwn(row, 'wildDefenseRaceStats'), row.name);
     assert.deepEqual(row.wildDefenseRaceStats, mapping.bySpiritId[row.id] ?? null, row.name);
     assert.equal(row.wildStrengthStage, mapping.strengthStageBySpiritId[row.id] ?? null, row.name);
-    if (row.wildDefenseRaceStats === null) assert(mapping.missing[row.id], row.name);
+    if (row.wildDefenseRaceStats === null) assert(mapping.missing[row.id] || mapping.candidatesBySpiritId?.[row.id], row.name);
   }
   // These package branches differ in attack, but have identical defense races.
-  assert.equal(species('乐乐鲨').wildAttackRaceStats, null);
+  assert.equal(species('乐乐鲨').wildAttackRaceStats.physicalAttack, 94);
   assert.equal(species('乐乐鲨').wildDefenseRaceStats.physicalDefense, 120);
 });
 

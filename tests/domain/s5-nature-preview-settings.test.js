@@ -11,7 +11,7 @@ test('skill result notices expose empirical corrections and never assume a burst
   const burst = { name: '天旋地转' };
   expect(skillPreviewNotices(row, burst)).toEqual([
     '攻击模型 · 钝化修正×0.6（估算）',
-    '迸发不自动识别；已触发时请在“条件”核对本次显示威力。',
+    '迸发不自动识别；已触发时请点齿轮核对本次显示威力。',
   ]);
   expect(skillPreviewNotices({ ...row, powerMode: 'displayed' }, burst)).toEqual([
     '攻击模型 · 钝化修正×0.6（估算）',
@@ -39,6 +39,16 @@ test('preview settings restore all original effect IDs without dropping the chos
   }
   for (const id of ['game-dice-effect-0', 'game-dice-effect-41', 'game-dice-effect-01', 'game-dice-effect-8-extra']) {
     expect(() => validatePreviewSettings({ profiles: [{ preview: { diceId: id } }] })).toThrow();
+  }
+});
+
+test('preview settings validate remembered dice before the switch restores them', () => {
+  for (const diceLast of ['custom', 'game-dice-effect-19', 'unresolved-all-stats-plus-30']) {
+    expect(() => validatePreviewSettings({ profiles: [{ preview: { diceId: 'none', diceLast } }] })).not.toThrow();
+  }
+  for (const diceLast of [{}, 1, 'invalid', 'game-dice-effect-41']) {
+    expect(() => validatePreviewSettings({ profiles: [{ preview: { diceId: 'none', diceLast } }] })).toThrow();
+    expect(() => validatePreviewSettings({ profiles: [], preview: { diceId: 'none', diceLast } })).toThrow();
   }
 });
 
