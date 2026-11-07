@@ -176,7 +176,7 @@ for (const activation of ['automatic', 'waiting']) test(`S5 nature delays old ca
     expect(Date.now() - startedAt).toBeGreaterThanOrEqual(3000);
     expect(resourceRequests.filter(url => /\/(?:ui\.mjs|[^/]+\.css|data\/[^/]+\.json)$/.test(url))).toEqual([]);
     expect(await page.evaluate(() => Boolean(window.oldS5UiExecuted || window.oldS5StartupExecuted || window.pveNatureUi))).toBe(false);
-    await expect(page.getByRole('heading', { name: 'S5奇异性格计算', exact: true })).toBeHidden();
+    await expect(page.getByRole('heading', { name: 'S5奇遇性格计算', exact: true })).toBeHidden();
     expect(await page.evaluate(async cacheName => (await (await caches.open(cacheName)).match('/tools/s5-nature/ui.mjs')).text(), cacheName))
       .toContain('oldS5UiExecuted');
 
@@ -201,7 +201,7 @@ for (const activation of ['automatic', 'waiting']) test(`S5 nature delays old ca
       expect(await workerPolicy(false)).toBe(false);
     }
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'S5奇异性格计算', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'S5奇遇性格计算', exact: true })).toBeVisible();
     await expect.poll(() => page.evaluate(() => Boolean(window.pveNatureUi))).toBe(true);
     expect(await page.evaluate(() => Boolean(window.oldS5UiExecuted || window.oldS5StartupExecuted))).toBe(false);
     expect(await workerPolicy(false)).toBe(true);
@@ -209,7 +209,7 @@ for (const activation of ['automatic', 'waiting']) test(`S5 nature delays old ca
 
     await context.setOffline(true);
     await page.reload();
-    await expect(page.getByRole('heading', { name: 'S5奇异性格计算', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'S5奇遇性格计算', exact: true })).toBeVisible();
     await expect.poll(() => page.evaluate(() => Boolean(window.pveNatureUi))).toBe(true);
   } catch (error) {
     const workerState = await page.evaluate(async () => {
@@ -242,8 +242,8 @@ for (const activation of ['automatic', 'waiting']) test(`S5 nature delays old ca
 
 test("S5 nature display power and conditional attacks calculate immediately without duplicate boosts", async ({ page }) => {
   await page.goto(toolPath);
-  await expect(page.getByRole('heading', { name: 'S5奇异性格计算', exact: true })).toBeVisible();
-  await expect(page).toHaveTitle('S5奇异性格计算 · 洛克计算器');
+  await expect(page.getByRole('heading', { name: 'S5奇遇性格计算', exact: true })).toBeVisible();
+  await expect(page).toHaveTitle('S5奇遇性格计算 · 洛克计算器');
   await chooseTarget(page, '可爱猿');
   await page.getByRole('group', { name: '野怪等级', exact: true }).getByRole('button', { name: '41', exact: true }).click();
   await page.locator('#star-seg').getByRole('button', { name: '10★', exact: true }).click();
@@ -363,13 +363,13 @@ test("S5 nature CN toolbox opens encounter HP with shiny and responsive assets",
   await page.getByRole("button", { name: "工具箱", exact: true }).click();
   const calculations = page.getByRole("navigation", { name: "工具箱", exact: true })
     .getByRole("region", { name: "计算", exact: true });
-  const entry = calculations.getByRole("link", { name: "S5奇异性格计算", exact: true });
+  const entry = calculations.getByRole("link", { name: "S5奇遇性格计算", exact: true });
   await expect(entry).toHaveAttribute("href", toolPath);
   await expect(entry).toHaveClass("app-menu__nature-tool");
   expect(await entry.evaluate(node => getComputedStyle(node).gridColumn)).toBe("1 / -1");
   await entry.click();
   await expect(page).toHaveURL(/\/tools\/s5-nature\/index\.html$/);
-  await expect(page.getByRole("heading", { name: "S5奇异性格计算", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "S5奇遇性格计算", exact: true })).toBeVisible();
   await expect(page.locator("#target-hp-range [data-hp-nature=up] b")).toHaveText(/^\d+$/);
 
   const ownHp = await page.evaluate(() => window.pveNatureUi.getPreview().ownPanel.hp);
@@ -436,7 +436,7 @@ test("S5 nature stays absent from the Global toolbox", async ({ page }) => {
   const menu = page.locator("#toolbox-panel");
   await expect(menu).toBeVisible();
   await expect(menu.locator(`a[href="${toolPath}"]`)).toHaveCount(0);
-  await expect(menu).not.toContainText("S5奇异性格计算");
+  await expect(menu).not.toContainText("S5奇遇性格计算");
 });
 
 test("S5 nature incoming attack shows measured whale damage and matches nature", async ({ page }) => {
