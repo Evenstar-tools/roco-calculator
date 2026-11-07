@@ -547,6 +547,32 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const value = encounter.incomingDamages[k];
     return Number.isInteger(value) && value >= 0 ? { damage: value } : null;
   }
+  function coefficientEvidence(result, target) {
+    const stage = result.wildStrengthStage ?? target?.wildStrengthStage;
+    if (![1, 2, 3].includes(stage)) return '';
+    const verified = target?.wildStrengthStageEvidence?.status === 'verified';
+    const lines = new Set();
+    for (const row of [...(result.outgoing ?? []), ...(result.incomingList ?? [])]) {
+      for (const prediction of row?.predictions ?? []) {
+        const trace = prediction.wildStatEvidence;
+        if (!trace) continue;
+        const label = statNames[trace.stat];
+        if (trace.kind === 'effective-defense-point') {
+          const condition = trace.fixedOutgoingCorrectionMultiplier
+            ? `，以克制修正 ×${trace.fixedOutgoingCorrectionMultiplier} 为前提` : '';
+          const band = trace.naturePercent === 100 ? `${label}不变` : `${trace.naturePercent === 90 ? '减' : '加'}${label}`;
+          lines.add(`${trace.level}级 · ${band}：反推有效防御 ${trace.value}${condition}`);
+        } else if (trace.kind === 'source-fit') {
+          const bands = trace.measuredPhysicalDefenseNatures.map(band => ({ neutral:`${label}不变`, up:`加${label}`, down:`减${label}` })[band]).join('／');
+          lines.add(`${label}：物种拟合 ×${trace.coefficient}，样本限 ${trace.measuredLevels.join('／')}级，${bands}`);
+          if (!trace.sampleScopeMatches) lines.add(`${label}其余等级或性格沿用该拟合外推`);
+        } else {
+          lines.add(`${label}：${trace.kind === 'stage-fit' ? '阶位拟合' : '阶位外推'} ×${trace.coefficient}`);
+        }
+      }
+    }
+    return `<details class="nature-details coefficient-details"><summary>阶位与系数</summary><p>强度阶位 ${stage} · ${verified ? '包体字段已核对' : '尚无包体确认'}</p>${lines.size ? `<ul>${[...lines].map(line => `<li>${html(line)}</li>`).join('')}</ul>` : ''}<p>攻防沿用经验模型，原始伤害公式尚未还原。</p></details>`;
+  }
   function renderVerdict(result, own, encounter, target, format) {
     const { observed, invalid } = readOutgoingObservations(own, format);
     const levels = result.targetLevels ?? [getSession().level];
@@ -591,7 +617,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const levelValue=levelMatched?'42 ✓':levelLabel(encounter.level);
     const levelNote=levelMatched?'与 42 级实测校准相符':measured.includes(encounter.level)?'该等级有物防校准；等级按游戏选择':'按游戏显示选择等级';
     const levelRow=`<div class="verdict-level"><span>等级</span><b${levelMatched?' class="up-ok"':''}>${html(levelValue)}</b><em>${html(levelNote)}</em></div>`;
-    $('preview-verdict').innerHTML = `<div class="rail-cap"><span>性格计算</span><span>${html(target?.name ?? '')}</span></div>${levelRow}<div class="verdict-big${invalid || (used && !matching.length) ? ' bad' : !used ? ' empty' : ''}">${summary}</div><p id="preview-comparison" class="verdict-note">经验模型，未吻合不能排除性格</p><div class="nature-axes">${axes}</div>${chips}${evidence.length?`<div class="evidence">${evidence.map(e=>`<div><i class="dot ${e.tone}"></i><span>${html(e.label)}</span><b class="${e.tone}">${html(e.text)}</b></div>`).join('')}</div>`:''}`;
+    $('preview-verdict').innerHTML = `<div class="rail-cap"><span>性格计算</span><span>${html(target?.name ?? '')}</span></div>${levelRow}<div class="verdict-big${invalid || (used && !matching.length) ? ' bad' : !used ? ' empty' : ''}">${summary}</div><p id="preview-comparison" class="verdict-note">经验模型，未吻合不能排除性格</p><div class="nature-axes">${axes}</div>${chips}${evidence.length?`<div class="evidence">${evidence.map(e=>`<div><i class="dot ${e.tone}"></i><span>${html(e.label)}</span><b class="${e.tone}">${html(e.text)}</b></div>`).join('')}</div>`:''}${coefficientEvidence(result, target)}`;
     $('preview-result-brief').textContent = ready && matching.length === 1 ? `${matching[0].name}（参考）` : summary;
     return { matching, used, invalid };
   }

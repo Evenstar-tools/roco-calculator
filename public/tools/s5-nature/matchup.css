@@ -393,3 +393,8 @@ input.switch:focus-visible { outline:2px solid var(--accent); outline-offset:2px
   .side-head .eyebrow-end { width:100%; justify-content:flex-start; }
   .config-row .quick-ivs { flex-wrap:wrap; }
 }
+
+.coefficient-details { border-top:1px dashed var(--line); padding-top:10px; line-height:1.6; color:var(--ink); overflow-wrap:anywhere; }
+.coefficient-details p { margin:8px 0 0; }
+.coefficient-details ul { padding-left:18px; margin:8px 0 0; }
+.coefficient-details li + li { margin-top:5px; }

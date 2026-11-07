@@ -66,7 +66,7 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
 const STATS = ['hp', 'physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense', 'speed'];
 const DEFENSE_STATS = ['physicalDefense', 'magicalDefense'];
 
-export function calculateWildDefense(raceDefense, level, nature, stat, strengthStage, sourcePetbaseId) {
+export function resolveWildDefense(raceDefense, level, nature, stat, strengthStage, sourcePetbaseId) {
   if (!Number.isInteger(raceDefense) || raceDefense < 1 || raceDefense > 1000) {
     throw new RangeError('防御种族值缺失或超出范围。');
   }
@@ -82,8 +82,23 @@ export function calculateWildDefense(raceDefense, level, nature, stat, strengthS
   const observed = stat === 'physicalDefense' && calibration?.physicalDefensePoints?.find(point =>
     point.level === level && point.naturePercent === naturePercent
     && point.raceDefense === raceDefense && point.strengthStage === strengthStage);
-  if (observed) return observed.effectiveDefense;
+  const evidence = { stat, strengthStage, sourcePetbaseId, level, naturePercent,
+    formulaVerified: false };
+  if (observed) return { ...evidence, ...observed, value: observed.effectiveDefense,
+    kind: 'effective-defense-point', coefficient: null };
   const coefficient = calibration?.[stat]
     ?? WILD_DEFENSE_MODEL.coefficients[strengthStage][stat];
-  return coefficient * (base * naturePercent / 100 + WILD_DEFENSE_MODEL.baseTail);
+  const sourceFit = calibration?.[stat] !== undefined;
+  const measuredLevels = sourceFit ? calibration.measuredLevels : undefined;
+  const measuredPhysicalDefenseNatures = sourceFit ? calibration.measuredPhysicalDefenseNatures : undefined;
+  const natureBand = naturePercent === 110 ? 'up' : naturePercent === 90 ? 'down' : 'neutral';
+  return { ...evidence, value: coefficient * (base * naturePercent / 100 + WILD_DEFENSE_MODEL.baseTail),
+    kind: sourceFit ? 'source-fit' : 'stage-extrapolation', coefficient,
+    ...(sourceFit ? { measuredLevels, measuredPhysicalDefenseNatures,
+      sampleScopeMatches: measuredLevels?.includes(level) === true
+        && measuredPhysicalDefenseNatures?.includes(natureBand) === true } : {}) };
+}
+
+export function calculateWildDefense(...args) {
+  return resolveWildDefense(...args).value;
 }
