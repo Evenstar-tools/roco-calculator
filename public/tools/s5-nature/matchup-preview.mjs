@@ -3,6 +3,8 @@ import { getAwakeningBonuses, resolveAwakeningType } from './awakening.mjs';
 import { wildPanel, targetLevels } from './engine.mjs';
 import { resolveWildTarget, missingWildRaceReason } from './wild-forms.mjs';
 import { WILD_HP_MODEL, wildTargetShiny } from './wild-hp.mjs';
+import { resolveWildAttack } from './wild-attack.mjs';
+import { resolveWildDefense } from './wild-defense.mjs';
 export { SHINY_HP_MULTIPLIER } from './wild-hp.mjs';
 import { traitInfo, resolveOwnTrait, applyAttackStage, applyDefenseStage } from './own-trait.mjs';
 
@@ -281,6 +283,11 @@ function damageEntry(skillId, overrideValue, direction, context) {
         hpModelName: incoming ? '我方实际面板及已选骰子' : candidate.hpModelName,
         targetHpModelName: candidate.hpModelName,
         attackerStat, defenderDefense,
+        // Evidence describes the pre-dice wild stat resolved by the same model.
+        wildStatEvidence: incoming
+          ? resolveWildAttack(target.raceStats[attackStat], input.level, candidate.nature, attackStat, target.wildStrengthStage)
+          : resolveWildDefense(target.wildDefenseRaceStats[defenseStat], input.level, candidate.nature,
+            defenseStat, target.wildStrengthStage, target.wildDefenseRaceStats.sourcePetbaseId),
       };
     });
     const displayRatio = power.powerMode === 'auto'
@@ -371,6 +378,7 @@ export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
       panelIncludesDice,
       diceApplication: { ownPanel: panelIncludesDice ? 'already-included' : 'apply-selected-effects',
         targetPanel: 'apply-selected-effects', typeCoefficientEffects: [...ownDice.typeCoefficientEffects, ...targetDice.typeCoefficientEffects] },
+      wildStrengthStage: target.wildStrengthStage, wildStrengthStageEvidence: target.wildStrengthStageEvidence,
       targetId: target.id, ownSpiritId: ownSpirit.id, targetLevel: input.level, targetLevels: [input.level], hpModel: WILD_HP_MODEL,
       ...(target.wildStatFormId ? { wildStatFormId: target.wildStatFormId, wildStatFormName: target.wildStatFormName } : {}),
       targetHpByNature, targetHpRange, targetHpByLevel: [{ level: input.level, ...targetHpByNature }] };

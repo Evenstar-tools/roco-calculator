@@ -19,7 +19,7 @@ export const WILD_ATTACK_MODEL = Object.freeze({
 const STATS = ['hp', 'physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense', 'speed'];
 const ATTACK_STATS = ['physicalAttack', 'magicalAttack'];
 
-export function calculateWildAttack(raceAttack, level, nature, stat, strengthStage) {
+export function resolveWildAttack(raceAttack, level, nature, stat, strengthStage) {
   if (!Number.isInteger(raceAttack) || raceAttack < 1 || raceAttack > 1000) {
     throw new RangeError('攻击种族值缺失或超出范围。');
   }
@@ -38,5 +38,11 @@ export function calculateWildAttack(raceAttack, level, nature, stat, strengthSta
   // Stage 1/2 samples distinguish rounding after the stage multiplier. Keep
   // integer tenths through this step; later combat/dice multipliers stay intact.
   const multiplierTenths = WILD_ATTACK_MODEL.stageMultipliers[strengthStage] * 10;
-  return Math.floor(((adjustedBase + WILD_ATTACK_MODEL.baseTail) * multiplierTenths + 5) / 10);
+  return { value: Math.floor(((adjustedBase + WILD_ATTACK_MODEL.baseTail) * multiplierTenths + 5) / 10),
+    kind: 'stage-fit', coefficient: WILD_ATTACK_MODEL.stageMultipliers[strengthStage],
+    stat, strengthStage, level, naturePercent, formulaVerified: false };
+}
+
+export function calculateWildAttack(...args) {
+  return resolveWildAttack(...args).value;
 }
