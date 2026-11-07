@@ -49,9 +49,16 @@ test('S5 nature searches all ten battlepass initial forms in the default and ded
     const catalog = await (await fetch('./data/catalog.json')).json();
     const seasons = await (await fetch('./data/season-targets.json')).json();
     const group = catalog.targetGroups.find(row => row.id === 'battlepass');
-    return { group, fallback: seasons.groups.find(row => row.id === 'battlepass'),
+    return { stageAudit: catalog.meta.strengthStageAudit,
+      verifiedStages: catalog.spirits.filter(row => row.wildStrengthStageEvidence?.status === 'verified').length,
+      unconfirmedStages: catalog.spirits.filter(row => row.wildStrengthStageEvidence?.status === 'unconfirmed').length,
+      group, fallback: seasons.groups.find(row => row.id === 'battlepass'),
       spirits: catalog.spirits.filter(row => group.spiritIds.includes(row.id)) };
   });
+  expect(source.stageAudit.counts).toEqual({ catalog: 694, verified: 666, unconfirmed: 28, mismatched: 0 });
+  expect(source.stageAudit.damageFormulaVerified).toBe(false);
+  expect(source.verifiedStages).toBe(666);
+  expect(source.unconfirmedStages).toBe(28);
   expect(source.group).toEqual(source.fallback);
   expect(source.group.spiritIds).toHaveLength(10);
   expect(new Set(source.group.spiritIds).size).toBe(10);
@@ -83,6 +90,11 @@ test('S5 nature searches all ten battlepass initial forms in the default and ded
   }
   await page.locator('#target-filter').selectOption('battlepass');
   await chooseTarget(page, '沉金兽');
+  const coefficientDetails = page.locator('.coefficient-details');
+  await expect(coefficientDetails).not.toHaveAttribute('open', '');
+  await coefficientDetails.locator('summary').click();
+  await expect(coefficientDetails).toContainText('强度阶位 1 · 包体字段已核对');
+  await expect(coefficientDetails).toContainText('原始伤害公式尚未还原');
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await picker.click();
