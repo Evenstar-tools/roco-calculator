@@ -123,6 +123,7 @@ test('whale rounded source fit marks measured bands and extrapolation separately
     { level: 42, stat: 'physicalDefense', naturePercents: [90, 100, 110] },
     { level: 43, stat: 'physicalDefense', naturePercents: [100] },
     { level: 41, stat: 'magicalDefense', naturePercents: [100] },
+    { level: 42, stat: 'magicalDefense', naturePercents: [100] },
     { level: 43, stat: 'magicalDefense', naturePercents: [100] },
   ];
   for (const stat of ['physicalDefense', 'magicalDefense']) {
@@ -152,4 +153,36 @@ test('whale rounded source fit marks measured bands and extrapolation separately
       }
     }
   }
+});
+
+test('stage3 extension applies rounded defenses without inventing source measurements', () => {
+  for (const [race, source, level, stat] of [
+    [125, 3499, 42, 'physicalDefense'], [125, 3499, 42, 'magicalDefense'],
+    [128, 99999, 43, 'magicalDefense'],
+  ]) {
+    const result = resolveWildDefense(race, level, neutral, stat, 3, source);
+    expect(result.value).toBe(Math.round((Math.round(10 + race * (level + 50) / 100) + 11) * 1.38));
+    expect(result.kind).toBe('stage-extrapolation');
+    expect(result.coefficient).toBe(1.38);
+    expect(result.sampleScopeMatches).toBe(false);
+    expect(result.measuredScopes).toEqual([]);
+    expect(result.rawPanelVerified).toBe(false);
+    expect(result.formulaVerified).toBe(false);
+  }
+  const birdMeasured = resolveWildDefense(85, 41,
+    { upStat: 'magicalDefense', downStat: 'speed' }, 'magicalDefense', 3, 3444);
+  expect(birdMeasured.value).toBe(148);
+  expect(birdMeasured.kind).toBe('source-fit');
+  expect(birdMeasured.sampleScopeMatches).toBe(true);
+  // The43-level/nature assumptions in340/204 were inferred, not captured.
+  for (const stat of ['physicalDefense', 'magicalDefense']) {
+    const birdInferred = resolveWildDefense(85, 43, neutral, stat, 3, 3444);
+    expect(birdInferred.value).toBe(138);
+    expect(birdInferred.sampleScopeMatches).toBe(false);
+  }
+  const stork = resolveWildDefense(81, 43, neutral, 'magicalDefense', 3, 3069);
+  expect(stork.value).toBe(132);
+  expect(stork.kind).toBe('stage-extrapolation');
+  expect(stork.sampleScopeMatches).toBe(false);
+  expect(resolveWildDefense(101, 43, neutral, 'physicalDefense', 3, 3069).sampleScopeMatches).toBe(true);
 });

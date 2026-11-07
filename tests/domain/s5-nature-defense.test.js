@@ -158,7 +158,7 @@ test('whale rounded fit replays the independent levels and both defenses without
   for (const sample of samples) assert.equal(replay(sample), sample[6], sample.join('/'));
 });
 
-test('stage coefficients reproduce the unrounded defense handoff across levels, natures and both categories', () => {
+test('retained stage1 and stage2 rules and stage3 physical observations preserve their exact values', () => {
   const samples = [
     ['可爱猿', 41, PD, 'neutral', 312, 100, 103],
     ['可爱猿', 41, PD, 'neutral', 312, 200, 206],
@@ -178,7 +178,6 @@ test('stage coefficients reproduce the unrounded defense handoff across levels, 
     // Display power already includes enemy guard dice; do not multiply D again.
     ['锤头鹳', 43, PD, 'neutral', 312, 44, 77],
     ['锤头鹳', 43, PD, 'neutral', 312, 40 * 1.8, 127],
-    ['锤头鹳', 43, MD, 'neutral', 176, 128, 158],
     // Keep the fractional value behind the displayed 123, rather than flooring.
     ['小翼龙', 42, MD, 'down', 176, 160 / 1.3, 142],
     ['小翼龙', 42, PD, 'up', 312, 180 / 1.3, 207],
@@ -192,7 +191,10 @@ test('handoff discrepancies stay visible instead of changing coefficients for ea
   const samples = [
     // The old fire cut contradicts the same dragon's ground-spike observation.
     ['伊雷龙', 41, PD, 'up', 312, 40 * 1.8, 157, 134],
-    ['锤头鹳', 43, MD, 'neutral', 176, 90 * 3 * 1.8 / 1.25, 481, 480],
+    // Stage3 is now extended to both defenses. Keep the original A176 inputs
+    // and observed158/481 rather than silently changing them toA181.
+    ['锤头鹳', 43, MD, 'neutral', 176, 128, 158, 154],
+    ['锤头鹳', 43, MD, 'neutral', 176, 90 * 3 * 1.8 / 1.25, 481, 467],
     // Original handoff assumed A176. Keep that input and its mismatch visible.
     ['深蓝鲸', 42, MD, 'neutral', 176, 176, 138, 134],
   ];
@@ -203,6 +205,51 @@ test('handoff discrepancies stay visible instead of changing coefficients for ea
   // The later Dimo panel is181. This explains138 conditionally, without
   // silently rewriting the original A176 observation above.
   assert.equal(replay(['深蓝鲸', 42, MD, 'neutral', 181, 176]), 138);
+});
+
+test('stage3 rounded formula replays the confirmed bird magic sample and conditional cross-checks', () => {
+  const samples = [
+    // Confirmed41-level MD-up; the heat-sand extra correction remainsK1.8.
+    ['噼啪鸟', 41, MD, 'up', 181, 160 * 1.8, 317],
+    // Their43-level/nature and F's fire-cut identification remain assumptions.
+    ['噼啪鸟', 43, MD, 'neutral', 181, 160 * 1.8, 340],
+    ['噼啪鸟', 43, PD, 'neutral', 312, 100, 204],
+    // Only a conditional A181 replay, not a replacement of the oldA176 record.
+    ['锤头鹳', 43, MD, 'neutral', 181, 128, 158],
+    ['锤头鹳', 43, MD, 'neutral', 181, 90 * 3 * 1.8 / 1.25, 481],
+  ];
+  for (const sample of samples) assert.equal(replay(sample), sample[6], sample.join('/'));
+});
+
+test('unmeasured stage3 pigeon uses the new formula in real previews while stage2 sea-anemone stays unchanged', () => {
+  const target = species('公平鸽');
+  assert.equal(target.wildStrengthStage, 3);
+  assert.equal(target.wildDefenseRaceStats.sourcePetbaseId, 3499);
+  for (const [ownName, moveName, expectedDamage, stat] of [
+    ['罗隐', '火焰切割', 149, PD], ['迪莫', '光球', 139, MD],
+  ]) {
+    const move = catalog.skills.find(row => row.name === moveName);
+    const panel = ownName === '罗隐'
+      ? { hp: 403, physicalAttack: 312, magicalAttack: 136, physicalDefense: 183, magicalDefense: 137, speed: 176 }
+      : { hp: 425, physicalAttack: 138, magicalAttack: 181, physicalDefense: 175, magicalDefense: 175, speed: 223 };
+    const result = previewMatchup({ targetId: target.id, level: 42,
+      profile: { spiritId: species(ownName).id, level: 60, awakening: 5, panel },
+      ownTrait: { stacks: 0, active: false }, skillIds: [move.id] }, catalog);
+    const row = result.outgoing[0].predictions.find(row => row.natureId === natureFor(stat, 'neutral').id);
+    assert.equal(row.defenderDefense, 188);
+    assert.equal(row.damage, expectedDamage);
+    assert.equal(row.wildStatEvidence.kind, 'stage-extrapolation');
+    assert.equal(row.wildStatEvidence.sampleScopeMatches, false);
+  }
+  // This initial form really isstage2 in the package, even though its mapped
+  // final-form defense races are128/128. Do not promote it merely by appearance.
+  const anemone = species('加油海葵');
+  assert.equal(anemone.wildStrengthStage, 2);
+  for (const [stat, coefficient] of [[PD, 1.65725], [MD, 1.6005]]) {
+    const mapping = anemone.wildDefenseRaceStats;
+    assert.equal(calculateWildDefense(mapping[stat], 42, natureFor(stat, 'neutral'), stat,
+      anemone.wildStrengthStage, mapping.sourcePetbaseId), coefficient * (10 + 128 * .92 + 11));
+  }
 });
 
 test('42-level calm wing-dragon matches the observed three moves without changing level or HP', () => {

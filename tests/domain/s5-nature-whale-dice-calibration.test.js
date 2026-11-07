@@ -46,6 +46,21 @@ test('43 whale replays six user readings with the confirmed post-thorn Dimo stac
   expect(physical.outgoing[1].typeInteraction.correctionMultiplier).toBe(1.8);
 });
 
+test('new level42 whale light-ball 138 keeps the confirmed A181 input separate from old A176', () => {
+  const input = inputFor('迪莫', ['光球']);
+  input.level = 42;
+  input.targetDiceIds = [];
+  const reading = neutral(preview(input).outgoing[0]);
+  expect(reading.attackerStat).toBeCloseTo(199.1, 10);
+  expect(reading.defenderDefense).toBe(208);
+  expect(reading.damage).toBe(138);
+
+  // Independent historical input, not a correction to the new observation.
+  // Replacing its A176 by A181 would hide an unresolved evidence mismatch.
+  input.profile.panel.magicalAttack = 176;
+  expect(neutral(preview(input).outgoing[0]).damage).toBe(134);
+});
+
 test('Best Partner stacks add to the same attack/defense dice attributes once', () => {
   const input = inputFor('迪莫', ['热砂'], 1);
   input.ownDiceIds = [];

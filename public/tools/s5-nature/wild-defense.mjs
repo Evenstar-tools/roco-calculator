@@ -1,25 +1,39 @@
 // Field fits use the ordinary family's strength-stage-3 defense races. Prefer
 // measurements for the exact source form; strength-stage coefficients are the
-// fallback, not proof that different species have identical defenses.
+// fallback, not proof that different species have identical defenses. The
+// user-authorized stage-3 extension uses the common rounded1.38 field fit.
 // Observed effective-defense points match only their recorded level/nature band
-// and source mapping. The fallback keeps its original fractional growth model.
+// and source mapping. Stages1/2 keep their fractional growth model.
 export const WILD_DEFENSE_MODEL = Object.freeze({
-  id: 's5-source-defense-v4',
+  id: 's5-stage3-rounded-defense-v5',
   source: 'user-authorized-encounter-formula-handoff-20261106',
   kind: 'empirical-formula',
   raceStrengthStage: 3,
   coefficientStrengthStage: 'source-form',
   baseTail: 11,
-  rounding: 'none',
+  rounding: 'stage-3-round-half-up-base-nature-final;stages-1-2-none',
   shinyMultiplier: 1,
   originalGameFormulaRecovered: false,
   liveObservationSource: 'pve-live-20261107-003806-000353',
-  evidenceRevision: '20261108-whale-rounded-defense',
+  evidenceRevision: '20261108-authorized-stage3-rounded-defense',
   observedPointScope: 'shield-start observations, including separately marked breaking hits; source-form, level, defense-nature band, race and strength-stage; blood and awakening are not runtime-matched',
   coefficients: Object.freeze({
     1: Object.freeze({ physicalDefense: 1.806, magicalDefense: 1.806 }),
     2: Object.freeze({ physicalDefense: 1.65725, magicalDefense: 1.6005 }),
-    3: Object.freeze({ physicalDefense: 1.38531, magicalDefense: 1.335 }),
+    3: Object.freeze({ physicalDefense: 1.38, magicalDefense: 1.38 }),
+  }),
+  roundedStageFits: Object.freeze({
+    3: Object.freeze({
+      coefficient: 1.38, strengthStage: 3,
+      rounding: 'round-half-up-base-nature-final',
+      kind: 'empirical-formula', valueMeaning: 'effective-damage-divisor',
+      rawPanelVerified: false, formulaVerified: false,
+      scope: 'user-authorized-strength-stage-3-extrapolation',
+      natureBandEvidence: 'unmeasured-source-level-and-nature-combinations-remain-extrapolation',
+      measuredScopes: Object.freeze([]),
+      neutralSampleCoefficientInterval: Object.freeze([411 / 298, 417 / 302]),
+      intervalBounds: '[lower,upper)',
+    }),
   }),
   sourceFormCalibrations: Object.freeze({
     // 小翼龙: 42-level neutral defense gives 684/540/99; defense-up with
@@ -56,12 +70,35 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
           Object.freeze({ level: 42, stat: 'physicalDefense', naturePercents: Object.freeze([90, 100, 110]) }),
           Object.freeze({ level: 43, stat: 'physicalDefense', naturePercents: Object.freeze([100]) }),
           Object.freeze({ level: 41, stat: 'magicalDefense', naturePercents: Object.freeze([100]) }),
+          Object.freeze({ level: 42, stat: 'magicalDefense', naturePercents: Object.freeze([100]) }),
           Object.freeze({ level: 43, stat: 'magicalDefense', naturePercents: Object.freeze([100]) }),
         ]),
         // A176/P176 ->138 at level42 remains a mismatch (this fit gives134).
         // A181 gives138, but that conditional replay cannot replace its record.
         conflictingSample: Object.freeze({ level: 42, stat: 'magicalDefense', naturePercent: 100,
           attackerStat: 176, displayedPower: 176, observedDamage: 138, fittedDamage: 134 }),
+      }),
+      formulaVerified: false }),
+    3069: Object.freeze({
+      roundedDefenseFit: Object.freeze({
+        coefficient: 1.38, strengthStage: 3,
+        raceStats: Object.freeze({ physicalDefense: 101, magicalDefense: 81 }),
+        rounding: 'round-half-up-base-nature-final',
+        kind: 'empirical-formula', valueMeaning: 'effective-damage-divisor',
+        rawPanelVerified: false,
+        natureBandEvidence: 'captured-hp-up-speed-down-physical-defense-neutral',
+        measuredScopes: Object.freeze([
+          Object.freeze({ level: 43, stat: 'physicalDefense', naturePercents: Object.freeze([100]) }),
+        ]),
+        // The archived Dimo panel was A176, not independently observed A181.
+        // Keep its158/481 mismatch; the stage-wide fit is an authorized extension.
+        conflictingSamples: Object.freeze([
+          Object.freeze({ level: 43, stat: 'magicalDefense', naturePercent: 100,
+            attackerStat: 176, displayedPower: 128, observedDamage: 158, fittedDamage: 154 }),
+          Object.freeze({ level: 43, stat: 'magicalDefense', naturePercent: 100,
+            attackerStat: 176, displayedPower: 216, correctionMultiplier: 1.8,
+            observedDamage: 481, fittedDamage: 467 }),
+        ]),
       }),
       formulaVerified: false }),
     // Only super-effective observations exist here; D174 is conditional on K1.8.
@@ -76,7 +113,8 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
           observedPreHitBloodIds: Object.freeze([11, 24]) }),
       ]),
       formulaVerified: false }),
-    // Exact source/level/nature points only; magical defense keeps its prior model.
+    // Exact physical points retain priority. The confirmed41-level MD-up317
+    // sample supports the stage3 fit; inferred43-level340/204 are cross-checks.
     3444: Object.freeze({
       physicalDefensePoints: Object.freeze([
         Object.freeze({ level: 42, naturePercent: 100, raceDefense: 85, strengthStage: 3,
@@ -90,6 +128,19 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
           effectiveDefense: 126, interval: Object.freeze([125.6964285714, 126.2600896861]),
           intervalBounds: '(lower,upper]', evidencePhase: 'pre-shield', encounters: Object.freeze([2]), observedBloodIds: Object.freeze([13]) }),
       ]),
+      roundedDefenseFit: Object.freeze({
+        coefficient: 1.38, strengthStage: 3,
+        raceStats: Object.freeze({ physicalDefense: 85, magicalDefense: 85 }),
+        rounding: 'round-half-up-base-nature-final',
+        kind: 'empirical-formula', valueMeaning: 'effective-damage-divisor',
+        rawPanelVerified: false,
+        natureBandEvidence: 'confirmed-source-level-nature-with-conditional-K1.8-for-magical-hit',
+        measuredScopes: Object.freeze([
+          Object.freeze({ level: 42, stat: 'physicalDefense', naturePercents: Object.freeze([100]) }),
+          Object.freeze({ level: 43, stat: 'physicalDefense', naturePercents: Object.freeze([90]) }),
+          Object.freeze({ level: 41, stat: 'magicalDefense', naturePercents: Object.freeze([110]) }),
+        ]),
+      }),
       formulaVerified: false }),
     // Fire100 ->110 remains within the shield and only gives (253.6577,255.9636].
     // The narrower point uses the later breaking hit dark300 ->332, conditional
@@ -131,13 +182,17 @@ export function resolveWildDefense(raceDefense, level, nature, stat, strengthSta
     formulaVerified: false };
   if (observed) return { ...evidence, ...observed, value: observed.effectiveDefense,
     kind: 'effective-defense-point', coefficient: null };
-  const roundedFit = calibration?.roundedDefenseFit;
-  if (roundedFit?.strengthStage === strengthStage && roundedFit.raceStats[stat] === raceDefense) {
+  const sourceRoundedFit = calibration?.roundedDefenseFit;
+  const sourceFitMatches = sourceRoundedFit?.strengthStage === strengthStage
+    && sourceRoundedFit.raceStats[stat] === raceDefense;
+  const roundedFit = sourceFitMatches ? sourceRoundedFit : WILD_DEFENSE_MODEL.roundedStageFits[strengthStage];
+  if (roundedFit) {
     const roundedBase = Math.round(base);
     const roundedNature = Math.round(roundedBase * naturePercent / 100);
     return { ...evidence,
       value: Math.round((roundedNature + WILD_DEFENSE_MODEL.baseTail) * roundedFit.coefficient),
-      kind: 'source-fit', coefficient: roundedFit.coefficient,
+      kind: sourceFitMatches && roundedFit.measuredScopes.some(scope => scope.stat === stat)
+        ? 'source-fit' : 'stage-extrapolation', coefficient: roundedFit.coefficient,
       rounding: roundedFit.rounding, roundedBase, roundedNature,
       valueMeaning: roundedFit.valueMeaning, rawPanelVerified: false,
       natureBandEvidence: roundedFit.natureBandEvidence, measuredScopes: roundedFit.measuredScopes,
