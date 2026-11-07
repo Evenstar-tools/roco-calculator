@@ -781,3 +781,64 @@ test("S5 nature compact comparison keeps paired measurements separate from highl
   await expect(verdict).toHaveText('待实测');
   await expect(page.locator('#preview-verdict .evidence')).toHaveCount(0);
 });
+
+
+test('S5 nature star changes keep fixed-panel incoming damage monotone with wild polarization zero', async ({ page }) => {
+  await page.goto(toolPath);
+  await page.locator('[data-profile="luoyin"]').click();
+  await page.locator('#load-own-preset').click();
+  await chooseTarget(page, '深蓝鲸');
+  await page.getByRole('group', { name: '野怪等级', exact: true }).getByRole('button', { name: '42', exact: true }).click();
+  await setDice(page, 'own', 'none');
+  await setDice(page, 'target', 'none');
+  await page.getByRole('combobox', { name: '敌方技能 1', exact: true }).fill('气泡');
+  await page.getByRole('option').getByText('气泡', { exact: true }).click();
+  let previous = Infinity;
+  for (const stars of [5, 6, 7, 8, 9, 10]) {
+    await page.locator('#star-seg').getByRole('button', { name: `${stars}★`, exact: true }).click();
+    const result = await page.evaluate(() => window.pveNatureUi.getPreview());
+    expect(result.ownPanel.magicalDefense).toBe(137);
+    const entry = result.incomingList[0];
+    expect(entry.typeInteraction.polarizationPercent).toBe(0);
+    expect(entry.typeInteraction.dullingPercent).toBe((stars - 5) * 45);
+    const hit = entry.predictions.find(row => row.upStat === 'magicalAttack' && row.downStat === 'speed').damage;
+    expect(hit).toBeLessThanOrEqual(previous);
+    expect(hit).toBe(stars === 5 ? 370 : 266);
+    await expect(page.locator('#preview-incoming-cells-0')).toContainText(String(hit));
+    previous = hit;
+  }
+  await page.reload();
+  await expect(page.locator('#star-seg').getByRole('button', { name: '10★', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#preview-incoming-cells-0')).toContainText('266');
+});
+
+test('S5 nature first action survives reload and manual power reset without double adding burst', async ({ page }) => {
+  await page.goto(toolPath);
+  await page.locator('[data-profile="luoyin"]').click();
+  await page.locator('#load-own-preset').click();
+  await page.locator('[data-iv-stat="physicalDefense"]').click();
+  await page.locator('#target-filter').selectOption('all');
+  await chooseTarget(page, '噼啪鸟');
+  await page.getByRole('group', { name: '野怪等级', exact: true }).getByRole('button', { name: '42', exact: true }).click();
+  await page.getByRole('combobox', { name: '敌方技能 1', exact: true }).fill('天旋地转');
+  await page.getByRole('option').getByText('天旋地转', { exact: true }).click();
+  const hit = () => page.evaluate(() => window.pveNatureUi.getPreview().incomingList[0].predictions.find(row => row.natureName === '勇敢').damage);
+  expect(await hit()).toBe(19);
+  const prefix = '#preview-incoming-condition-0';
+  await page.locator(`${prefix}-gear`).click();
+  await page.locator(`${prefix}-firstAction`).check();
+  expect(await hit()).toBe(29);
+  await page.locator(`${prefix}-displayedPower`).fill('45');
+  await page.locator(`${prefix}-displayedPower`).press('Tab');
+  expect(await hit()).toBe(29);
+  await expect(page.locator(`${prefix}-firstAction`)).toBeDisabled();
+  await page.locator(`${prefix}-resetPower`).click();
+  await expect(page.locator(`${prefix}-firstAction`)).toBeChecked();
+  expect(await hit()).toBe(29);
+  await page.reload();
+  await page.locator(`${prefix}-gear`).click();
+  await expect(page.locator(`${prefix}-firstAction`)).toBeChecked();
+  expect(await hit()).toBe(29);
+  await page.locator(`${prefix}-firstAction`).uncheck();
+  expect(await hit()).toBe(19);
+});
