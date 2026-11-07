@@ -1,7 +1,155 @@
 import { expect, test } from "@playwright/test";
+import { createServer } from "node:http";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { resetUiuxStorage, waitForAppReady } from "./helpers/uiux-helpers.js";
 
 const toolPath = "/tools/s5-nature/index.html";
+
+for (const activation of ['automatic', 'waiting']) test(`S5 nature delays old cached modules until a real worker confirms its policy and retries after a slow install (${activation})`, async ({ page, context }) => {
+  const publicRoot = path.resolve(process.env.S5_UPGRADE_PUBLIC_ROOT || 'dist/client');
+  const currentWorker = readFileSync('public/sw.js', 'utf8');
+  // Reproduce the observed installed/waiting state in one variant. All policy,
+  // activation-message and fetch handlers still run as the real worker code.
+  const workerSource = activation === 'waiting'
+    ? currentWorker.replace('.then(() => self.skipWaiting()),', '.then(() => undefined),')
+    : currentWorker;
+  if (activation === 'waiting') expect(workerSource).not.toBe(currentWorker);
+  const cacheName = 'rock-calculator-webapp-browser-old';
+  const legacyWorker = `
+    self.addEventListener('install', event => event.waitUntil(self.skipWaiting()));
+    self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
+    self.addEventListener('fetch', event => {
+      if (event.request.method !== 'GET') return;
+      if (event.request.mode === 'navigate') { event.respondWith(fetch(event.request)); return; }
+      event.respondWith((async () => {
+        const cache = await caches.open('${cacheName}');
+        const saved = await cache.match(event.request);
+        const fresh = fetch(event.request).then(async response => {
+          if (response.ok) await cache.put(event.request, response.clone());
+          return response;
+        });
+        if (saved) { event.waitUntil(fresh.catch(() => {})); return saved; }
+        return fresh;
+      })());
+    });`;
+  let useCurrent = false;
+  let releaseInstall;
+  const installGate = new Promise(resolve => { releaseInstall = resolve; });
+  const resourceRequests = [];
+  page.on('request', request => resourceRequests.push(new URL(request.url()).pathname));
+  const server = createServer(async (request, response) => {
+    const pathname = new URL(request.url, 'http://localhost').pathname;
+    response.setHeader('Cache-Control', 'no-store');
+    if (pathname === '/seed') {
+      response.setHeader('Content-Type', 'text/html');
+      response.end('<!doctype html><title>Worker fixture</title>');
+      return;
+    }
+    if (pathname === '/sw.js') {
+      response.setHeader('Content-Type', 'text/javascript');
+      response.end(useCurrent ? workerSource : legacyWorker);
+      return;
+    }
+    if (useCurrent && pathname === '/manifest.webmanifest') await installGate;
+    const file = path.resolve(publicRoot, '.' + pathname);
+    if (!file.startsWith(publicRoot + path.sep)) { response.writeHead(404).end(); return; }
+    const contentTypes = { '.html': 'text/html', '.mjs': 'text/javascript', '.js': 'text/javascript',
+      '.css': 'text/css', '.json': 'application/json', '.webmanifest': 'application/manifest+json',
+      '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml' };
+    response.setHeader('Content-Type', contentTypes[path.extname(file)] || 'application/octet-stream');
+    try { response.end(readFileSync(file)); }
+    catch { response.writeHead(404).end(); }
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  const origin = `http://127.0.0.1:${server.address().port}`;
+  try {
+    await page.goto(origin + '/seed');
+    await page.evaluate(async ({ cacheName, toolPath }) => {
+      await navigator.serviceWorker.register('/sw.js');
+      await navigator.serviceWorker.ready;
+      if (!navigator.serviceWorker.controller) await new Promise(resolve =>
+        navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true }));
+      const cache = await caches.open(cacheName);
+      const toolRoot = toolPath.replace('index.html', '');
+      await cache.put(toolRoot + 'ui.mjs', new Response('globalThis.oldS5UiExecuted = true; throw new Error("old UI mixed into new HTML");',
+        { headers: { 'Content-Type': 'text/javascript' } }));
+      await cache.put(toolRoot + 'web-startup.mjs', new Response('globalThis.oldS5StartupExecuted = true; throw new Error("old bootstrap");',
+        { headers: { 'Content-Type': 'text/javascript' } }));
+      await cache.put(toolRoot + 'matchup.css', new Response('body { background: red; }', { headers: { 'Content-Type': 'text/css' } }));
+      await cache.put(toolRoot + 'data/catalog.json', new Response('{"old":true}', { headers: { 'Content-Type': 'application/json' } }));
+    }, { cacheName, toolPath });
+    useCurrent = true;
+    resourceRequests.length = 0;
+    const startedAt = Date.now();
+    await page.goto(origin + toolPath);
+    await expect(page.locator('#tool-startup-status')).toHaveText('缓存更新尚未完成，请刷新重试。');
+    expect(Date.now() - startedAt).toBeGreaterThanOrEqual(3000);
+    expect(resourceRequests.filter(url => /\/(?:ui\.mjs|[^/]+\.css|data\/[^/]+\.json)$/.test(url))).toEqual([]);
+    expect(await page.evaluate(() => Boolean(window.oldS5UiExecuted || window.oldS5StartupExecuted || window.pveNatureUi))).toBe(false);
+    await expect(page.getByRole('heading', { name: 'S5奇异性格计算', exact: true })).toBeHidden();
+    expect(await page.evaluate(async cacheName => (await (await caches.open(cacheName)).match('/tools/s5-nature/ui.mjs')).text(), cacheName))
+      .toContain('oldS5UiExecuted');
+
+    releaseInstall();
+    const workerPolicy = waitingAllowed => page.evaluate(async waitingAllowed => {
+      const registration = await navigator.serviceWorker.getRegistration('/');
+      const worker = (waitingAllowed && registration?.waiting) || navigator.serviceWorker.controller;
+      return new Promise(resolve => {
+      const channel = new MessageChannel();
+      const timer = setTimeout(() => { channel.port1.close(); resolve(false); }, 300);
+      channel.port1.onmessage = ({ data }) => {
+        clearTimeout(timer); channel.port1.close();
+        resolve(data?.type === 'S5_TOOL_CACHE_POLICY' && data?.policy === 'network-first-v1');
+      };
+      worker.postMessage({ type: 'GET_S5_TOOL_CACHE_POLICY' }, [channel.port2]);
+    }); }, waitingAllowed);
+    // The failed page has deliberately stopped. Retry once installation is done;
+    // an installed worker may still be waiting until the retry activates it.
+    await expect.poll(() => workerPolicy(true), { timeout: 10_000 }).toBe(true);
+    if (activation === 'waiting') {
+      expect(await page.evaluate(async () => (await navigator.serviceWorker.getRegistration('/')).waiting?.state)).toBe('installed');
+      expect(await workerPolicy(false)).toBe(false);
+    }
+    await page.reload();
+    await expect(page.getByRole('heading', { name: 'S5奇异性格计算', exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => Boolean(window.pveNatureUi))).toBe(true);
+    expect(await page.evaluate(() => Boolean(window.oldS5UiExecuted || window.oldS5StartupExecuted))).toBe(false);
+    expect(await workerPolicy(false)).toBe(true);
+    await expect(page.locator('#tool-startup-status')).toHaveCount(0);
+
+    await context.setOffline(true);
+    await page.reload();
+    await expect(page.getByRole('heading', { name: 'S5奇异性格计算', exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => Boolean(window.pveNatureUi))).toBe(true);
+  } catch (error) {
+    const workerState = await page.evaluate(async () => {
+      const capability = worker => worker && new Promise(resolve => {
+        const channel = new MessageChannel();
+        const timer = setTimeout(() => { channel.port1.close(); resolve(null); }, 300);
+        channel.port1.onmessage = ({ data }) => { clearTimeout(timer); channel.port1.close(); resolve(data); };
+        worker.postMessage({ type: 'GET_S5_TOOL_CACHE_POLICY' }, [channel.port2]);
+      });
+      return {
+      controller: navigator.serviceWorker.controller && { url: navigator.serviceWorker.controller.scriptURL, state: navigator.serviceWorker.controller.state },
+      registrations: await Promise.all((await navigator.serviceWorker.getRegistrations()).map(async registration => ({
+        scope: registration.scope,
+        installing: registration.installing && { url: registration.installing.scriptURL, state: registration.installing.state },
+        waiting: registration.waiting && { url: registration.waiting.scriptURL, state: registration.waiting.state, capability: await capability(registration.waiting) },
+        active: registration.active && { url: registration.active.scriptURL, state: registration.active.state, capability: await capability(registration.active) },
+      }))),
+      caches: await caches.keys(),
+    }; }).catch(diagnosticError => ({ diagnosticError: diagnosticError.message }));
+    await test.info().attach('worker-state', { body: JSON.stringify(workerState, null, 2), contentType: 'application/json' });
+    throw error;
+  } finally {
+    releaseInstall();
+    await context.setOffline(false);
+    await page.goto('about:blank');
+    server.closeAllConnections();
+    await new Promise(resolve => server.close(resolve));
+  }
+});
 
 test("S5 nature display power and conditional attacks calculate immediately without duplicate boosts", async ({ page }) => {
   await page.goto(toolPath);

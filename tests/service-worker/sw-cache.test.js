@@ -89,6 +89,27 @@ function dispatchFetch(listener, path, { mode = "cors", headers = {}, signal, re
 }
 
 describe("service worker cache policy", () => {
+  test("a verified S5 startup can activate the installed policy worker", async () => {
+    const harness = createHarness();
+    let activation;
+    harness.listeners.message({ data: { type: "ACTIVATE_S5_TOOL_CACHE_POLICY", policy: "network-first-v1" },
+      waitUntil(value) { activation = value; } });
+    await activation;
+    expect(harness.self.skipWaiting).toHaveBeenCalledOnce();
+    harness.listeners.message({ data: { type: "ACTIVATE_S5_TOOL_CACHE_POLICY", policy: "unknown" } });
+    expect(harness.self.skipWaiting).toHaveBeenCalledOnce();
+  });
+
+  test("S5 startup can confirm the network-first policy directly from its controlling worker", () => {
+    const harness = createHarness();
+    const reply = vi.fn();
+    const waitUntil = vi.fn();
+    harness.listeners.message({ data: { type: "GET_S5_TOOL_CACHE_POLICY" }, ports: [{ postMessage: reply }], waitUntil });
+    expect(reply).toHaveBeenCalledWith({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v1", path: "/tools/s5-nature/" });
+    expect(waitUntil).not.toHaveBeenCalled();
+    expect(harness.caches.open).not.toHaveBeenCalled();
+  });
+
   test.each(["/pre", "/pre/", "/pre/index.html", "/pre?source=pwa&theme=s5", "/pre/?theme=s5", "/pre/index.html?build-check=1"])("retired preview navigation %s redirects without replaying stale preview HTML", async (path) => {
     const fetchImpl = vi.fn(async () => { throw new Error("offline"); });
     const harness = createHarness({ fetchImpl, cached: {

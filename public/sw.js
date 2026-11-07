@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.3.17-20261107-v3-completion-r2";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.17-20261107-v3-completion-r3";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 // 图片长期缓存不随发布清空；摘要由 scripts/stamp-image-cache.mjs 按图片内容写入。
 const IMAGE_CACHE_PREFIX = "rock-calculator-images-";
@@ -119,6 +119,14 @@ function drainVisitedAssets() {
 }
 
 self.addEventListener("message", (event) => {
+  if (event.data?.type === "ACTIVATE_S5_TOOL_CACHE_POLICY" && event.data?.policy === "network-first-v1") {
+    event.waitUntil(self.skipWaiting());
+    return;
+  }
+  if (event.data?.type === "GET_S5_TOOL_CACHE_POLICY") {
+    event.ports?.[0]?.postMessage({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v1", path: "/tools/s5-nature/" });
+    return;
+  }
   if (event.data?.type !== "CACHE_VISITED_ASSETS" || !Array.isArray(event.data.urls)) return;
   const urls = [...new Set(event.data.urls.flatMap((value) => {
     if (typeof value !== "string") return [];
