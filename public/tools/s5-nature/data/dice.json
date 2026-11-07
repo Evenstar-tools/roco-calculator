@@ -29,7 +29,7 @@
     "stackingPolicy": "未恢复多个同时生效来源的叠加公式；原始add_max不作为可叠证明，重复BUFFBASE项不得去重。",
     "gameplayTypeCount": 4,
     "gameEffectCount": 40,
-    "supportMeaning": "supported=true仅指可按现有标量安全试算；supportStatus=trial，不代表服务器公式或实战已验证。",
+    "supportMeaning": "supported=true指可在标注范围按当前模型试算；系别骰子限单关系。supportStatus=trial，不代表服务器公式或实战已验证。",
     "hpPolicy": "本目录没有通用生命上限骰子；回合恢复、扣当前生命及护盾不得映射为hpMultiplier。"
   },
   "sources": [
@@ -1375,8 +1375,8 @@
       "buffId": 20420180,
       "name": "克制",
       "description": "克制系数增加为250%",
-      "supported": false,
-      "supportStatus": "unsupported",
+      "supported": true,
+      "supportStatus": "trial",
       "effects": {},
       "effectKinds": [
         "type-coefficient"
@@ -1485,7 +1485,14 @@
         "relation": "super-effective",
         "value": 2.5
       },
-      "unsupportedReason": "保留原文系别系数；双属性、极化与钝化组合公式未闭合，不自动套全局威力或伤害倍率。"
+      "typeCoefficientPolicy": {
+        "model": "single-relation-descriptor-with-existing-awakening-v1",
+        "scope": "single-non-neutral-defender-type",
+        "role": "attacker",
+        "originalConsumerRecovered": false,
+        "interactionLiveVerified": false
+      },
+      "applicationNote": "单一克制或抵抗关系按原文系数结算，觉醒沿用当前经验模型；手填显示威力不重复添加。双非中性关系需明确最终威力，组合尚无独立实录验证。"
     },
     {
       "id": "game-dice-effect-8",
@@ -1494,8 +1501,8 @@
       "buffId": 20420200,
       "name": "抵抗",
       "description": "抵抗系数降低为40%",
-      "supported": false,
-      "supportStatus": "unsupported",
+      "supported": true,
+      "supportStatus": "trial",
       "effects": {},
       "effectKinds": [
         "type-coefficient"
@@ -1604,7 +1611,14 @@
         "relation": "resistance",
         "value": 0.4
       },
-      "unsupportedReason": "保留原文系别系数；双属性、极化与钝化组合公式未闭合，不自动套全局威力或伤害倍率。"
+      "typeCoefficientPolicy": {
+        "model": "single-relation-descriptor-with-existing-awakening-v1",
+        "scope": "single-non-neutral-defender-type",
+        "role": "defender",
+        "originalConsumerRecovered": false,
+        "interactionLiveVerified": false
+      },
+      "applicationNote": "单一克制或抵抗关系按原文系数结算，觉醒沿用当前经验模型；手填显示威力不重复添加。双非中性关系需明确最终威力，组合尚无独立实录验证。"
     },
     {
       "id": "game-dice-effect-9",
@@ -2307,8 +2321,8 @@
       "buffId": 20420190,
       "name": "强力克制",
       "description": "克制系数增加为350%",
-      "supported": false,
-      "supportStatus": "unsupported",
+      "supported": true,
+      "supportStatus": "trial",
       "effects": {},
       "effectKinds": [
         "type-coefficient"
@@ -2416,7 +2430,14 @@
         "relation": "super-effective",
         "value": 3.5
       },
-      "unsupportedReason": "保留原文系别系数；双属性、极化与钝化组合公式未闭合，不自动套全局威力或伤害倍率。"
+      "typeCoefficientPolicy": {
+        "model": "single-relation-descriptor-with-existing-awakening-v1",
+        "scope": "single-non-neutral-defender-type",
+        "role": "attacker",
+        "originalConsumerRecovered": false,
+        "interactionLiveVerified": false
+      },
+      "applicationNote": "单一克制或抵抗关系按原文系数结算，觉醒沿用当前经验模型；手填显示威力不重复添加。双非中性关系需明确最终威力，组合尚无独立实录验证。"
     },
     {
       "id": "game-dice-effect-15",
@@ -2425,8 +2446,8 @@
       "buffId": 20420210,
       "name": "强力抵抗",
       "description": "抵抗系数降低为25%",
-      "supported": false,
-      "supportStatus": "unsupported",
+      "supported": true,
+      "supportStatus": "trial",
       "effects": {},
       "effectKinds": [
         "type-coefficient"
@@ -2534,7 +2555,14 @@
         "relation": "resistance",
         "value": 0.25
       },
-      "unsupportedReason": "保留原文系别系数；双属性、极化与钝化组合公式未闭合，不自动套全局威力或伤害倍率。"
+      "typeCoefficientPolicy": {
+        "model": "single-relation-descriptor-with-existing-awakening-v1",
+        "scope": "single-non-neutral-defender-type",
+        "role": "defender",
+        "originalConsumerRecovered": false,
+        "interactionLiveVerified": false
+      },
+      "applicationNote": "单一克制或抵抗关系按原文系数结算，觉醒沿用当前经验模型；手填显示威力不重复添加。双非中性关系需明确最终威力，组合尚无独立实录验证。"
     },
     {
       "id": "game-dice-effect-16",

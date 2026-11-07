@@ -71,9 +71,9 @@ function diceForSide(ids, manualEffects, diceCatalog, label) {
     if (dice && has(dice, 'typeCoefficient')) {
       const expected = TYPE_DICE_COEFFICIENTS.get(dice.gameEffectId);
       const coefficient = dice.typeCoefficient;
-      // Only these four original-package records have a known descriptor.
-      // Recording their text does not implement order42 or its interaction.
-      if (id !== `game-dice-effect-${dice.gameEffectId}` || dice.supported !== false || !expected
+      // Exact descriptors only. Legacy catalogs marked these reference-only;
+      // the single-relation trial now handles them before scalar effects.
+      if (id !== `game-dice-effect-${dice.gameEffectId}` || typeof dice.supported !== 'boolean' || !expected
         || !isObject(coefficient) || Object.keys(coefficient).length !== 2
         || coefficient.relation !== expected.relation || coefficient.value !== expected.value
         || !isObject(dice.effects) || Object.keys(dice.effects).length !== 0) {
@@ -81,7 +81,7 @@ function diceForSide(ids, manualEffects, diceCatalog, label) {
       }
       typeCoefficientEffects.push({ id, gameEffectId: dice.gameEffectId, name: dice.name,
         relation: coefficient.relation, value: coefficient.value, side: label });
-      warnings.push(`${label}骰子「${dice.name}」系数仅记录，未应用：与双系及极化／钝化的交互尚未完成验证。`);
+      warnings.push(`${label}骰子「${dice.name}」按单关系系数试算，觉醒组合沿用当前模型，未完成独立实战验证。`);
       continue;
     }
     if (!dice || dice.supported !== true) throw new RangeError(`${label}骰子「${dice?.name || id}」暂不自动核算：${dice?.unsupportedReason || '实际效果未确认。'}`);
@@ -126,6 +126,25 @@ function typeContext(skill, defender, catalog) {
   return { multiplier, factors };
 }
 
+function singleRelationDice(type, attackerDice, defenderDice) {
+  // Package order42 descriptions distinguish damage dealt while exploiting a
+  // weakness from damage received while resisting. The four dice descriptors
+  // specify absolute coefficients, not universal final-damage multipliers.
+  // This is a bounded model, not a recovered order42 consumer. In particular,
+  // applying the existing awakening fit after it is still an empirical choice.
+  const relevant = [...attackerDice.typeCoefficientEffects.filter(row => row.relation === 'super-effective'),
+    ...(defenderDice?.typeCoefficientEffects ?? []).filter(row => row.relation === 'resistance')];
+  const factors = type.factors.filter(factor => factor !== 1);
+  if (type.multiplier === 0 || factors.length === 0 || relevant.length === 0) {
+    return { multiplier: type.multiplier, applied: [] };
+  }
+  if (factors.length > 1 || relevant.length > 1) {
+    throw new RangeError('本场骰子与双系、极化／钝化的组合尚未完成验证；请在技能设置中填写已知最终威力。');
+  }
+  const effect = relevant.find(row => row.relation === (type.multiplier > 1 ? 'super-effective' : 'resistance'));
+  return { multiplier: effect?.value ?? type.multiplier, applied: effect ? [effect] : [] };
+}
+
 function readOverride(value) {
   if (value === undefined || value === null) return {};
   if (!isObject(value)) throw new RangeError('本次技能覆盖值须为对象。');
@@ -163,12 +182,15 @@ function resolvePower(skill, override, attacker, defender, attackerAwakening, de
     if (typeDice.length) typeInteraction = { model: 'explicit-final-power-override', formulaVerified: false, recordedDiceEffects: typeDice };
   } else {
     const type = typeContext(skill, defender, catalog);
-    if (typeDice.length && type.multiplier !== 0 && type.factors.some(factor => factor !== 1)) {
-      throw new RangeError('本场骰子与当前系别、极化／钝化的组合尚未完成验证；如已知最终威力，可在“条件”中手填。');
-    }
+    const diceType = singleRelationDice(type, dice, defenderDice);
     const mixed = type.multiplier === 1 && type.factors.some(factor => factor !== 1);
     typeInteraction = resolveAwakeningType(type.multiplier, attackerAwakening, defenderAwakening, mixed);
-    if (typeDice.length) typeInteraction = { ...typeInteraction, formulaVerified: false, recordedDiceEffects: typeDice };
+    if (typeDice.length) typeInteraction = { ...typeInteraction,
+      multiplier: diceType.multiplier * typeInteraction.correctionMultiplier,
+      diceBaseMultiplier: diceType.multiplier, recordedDiceEffects: typeDice, appliedDiceEffects: diceType.applied,
+      diceModel: 'single-relation-descriptor-with-existing-awakening-v1',
+      formulaVerified: false, approximate: diceType.applied.length > 0 || typeInteraction.approximate,
+      diceFormulaRecovered: false, diceInteractionLiveVerified: false };
     typeMultiplier = typeInteraction.multiplier;
     if (powerMode === 'displayed') {
       displayedPower = typeDice.length && type.multiplier === 0 ? 0 : override.displayedPower;
@@ -176,7 +198,7 @@ function resolvePower(skill, override, attacker, defender, attackerAwakening, de
       if (!Array.isArray(attacker.types) || !attacker.types.length) throw new RangeError('攻击方属性资料不足。');
       stab = attacker.types.includes(skill.type) ? getAwakeningBonuses(attackerAwakening).sameTypeMultiplier : 1;
       displayedPower = Math.max(0, skill.basePower + dice.effects.skillPowerAdd + (trait.fixedPowerAdd ?? 0))
-        * dice.effects.powerMultiplier * (trait.powerMultiplier ?? 1) * stab * type.multiplier;
+        * dice.effects.powerMultiplier * (trait.powerMultiplier ?? 1) * stab * diceType.multiplier;
     }
     // Game/standard-calculator skill-bar power excludes the PVE correction.
     power = displayedPower * typeInteraction.correctionMultiplier;
@@ -189,6 +211,8 @@ function resolvePower(skill, override, attacker, defender, attackerAwakening, de
     ...(powerMode === 'displayed' ? ['按手填显示威力结算，已包含的特性及骰子攻防、威力加成不重复叠加。'] : []),
     ...(powerMode === 'final' ? ['按最终威力口径结算，系别与觉醒不再额外换算；恢复自动后按当前条件试算。'] : []),
     ...(powerMode === 'final' && typeDice.length ? ['本次按显式最终威力绕过骰子系数换算；其与极化／钝化的公式尚未验证。'] : []),
+    ...(powerMode !== 'final' && typeInteraction?.appliedDiceEffects?.length
+      ? [`骰子系别系数 ${typeInteraction.baseMultiplier} → ${typeInteraction.diceBaseMultiplier}；${powerMode === 'displayed' ? '已含于手填显示威力，不重复添加' : '按单关系结算'}，觉醒沿用当前模型。`] : []),
   ] };
 }
 

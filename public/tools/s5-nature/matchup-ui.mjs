@@ -299,8 +299,8 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const records = (diceCatalog?.dice ?? []).filter(row => Number.isInteger(row.gameEffectId));
     const group = (label, rows) => rows.length ? `<optgroup label="${label}">${rows.map(row=>`<option value="${html(row.id)}">${html(row.name)} · ${html(diceDescription(row))}</option>`).join('')}</optgroup>` : '';
     $(`${side}-dice`).innerHTML = '<option value="none">无加成</option>'
-      + group('属性与威力 · 试算', records.filter(row=>row.supported))
-      + group('系别关系 · 待校验', records.filter(row=>row.typeCoefficient))
+      + group('属性与威力 · 试算', records.filter(row=>row.supported&&!row.typeCoefficient))
+      + group('系别关系 · 单关系试算', records.filter(row=>row.typeCoefficient))
       + group('回合与特殊效果 · 仅资料', records.filter(row=>!row.supported&&!row.typeCoefficient))
       + '<option value="custom">自填合计加成</option>'
       + (diceCatalog?.dice ?? []).filter(row=>['manual-power-plus-40','unresolved-all-stats-plus-30'].includes(row.id)).map(row=>`<option value="${row.id}" hidden>${html(row.name)}（旧配置）</option>`).join('');
@@ -677,7 +677,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       const note=$(`${side}-dice-note`);
       note.hidden=id==='none';
       note.textContent=id==='custom'?'按手填合计试算；组合与取整仍需实测。'
-        : row ? `${diceDescription(row)} ${row.typeCoefficient?'与双系、极化/钝化的组合待校验，非中性关系暂停自动试算。':row.supported?'按原配置试算，取整与叠加待实测。':row.unsupportedReason ?? '当前仅展示资料，未接入结算。'}`
+        : row ? `${diceDescription(row)} ${row.typeCoefficient?'单一系别按配置文案试算；觉醒沿用当前模型。双系组合需填写最终威力。':row.supported?'按原配置试算，取整与叠加待实测。':row.unsupportedReason ?? '当前仅展示资料，未接入结算。'}`
           : '骰子资料缺失，请重新选择。';
       renderDiceUi(side, holder);
     }

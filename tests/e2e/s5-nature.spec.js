@@ -3,6 +3,7 @@ import { resetUiuxStorage, waitForAppReady } from "./helpers/uiux-helpers.js";
 
 const toolPath = "/tools/s5-nature/index.html";
 
+
 test('S5 nature searches all ten battlepass initial forms in the default and dedicated filters', async ({ page }) => {
   test.setTimeout(60000);
   const names = ['绒绒', '犀角鸟', '小雪人', '爆焰仔', '咬咬小子', '足尖元件', '热团团', '新月鹭', '地银链', '沉金兽'];
@@ -20,7 +21,10 @@ test('S5 nature searches all ten battlepass initial forms in the default and ded
   expect(new Set(source.group.spiritIds).size).toBe(10);
   expect(source.group.families.map(row => row.name)).toEqual(names);
   expect(source.spirits.every(row => row.stage === '一阶')).toBe(true);
-  expect(source.spirits.filter(row => row.wildStrengthStage === 2).map(row => row.name)).toEqual(['小雪人', '爆焰仔', '咬咬小子', '足尖元件']);
+  expect(Object.fromEntries(source.spirits.map(row => [row.name, row.wildStrengthStage]))).toEqual({
+    '绒绒': 1, '犀角鸟': 1, '小雪人': 2, '爆焰仔': 2, '咬咬小子': 2,
+    '足尖元件': 2, '热团团': 1, '新月鹭': 1, '地银链': 1, '沉金兽': 1,
+  });
   for (const name of names) {
     await chooseTarget(page, name);
     expect(await page.evaluate(() => window.pveNatureUi.getSession().targetId)).toBe(source.spirits.find(row => row.name === name).id);
@@ -53,6 +57,38 @@ test('S5 nature searches all ten battlepass initial forms in the default and ded
   }
 });
 
+test('S5 nature type dice calculate single resistance and preserve entered power without double counting', async ({ page }) => {
+  await page.goto(toolPath);
+  await page.locator('[data-profile="luoyin"]').click();
+  await page.locator('#load-own-preset').click();
+  await chooseTarget(page, '伊雷龙');
+  await page.getByRole('group', { name: '野怪等级', exact: true }).getByRole('button', { name: '42', exact: true }).click();
+  await setDice(page, 'own', 'none');
+  await setDice(page, 'target', 'game-dice-effect-8');
+  const fire = () => page.evaluate(() => window.pveNatureUi.getPreview().outgoing[0]);
+  const automatic = await fire();
+  expect(automatic.skillName).toBe('火焰切割');
+  expect(automatic.status).toBe('estimated');
+  expect(automatic.displayedPower).toBe(40);
+  expect(automatic.effectivePower).toBe(72);
+  expect(automatic.predictions.find(row => row.upStat === 'physicalDefense').damage).toBe(133);
+  await expect(page.locator('#preview-cells-0 .dmg').first()).toHaveText(/^\d+$/);
+  await page.reload();
+  await expect(page.locator('#target-dice')).toHaveValue('game-dice-effect-8');
+  await page.locator('#preview-condition-0-gear').click();
+  await page.locator('#preview-condition-0-displayedPower').fill('40');
+  await page.locator('#preview-condition-0-displayedPower').press('Tab');
+  expect((await fire()).predictions.map(row => row.damage)).toEqual(automatic.predictions.map(row => row.damage));
+  await page.locator('#preview-condition-0-gear').click();
+  await setDice(page, 'target', 'game-dice-effect-15');
+  expect((await fire()).effectivePower).toBe(72);
+  await page.locator('#preview-condition-0-gear').click();
+  await page.locator('#preview-condition-0-resetPower').click();
+  expect((await fire()).displayedPower).toBe(25);
+  expect((await fire()).effectivePower).toBe(45);
+  await page.locator('#preview-condition-0-gear').click();
+  await page.screenshot({ path: 'output/playwright/s5-type-dice-single-relation.png', fullPage: true });
+});
 
 test("S5 nature display power and conditional attacks calculate immediately without duplicate boosts", async ({ page }) => {
   await page.goto(toolPath);

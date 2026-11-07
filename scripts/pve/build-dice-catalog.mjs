@@ -43,6 +43,19 @@ const plain = value => typeof value === 'string' ? value.replace(/<[^>]*>/gu, ''
 const copy = value => JSON.parse(JSON.stringify(value));
 const label = record => [...new Set([record.textPlain || plain(record.buff_text), plain(record.buff?.desc)].filter(Boolean))].join('；');
 
+function typeCoefficientMapping(record) {
+  const coefficient = TYPE_COEFFICIENTS.get(record.id);
+  if (!coefficient) return null;
+  const [baseId, params] = new Map([
+    [7, [2042018, [50, 0, 0, 0]]], [14, [2042019, [150, 0, 0, 0]]],
+    [8, [2042020, [0, 0, 0, 20]]], [15, [2042021, [0, 0, 0, 50]]],
+  ]).get(record.id);
+  const base = record.buffBases?.[0];
+  if (record.buffBases?.length !== 1 || base.id !== baseId || base.buffbase_order !== 42
+    || JSON.stringify(base.buffbase_param?.map(row => row.params)) !== JSON.stringify(params.map(value => [value]))) return null;
+  return { ...coefficient };
+}
+
 function scalarMapping(record) {
   if ([11, 17].includes(record.id)) {
     const amount = record.id === 11 ? 20 : 40;
@@ -71,8 +84,8 @@ function scalarMapping(record) {
 
 function buildEffect(record) {
   const mapping = scalarMapping(record);
-  const coefficient = TYPE_COEFFICIENTS.get(record.id);
-  const supported = Boolean(mapping);
+  const coefficient = typeCoefficientMapping(record);
+  const supported = Boolean(mapping || coefficient);
   const entry = {
     id: `game-dice-effect-${record.id}`,
     gameEffectId: record.id,
@@ -103,12 +116,20 @@ function buildEffect(record) {
     originalConfig: copy(record),
   };
   if (coefficient) entry.typeCoefficient = { ...coefficient };
+  if (coefficient) entry.typeCoefficientPolicy = {
+    model: 'single-relation-descriptor-with-existing-awakening-v1',
+    scope: 'single-non-neutral-defender-type',
+    role: coefficient.relation === 'super-effective' ? 'attacker' : 'defender',
+    originalConsumerRecovered: false, interactionLiveVerified: false,
+  };
   if (supported) {
-    entry.applicationNote = '仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。';
+    entry.applicationNote = coefficient
+      ? '单一克制或抵抗关系按原文系数结算，觉醒沿用当前经验模型；手填显示威力不重复添加。双非中性关系需明确最终威力，组合尚无独立实录验证。'
+      : '仅确认本局实际生效、面板和显示威力未重复包含后，按现有标量进行单来源试算；取整与叠加仍待实战核对。';
     if (Object.hasOwn(entry.effects, 'speedMultiplier')) entry.applicationNote += '速度仅调整面板，不自动判定先手或条件技能。';
   } else {
-    entry.unsupportedReason = coefficient
-      ? '保留原文系别系数；双属性、极化与钝化组合公式未闭合，不自动套全局威力或伤害倍率。'
+    entry.unsupportedReason = TYPE_COEFFICIENTS.has(record.id)
+      ? '系别骰子原始参数与已核对记录不符，需重新核对配置。'
       : UNSUPPORTED.get(record.id) ?? '原始字段尚不能安全映射到现有标量，不自动参与计算。';
   }
   return entry;
@@ -166,7 +187,7 @@ export function buildDiceCatalog(source, previous) {
       sourceBoundary: '四种龙龙骰玩法和40个效果来自原始配置；不等于实战验证、全部可获得或本局已生效。与精灵特性投骰分离。',
       selectionPolicy: '双方各自确认实际生效来源；一次仅试算单一效果，不按骰子面数随机生成，不替另一侧自动附加。',
       stackingPolicy: '未恢复多个同时生效来源的叠加公式；原始add_max不作为可叠证明，重复BUFFBASE项不得去重。',
-      supportMeaning: 'supported=true仅指可按现有标量安全试算；supportStatus=trial，不代表服务器公式或实战已验证。',
+      supportMeaning: 'supported=true指可在标注范围按当前模型试算；系别骰子限单关系。supportStatus=trial，不代表服务器公式或实战已验证。',
       hpPolicy: '本目录没有通用生命上限骰子；回合恢复、扣当前生命及护盾不得映射为hpMultiplier。',
     },
     sources: [...priorSources, ...originalSources],

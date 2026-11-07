@@ -46,13 +46,18 @@ test('all-stat effects have exactly five attributes and never apply HP', () => {
   for (const row of game) assert.equal(Object.hasOwn(row.effects, 'hpMultiplier'), false);
 });
 
-test('resistance and super-effective coefficients are reference-only, not global scalar effects', () => {
+test('resistance and super-effective coefficients support single-relation trials without global scalar effects', () => {
   for (const [id, relation, value] of [[7, 'super-effective', 2.5], [8, 'resistance', .4], [14, 'super-effective', 3.5], [15, 'resistance', .25]]) {
     const row = effect(id);
     assert.deepEqual(row.typeCoefficient, { relation, value });
-    assert.equal(row.supported, false);
+    assert.equal(row.supported, true);
+    assert.equal(row.supportStatus, 'trial');
     assert.deepEqual(row.effects, {});
-    assert.match(row.unsupportedReason, /双属性.*极化.*钝化/);
+    assert.equal(row.typeCoefficientPolicy.scope, 'single-non-neutral-defender-type');
+    assert.equal(row.typeCoefficientPolicy.interactionLiveVerified, false);
+    assert.equal(row.typeCoefficientPolicy.originalConsumerRecovered, false);
+    assert.equal(row.typeCoefficientPolicy.role, relation === 'resistance' ? 'defender' : 'attacker');
+    assert.match(row.applicationNote, /单一.*手填显示威力不重复/);
   }
   assert.equal(effect(31).supported, false, 'conditional super-effective damage is not universal damage');
 });
@@ -69,7 +74,7 @@ test('repeated cost and fixed-speed base records are preserved rather than dedup
 });
 
 test('only explicit scalar mappings support trial; event effects do not silently become no-op supported entries', () => {
-  assert.deepEqual(game.filter(row => row.supported).map(row => row.gameEffectId), [1, 2, 3, 4, 11, 12, 13, 17, 19, 33, 35, 37]);
+  assert.deepEqual(game.filter(row => row.supported).map(row => row.gameEffectId), [1, 2, 3, 4, 7, 8, 11, 12, 13, 14, 15, 17, 19, 33, 35, 37]);
   assert.deepEqual(effect(11).effects, { skillPowerAdd: 20 });
   assert.deepEqual(effect(17).effects, { skillPowerAdd: 40 });
   assert.deepEqual(effect(12).effects, { physicalAttackMultiplier: 2 });
@@ -106,5 +111,10 @@ test('generator can replay from retained original records and fails closed when 
   const rebuilt = buildDiceCatalog(source, catalog).dice.find(row => row.gameEffectId === 19);
   assert.equal(rebuilt.supported, false);
   assert.deepEqual(rebuilt.effects, {});
+  source.records.find(row => row.id === 8).buffBases[0].buffbase_param[3].params[0] = -20;
+  const changedType = buildDiceCatalog(source, catalog).dice.find(row => row.gameEffectId === 8);
+  assert.equal(changedType.supported, false);
+  assert.equal(changedType.typeCoefficient, undefined);
+  assert.match(changedType.unsupportedReason, /参数.*不符/);
   assert.throws(() => buildDiceCatalog({ ...source, records: source.records.slice(1) }, catalog), /40 unique/);
 });

@@ -183,8 +183,8 @@ function typedInput(targetTypes = ['plain']) {
   data.spirits.find(p => p.id === x.profile.spiritId).types = ['plain'];
   data.spirits.find(p => p.id === x.targetId).types = targetTypes;
   data.skills.find(p => p.id === move.id).type = 'plain';
-  data.typeChart = { types: ['plain', 'resist', 'weak', 'immune'], matrix: [
-    [1, .5, 2, 0], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1],
+  data.typeChart = { types: ['plain', 'resist', 'weak', 'immune', 'resist2', 'weak2'], matrix: [
+    [1, .5, 2, 0, .5, 2], ...Array.from({ length: 5 }, () => Array(6).fill(1)),
   ] };
   return { x, data };
 }
@@ -200,7 +200,7 @@ test.each([7, 8, 14, 15])('known type coefficient %i is recorded without changin
   assert.equal(result.diceApplication.typeCoefficientEffects[0].gameEffectId, gameEffectId);
 });
 
-test.each([['resist'], ['weak'], ['resist', 'weak']].map(types => ({ types })))('type dice reject non-neutral factors $types in auto and displayed paths', ({ types }) => {
+test.each([['resist', 'resist2'], ['weak', 'weak2'], ['resist', 'weak']].map(types => ({ types })))('type dice keep composite factors $types explicit in auto and displayed paths', ({ types }) => {
   const { x, data } = typedInput(types);
   x.targetDiceIds = ['game-dice-effect-8'];
   for (const displayed of [false, true]) {
@@ -209,6 +209,67 @@ test.each([['resist'], ['weak'], ['resist', 'weak']].map(types => ({ types })))(
     assert.equal(entry.status, 'unsupported');
     assert.match(entry.reason, /骰子.*极化.*钝化.*未.*验证/);
   }
+});
+
+test.each([[8, .4], [15, .25]])('defending resistance dice %i replace the base relation once in both power modes', (id, factor) => {
+  const { x, data } = typedInput(['resist']);
+  x.targetDiceIds = [`game-dice-effect-${id}`];
+  const automatic = row(preview(x, data));
+  assert.equal(automatic.status, 'estimated');
+  assert.equal(automatic.displayedPower, 55 * 2 * factor);
+  assert.equal(automatic.effectivePower, 55 * 2 * factor * 1.8);
+  assert.equal(automatic.typeInteraction.diceBaseMultiplier, factor);
+  assert.equal(automatic.typeInteraction.appliedDiceEffects[0].side, '敌方');
+  assert.equal(automatic.typeInteraction.formulaVerified, false);
+  x.skillOverrides = { [move.id]: { displayedPower: automatic.displayedPower } };
+  const manual = row(preview(x, data));
+  assert.equal(manual.effectivePower, automatic.effectivePower);
+  assert.deepEqual(manual.predictions.map(p => p.damage), automatic.predictions.map(p => p.damage));
+  // A second, neutral defending type does not create a composite relationship.
+  data.spirits.find(p => p.id === x.targetId).types.push('plain');
+  assert.equal(row(preview(x, data)).effectivePower, automatic.effectivePower);
+});
+
+test.each([[7, 2.5], [14, 3.5]])('attacking super-effective dice %i replace 2 without clamping the new coefficient', (id, factor) => {
+  const { x, data } = typedInput(['weak']);
+  x.ownDiceIds = [`game-dice-effect-${id}`];
+  const result = row(preview(x, data));
+  assert.equal(result.status, 'estimated');
+  assert.equal(result.displayedPower, 55 * 2 * factor);
+  assert.equal(result.effectivePower, 55 * 2 * factor * 1.8);
+  assert.equal(result.typeInteraction.appliedDiceEffects[0].side, '我方');
+});
+
+test('own resistance and enemy offense dice do not modify the wrong damage direction', () => {
+  const { x, data } = typedInput(['resist']);
+  const baseline = row(preview(x, data));
+  x.ownDiceIds = ['game-dice-effect-8'];
+  x.targetDiceIds = ['game-dice-effect-7'];
+  const result = row(preview(x, data));
+  assert.equal(result.status, 'estimated');
+  assert.equal(result.effectivePower, baseline.effectivePower);
+  assert.equal(result.typeInteraction.appliedDiceEffects.length, 0);
+});
+
+test('both relevant type dice keep their unverified interaction explicit', () => {
+  const { x, data } = typedInput(['resist']);
+  x.ownDiceIds = ['game-dice-effect-7'];
+  x.targetDiceIds = ['game-dice-effect-8'];
+  assert.equal(row(preview(x, data)).status, 'unsupported');
+});
+
+test('incoming resistance dice use the defending own side and existing dulling once', () => {
+  const { x, data } = typedInput();
+  data.spirits.find(p => p.id === x.profile.spiritId).types = ['resist'];
+  x.incomingSkillId = move.id;
+  x.ownDiceIds = ['game-dice-effect-8'];
+  const result = preview(x, data).incoming;
+  assert.equal(result.status, 'estimated');
+  assert.equal(result.displayedPower, 55 * 1.25 * .4);
+  assert.equal(result.effectivePower, 55 * 1.25 * .4 * .6);
+  assert.equal(result.typeInteraction.appliedDiceEffects[0].side, '我方');
+  x.incomingOverrides = { displayedPower: result.displayedPower };
+  assert.equal(preview(x, data).incoming.effectivePower, result.effectivePower);
 });
 
 test('type dice never turn immunity into damage, even with a nonzero displayed override', () => {
@@ -235,9 +296,9 @@ test('legacy final-power input bypasses unresolved type correction but never cla
   assert.equal(result.calibrationStatus, 'unverified');
 });
 
-test('incoming type dice use the same gate and unsupported events remain explicit', () => {
+test('incoming composite type dice keep the same boundary and unsupported events remain explicit', () => {
   const { x, data } = typedInput();
-  data.spirits.find(p => p.id === x.profile.spiritId).types = ['resist'];
+  data.spirits.find(p => p.id === x.profile.spiritId).types = ['resist', 'resist2'];
   x.incomingSkillId = move.id;
   x.ownDiceIds = ['game-dice-effect-8'];
   assert.equal(preview(x, data).incoming.status, 'unsupported');
