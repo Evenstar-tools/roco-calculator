@@ -11,8 +11,9 @@ test('skill result notices expose empirical corrections and never assume a burst
   const burst = { name: '天旋地转' };
   expect(skillPreviewNotices(row, burst)).toEqual([
     '攻击模型 · 钝化修正×0.6（估算）',
-    '迸发不自动识别；已触发时请点齿轮核对本次显示威力。',
+    '首次行动可在齿轮中开启迸发。',
   ]);
+  expect(skillPreviewNotices({ ...row, firstActionPowerAdd: 30 }, burst)).toContain('入场首次行动 · 迸发威力 +30');
   expect(skillPreviewNotices({ ...row, powerMode: 'displayed' }, burst)).toEqual([
     '攻击模型 · 钝化修正×0.6（估算）',
   ]);
@@ -29,6 +30,16 @@ test('skill result notices expose empirical corrections and never assume a burst
 test('preview settings preserve fractional displayed power and legacy final power separately', () => {
   for (const override of [{ displayedPower: 60.5 }, { displayedPower: 0 }, { effectivePower: 137.5 }]) {
     expect(() => validatePreviewSettings(sessionWith(override))).not.toThrow();
+  }
+});
+
+test('preview settings preserve only explicit boolean first-action conditions', () => {
+  for (const firstAction of [true, false]) {
+    expect(() => validatePreviewSettings(sessionWith({ firstAction }))).not.toThrow();
+    expect(() => validatePreviewSettings(sessionWith({ firstAction, displayedPower: 45 }))).not.toThrow();
+  }
+  for (const firstAction of [1, 0, 'true', null, {}]) {
+    expect(() => validatePreviewSettings(sessionWith({ firstAction }))).toThrow();
   }
 });
 

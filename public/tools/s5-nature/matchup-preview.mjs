@@ -14,7 +14,7 @@ const EFFECT_DEFAULTS = {
   powerMultiplier: 1, skillPowerAdd: 0, damageMultiplier: 1,
   damageReductionMultiplier: 1, critMultiplier: 1,
 };
-const OVERRIDE_KEYS = new Set(['effectivePower', 'displayedPower', 'hitCount', 'powerMultiplier', 'note']);
+const OVERRIDE_KEYS = new Set(['effectivePower', 'displayedPower', 'hitCount', 'powerMultiplier', 'firstAction', 'note']);
 const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const finite = value => typeof value === 'number' && Number.isFinite(value);
 const integer = (value, low, high) => Number.isSafeInteger(value) && value >= low && value <= high;
@@ -154,6 +154,7 @@ function readOverride(value) {
   if (has(value, 'displayedPower') && has(value, 'effectivePower')) throw new RangeError('显示威力与旧最终威力不可同时填写。');
   if (has(value, 'hitCount') && !integer(value.hitCount, 1, 100)) throw new RangeError('本次连击数须为1至100的整数。');
   if (has(value, 'powerMultiplier') && (!finite(value.powerMultiplier) || value.powerMultiplier < 0 || value.powerMultiplier > 100)) throw new RangeError('本次额外威力倍率须为0至100的有限数字。');
+  if (has(value, 'firstAction') && typeof value.firstAction !== 'boolean') throw new RangeError('入场首次行动须为布尔值。');
   return value;
 }
 
@@ -167,6 +168,13 @@ export function defaultSkillHitCount(skill) {
   return integer(count, 1, 100) ? count : 1;
 }
 
+// CN DESC_NOTE_CONF 1010 defines burst as the first action after entering.
+// SKILL_CONF 7020980 and BUFFBASE_CONF 2093009 give this move +30.
+// Full HP alone does not establish that condition; other burst rules remain explicit.
+export function firstActionPowerBonus(skill) {
+  return skill?.name === '天旋地转' ? 30 : 0;
+}
+
 function resolvePower(skill, override, attacker, defender, attackerAwakening, defenderAwakening, dice, catalog, trait = {}, defenderDice) {
   const powerMode = has(override, 'displayedPower') ? 'displayed' : has(override, 'effectivePower') ? 'final' : 'auto';
   const manual = powerMode !== 'auto';
@@ -174,6 +182,7 @@ function resolvePower(skill, override, attacker, defender, attackerAwakening, de
   // supported is the legacy record filter, not a gate on base-power preview.
   // Resolve the current direct hit; optional power/count overrides model triggers.
   if (!manual && !canPreviewBasePower(skill)) throw new RangeError('该技能威力随战况变化，请填写本次显示威力。');
+  const firstActionPowerAdd = !manual && override.firstAction === true ? firstActionPowerBonus(skill) : 0;
   let displayedPower = null, typeInteraction = null, typeMultiplier = null, stab = null, power;
   const typeDice = [...dice.typeCoefficientEffects, ...(defenderDice?.typeCoefficientEffects ?? [])];
   if (powerMode === 'final') {
@@ -197,7 +206,7 @@ function resolvePower(skill, override, attacker, defender, attackerAwakening, de
     } else {
       if (!Array.isArray(attacker.types) || !attacker.types.length) throw new RangeError('攻击方属性资料不足。');
       stab = attacker.types.includes(skill.type) ? getAwakeningBonuses(attackerAwakening).sameTypeMultiplier : 1;
-      displayedPower = Math.max(0, skill.basePower + dice.effects.skillPowerAdd + (trait.fixedPowerAdd ?? 0))
+      displayedPower = Math.max(0, skill.basePower + firstActionPowerAdd + dice.effects.skillPowerAdd + (trait.fixedPowerAdd ?? 0))
         * dice.effects.powerMultiplier * (trait.powerMultiplier ?? 1) * stab * diceType.multiplier;
     }
     // Game/standard-calculator skill-bar power excludes the PVE correction.
@@ -207,7 +216,7 @@ function resolvePower(skill, override, attacker, defender, attackerAwakening, de
   power *= extra;
   if (displayedPower !== null) displayedPower *= extra;
   if (!finite(power) || power < 0 || power > 10000000) throw new RangeError('本次威力超出可核算范围。');
-  return { power, displayedPower, powerMode, typeMultiplier, typeInteraction, stab, hitCount: override.hitCount ?? (powerMode === 'final' ? 1 : defaultSkillHitCount(skill)), manual, notes: [
+  return { power, displayedPower, powerMode, firstActionPowerAdd, typeMultiplier, typeInteraction, stab, hitCount: override.hitCount ?? (powerMode === 'final' ? 1 : defaultSkillHitCount(skill)), manual, notes: [
     ...(powerMode === 'displayed' ? ['按手填显示威力结算，已包含的特性及骰子攻防、威力加成不重复叠加。'] : []),
     ...(powerMode === 'final' ? ['按最终威力口径结算，系别与觉醒不再额外换算；恢复自动后按当前条件试算。'] : []),
     ...(powerMode === 'final' && typeDice.length ? ['本次按显式最终威力绕过骰子系数换算；其与极化／钝化的公式尚未验证。'] : []),
@@ -292,6 +301,7 @@ function damageEntry(skillId, overrideValue, direction, context) {
       reason: power.notes.join(' '),
       displayedPower: power.displayedPower === null ? null : Number((power.displayedPower * displayRatio).toFixed(10)),
       powerMode: power.powerMode,
+      firstActionPowerAdd: power.firstActionPowerAdd,
       effectivePower: power.power, hitCount: power.hitCount, typeMultiplier: power.typeMultiplier,
       stab: power.stab, typeInteraction: power.typeInteraction, manualPower: power.manual, predictions };
   } catch (error) {

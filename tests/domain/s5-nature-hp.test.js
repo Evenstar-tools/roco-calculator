@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { wildPanel, solve, predictObservation } from '../../public/tools/s5-nature/engine.mjs';
 import { previewMatchup } from '../../public/tools/s5-nature/matchup-preview.mjs';
-import { analyzeHealth } from '../../public/tools/s5-nature/calibration.mjs';
+import { analyzeHealth, compareFieldSamples } from '../../public/tools/s5-nature/calibration.mjs';
 import { formatGamePercent } from '../../public/tools/s5-nature/hp-inverse.mjs';
 import { WILD_HP_MODEL, wildTargetShiny } from '../../public/tools/s5-nature/wild-hp.mjs';
 
@@ -113,4 +113,48 @@ test('browser catalog transport preserves every spirit, skill and learning relat
   const source = JSON.parse(readFileSync('public/tools/s5-nature/data/catalog.json', 'utf8'));
   const restored = restoreS5RuntimeRelations(JSON.parse(JSON.stringify(packS5RuntimeRelations(source))));
   assert.deepEqual(restored, source);
+});
+
+test('historical incoming comparisons use the skill defense axis, including equal wrong-axis values', () => {
+  const fieldData = JSON.parse(readFileSync('public/tools/s5-nature/data/field-samples.json', 'utf8'));
+  const physical = fieldData.entries.find(row => row.defenderDefense != null);
+  // Controlled comparison fixture: the known 137 magic-defense panel checks
+  // field selection only. This does not certify a damage formula or nature.
+  const magical = {
+    id: 'magic-defense-axis-fixture', targetId: species('伊雷龙').id, level: 43,
+    direction: 'incoming', skillId: catalog.skills.find(row => row.name === '升龙咆哮').id,
+    damage: 660, stat: 'magicalAttack', defenderName: '罗隐',
+    defenderLevel: 60, defenderAwakening: 5, defenderDefense: 137, referenceOnly: true,
+  };
+  const compare = (sample, physicalDefense, magicalDefense) => {
+    const session = {
+      targetId: sample.targetId, level: sample.level,
+      profiles: [{ id: 'receiver', spiritId: species('罗隐').id, level: sample.defenderLevel,
+        awakening: sample.defenderAwakening, panel: { physicalDefense, magicalDefense } }],
+      observations: [{ profileId: 'receiver', direction: 'incoming', skillId: sample.skillId,
+        damage: sample.damage, context: 'clean' }],
+    };
+    const matched = compareFieldSamples(session, catalog, { entries: [sample] })[0].matches[0];
+    assert.equal(matched.referenceOnly, true, 'matching configuration must preserve reference status');
+    return matched.configurationMatches;
+  };
+  assert.deepEqual([
+    compare(magical, 183, 137), compare(magical, 137, 170),
+    compare(physical, physical.defenderDefense, 137), compare(physical, 137, physical.defenderDefense),
+  ], [true, false, true, false]);
+});
+
+test('historical poison readings with unknown layers remain references even after a confirmed five-layer observation', () => {
+  const fieldData = JSON.parse(readFileSync('public/tools/s5-nature/data/field-samples.json', 'utf8'));
+  const sample = fieldData.entries.find(row => row.id === 'image-2-whale-hp-01-damage-1');
+  assert.match(sample.notes, /中毒层数未知/);
+  const session = {
+    targetId: sample.targetId, level: sample.level, profiles: [],
+    observations: [{ direction: 'poison', damage: sample.damage, context: 'clean',
+      poison: { confirmed: true, layers: 5, multiplier: 1 } }],
+  };
+  const result = compareFieldSamples(session, catalog, fieldData)[0].matches.find(row => row.id === sample.id);
+  assert.equal(result.referenceOnly, true);
+  assert.equal(result.notes, sample.notes);
+  assert.equal(result.configurationMatches, false, 'current layer count cannot fill unknown historical layers');
 });

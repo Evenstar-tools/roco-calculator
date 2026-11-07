@@ -1,7 +1,7 @@
 import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { previewMatchup } from '../../public/tools/s5-nature/matchup-preview.mjs';
+import { previewMatchup, firstActionPowerBonus } from '../../public/tools/s5-nature/matchup-preview.mjs';
 
 const read = name => JSON.parse(readFileSync(`public/tools/s5-nature/data/${name}.json`, 'utf8'));
 const catalog = read('catalog'), dice = read('dice'), traits = read('traits');
@@ -106,4 +106,56 @@ test('empirical incoming dulling is visible as approximate and preserves neutral
   assert.equal(row.typeInteraction.approximate, true);
   assert.equal(row.typeInteraction.formulaVerified, false);
   assert.equal(natureRow(row, 'magicalAttack', 'speed').damage, 266);
+});
+
+test('recorded first-action Heaven Spin adds its burst once and preserves manual power', () => {
+  // 20261107-003806-000353/encounter-0001/E3/P1: 42级勇敢噼啪鸟,
+  // first action 天旋地转, 罗隐10星物防183, actual HP403 ->374.
+  const x = input('噼啪鸟', 42);
+  x.profile.panel.speed = 289;
+  x.incomingSkillIds = [skill('天旋地转').id];
+  const damage = row => row.predictions.find(p => p.natureName === '勇敢').damage;
+  assert.equal(damage(preview(x).incoming), 19);
+  x.incomingOverridesList = [{ firstAction: true }];
+  const first = preview(x).incoming;
+  assert.equal(first.status, 'estimated');
+  assert.equal(damage(first), 29);
+  assert.equal(first.displayedPower, 45);
+  assert.equal(first.firstActionPowerAdd, 30);
+  assert.equal(skill('天旋地转').basePower, 60);
+  for (const override of [{ displayedPower: 45 }, { effectivePower: 27 }]) {
+    x.incomingOverridesList = [{ firstAction: true, ...override }];
+    const manual = preview(x).incoming;
+    assert.equal(damage(manual), 29);
+    assert.equal(manual.firstActionPowerAdd, 0);
+  }
+  x.incomingOverridesList = [{ firstAction: false }];
+  const later = preview(x).incoming;
+  assert.equal(damage(later), 19);
+  assert.equal(later.firstActionPowerAdd, 0);
+});
+
+test('first-action bonus enters before power multipliers and only applies to the confirmed move', () => {
+  const x = input('噼啪鸟', 42);
+  x.incomingSkillIds = [skill('天旋地转').id];
+  x.targetDiceEffects = { skillPowerAdd: 40, powerMultiplier: 2 };
+  x.incomingOverridesList = [{ firstAction: true }];
+  const first = preview(x).incoming;
+  assert.equal(first.displayedPower, (60 + 30 + 40) * 2 * .5);
+  assert.equal(first.effectivePower, 78);
+  assert.equal(firstActionPowerBonus(skill('天旋地转')), 30);
+  assert.equal(firstActionPowerBonus(skill('交叉闪电')), 0);
+  assert.equal(firstActionPowerBonus(null), 0);
+  x.incomingSkillIds = [skill('交叉闪电').id];
+  const unrelated = preview(x).incoming;
+  x.incomingOverridesList = [{}];
+  const baseline = preview(x).incoming;
+  assert.deepEqual(unrelated.predictions, baseline.predictions);
+  assert.equal(unrelated.firstActionPowerAdd, 0);
+  for (const firstAction of ['true', 1, 0, null]) {
+    x.incomingOverridesList = [{ firstAction }];
+    const invalid = preview(x).incoming;
+    assert.equal(invalid.status, 'unsupported');
+    assert.match(invalid.reason, /首次行动.*布尔/);
+  }
 });

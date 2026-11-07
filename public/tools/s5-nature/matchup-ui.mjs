@@ -1,5 +1,5 @@
 import { createPicker } from './picker.mjs';
-import { previewMatchup, canPreviewBasePower, defaultSkillHitCount } from './matchup-preview.mjs';
+import { previewMatchup, canPreviewBasePower, defaultSkillHitCount, firstActionPowerBonus } from './matchup-preview.mjs';
 import { traitControls, traitPanelPercents } from './own-trait.mjs';
 import { formatGamePercent } from './hp-inverse.mjs';
 import { getOwnSkillIds } from './own-presets.mjs';
@@ -40,10 +40,10 @@ export function skillPreviewNotices(row, skill) {
       : `${incoming ? '钝化' : '极化'}修正×${powerNumber(type.correctionMultiplier)}（估算）`);
   }
   const notices = [parts.join(' · ')];
-  // A buff callback alone does not establish that this hit consumed burst.
-  // Keep the existing explicit power input; never silently add 30.
-  if (skill?.name === '天旋地转' && row.powerMode === 'auto') {
-    notices.push('迸发不自动识别；已触发时请点齿轮核对本次显示威力。');
+  if (firstActionPowerBonus(skill) && row.powerMode === 'auto') {
+    notices.push(row.firstActionPowerAdd > 0
+      ? `入场首次行动 · 迸发威力 +${row.firstActionPowerAdd}`
+      : '首次行动可在齿轮中开启迸发。');
   }
   return notices;
 }
@@ -54,6 +54,7 @@ export function validatePreviewSettings(session) {
     if (!object(value)) fail();
     if (Object.hasOwn(value, 'displayedPower') && Object.hasOwn(value, 'effectivePower')) fail();
     for (const [key,v] of Object.entries(value)) {
+      if (key === 'firstAction') { if (typeof v !== 'boolean') fail(); continue; }
       if (!['displayedPower','effectivePower','powerMultiplier','hitCount'].includes(key) || !Number.isFinite(v) || v < 0 || v > 100000) fail();
       if (key === 'hitCount' && (!Number.isInteger(v) || v < 1 || v > 100)) fail();
     }
@@ -284,7 +285,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   }
   // 常用条件保持三项；已知最终威力保留为展开项。
   function conditionControl(prefix) {
-    return `<div id="${prefix}-pop" class="pskill-pop" role="dialog" aria-label="本招条件" hidden><div class="pskill-pop-grid"><label>显示威力<input id="${prefix}-displayedPower" type="number" min="0" max="100000" step="any" placeholder="自动"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label></div><div class="pskill-pop-foot"><span id="${prefix}-auto" class="pskill-auto"></span><span id="${prefix}-legacyPower" class="preview-legacy-power" hidden><span id="${prefix}-legacyPower-label"></span></span><button id="${prefix}-resetPower" type="button" class="text-button">恢复自动</button></div><details class="preview-final-power"><summary>已知最终威力</summary><label>最终威力<input id="${prefix}-effectivePower" type="number" min="0" max="100000" step="any" placeholder="未填写"/></label><p>已含系别与极化/钝化，不含面板攻防；与显示威力互斥。</p></details></div>`;
+    return `<div id="${prefix}-pop" class="pskill-pop" role="dialog" aria-label="本招条件" hidden><div class="pskill-pop-grid"><label>显示威力<input id="${prefix}-displayedPower" type="number" min="0" max="100000" step="any" placeholder="自动"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label></div><label id="${prefix}-firstAction-row" class="pskill-first-action" hidden><input id="${prefix}-firstAction" type="checkbox"/><span id="${prefix}-firstAction-label">入场首次行动 · 迸发 +30</span></label><div class="pskill-pop-foot"><span id="${prefix}-auto" class="pskill-auto"></span><span id="${prefix}-legacyPower" class="preview-legacy-power" hidden><span id="${prefix}-legacyPower-label"></span></span><button id="${prefix}-resetPower" type="button" class="text-button">恢复自动</button></div><details class="preview-final-power"><summary>已知最终威力</summary><label>最终威力<input id="${prefix}-effectivePower" type="number" min="0" max="100000" step="any" placeholder="未填写"/></label><p>已含系别与极化/钝化，不含面板攻防；与显示威力互斥。</p></details></div>`;
   }
   const heading = (columns, last) => `<div class="pth pth-skill">技能</div>${columns.map(([key,label])=>`<div class="pth">${catalog.assets?.stats?.[key]?`<img src="${html(catalog.assets.stats[key])}" alt=""/>`:''}${label}${key==='other'?'':'<span class="up-arrow">↑</span>'}</div>`).join('')}<div class="pth">${last}</div>`;
   $('preview-outgoing').innerHTML = heading(OUT_COLUMNS,'实测<button id="preview-reset-observed" type="button" class="text-button pth-action">清空</button>') + Array.from({length:4},(_,i) =>
@@ -368,6 +369,11 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       if(value!==null && key==='displayedPower') delete holder.effectivePower;
       if(value!==null && key==='effectivePower') delete holder.displayedPower;
     }));
+    $(`${prefix}-firstAction`).addEventListener('change',()=>commit(()=>{
+      const {own,encounter}=state();
+      const holder=incoming?encounter.incomingOverridesList[index]:(own.skillOverrides[own.skillIds[index]]??={});
+      if ($(`${prefix}-firstAction`).checked) holder.firstAction=true; else delete holder.firstAction;
+    }));
     $(`${prefix}-resetPower`).addEventListener('click',()=>commit(()=>{
       const {own,encounter}=state();
       const holder=incoming?encounter.incomingOverridesList[index]:own.skillOverrides[own.skillIds[index]];
@@ -446,6 +452,11 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     $(`${prefix}-displayedPower`).placeholder = legacy ? '最终威力生效中' : '自动';
     $(`${prefix}-gear`).classList.toggle('is-set', Object.keys(overrides).length > 0);
     const skill=skills.get(skillId);
+    const burst=firstActionPowerBonus(skill), manual=legacy || Object.hasOwn(overrides,'displayedPower');
+    $(`${prefix}-firstAction-row`).hidden=!burst;
+    $(`${prefix}-firstAction`).checked=overrides.firstAction===true;
+    $(`${prefix}-firstAction`).disabled=manual;
+    $(`${prefix}-firstAction-label`).textContent=manual ? '迸发按手填威力，不额外叠加' : `入场首次行动 · 迸发 +${burst}`;
     $(`${prefix}-gear`).hidden = !skill;
     if(!skill) { $(metaId).innerHTML=''; $(metaId).title=''; return; }
     $(metaId).innerHTML=`${typeIcon(skill)}${category(skill)} · 显示威力 —`;
@@ -696,7 +707,10 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     // 手填过的招，另算一份自动值给 ⚙ 弹层对照。
     const anyOverride = own.skillIds.some(id => id && Object.keys(own.skillOverrides[id] ?? {}).length) || encounter.incomingOverridesList.some(o => Object.keys(o ?? {}).length);
     let autoPreview = currentPreview;
-    if (anyOverride) try { autoPreview = previewMatchup({...input, skillOverrides:{}, incomingOverridesList:input.incomingOverridesList.map(()=>({}))},catalog,diceCatalog,traitCatalog); } catch { autoPreview = {}; }
+    const actionOnly = override => override?.firstAction === true ? {firstAction:true} : {};
+    if (anyOverride) try { autoPreview = previewMatchup({...input,
+      skillOverrides:Object.fromEntries(Object.entries(input.skillOverrides ?? {}).map(([id,override])=>[id,actionOnly(override)])),
+      incomingOverridesList:input.incomingOverridesList.map(actionOnly)},catalog,diceCatalog,traitCatalog); } catch { autoPreview = {}; }
     const { observed } = readOutgoingObservations(own, format);
     for(let i=0;i<4;i++) {
       const obs = observed[i]?.invalid ? null : observed[i];

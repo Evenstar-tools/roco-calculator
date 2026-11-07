@@ -101,11 +101,17 @@ export function compareFieldSamples(session, catalog, data) {
     if (!matches.length) return [];
     const profile = session.profiles.find(row => row.id === obs.profileId);
     const own = catalog.spirits.find(row => row.id === profile?.spiritId);
+    const skill = catalog.skills.find(row => row.id === obs.skillId);
+    const defenseStat = skill?.category === 'physical' ? 'physicalDefense'
+      : skill?.category === 'magical' ? 'magicalDefense' : null;
     return [{ index, matches: matches.map(row => ({ ...row,
       configurationMatches: obs.direction === 'poison'
-        ? obs.poison?.confirmed === true && obs.poison.layers === 5 && obs.context === 'clean'
+        // A current layer count cannot supply missing historical conditions.
+        ? row.poison?.confirmed === true && obs.poison?.confirmed === true
+          && row.poison.layers === obs.poison.layers && row.poison.multiplier === obs.poison.multiplier
+          && obs.context === 'clean'
         : own?.name === row.defenderName && obs.context === 'clean'
-          && row.defenderDefense != null && profile?.panel?.physicalDefense === row.defenderDefense
+          && defenseStat != null && row.defenderDefense != null && profile?.panel?.[defenseStat] === row.defenderDefense
           && profile?.level === row.defenderLevel && profile?.awakening === row.defenderAwakening,
     })) }];
   });
