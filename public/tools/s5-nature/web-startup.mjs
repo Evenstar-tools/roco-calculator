@@ -96,9 +96,21 @@ export async function prepareToolWorker(serviceWorker = globalThis.navigator?.se
 
 export async function startTool({ serviceWorker = globalThis.navigator?.serviceWorker,
   location = globalThis.location, document = globalThis.document,
-  loadUI = () => import('./ui.mjs'), timeoutMs = 3000 } = {}) {
+  loadUI = () => import('./ui.mjs'), fetchResource = globalThis.fetch, timeoutMs = 3000 } = {}) {
   try {
+    const initialController = serviceWorker?.controller;
     await prepareToolWorker(serviceWorker, location, timeoutMs);
+    if (serviceWorker?.controller && serviceWorker.controller !== initialController) {
+      // HTML and this bootstrap were fetched before takeover. Populate the new
+      // worker's cache as well so the very next reload can work offline.
+      const urls = [location?.href, import.meta.url].filter(url => typeof url === 'string'
+        && new URL(url).origin === location.origin);
+      const abort = new AbortController();
+      const timer = setTimeout(() => abort.abort(), 3000);
+      try {
+        await Promise.allSettled(urls.map(url => fetchResource(url, { cache: 'no-cache', signal: abort.signal })));
+      } finally { clearTimeout(timer); }
+    }
     const cleanup = [];
     let timer;
     try {

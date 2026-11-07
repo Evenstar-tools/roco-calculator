@@ -188,6 +188,23 @@ test('a verified waiting worker is asked to activate, but UI still waits for con
   expectClean(h.serviceWorker, h.registration, h.next);
 });
 
+test.each([false, true])('takeover primes the early-loaded HTML without blocking the UI on a cache failure: %s', async fails => {
+  const h = harness();
+  const fetchResource = vi.fn(async () => {
+    if (fails) throw new Error('offline');
+    return new Response('current page');
+  });
+  const fullLocation = { ...location, href: `${location.origin}/tools/s5-nature/index.html` };
+  const started = startTool({ ...h, location: fullLocation, fetchResource });
+  await vi.waitFor(() => expect(h.serviceWorker.register).toHaveBeenCalledOnce());
+  expect(fetchResource).not.toHaveBeenCalled();
+  h.serviceWorker.controller = h.next;
+  h.serviceWorker.emit('controllerchange');
+  await expect(started).resolves.toBe('started');
+  expect(fetchResource).toHaveBeenCalledWith(fullLocation.href, expect.objectContaining({ cache: 'no-cache' }));
+  expect(fetchResource.mock.invocationCallOrder[0]).toBeLessThan(h.stylesheet.setAttribute.mock.invocationCallOrder[0]);
+});
+
 test('an unknown waiting worker is never asked to activate or allowed to serve the UI', async () => {
   vi.useFakeTimers();
   const h = harness();
