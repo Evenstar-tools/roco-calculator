@@ -98,7 +98,7 @@ test('legacy final overrides retain meaning and conflicting override kinds fail 
   assert.match(preview(x).outgoing[0].reason, /不可同时/);
 });
 
-test('field-calibrated incoming dulling preserves evidence status and confirmed whale damage', () => {
+test('shared incoming dulling preserves evidence status and confirmed whale damage', () => {
   const x = input('深蓝鲸', 42);
   x.incomingSkillId = skill('气泡').id;
   const row = preview(x).incoming;

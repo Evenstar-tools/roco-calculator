@@ -43,10 +43,12 @@ export function getAwakeningBonuses(awakening) {
 // Ratio bounds cross-checked against two original video demonstrations/tables.
 // This is not recovered game code; double-type interactions remain an extension.
 export const TYPE_INTERACTION_MODEL = Object.freeze({
-  id: 's5-monotone-type-fit-v3',
-  basis: 'relation-bounds-preserving-high-star-samples',
+  id: 's5-unified-dulling-fit-v4',
+  basis: 'unified-dulling-floor-from-whale-field-correction',
   formulaVerified: false,
-  evidence: 'docs/maintenance/s5-dulling-continuity-fix-20261107.md',
+  evidence: 'docs/maintenance/s5-unified-dulling-fix-20261108.md',
+  lowerBound: .6,
+  upperBound: 1.8,
 });
 
 /** Apply awakening AFTER the calculator has combined the defender's types.
@@ -62,14 +64,12 @@ export function resolveAwakeningType(baseMultiplier, attackerAwakening, defender
   const defender = getAwakeningBonuses(defenderAwakening);
   const ratio = (100 + attacker.polarizationPercent) / (100 + defender.dullingPercent);
   const modeled = (attackerAwakening > 0 || defenderAwakening > 0) && (mixedRelation || (baseMultiplier !== 0 && baseMultiplier !== 1));
-  // Wild P/D are zero (user-confirmed): preview applies only our polarization
-  // on outgoing hits and only our dulling on incoming hits. Keep the existing
-  // high-star anchors, but use one bound per relation at every level: switching
-  // rules at eight stars made higher dulling increase damage. Low-star values
-  // are consistency extrapolations, not newly measured calibration points.
-  const lowerBound = baseMultiplier > 1 ? .72 : .6;
+  // Wild P/D are zero. Share one correction across species, levels, skills
+  // and type-dice paths; do not revive the old .72 super-effective floor.
+  // Five stars remain neutral, six stars retain the ratio, seven through ten
+  // reach .6. This is the adopted empirical model, not recovered game code.
   const correctionMultiplier = baseMultiplier === 0 || baseMultiplier === 1 ? 1
-    : Math.max(lowerBound, Math.min(1.8, ratio));
+    : Math.max(TYPE_INTERACTION_MODEL.lowerBound, Math.min(TYPE_INTERACTION_MODEL.upperBound, ratio));
   const multiplier = baseMultiplier * correctionMultiplier;
   return {
     multiplier, baseMultiplier, correctionMultiplier,

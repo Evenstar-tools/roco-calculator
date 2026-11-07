@@ -6,7 +6,7 @@ import { observationMatch } from '../../public/tools/s5-nature/matchup-ui.mjs';
 import { wildPanel, predictObservation, solve } from '../../public/tools/s5-nature/engine.mjs';
 import { restoreS5RuntimeRelations } from '../../public/tools/s5-nature/vendor/s5-runtime-relations.js';
 import { calculateWildAttack, WILD_ATTACK_MODEL } from '../../public/tools/s5-nature/wild-attack.mjs';
-import { resolveAwakeningType } from '../../public/tools/s5-nature/awakening.mjs';
+import { resolveAwakeningType, TYPE_INTERACTION_MODEL } from '../../public/tools/s5-nature/awakening.mjs';
 
 const read = name => JSON.parse(readFileSync(`public/tools/s5-nature/data/${name}.json`, 'utf8'));
 const catalog = restoreS5RuntimeRelations(read('catalog')), dice = read('dice'), mapping = read('wild-attack-races');
@@ -211,7 +211,7 @@ test('four saved incoming hits share the resisted .6 fit with native-stage attac
     assert.equal(sample.observedDynamicPower, null, 'preserve the missing runtime-power field');
     assert(sample.pointer.startsWith('/events/'));
   }
-  assert.equal(resolveAwakeningType(2, 0, 5).correctionMultiplier, .72);
+  assert.equal(resolveAwakeningType(2, 0, 5).correctionMultiplier, .6);
   assert.equal(resolveAwakeningType(1, 0, 5).correctionMultiplier, 1);
 });
 
@@ -367,7 +367,7 @@ test('type correction stays monotone on both axes without changing neutral immun
   }
 });
 
-test('42 whale calibration preserves lower stars and consistent auto displayed and legacy-final power', () => {
+test('shared dulling keeps automatic displayed and legacy-final power consistent across stars', () => {
   const input = inputFor('深蓝鲸', 42);
   input.profile.panel.magicalDefense = 137;
   input.incomingSkillId = skill('气泡').id;
@@ -376,7 +376,7 @@ test('42 whale calibration preserves lower stars and consistent auto displayed a
     const automatic = previewMatchup(input, catalog, dice).incoming;
     const manual = previewMatchup({ ...input, incomingOverrides: { displayedPower: 250 } }, catalog, dice).incoming;
     assert.deepEqual(manual.predictions.map(row => row.damage), automatic.predictions.map(row => row.damage));
-    if (awakening >= 3) assert.equal(automatic.predictions.find(row => row.natureId === natureFor('magicalAttack', 'up').id).damage, awakening === 5 ? 222 : 266);
+    assert.equal(automatic.predictions.find(row => row.natureId === natureFor('magicalAttack', 'up').id).damage, [370, 255, 222, 222, 222, 222][awakening]);
     const final = previewMatchup({ ...input, incomingOverrides: { effectivePower: 180 } }, catalog, dice).incoming;
     assert.equal(final.effectivePower, 180);
     assert.equal(final.predictions.find(row => row.natureId === natureFor('magicalAttack', 'up').id).damage, 266);
@@ -400,11 +400,8 @@ test('42 whale water hits calibrate 10-star Luoyin together and match observatio
     assert.equal(entry.typeInteraction.formulaVerified, false);
     assert.deepEqual(['down', 'neutral', 'up'].map(direction => entry.predictions
       .find(row => row.natureId === natureFor('magicalAttack', direction).id).damage), expected, name);
-    const evidence = entry.typeInteraction.fieldCalibration;
-    assert.equal(evidence.targetSourcePetbaseId, 3381);
-    assert.equal(evidence.measuredNatureBand, 'magicalAttack-up');
-    assert.equal(evidence.otherNatureBands, 'wild-attack-model-derived');
-    assert.equal(evidence.originalGameFormulaRecovered, false);
+    assert.equal(entry.typeInteraction.model, TYPE_INTERACTION_MODEL.id);
+    assert.equal(TYPE_INTERACTION_MODEL.formulaVerified, false);
     const matches = entry.predictions.filter(row => observationMatch(row, { damage: expected[2] }));
     assert.equal(matches.length, 5, name);
     assert(matches.every(row => row.upStat === 'magicalAttack'), name);
@@ -416,7 +413,7 @@ test('42 whale water hits calibrate 10-star Luoyin together and match observatio
   assert.deepEqual(result.incoming, result.incomingList[0]);
 });
 
-test('incoming calibration stays within the measured species level star and move conditions', () => {
+test('incoming correction uses the shared formula across species levels stars moves and type dice', () => {
   const base = inputFor('深蓝鲸', 42);
   base.profile.awakening = 5;
   base.profile.panel.magicalDefense = 137;
@@ -439,6 +436,10 @@ test('incoming calibration stays within the measured species level star and move
     const entry = previewMatchup(input, catalog, dice).incoming;
     assert.equal(entry.status, 'estimated', `${name}: ${entry.reason}`);
     assert.equal(entry.typeInteraction?.fieldCalibration, undefined, name);
+    if (entry.typeInteraction?.baseMultiplier !== undefined && ![0, 1].includes(entry.typeInteraction.baseMultiplier)) {
+      assert.equal(entry.typeInteraction.model, input.profile.awakening === 0 ? 'calculator-type-chart' : TYPE_INTERACTION_MODEL.id, name);
+      assert.equal(entry.typeInteraction.correctionMultiplier, [1, 100 / 145, .6, .6, .6, .6][input.profile.awakening], name);
+    }
     if (entry.typeInteraction?.baseMultiplier !== undefined) {
       assert.equal(entry.typeInteraction.correctionMultiplier,
         resolveAwakeningType(entry.typeInteraction.baseMultiplier, 0, input.profile.awakening).correctionMultiplier, name);
@@ -456,7 +457,7 @@ test('incoming calibration stays within the measured species level star and move
   }
 });
 
-test('calibrated incoming damage keeps normal panel and dice processing without a MD137 branch', () => {
+test('shared incoming correction keeps normal panel and dice processing without a MD137 branch', () => {
   const input = inputFor('深蓝鲸', 42);
   input.profile.awakening = 5;
   input.incomingSkillId = skill('气泡').id;
