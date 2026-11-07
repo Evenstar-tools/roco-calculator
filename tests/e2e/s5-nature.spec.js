@@ -803,13 +803,13 @@ test('S5 nature star changes keep fixed-panel incoming damage monotone with wild
     expect(entry.typeInteraction.dullingPercent).toBe((stars - 5) * 45);
     const hit = entry.predictions.find(row => row.upStat === 'magicalAttack' && row.downStat === 'speed').damage;
     expect(hit).toBeLessThanOrEqual(previous);
-    expect(hit).toBe(stars === 5 ? 370 : 266);
+    expect(hit).toBe(stars === 5 ? 370 : stars === 10 ? 222 : 266);
     await expect(page.locator('#preview-incoming-cells-0')).toContainText(String(hit));
     previous = hit;
   }
   await page.reload();
   await expect(page.locator('#star-seg').getByRole('button', { name: '10★', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('#preview-incoming-cells-0')).toContainText('266');
+  await expect(page.locator('#preview-incoming-cells-0')).toContainText('222');
 });
 
 test('S5 nature first action survives reload and manual power reset without double adding burst', async ({ page }) => {
