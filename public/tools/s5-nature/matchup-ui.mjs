@@ -619,8 +619,13 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
           const band = trace.naturePercent === 100 ? `${label}不变` : `${trace.naturePercent === 90 ? '减' : '加'}${label}`;
           lines.add(`${trace.level}级 · ${band}：反推有效防御 ${trace.value}${condition}`);
         } else if (trace.kind === 'source-fit') {
-          const bands = trace.measuredPhysicalDefenseNatures.map(band => ({ neutral:`${label}不变`, up:`加${label}`, down:`减${label}` })[band]).join('／');
-          lines.add(`${label}：物种拟合 ×${trace.coefficient}，样本限 ${trace.measuredLevels.join('／')}级，${bands}`);
+          const scopes = Array.isArray(trace.measuredScopes)
+            ? trace.measuredScopes.filter(scope => scope.stat === trace.stat).map(scope => {
+              const bands = scope.naturePercents.map(percent => percent === 100 ? `${label}不变` : `${percent < 100 ? '减' : '加'}${label}`).join('／');
+              return `${scope.level}级（${bands}）`;
+            }).join('；')
+            : `${trace.measuredLevels.join('／')}级，${trace.measuredPhysicalDefenseNatures.map(band => ({ neutral:`${label}不变`, up:`加${label}`, down:`减${label}` })[band]).join('／')}`;
+          lines.add(`${label}：物种拟合 ×${trace.coefficient}，样本限 ${scopes}`);
           if (!trace.sampleScopeMatches) lines.add(`${label}其余等级或性格沿用该拟合外推`);
         } else {
           lines.add(`${label}：${trace.kind === 'stage-fit' ? '阶位拟合' : '阶位外推'} ×${trace.coefficient}`);

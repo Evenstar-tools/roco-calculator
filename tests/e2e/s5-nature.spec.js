@@ -678,3 +678,51 @@ test("S5 nature separates HP evidence and exact per-hit observations without dro
   await expect(verdict.locator('[data-stat="hp"] b')).toHaveText('加');
   await expect(verdict.locator('.verdict-big')).toHaveText('模型未吻合');
 });
+
+
+test('S5 whale dice calibration renders both defense scopes and Dimo trait timing', async ({ page }) => {
+  await page.goto(toolPath);
+  await expect(page.locator('#load-own-preset')).toBeEnabled();
+  const configure = async (name, moves, panel) => page.evaluate(async ({ name, moves, panel }) => {
+    const catalog = await (await fetch('./data/catalog.json')).json();
+    const session = window.pveNatureUi.getSession();
+    const spirit = catalog.spirits.find(row => row.name === name);
+    const profile = session.profiles.find(row => row.spiritId === spirit.id);
+    session.activeProfileId = profile.id;
+    session.targetId = catalog.spirits.find(row => row.name === '深蓝鲸').id;
+    session.level = 43;
+    Object.assign(profile, { awakening: 5, level: 60, panelSource: 'manual', panel });
+    profile.preview = { speciesId: spirit.id, skillIds: moves.map(name => catalog.skills.find(row => row.name === name).id),
+      diceId: 'game-dice-effect-1', trait: { stacks: 0 }, observed: {}, skillOverrides: {},
+      observedTargetId: session.targetId, observedLevel: 43 };
+    session.preview = { targetId: session.targetId, level: 43, shiny: false, diceId: 'game-dice-effect-8',
+      incomingSkillIds: [], incomingOverridesList: [], incomingDamages: [] };
+    window.pveNatureUi.setSession(session);
+  }, { name, moves, panel });
+  const damages = () => page.evaluate(() => window.pveNatureUi.getPreview().outgoing.filter(row => row?.skillId)
+    .map(row => row.predictions.find(p => p.upStat === 'physicalAttack' && p.downStat === 'speed').damage));
+  await configure('罗隐', ['地刺','火焰切割','彼岸之手'],
+    { hp:403, physicalAttack:312, magicalAttack:136, physicalDefense:183, magicalDefense:137, speed:176 });
+  expect(await damages()).toEqual([294,117,491]);
+  await expect(page.locator('.coefficient-details')).toContainText('43级（物防不变）');
+  await page.reload();
+  await expect(page.locator('#load-own-preset')).toBeEnabled();
+  expect(await damages()).toEqual([294,117,491]);
+  await configure('迪莫', ['光球','棘突','热砂'],
+    { hp:425, physicalAttack:138, magicalAttack:181, physicalDefense:175, magicalDefense:175, speed:223 });
+  expect(await damages()).toEqual([136,308,68]);
+  await expect(page.locator('.coefficient-details')).toContainText('41级（魔防不变）；43级（魔防不变）');
+  await expect(page.locator('.coefficient-details')).not.toContainText('42级（魔防');
+  await page.locator('#preview-observed-0').fill('136');
+  await page.locator('#preview-observed-0').press('Tab');
+  await page.locator('#preview-remaining-0').fill('74');
+  await page.locator('#preview-remaining-0').press('Tab');
+  await expect(page.locator('#preview-verdict')).toContainText('吻合');
+  await page.getByRole('button', { name: '增加层数', exact: true }).click();
+  expect((await damages())[2]).toBe(80);
+  await expect(page.locator('#preview-cells-2 .dmg')).toContainText(['80']);
+  expect(await page.evaluate(() => window.pveNatureUi.getPreview().outgoing[2].displayedPower)).toBe(104);
+  await page.reload();
+  await expect(page.locator('#own-trait-stacks')).toHaveValue('1');
+  expect((await damages())[2]).toBe(80);
+});
