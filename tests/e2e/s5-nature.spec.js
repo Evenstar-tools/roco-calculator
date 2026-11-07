@@ -567,7 +567,7 @@ test("S5 nature level evidence does not confirm a fixed level or a single matchi
   await page.locator('#preview-observed-0').fill(damage);
   await page.locator('#preview-observed-0').press('Tab');
   await expect(page.locator('.verdict-level')).not.toContainText('✓');
-  await expect(page.locator('#preview-comparison')).toContainText('经验模型');
+  await expect(page.locator('#preview-comparison')).toContainText('我方 1/1 招吻合');
 });
 
 test("S5 nature incoming damage above own HP still identifies unchanged magical attack", async ({ page }) => {
@@ -601,7 +601,7 @@ test("S5 nature incoming damage above own HP still identifies unchanged magical 
   const verdict = page.locator('#preview-verdict');
   await expect(verdict.locator('.verdict-big')).toHaveText(/^\d+ 个模型候选$/);
   await expect(verdict.locator('[data-stat="magicalAttack"] b')).toHaveText('不变');
-  await expect(verdict.locator('.evidence')).toContainText('升龙咆哮 掉血 660');
+  await expect(verdict.locator('.evidence')).toContainText('升龙咆哮 总伤 660');
   await page.reload();
   await expect(damage).toHaveValue('660');
   await expect(verdict.locator('[data-stat="magicalAttack"] b')).toHaveText('不变');
@@ -841,4 +841,63 @@ test('S5 nature first action survives reload and manual power reset without doub
   expect(await hit()).toBe(29);
   await page.locator(`${prefix}-firstAction`).uncheck();
   expect(await hit()).toBe(19);
+});
+
+
+test("S5 nature separates HP evidence and exact per-hit observations without dropping conflicts", async ({ page }) => {
+  await page.goto(toolPath);
+  await page.waitForFunction(() => Boolean(window.pveNatureUi));
+  await page.evaluate(async () => {
+    const catalog = await (await fetch('./data/catalog.json')).json();
+    const { calculateOwnPanel } = await import('./own-panel.mjs');
+    const session = window.pveNatureUi.getSession();
+    const own = catalog.spirits.find(s => s.name === '圣代甜甜（蓝莓抹茶口味）');
+    const target = catalog.spirits.find(s => s.name === '锤头鹳');
+    const skill = name => catalog.skills.find(s => s.name === name).id;
+    if (!own || !target) throw new Error('Screenshot species missing');
+    const p = session.profiles[0];
+    session.activeProfileId = p.id; session.targetId = target.id; session.level = 43;
+    p.spiritId = own.id; p.name = own.name; p.level = 60; p.awakening = 3;
+    p.natureId = catalog.natures.find(n => n.name === '踏实').id;
+    p.displayIvs = { hp: 60, physicalAttack: 0, magicalAttack: 60, physicalDefense: 60, magicalDefense: 0, speed: 0 };
+    p.panel = calculateOwnPanel({ raceStats: own.raceStats, level: 60, natureId: p.natureId, displayIvs: p.displayIvs }, catalog);
+    p.panelSource = 'pvp-five-star';
+    p.preview = { speciesId: own.id, skillIds: ['碎冰冰','寒潮','离子震荡','打喷嚏'].map(skill),
+      diceId: 'game-dice-effect-18', diceLast: 'game-dice-effect-18', trait: { stacks: 0, active: false },
+      observed: { 0: { damage: 311, remainingPercent: 27 } }, observedTargetId: target.id, observedLevel: 43 };
+    session.preview = { targetId: target.id, level: 43, diceId: 'game-dice-effect-4', diceLast: 'game-dice-effect-4',
+      incomingSkillIds: ['水花四溅','升龙咆哮'].map(skill), incomingDamages: [24, 7], incomingDefender: `${p.id}:${own.id}` };
+    localStorage.setItem('roco-pve-nature-manual-v1', JSON.stringify(session));
+    return session;
+  });
+  await page.reload();
+  await page.waitForFunction(() => Boolean(window.pveNatureUi));
+  const verdict = page.locator('#preview-verdict');
+  await expect(verdict.locator('.hp-comparison')).toContainText('421–426');
+  await expect(page.locator('#preview-comparison')).toContainText('敌方 1/2 招吻合');
+  await expect(verdict).toContainText('实测比最近值少 140');
+  await expect(page.locator('#preview-incoming-cells-0')).toContainText('6 × 4 段');
+  await expect(page.locator('#preview-incoming-unit-0')).toHaveValue('total');
+  await page.locator('#preview-incoming-unit-0').selectOption('perHit');
+  await page.locator('#preview-incoming-damage-0').fill('6');
+  await page.locator('#preview-incoming-damage-0').press('Tab');
+  await expect(page.locator('#preview-incoming-cells-0 .hit')).toHaveCount(2);
+  await expect(verdict).toContainText('单段 6 × 4 = 24');
+  await page.reload();
+  await expect(page.locator('#preview-incoming-unit-0')).toHaveValue('perHit');
+  await page.locator('#preview-incoming-damage-0').fill('7');
+  await page.locator('#preview-incoming-damage-0').press('Tab');
+  await expect(page.locator('#preview-incoming-cells-0 .hit')).toHaveCount(0);
+  await expect(verdict).toContainText('实测比最近值多 4');
+  await page.locator('#preview-incoming-damage-0').fill('-1');
+  await page.locator('#preview-incoming-damage-0').press('Tab');
+  await expect(verdict.locator('.verdict-big')).toHaveText('输入有误');
+  await expect(page.locator('#preview-incoming-cells-0 .hit')).toHaveCount(0);
+  await page.locator('#preview-incoming-damage-0').fill('6');
+  await page.locator('#preview-incoming-damage-0').press('Tab');
+  // Independent HP evidence remains usable without discarding a damage conflict.
+  await page.locator('#preview-remaining-0').fill('43');
+  await page.locator('#preview-remaining-0').press('Tab');
+  await expect(verdict.locator('[data-stat="hp"] b')).toHaveText('加');
+  await expect(verdict.locator('.verdict-big')).toHaveText('模型未吻合');
 });
