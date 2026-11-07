@@ -87,6 +87,10 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("message", (event) => {
+  if (event.data?.type === "ACTIVATE_S5_TOOL_CACHE_POLICY" && event.data?.policy === "network-first-v1") {
+    event.waitUntil(self.skipWaiting());
+    return;
+  }
   if (event.data?.type === "GET_S5_TOOL_CACHE_POLICY") {
     event.ports?.[0]?.postMessage({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v1", path: "/tools/s5-nature/" });
     return;

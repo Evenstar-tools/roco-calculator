@@ -9,9 +9,8 @@ export async function prepareToolWorker(serviceWorker = globalThis.navigator?.se
   const root = `${location.origin}/`;
   const retryError = () => new Error('缓存更新尚未完成，请刷新重试。');
   const deadline = new Promise((_, reject) => { timer = setTimeout(() => reject(retryError()), timeoutMs); });
-  const confirmController = async () => {
-    const controller = serviceWorker.controller;
-    if (finished || !controller) return false;
+  const confirmPolicy = async (worker, stillCurrent) => {
+    if (finished || !worker) return false;
     return new Promise(resolve => {
       const channel = new MessageChannel();
       let settled = false;
@@ -23,15 +22,19 @@ export async function prepareToolWorker(serviceWorker = globalThis.navigator?.se
         channel.port1.onmessage = null;
         channel.port1.close();
         channel.port2.close();
-        resolve(supported && serviceWorker.controller === controller && !finished);
+        resolve(supported && stillCurrent() && !finished);
       };
       cleanup.push(() => settle(false));
       responseTimer = setTimeout(() => settle(false), 400);
       channel.port1.onmessage = ({ data }) => settle(data?.type === 'S5_TOOL_CACHE_POLICY'
         && data?.policy === 'network-first-v1' && data?.path === '/tools/s5-nature/');
-      try { controller.postMessage({ type: 'GET_S5_TOOL_CACHE_POLICY' }, [channel.port2]); }
+      try { worker.postMessage({ type: 'GET_S5_TOOL_CACHE_POLICY' }, [channel.port2]); }
       catch { settle(false); }
     });
+  };
+  const confirmController = () => {
+    const controller = serviceWorker.controller;
+    return confirmPolicy(controller, () => serviceWorker.controller === controller);
   };
   const update = async () => {
     const existing = await serviceWorker.getRegistration(root);
@@ -54,7 +57,26 @@ export async function prepareToolWorker(serviceWorker = globalThis.navigator?.se
     try {
       const registration = await serviceWorker.register('/sw.js', { updateViaCache: 'none' });
       if (finished) throw retryError();
-      await registration.update();
+      const activateWaiting = async pending => {
+        if (!pending || pending.state !== 'installed') return;
+        if (await confirmPolicy(pending, () => registration.waiting === pending)) {
+          try { pending.postMessage({ type: 'ACTIVATE_S5_TOOL_CACHE_POLICY', policy: 'network-first-v1' }); }
+          catch { /* A superseded worker must still pass the controller check. */ }
+        }
+      };
+      const watched = new Set();
+      const watchInstallation = () => {
+        const pending = registration.waiting ?? registration.installing;
+        if (!pending || watched.has(pending)) return;
+        watched.add(pending);
+        const stateChanged = () => { void activateWaiting(pending); };
+        pending.addEventListener('statechange', stateChanged);
+        cleanup.push(() => pending.removeEventListener('statechange', stateChanged));
+        stateChanged();
+      };
+      registration.addEventListener('updatefound', watchInstallation);
+      cleanup.push(() => registration.removeEventListener('updatefound', watchInstallation));
+      watchInstallation();
     } catch {
       if (await confirmController()) return true;
       throw retryError();

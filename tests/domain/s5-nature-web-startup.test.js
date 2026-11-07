@@ -30,7 +30,7 @@ function harness() {
   const old = events({ scriptURL: `${location.origin}/sw.js`, state: 'activated' });
   const next = events({ scriptURL: `${location.origin}/sw.js`, state: 'installing' });
   old.postMessage = vi.fn((_, ports) => ports[0].postMessage({ type: 'S5_TOOL_CACHE_POLICY', policy: 'legacy' }));
-  next.postMessage = vi.fn((_, ports) => ports[0].postMessage({ type: 'S5_TOOL_CACHE_POLICY', policy: 'network-first-v1', path: '/tools/s5-nature/' }));
+  next.postMessage = vi.fn((_, ports) => ports?.[0]?.postMessage({ type: 'S5_TOOL_CACHE_POLICY', policy: 'network-first-v1', path: '/tools/s5-nature/' }));
   const registration = events({ scope: `${location.origin}/`, active: old, installing: null, waiting: null,
     update: vi.fn(async () => undefined) });
   const serviceWorker = events({ controller: old, getRegistration: vi.fn(async () => registration),
@@ -63,18 +63,15 @@ test('S5 HTML defers all tool CSS and the UI module until the worker gate finish
 
 test('an old controlling worker updates and takes over before tool CSS, data and UI load', async () => {
   const h = harness();
-  const updated = deferred();
-  h.registration.update.mockImplementation(() => {
+  h.serviceWorker.register.mockImplementation(async () => {
     h.registration.installing = h.next;
-    h.registration.emit('updatefound');
-    return updated.promise;
+    return h.registration;
   });
   const started = startTool({ ...h, location });
-  await vi.waitFor(() => expect(h.registration.update).toHaveBeenCalledOnce());
+  await vi.waitFor(() => expect(h.next.addEventListener).toHaveBeenCalledOnce());
   expect(h.serviceWorker.register).toHaveBeenCalledWith('/sw.js', { updateViaCache: 'none' });
   expect(h.stylesheet.setAttribute).not.toHaveBeenCalled();
   expect(h.loadUI).not.toHaveBeenCalled();
-  updated.resolve();
   h.next.state = 'activated';
   h.registration.installing = null;
   h.registration.active = h.next;
@@ -87,6 +84,7 @@ test('an old controlling worker updates and takes over before tool CSS, data and
   expect(h.stylesheet.setAttribute).toHaveBeenCalledWith('href', './matchup.css');
   expect(h.stylesheet.setAttribute.mock.invocationCallOrder[0]).toBeLessThan(h.loadUI.mock.invocationCallOrder[0]);
   expect(h.loadUI).toHaveBeenCalledOnce();
+  expect(h.registration.update).not.toHaveBeenCalled();
   expect(h.status.remove).toHaveBeenCalledOnce();
   expect(h.document.body.style.removeProperty).toHaveBeenCalledWith('visibility');
   expectClean(h.serviceWorker, h.registration, h.next, h.stylesheet);
@@ -111,7 +109,7 @@ test.each(['no registration', 'no service worker', 'known current offline', 'alr
 
 test('an old unknown controller blocks startup when its upgrade fails offline', async () => {
   const h = harness();
-  h.registration.update.mockRejectedValue(new Error('offline'));
+  h.serviceWorker.register.mockRejectedValue(new Error('offline'));
   await expect(startTool({ ...h, location })).rejects.toThrow('缓存更新尚未完成');
   expect(h.loadUI).not.toHaveBeenCalled();
   expect(h.stylesheet.setAttribute).not.toHaveBeenCalled();
@@ -123,7 +121,7 @@ test('a stalled worker update has a bounded wait, cleans up, and cannot start th
   vi.useFakeTimers();
   const h = harness();
   const updated = deferred();
-  h.registration.update.mockImplementation(() => {
+  h.serviceWorker.register.mockImplementation(() => {
     h.registration.installing = h.next;
     h.registration.emit('updatefound');
     return updated.promise;
@@ -160,10 +158,11 @@ test('controller replacement without a matching capability response never permit
   vi.useFakeTimers();
   const h = harness();
   h.next.postMessage = h.old.postMessage;
-  h.registration.update.mockImplementation(async () => {
+  h.serviceWorker.register.mockImplementation(async () => {
     h.serviceWorker.controller = h.next;
     h.registration.active = h.next;
     h.serviceWorker.emit('controllerchange');
+    return h.registration;
   });
   const failed = expect(startTool({ ...h, location, timeoutMs: 100 })).rejects.toThrow('缓存更新尚未完成');
   await vi.advanceTimersByTimeAsync(100);
@@ -171,6 +170,35 @@ test('controller replacement without a matching capability response never permit
   expect(h.stylesheet.setAttribute).not.toHaveBeenCalled();
   expect(h.loadUI).not.toHaveBeenCalled();
   expectClean(h.serviceWorker, h.registration);
+});
+
+test('a verified waiting worker is asked to activate, but UI still waits for controller confirmation', async () => {
+  const h = harness();
+  h.next.state = 'installed';
+  h.registration.waiting = h.next;
+  const started = startTool({ ...h, location });
+  await vi.waitFor(() => expect(h.next.postMessage).toHaveBeenCalledWith({ type: 'ACTIVATE_S5_TOOL_CACHE_POLICY', policy: 'network-first-v1' }));
+  expect(h.stylesheet.setAttribute).not.toHaveBeenCalled();
+  expect(h.loadUI).not.toHaveBeenCalled();
+  h.registration.waiting = null;
+  h.registration.active = h.next;
+  h.serviceWorker.controller = h.next;
+  h.serviceWorker.emit('controllerchange');
+  await expect(started).resolves.toBe('started');
+  expectClean(h.serviceWorker, h.registration, h.next);
+});
+
+test('an unknown waiting worker is never asked to activate or allowed to serve the UI', async () => {
+  vi.useFakeTimers();
+  const h = harness();
+  h.next.state = 'installed';
+  h.next.postMessage = h.old.postMessage;
+  h.registration.waiting = h.next;
+  const failed = expect(startTool({ ...h, location, timeoutMs: 100 })).rejects.toThrow('缓存更新尚未完成');
+  await vi.advanceTimersByTimeAsync(100);
+  await failed;
+  expect(h.next.postMessage.mock.calls.some(([message]) => message.type === 'ACTIVATE_S5_TOOL_CACHE_POLICY')).toBe(false);
+  expect(h.loadUI).not.toHaveBeenCalled();
 });
 
 test.each(['https://calculator.test/tools/', 'https://calculator.test/other-sw.js'])(
