@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { createServer } from "vite";
 import { buildRuntimeSnapshot } from "./runtime-snapshot.mjs";
 import { packS5RuntimeRelations } from "../src/data/s5-runtime-relations.js";
+import { buildS5NatureUi } from "./build-s5-nature-ui.mjs";
 
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
 const readJson = async file => JSON.parse(await readFile(file, "utf8"));
@@ -140,6 +141,7 @@ export function s5BwikiRuntimePlugin() {
         const data = await readJson(file);
         await writeFile(file, JSON.stringify(name === "catalog" ? packS5RuntimeRelations(data) : data), "utf8");
       }
+      await buildS5NatureUi({ root: ROOT, outDir });
     },
   };
 }

@@ -113,6 +113,7 @@ export async function startTool({ serviceWorker = globalThis.navigator?.serviceW
     }
     const cleanup = [];
     let timer;
+    let result;
     try {
       const styles = [...document.querySelectorAll('link[data-tool-style]')].map(stylesheet => new Promise((resolve, reject) => {
         const loaded = () => resolve();
@@ -126,14 +127,16 @@ export async function startTool({ serviceWorker = globalThis.navigator?.serviceW
         stylesheet.setAttribute('href', stylesheet.getAttribute('data-tool-style'));
         stylesheet.removeAttribute('data-tool-style');
       }));
-      await Promise.race([Promise.all(styles), new Promise((_, reject) => {
+      const stylesReady = Promise.race([Promise.all(styles), new Promise((_, reject) => {
         timer = setTimeout(() => reject(new Error('Tool stylesheet timed out')), 5000);
       })]);
+      // The worker gate has passed. Fetch code/data alongside CSS, but reveal
+      // the form only once both its styles and initialization have completed.
+      [result] = await Promise.all([loadUI(), stylesReady]);
     } finally {
       clearTimeout(timer);
       for (const dispose of cleanup) dispose();
     }
-    const result = await loadUI();
     document.getElementById('tool-startup-status')?.remove();
     document.body.style.removeProperty('visibility');
     return result;

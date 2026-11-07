@@ -1,4 +1,5 @@
 import { restoreS5RuntimeRelations } from "./vendor/s5-runtime-relations.js";
+import { loadToolData } from "./load-data.mjs";
 import { createMatchupUi, normalizeDiceSettings, validatePreviewSettings } from "./matchup-ui.mjs";
 import { solve, resolveObservationPower } from "./engine.mjs";
 import { calculateOwnPanel } from "./own-panel.mjs";
@@ -1388,21 +1389,9 @@ function attachEvents() {
 }
 
 try {
-  const response = await fetch("./data/catalog.json");
-  if (!response.ok) throw new Error("技能数据加载失败，请刷新页面重试。");
-  catalog = restoreS5RuntimeRelations(await response.json());
-  const fieldResponse = await fetch("./data/field-samples.json");
-  if (fieldResponse.ok) fieldData = await fieldResponse.json();
-  const diceResponse = await fetch("./data/dice.json");
-  if (!diceResponse.ok) throw new Error("骰子数据加载失败，请刷新页面重试。");
-  diceCatalog = await diceResponse.json();
-  if (!Array.isArray(diceCatalog?.dice) || !diceCatalog.dice.length) throw new Error("骰子数据不完整，请刷新页面重试。");
-  const traitResponse = await fetch("./data/traits.json");
-  if (traitResponse.ok) traitCatalog = await traitResponse.json();
-  try {
-    const presetResponse = await fetch("/data/presets/pvp-popular-configs.json");
-    if (presetResponse.ok) presetLibrary = await presetResponse.json();
-  } catch { /* Local CN and the two built-in presets remain available offline. */ }
+  const data = await loadToolData();
+  catalog = restoreS5RuntimeRelations(data.catalog);
+  ({ fieldData, diceCatalog, traitCatalog, presetLibrary } = data);
   skillMap = new Map(catalog.skills.map((skill) => [skill.id, skill]));
   spiritMap = new Map(catalog.spirits.map((spirit) => [spirit.id, spirit]));
   seasonGroups = Array.isArray(catalog.targetGroups)

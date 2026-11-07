@@ -227,12 +227,12 @@ test.each(['https://calculator.test/tools/', 'https://calculator.test/other-sw.j
     expect(h.serviceWorker.register).not.toHaveBeenCalled();
   });
 
-test('the UI stays hidden until its stylesheet loads', async () => {
+test('UI initialization runs alongside styles while the form stays hidden until both finish', async () => {
   const h = harness();
   h.stylesheet.setAttribute.mockImplementation(() => undefined);
   const started = startTool({ ...h, serviceWorker: null, location });
   await vi.waitFor(() => expect(h.stylesheet.setAttribute).toHaveBeenCalledOnce());
-  expect(h.loadUI).not.toHaveBeenCalled();
+  expect(h.loadUI).toHaveBeenCalledOnce();
   expect(h.document.body.style.removeProperty).not.toHaveBeenCalled();
   h.stylesheet.emit('load');
   await expect(started).resolves.toBe('started');
@@ -259,7 +259,7 @@ test('a stalled stylesheet becomes a visible failure and removes load listeners'
   await vi.advanceTimersByTimeAsync(5000);
   await failed;
   expect(h.status.textContent).toBe('加载失败，请刷新重试。');
-  expect(h.loadUI).not.toHaveBeenCalled();
+  expect(h.loadUI).toHaveBeenCalledOnce();
   expectClean(h.stylesheet);
   expect(vi.getTimerCount()).toBe(0);
 });
