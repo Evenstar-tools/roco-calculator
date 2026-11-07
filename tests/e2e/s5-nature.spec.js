@@ -930,7 +930,7 @@ test("S5 nature separates HP evidence and exact per-hit observations without dro
 });
 
 
-test('S5 nature whale dice calibration renders both defense scopes and Dimo trait timing', async ({ page }) => {
+test('S5 nature defense calibration renders stage-three rollout and Dimo trait timing', async ({ page }) => {
   await page.goto(toolPath);
   await expect(page.locator('#load-own-preset')).toBeEnabled();
   const configure = async (name, moves, panel) => page.evaluate(async ({ name, moves, panel }) => {
@@ -961,8 +961,7 @@ test('S5 nature whale dice calibration renders both defense scopes and Dimo trai
   await configure('迪莫', ['光球','棘突','热砂'],
     { hp:425, physicalAttack:138, magicalAttack:181, physicalDefense:175, magicalDefense:175, speed:223 });
   expect(await damages()).toEqual([136,308,68]);
-  await expect(page.locator('.coefficient-details')).toContainText('41级（魔防不变）；43级（魔防不变）');
-  await expect(page.locator('.coefficient-details')).not.toContainText('42级（魔防');
+  await expect(page.locator('.coefficient-details')).toContainText('41级（魔防不变）；42级（魔防不变）；43级（魔防不变）');
   await page.locator('#preview-observed-0').fill('136');
   await page.locator('#preview-observed-0').press('Tab');
   await page.locator('#preview-remaining-0').fill('74');
@@ -976,4 +975,32 @@ test('S5 nature whale dice calibration renders both defense scopes and Dimo trai
   await page.reload();
   await expect(page.locator('#own-trait-stacks')).toHaveValue('1');
   expect((await damages())[2]).toBe(80);
+
+  // The rollout must reach another species through the actual UI/session path.
+  await page.evaluate(async () => {
+    const catalog = await (await fetch('./data/catalog.json')).json();
+    const session = window.pveNatureUi.getSession();
+    const profile = session.profiles.find(row => row.id === session.activeProfileId);
+    session.targetId = catalog.spirits.find(row => row.name === '噼啪鸟').id;
+    session.level = 41;
+    profile.preview = { ...profile.preview, diceId: 'none', trait: { stacks: 0 }, observed: {}, observedRemaining: {},
+      skillIds: [catalog.skills.find(row => row.name === '热砂').id], skillOverrides: {},
+      observedTargetId: session.targetId, observedLevel: 41 };
+    session.preview = { targetId: session.targetId, level: 41, shiny: false, diceId: 'none',
+      incomingSkillIds: [], incomingOverridesList: [], incomingDamages: [] };
+    window.pveNatureUi.setSession(session);
+  });
+  const bird = await page.evaluate(() => window.pveNatureUi.getPreview().outgoing[0].predictions
+    .find(row => row.upStat === 'magicalDefense' && row.downStat === 'speed'));
+  expect(bird.damage).toBe(317);
+  expect(bird.defenderDefense).toBe(148);
+  await expect(page.locator('.coefficient-details')).toContainText('41级（加魔防）');
+  await page.locator('#preview-observed-0').fill('317');
+  await page.locator('#preview-observed-0').press('Tab');
+  await expect(page.locator('#preview-verdict')).toContainText('吻合');
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.reload();
+  await expect(page.locator('#preview-observed-0')).toHaveValue('317');
+  await expect(page.locator('#preview-verdict')).toContainText('吻合');
 });
