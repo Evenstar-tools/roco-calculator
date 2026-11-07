@@ -419,10 +419,11 @@
     </main>
     <script type="module">
       try {
-        const { startTool } = await import('./web-startup.mjs');
+        const { startTool } = await import('./web-startup.mjs?sw-policy=3');
         await startTool();
-      } catch {
-        document.getElementById('tool-startup-status').textContent = '加载失败，请刷新重试。';
+      } catch (error) {
+        document.getElementById('tool-startup-status').textContent = error.message === '缓存更新尚未完成，请刷新重试。'
+          ? error.message : '加载失败，请刷新重试。';
       }
     </script>
   </body>

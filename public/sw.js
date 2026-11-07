@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.3.17-20261106-compact-values";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.17-20261107-v3-completion-r3";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 const APP_SHELL = [
   "/manifest.webmanifest",
@@ -87,6 +87,10 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("message", (event) => {
+  if (event.data?.type === "GET_S5_TOOL_CACHE_POLICY") {
+    event.ports?.[0]?.postMessage({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v1", path: "/tools/s5-nature/" });
+    return;
+  }
   if (event.data?.type !== "CACHE_VISITED_ASSETS" || !Array.isArray(event.data.urls)) return;
   const urls = [...new Set(event.data.urls.flatMap((value) => {
     if (typeof value !== "string") return [];
@@ -142,9 +146,9 @@ async function cacheFirst(request) {
   return refreshCache(cache, request);
 }
 
-async function refreshCache(cache, request) {
+async function refreshCache(cache, request, fetchOptions) {
   try {
-    const response = await fetch(request);
+    const response = await (fetchOptions ? fetch(request, fetchOptions) : fetch(request));
     if (response.ok) {
       try {
         await cache.put(request, response.clone());
@@ -179,9 +183,9 @@ async function staleWhileRevalidate(event, request, fallbackRequest = request) {
   return (await refresh) ?? cache.match(fallbackRequest);
 }
 
-async function networkFirst(request, fallbackRequests) {
+async function networkFirst(request, fallbackRequests, fetchOptions) {
   const cache = await caches.open(CACHE_NAME);
-  const response = (await refreshCache(cache, request)) ?? (await cache.match(request));
+  const response = (await refreshCache(cache, request, fetchOptions)) ?? (await cache.match(request));
   if (response) return response;
   for (const fallback of fallbackRequests) {
     const cached = await cache.match(fallback);
@@ -197,6 +201,14 @@ self.addEventListener("fetch", (event) => {
 
   if (url.pathname.startsWith("/api/")) {
     event.respondWith(fetch(event.request, { cache: "no-store" }));
+    return;
+  }
+
+  // S5 has unhashed modules and data: revalidate online, reuse the exact URL offline.
+  if (url.pathname === "/tools/s5-nature" || url.pathname.startsWith("/tools/s5-nature/")) {
+    event.respondWith(networkFirst(event.request, [], { cache: "no-cache" }).then(
+      response => response ?? Response.error(),
+    ));
     return;
   }
 

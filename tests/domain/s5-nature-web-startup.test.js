@@ -1,8 +1,14 @@
 import { readFileSync } from 'node:fs';
-import { afterEach, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { prepareToolWorker, startTool } from '../../public/tools/s5-nature/web-startup.mjs';
 
 const location = { protocol: 'https:', origin: 'https://calculator.test' };
+beforeEach(() => vi.stubGlobal('MessageChannel', class {
+  constructor() {
+    this.port1 = { onmessage: null, close: vi.fn() };
+    this.port2 = { close: vi.fn(), postMessage: data => queueMicrotask(() => this.port1.onmessage?.({ data })) };
+  }
+}));
 const deferred = () => {
   let resolve;
   let reject;
@@ -23,6 +29,8 @@ function events(properties = {}) {
 function harness() {
   const old = events({ scriptURL: `${location.origin}/sw.js`, state: 'activated' });
   const next = events({ scriptURL: `${location.origin}/sw.js`, state: 'installing' });
+  old.postMessage = vi.fn((_, ports) => ports[0].postMessage({ type: 'S5_TOOL_CACHE_POLICY', policy: 'legacy' }));
+  next.postMessage = vi.fn((_, ports) => ports[0].postMessage({ type: 'S5_TOOL_CACHE_POLICY', policy: 'network-first-v1', path: '/tools/s5-nature/' }));
   const registration = events({ scope: `${location.origin}/`, active: old, installing: null, waiting: null,
     update: vi.fn(async () => undefined) });
   const serviceWorker = events({ controller: old, getRegistration: vi.fn(async () => registration),
@@ -40,12 +48,12 @@ function expectClean(...targets) {
     expect([...target.listeners.values()].every(listeners => listeners.size === 0)).toBe(true);
   }
 }
-afterEach(() => vi.useRealTimers());
+afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 
 test('S5 HTML defers all tool CSS and the UI module until the worker gate finishes', () => {
   const html = readFileSync('public/tools/s5-nature/index.html', 'utf8');
   expect(html).not.toMatch(/<script[^>]+src=["']\.\/ui\.mjs/);
-  expect(html).toContain("await import('./web-startup.mjs')");
+  expect(html).toContain("await import('./web-startup.mjs?sw-policy=3')");
   expect(html).toContain('await startTool()');
   expect(html.match(/data-tool-style=/g)).toHaveLength(4);
   expect(html).not.toMatch(/<link\b[^>]*rel="stylesheet"[^>]*\shref=/);
@@ -84,12 +92,16 @@ test('an old controlling worker updates and takes over before tool CSS, data and
   expectClean(h.serviceWorker, h.registration, h.next, h.stylesheet);
 });
 
-test.each(['no registration', 'no service worker', 'offline', 'already current'])(
+test.each(['no registration', 'no service worker', 'known current offline', 'already current'])(
   '%s starts the tool without waiting for a controller change or installing a new cache', async mode => {
     const h = harness();
     if (mode === 'no registration') h.serviceWorker.getRegistration.mockResolvedValue(undefined);
     if (mode === 'no service worker') h.serviceWorker = null;
-    if (mode === 'offline') h.registration.update.mockRejectedValue(new Error('offline'));
+    if (mode === 'known current offline' || mode === 'already current') {
+      h.registration.active = h.next;
+      h.serviceWorker.controller = h.next;
+      h.registration.update.mockRejectedValue(new Error('offline'));
+    }
     await expect(startTool({ ...h, location })).resolves.toBe('started');
     expect(h.loadUI).toHaveBeenCalledOnce();
     expect(h.stylesheet.setAttribute).toHaveBeenCalledOnce();
@@ -97,17 +109,13 @@ test.each(['no registration', 'no service worker', 'offline', 'already current']
     expectClean(h.registration, ...(h.serviceWorker ? [h.serviceWorker] : []));
   });
 
-test('an installation that becomes redundant falls back and cleans every listener', async () => {
+test('an old unknown controller blocks startup when its upgrade fails offline', async () => {
   const h = harness();
-  h.registration.update.mockImplementation(async () => {
-    h.registration.installing = h.next;
-    h.registration.emit('updatefound');
-  });
-  const started = startTool({ ...h, location });
-  await vi.waitFor(() => expect(h.next.addEventListener).toHaveBeenCalledOnce());
-  h.next.state = 'redundant';
-  h.next.emit('statechange');
-  await expect(started).resolves.toBe('started');
+  h.registration.update.mockRejectedValue(new Error('offline'));
+  await expect(startTool({ ...h, location })).rejects.toThrow('缓存更新尚未完成');
+  expect(h.loadUI).not.toHaveBeenCalled();
+  expect(h.stylesheet.setAttribute).not.toHaveBeenCalled();
+  expect(h.status.textContent).toBe('缓存更新尚未完成，请刷新重试。');
   expectClean(h.serviceWorker, h.registration, h.next);
 });
 
@@ -120,17 +128,18 @@ test('a stalled worker update has a bounded wait, cleans up, and cannot start th
     h.registration.emit('updatefound');
     return updated.promise;
   });
-  const started = startTool({ ...h, location, timeoutMs: 100 });
+  const failed = expect(startTool({ ...h, location, timeoutMs: 100 })).rejects.toThrow('缓存更新尚未完成');
   await vi.advanceTimersByTimeAsync(99);
   expect(h.loadUI).not.toHaveBeenCalled();
   await vi.advanceTimersByTimeAsync(1);
-  await expect(started).resolves.toBe('started');
+  await failed;
+  expect(h.stylesheet.setAttribute).not.toHaveBeenCalled();
   expectClean(h.serviceWorker, h.registration, h.next);
   h.serviceWorker.controller = h.next;
   h.serviceWorker.emit('controllerchange');
   updated.resolve();
   await Promise.resolve();
-  expect(h.loadUI).toHaveBeenCalledOnce();
+  expect(h.loadUI).not.toHaveBeenCalled();
   expect(vi.getTimerCount()).toBe(0);
 });
 
@@ -139,12 +148,29 @@ test('a delayed registration lookup cannot register a worker after startup timed
   const h = harness();
   const lookup = deferred();
   h.serviceWorker.getRegistration.mockReturnValue(lookup.promise);
-  const prepared = prepareToolWorker(h.serviceWorker, location, 100);
+  const failed = expect(prepareToolWorker(h.serviceWorker, location, 100)).rejects.toThrow('缓存更新尚未完成');
   await vi.advanceTimersByTimeAsync(100);
-  await expect(prepared).resolves.toBe(false);
+  await failed;
   lookup.resolve(h.registration);
   await Promise.resolve();
   expect(h.serviceWorker.register).not.toHaveBeenCalled();
+});
+
+test('controller replacement without a matching capability response never permits startup', async () => {
+  vi.useFakeTimers();
+  const h = harness();
+  h.next.postMessage = h.old.postMessage;
+  h.registration.update.mockImplementation(async () => {
+    h.serviceWorker.controller = h.next;
+    h.registration.active = h.next;
+    h.serviceWorker.emit('controllerchange');
+  });
+  const failed = expect(startTool({ ...h, location, timeoutMs: 100 })).rejects.toThrow('缓存更新尚未完成');
+  await vi.advanceTimersByTimeAsync(100);
+  await failed;
+  expect(h.stylesheet.setAttribute).not.toHaveBeenCalled();
+  expect(h.loadUI).not.toHaveBeenCalled();
+  expectClean(h.serviceWorker, h.registration);
 });
 
 test.each(['https://calculator.test/tools/', 'https://calculator.test/other-sw.js'])(
