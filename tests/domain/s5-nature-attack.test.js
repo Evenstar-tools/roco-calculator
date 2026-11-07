@@ -279,3 +279,66 @@ test('changing target attack races leaves outgoing damage, selected-form HP, def
   assert.deepEqual(replay.targetHpByNature, plain.targetHpByNature);
   assert.deepEqual(replay.ownPanel, plain.ownPanel);
 });
+
+
+test('raising own stars cannot increase incoming damage at fixed panels and conditions', () => {
+  // Regression: old 7->8-star branch raised the same whale hit222->266.
+  // This locks model consistency, not the empirical accuracy of unmeasured stars.
+  for (const [name, move] of [['深蓝鲸', '气泡'], ['蟹蟹椰', '针刺射击']]) {
+    for (const level of [41, 42, 43]) {
+      let previous;
+      for (let awakening = 0; awakening <= 5; awakening++) {
+        const input = inputFor(name, level);
+        input.profile.awakening = awakening;
+        input.profile.panel.magicalDefense = 137;
+        input.incomingSkillId = skill(move).id;
+        const entry = previewMatchup(input, catalog, dice).incoming;
+        assert.equal(entry.status, 'estimated', entry.reason);
+        if (previous) entry.predictions.forEach((row, index) => {
+          assert(row.damage <= previous[index].damage,
+            `${name}/${move}/${level}/${row.natureName}: ${awakening + 4}->${awakening + 5} stars ${previous[index].damage}->${row.damage}`);
+        });
+        previous = entry.predictions;
+      }
+    }
+  }
+});
+
+test('type correction stays monotone on both axes without changing neutral immunity or outgoing anchors', () => {
+  for (const base of [.25, .5, 1.5, 2, 3]) {
+    for (let fixed = 0; fixed <= 5; fixed++) {
+      for (let step = 1; step <= 5; step++) {
+        assert(resolveAwakeningType(base, fixed, step).multiplier <= resolveAwakeningType(base, fixed, step - 1).multiplier,
+          `dulling: base${base}, attacker${fixed}, defender${step - 1}->${step}`);
+        assert(resolveAwakeningType(base, step, fixed).multiplier >= resolveAwakeningType(base, step - 1, fixed).multiplier,
+          `polarization: base${base}, attacker${step - 1}->${step}, defender${fixed}`);
+      }
+    }
+  }
+  for (let stars = 0; stars <= 5; stars++) {
+    for (const base of [0, 1]) {
+      assert.equal(resolveAwakeningType(base, stars, 0).multiplier, base);
+      assert.equal(resolveAwakeningType(base, 0, stars).multiplier, base);
+    }
+    for (const base of [.25, .5, 1.5, 2, 3]) {
+      assert.equal(resolveAwakeningType(base, stars, stars).multiplier, base);
+      assert.equal(resolveAwakeningType(base, stars, 0).correctionMultiplier, Math.min(1.8, 1 + stars * .45));
+    }
+  }
+});
+
+test('dulling continuity keeps the266 anchor and consistent auto displayed and legacy-final power', () => {
+  const input = inputFor('深蓝鲸', 42);
+  input.profile.panel.magicalDefense = 137;
+  input.incomingSkillId = skill('气泡').id;
+  for (let awakening = 0; awakening <= 5; awakening++) {
+    input.profile.awakening = awakening;
+    const automatic = previewMatchup(input, catalog, dice).incoming;
+    const manual = previewMatchup({ ...input, incomingOverrides: { displayedPower: 250 } }, catalog, dice).incoming;
+    assert.deepEqual(manual.predictions.map(row => row.damage), automatic.predictions.map(row => row.damage));
+    if (awakening >= 3) assert.equal(automatic.predictions.find(row => row.natureId === natureFor('magicalAttack', 'up').id).damage, 266);
+    const final = previewMatchup({ ...input, incomingOverrides: { effectivePower: 180 } }, catalog, dice).incoming;
+    assert.equal(final.effectivePower, 180);
+    assert.equal(final.predictions.find(row => row.natureId === natureFor('magicalAttack', 'up').id).damage, 266);
+  }
+});
