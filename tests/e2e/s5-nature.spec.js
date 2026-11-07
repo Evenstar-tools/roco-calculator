@@ -6,6 +6,58 @@ import { resetUiuxStorage, waitForAppReady } from "./helpers/uiux-helpers.js";
 
 const toolPath = "/tools/s5-nature/index.html";
 
+test('S5 nature searches all ten battlepass initial forms in the default and dedicated filters', async ({ page }) => {
+  test.setTimeout(60000);
+  const names = ['绒绒', '犀角鸟', '小雪人', '爆焰仔', '咬咬小子', '足尖元件', '热团团', '新月鹭', '地银链', '沉金兽'];
+  await page.goto(toolPath);
+  await expect(page.locator('#target-filter')).toHaveValue('initial');
+  const source = await page.evaluate(async () => {
+    const catalog = await (await fetch('./data/catalog.json')).json();
+    const seasons = await (await fetch('./data/season-targets.json')).json();
+    const group = catalog.targetGroups.find(row => row.id === 'battlepass');
+    return { group, fallback: seasons.groups.find(row => row.id === 'battlepass'),
+      spirits: catalog.spirits.filter(row => group.spiritIds.includes(row.id)) };
+  });
+  expect(source.group).toEqual(source.fallback);
+  expect(source.group.spiritIds).toHaveLength(10);
+  expect(new Set(source.group.spiritIds).size).toBe(10);
+  expect(source.group.families.map(row => row.name)).toEqual(names);
+  expect(source.spirits.every(row => row.stage === '一阶')).toBe(true);
+  expect(source.spirits.filter(row => row.wildStrengthStage === 2).map(row => row.name)).toEqual(['小雪人', '爆焰仔', '咬咬小子', '足尖元件']);
+  for (const name of names) {
+    await chooseTarget(page, name);
+    expect(await page.evaluate(() => window.pveNatureUi.getSession().targetId)).toBe(source.spirits.find(row => row.name === name).id);
+    await expect(page.locator('#target-hp-range')).toContainText('普通');
+  }
+  await page.locator('#target-filter').selectOption('battlepass');
+  const picker = page.getByRole('combobox', { name: '选择野生目标', exact: true });
+  await picker.click();
+  const options = page.locator('#target-picker-listbox [role="option"]');
+  await expect(options).toHaveCount(10);
+  expect(await options.locator('strong').allTextContents()).toEqual(expect.arrayContaining(names));
+  await expect(options.first()).toContainText('通行证');
+  await picker.fill('沉金');
+  await expect(options).toHaveCount(1);
+  await expect(options).toContainText('沉金兽');
+  await picker.press('Escape');
+  for (const [filter, target] of [['S2', '恶魔叮'], ['S5', '深蓝鲸']]) {
+    await page.locator('#target-filter').selectOption(filter);
+    await chooseTarget(page, target);
+  }
+  await page.locator('#target-filter').selectOption('battlepass');
+  await chooseTarget(page, '沉金兽');
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await picker.click();
+    await expect(options).toHaveCount(10);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: `output/playwright/s5-battlepass-targets-${width}.png` });
+    await picker.press('Escape');
+  }
+});
+
+
+
 for (const activation of ['automatic', 'waiting']) test(`S5 nature delays old cached modules until a real worker confirms its policy and retries after a slow install (${activation})`, async ({ page, context }) => {
   const publicRoot = path.resolve(process.env.S5_UPGRADE_PUBLIC_ROOT || 'dist/client');
   const currentWorker = readFileSync('public/sw.js', 'utf8');
@@ -255,6 +307,7 @@ async function setDice(page, side, id) {
 
 async function chooseTarget(page, name) {
   const picker = page.getByRole("combobox", { name: "选择野生目标", exact: true });
+  await picker.click();
   await picker.fill(name);
   await page.getByRole("option").getByText(name, { exact: true }).click();
   await expect(picker).toHaveValue(name);
