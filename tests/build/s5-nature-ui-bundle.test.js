@@ -24,13 +24,20 @@ async function output(startup) {
   return directory;
 }
 
-test("production tool loads one minified module while preserving its worker gate and readable files", async () => {
+test("production tool loads one bundle and minifies compatibility modules without changing exports or sources", async () => {
   const sourceStartup = path.join(root, "public/tools/s5-nature/web-startup.mjs");
   const startup = await readFile(sourceStartup, "utf8");
+  const sourceUi = path.join(root, "public/tools/s5-nature/ui.mjs");
+  const ui = await readFile(sourceUi, "utf8");
   const outDir = await output(startup);
   const toolDir = path.join(outDir, "tools/s5-nature");
-  const legacy = "// legacy UI retained for existing references\n";
+  const legacy = "// legacy UI retained for existing references\nexport const compatibilityValue = 21 + 21;\n";
   await writeFile(path.join(toolDir, "ui.mjs"), legacy, "utf8");
+  await mkdir(path.join(toolDir, "vendor"));
+  const vendor = "// retain the exported function and its calculation\nexport function double(value) { return value * 2; }\n";
+  for (const name of ["relations.js", "damage.mjs"]) await writeFile(path.join(toolDir, "vendor", name), vendor, "utf8");
+  await mkdir(path.join(toolDir, "data"));
+  await writeFile(path.join(toolDir, "data", "evidence.json"), '{ "evidence": true }\n', "utf8");
   await writeFile(path.join(outDir, "index.html"), "calculator shell", "utf8");
 
   const bundleFile = await buildS5NatureUi({ root, outDir });
@@ -45,9 +52,18 @@ test("production tool loads one minified module while preserving its worker gate
   expect(await readFile(path.join(toolDir, "web-startup.mjs"), "utf8"))
     .toBe(startup.replace(/import\((['"])\.\/ui\.mjs\1\)/u, `import(${JSON.stringify(`./${bundleName}`)})`));
   expect(await readFile(sourceStartup, "utf8")).toBe(startup);
-  expect(await readFile(path.join(toolDir, "ui.mjs"), "utf8")).toBe(legacy);
+  expect(await readFile(sourceUi, "utf8")).toBe(ui);
+  const compressedLegacy = await readFile(path.join(toolDir, "ui.mjs"), "utf8");
+  expect(compressedLegacy.length).toBeLessThan(legacy.length);
+  expect((await import(`data:text/javascript,${encodeURIComponent(compressedLegacy)}`)).compatibilityValue).toBe(42);
+  for (const name of ["relations.js", "damage.mjs"]) {
+    const compressed = await readFile(path.join(toolDir, "vendor", name), "utf8");
+    expect(compressed.length).toBeLessThan(vendor.length);
+    expect((await import(`data:text/javascript,${encodeURIComponent(compressed)}`)).double(21)).toBe(42);
+  }
+  expect(await readFile(path.join(toolDir, "data", "evidence.json"), "utf8")).toBe('{ "evidence": true }\n');
   expect(await readFile(path.join(outDir, "index.html"), "utf8")).toBe("calculator shell");
-  expect((await readdir(toolDir)).sort()).toEqual([bundleName, "ui.mjs", "web-startup.mjs"].sort());
+  expect((await readdir(toolDir)).sort()).toEqual([bundleName, "data", "ui.mjs", "vendor", "web-startup.mjs"].sort());
 });
 
 test("outputs without the CN tool are untouched", async () => {

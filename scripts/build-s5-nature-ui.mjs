@@ -1,9 +1,24 @@
 import { existsSync } from "node:fs";
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { minify } from "terser";
 import { build } from "vite";
 
-/** Bundle only the deployed CN tool; its readable modules and startup gate stay intact. */
+async function minifyCompatibilityModules(toolDir) {
+  for (const directory of [toolDir, path.join(toolDir, "vendor")]) {
+    if (!existsSync(directory)) continue;
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      if (!entry.isFile() || entry.name === "web-startup.mjs" ||
+          !(entry.name.endsWith(".mjs") || (directory !== toolDir && entry.name.endsWith(".js")))) continue;
+      const filename = path.join(directory, entry.name);
+      const result = await minify(await readFile(filename, "utf8"), { module: true, ecma: 2022 });
+      if (typeof result.code !== "string") throw new Error(`S5 module minification failed: ${entry.name}`);
+      await writeFile(filename, result.code, "utf8");
+    }
+  }
+}
+
+/** Bundle the deployed CN tool while preserving its module paths, exports and startup gate. */
 export async function buildS5NatureUi({ root, outDir }) {
   const toolDir = path.join(outDir, "tools/s5-nature");
   const startupFile = path.join(toolDir, "web-startup.mjs");
@@ -42,6 +57,7 @@ export async function buildS5NatureUi({ root, outDir }) {
   const bundleName = entries[0].fileName;
   const bundleFile = path.join(toolDir, bundleName);
   if (!existsSync(bundleFile)) throw new Error("S5 UI bundle was not generated");
+  await minifyCompatibilityModules(toolDir);
   await writeFile(startupFile, startup.replace(uiImport, () => `import(${JSON.stringify(`./${bundleName}`)})`), "utf8");
   return bundleFile;
 }
