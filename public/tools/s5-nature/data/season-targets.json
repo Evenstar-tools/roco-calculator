@@ -1795,13 +1795,113 @@
       ],
       "evidenceStatus": "candidate-pending-complete-game-pool-verification",
       "sourceNote": "S5名单为助手配置与已核赛季资料交叉候选，尚缺最新完整异色池验证。这里优先筛选对应普通形态，不改变外观。"
+    },
+    {
+      "id": "battlepass",
+      "label": "S1–S5 通行证初始形态",
+      "shortLabel": "通行证",
+      "spiritIds": [
+        "spirit_c48b78143a3d44b3",
+        "spirit_dffa44a6fdca4257",
+        "spirit_cd1a308eb48c6ee7",
+        "spirit_91b6b1d0ba27d34f",
+        "spirit_7852c4374166c897",
+        "spirit_87ae52b86587400d",
+        "spirit_62628958b4cc94fd",
+        "spirit_44fd7ec28737bb00",
+        "spirit_preview_s5_silver-chain",
+        "spirit_preview_s5_sinking-gold-beast"
+      ],
+      "families": [
+        {
+          "name": "绒绒",
+          "season": "S1",
+          "nativeFamilyRootId": 3244,
+          "spiritIds": [
+            "spirit_c48b78143a3d44b3"
+          ]
+        },
+        {
+          "name": "犀角鸟",
+          "season": "S1",
+          "nativeFamilyRootId": 3309,
+          "spiritIds": [
+            "spirit_dffa44a6fdca4257"
+          ]
+        },
+        {
+          "name": "小雪人",
+          "season": "S2",
+          "nativeFamilyRootId": 3531,
+          "spiritIds": [
+            "spirit_cd1a308eb48c6ee7"
+          ]
+        },
+        {
+          "name": "爆焰仔",
+          "season": "S2",
+          "nativeFamilyRootId": 3572,
+          "spiritIds": [
+            "spirit_91b6b1d0ba27d34f"
+          ]
+        },
+        {
+          "name": "咬咬小子",
+          "season": "S3",
+          "nativeFamilyRootId": 3710,
+          "spiritIds": [
+            "spirit_7852c4374166c897"
+          ]
+        },
+        {
+          "name": "足尖元件",
+          "season": "S3",
+          "nativeFamilyRootId": 3718,
+          "spiritIds": [
+            "spirit_87ae52b86587400d"
+          ]
+        },
+        {
+          "name": "热团团",
+          "season": "S4",
+          "nativeFamilyRootId": 3574,
+          "spiritIds": [
+            "spirit_62628958b4cc94fd"
+          ]
+        },
+        {
+          "name": "新月鹭",
+          "season": "S4",
+          "nativeFamilyRootId": 3764,
+          "spiritIds": [
+            "spirit_44fd7ec28737bb00"
+          ]
+        },
+        {
+          "name": "地银链",
+          "season": "S5",
+          "nativeFamilyRootId": 3799,
+          "spiritIds": [
+            "spirit_preview_s5_silver-chain"
+          ]
+        },
+        {
+          "name": "沉金兽",
+          "season": "S5",
+          "nativeFamilyRootId": 3802,
+          "spiritIds": [
+            "spirit_preview_s5_sinking-gold-beast"
+          ]
+        }
+      ],
+      "sourceNote": "S1–S5 每季两只通行证精灵，共 10 只初始形态。按通行证奖励与进化链对应，保留各精灵原有强度阶位。"
     }
   ],
   "sources": [
     {
       "id": "audited-local-family-list",
       "path": "D:/codex/worktrees/roco-plugin-web-release-20261105/output/local-package-lists-20261105/spirits/combined-local-spirit-lists.json",
-      "selection": "仅 encounter_families 中明确分类为 season_encounter_shiny 的S2/S5家族；不读取battlepass_families作为目标。"
+      "selection": "S2/S5 使用 encounter_families；全部赛季通行证使用 battlepass_families，每个家族只取初始形态。"
     },
     {
       "id": "s2-game-season-preview",
@@ -1814,6 +1914,11 @@
       "id": "calculator-id-and-member-types",
       "path": "D:/codex/worktrees/roco-plugin-web-release-20261105/dist/client/data/runtime.json",
       "scope": "ID与各成员属性沿用源文件calculator_matches；最终catalog引用须经回归检查，实际显示属性以最终catalog为准。"
+    },
+    {
+      "id": "battlepass-initial-forms",
+      "path": "D:/codex/worktrees/roco-plugin-web-release-20261105/output/local-package-lists-20261105/spirits/combined-local-spirit-lists.json",
+      "selection": "battlepass_families 的 family_root_id / family_root_name 与当前 catalog 对应；S1–S4 有 BATTLE_PASS_THEME_CONF 核对，S5 沿用已核奖励资料与本地进化链对应。"
     }
   ],
   "unresolved": [

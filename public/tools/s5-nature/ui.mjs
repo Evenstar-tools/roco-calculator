@@ -144,6 +144,12 @@ function groupIdsFor(spiritId) {
     .map((group) => group.id);
 }
 
+function groupLabelsFor(spiritId) {
+  return seasonGroups
+    .filter((group) => group.spiritIds?.includes(spiritId))
+    .map((group) => group.shortLabel ?? group.id);
+}
+
 function matchesSpirit(spirit, query) {
   const text = query
     .trim()
@@ -171,7 +177,7 @@ function matchesSpirit(spirit, query) {
 function spiritLabel(spirit) {
   const dex =
     spirit.dexNo == null ? "" : `#${String(spirit.dexNo).padStart(3, "0")} `;
-  const seasons = groupIdsFor(spirit.id);
+  const seasons = groupLabelsFor(spirit.id);
   return `${dex}${spirit.name}${spirit.types?.length ? ` · ${spirit.types.join("/")}` : ""}${seasons.length ? ` · ${seasons.join("/")}` : ""}${hasCompleteRaceStats(spirit) ? "" : " · 资料不足"}`;
 }
 
@@ -221,7 +227,7 @@ function renderTargetPicker() {
     ? seasonGroups
     : seasonGroups.filter((row) => row.id === targetFilter);
   $("target-catalog-note").textContent =
-    `${count} 项${outside ? " · 当前目标在筛选外" : ""}${targetFilter === "priority" ? " · S2 / S5 相关目标优先排列" : targetFilter === "all" ? " · 全目录" : targetFilter === "initial" ? " · S2 / S5 初始形态" : ` · ${group?.label ?? targetFilter}`}`;
+    `${count} 项${outside ? " · 当前目标在筛选外" : ""}${targetFilter === "priority" ? " · S2 / S5 与通行证目标优先排列" : targetFilter === "all" ? " · 全目录" : targetFilter === "initial" ? " · S2 / S5 与通行证初始形态" : ` · ${group?.label ?? targetFilter}`}`;
   $("season-source-details").hidden = !selectedGroups.length;
   $("season-source-notes").innerHTML = selectedGroups
     .map((row) => `<p>${escapeHtml(row.sourceNote ?? row.label)}</p>`)
@@ -397,7 +403,7 @@ function initializePickers() {
     rows: () => spiritRows("target-species"),
     image: (row) => row.imageUrl,
     describe: (row) =>
-      `${row.dexNo ? `#${row.dexNo} · ` : ""}${row.types.join(" / ")} · ${groupIdsFor(row.id).join(" / ")}${hasCompleteRaceStats(row) ? "" : " · 资料不足"}`,
+      `${row.dexNo ? `#${row.dexNo} · ` : ""}${row.types.join(" / ")} · ${groupLabelsFor(row.id).join(" / ")}${hasCompleteRaceStats(row) ? "" : " · 资料不足"}`,
   });
   pickers.skill = createPicker({
     anchor: "skill-picker",
