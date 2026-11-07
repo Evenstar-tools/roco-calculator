@@ -2,12 +2,13 @@ import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { previewMatchup } from '../../public/tools/s5-nature/matchup-preview.mjs';
-import { wildPanel, predictObservation } from '../../public/tools/s5-nature/engine.mjs';
+import { wildPanel, predictObservation, solve } from '../../public/tools/s5-nature/engine.mjs';
+import { restoreS5RuntimeRelations } from '../../public/tools/s5-nature/vendor/s5-runtime-relations.js';
 import { calculateWildAttack, WILD_ATTACK_MODEL } from '../../public/tools/s5-nature/wild-attack.mjs';
 import { resolveAwakeningType } from '../../public/tools/s5-nature/awakening.mjs';
 
 const read = name => JSON.parse(readFileSync(`public/tools/s5-nature/data/${name}.json`, 'utf8'));
-const catalog = read('catalog'), dice = read('dice'), mapping = read('wild-attack-races');
+const catalog = restoreS5RuntimeRelations(read('catalog')), dice = read('dice'), mapping = read('wild-attack-races');
 const fieldSamples = read('field-samples').entries;
 const species = name => catalog.spirits.find(row => row.name === name);
 const skill = name => catalog.skills.find(row => row.name === name);
@@ -45,12 +46,50 @@ test('whale author table replays all 30 readings automatically including conditi
     const row = entry.predictions.find(row => row.natureId === natureFor('magicalAttack', direction).id);
     assert.equal(row.damage, observed, `${level}/${direction}/${name}`);
     if (name === '甩水') assert.equal(entry.effectivePower, 37.5);
+    // Exercise the record solver too: preview alone used to hide seven blocked rows.
+    const result = solve({ targetId: input.targetId, level, profiles: [input.profile],
+      observations: [{ id: 'measured', direction: 'incoming', profileId: input.profile.id,
+        skillId: selected.id, damage: observed, context: 'clean', reduction: 1,
+        ...(name === '涌泉' ? { actualSkillCost: 6 } : {}) }] }, catalog);
+    assert.equal(result.observations[0].status, 'used', `${level}/${direction}/${name}`);
+    const bands = new Set(result.candidates.map(({ nature }) => nature.upStat === 'magicalAttack'
+      ? 'up' : nature.downStat === 'magicalAttack' ? 'down' : 'neutral'));
+    assert.deepEqual([...bands], [direction], `${level}/${direction}/${name}`);
+    assert.equal(result.candidatesEstimated, true);
     count++;
   }
   assert.equal(count, 30);
   assert.equal(WILD_ATTACK_MODEL.natureRounding, 'round-half-up');
   assert.equal(WILD_ATTACK_MODEL.originalGameFormulaRecovered, false);
   assert.deepEqual(catalog.meta.wildAttackModel, WILD_ATTACK_MODEL);
+});
+
+test('Spring records require the actual cost and use cost reduction before same-type damage', () => {
+  const input = inputFor('深蓝鲸', 42);
+  input.profile.spiritId = species('迪莫').id;
+  const session = { targetId: input.targetId, level: 42, profiles: [input.profile] };
+  const observation = { id: 'spring', direction: 'incoming', profileId: 'own',
+    skillId: skill('涌泉').id, context: 'clean', reduction: 1, damage: 128 };
+  const nature = natureFor('magicalAttack', 'neutral');
+  for (const [actualSkillCost, damage] of [[6, 128], [4, 156], [0, 214], [7, 128]]) {
+    const result = predictObservation(session, { ...observation, actualSkillCost, damage }, nature, catalog);
+    assert.equal(result.status, 'used');
+    assert.equal(result.damage, damage);
+    assert.equal(result.compatible, true);
+  }
+  for (const actualSkillCost of [undefined, null, -1, 1.5, '6', 21]) {
+    const result = predictObservation(session, { ...observation, actualSkillCost }, nature, catalog);
+    assert.equal(result.status, 'blocked');
+    assert.match(result.reason, /实际能耗/);
+  }
+  for (const override of [{ context: 'unknown' }, { hitCount: 2 }, { reduction: 0.8 }, { ownDefeated: true }]) {
+    assert.equal(predictObservation(session, { ...observation, actualSkillCost: 6, ...override }, nature, catalog).status, 'blocked');
+  }
+  for (const selected of [skill('砂糖弹球'), skill('天旋地转'), catalog.skills.find(row => !['physical', 'magical'].includes(row.category))]) {
+    assert(selected);
+    const result = predictObservation(session, { ...observation, skillId: selected.id }, nature, catalog);
+    assert.equal(result.status, 'blocked', selected.name);
+  }
 });
 
 test('five wing-dragon claw readings use selected-form stage2 attack including final rounding', () => {

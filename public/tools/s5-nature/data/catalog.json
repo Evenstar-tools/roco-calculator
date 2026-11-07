@@ -39982,8 +39982,8 @@
       "iconUrl": null,
       "basePower": 110,
       "description": "造成魔伤，每次使用后，本技能能耗永久-1。",
-      "supported": false,
-      "unsupportedReason": "含状态、条件、多段或其他机制，本版仅保存记录，暂不用于筛选。"
+      "supported": true,
+      "unsupportedReason": null
     },
     {
       "id": "skill_d0d442331827d39c",
@@ -40004,8 +40004,8 @@
       "iconUrl": null,
       "basePower": 150,
       "description": "造成魔伤，应对状态：本技能能耗永久-6。",
-      "supported": false,
-      "unsupportedReason": "含状态、条件、多段或其他机制，本版仅保存记录，暂不用于筛选。"
+      "supported": true,
+      "unsupportedReason": null
     },
     {
       "id": "skill_1502898d672522e3",
@@ -40191,8 +40191,12 @@
       "iconUrl": null,
       "basePower": 90,
       "description": "造成魔伤，本技能能耗每-1，威力+10。",
-      "supported": false,
-      "unsupportedReason": "含状态、条件、多段或其他机制，本版仅保存记录，暂不用于筛选。"
+      "supported": true,
+      "unsupportedReason": null,
+      "recordCostPower": {
+        "baseCost": 6,
+        "perCost": 10
+      }
     },
     {
       "id": "skill_d457bb1dce36b046",

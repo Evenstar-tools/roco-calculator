@@ -117,6 +117,15 @@ function observationError(obs) {
   return '';
 }
 
+export function resolveObservationPower(skill, obs) {
+  const rule = skill.recordCostPower;
+  if (!rule) return skill.basePower;
+  if (!integer(obs.actualSkillCost, 0, 20)) {
+    throw new RangeError(`请填写${skill.name}本次实际能耗（0至20的整数；未减费时为${rule.baseCost}）。`);
+  }
+  return skill.basePower + Math.max(0, rule.baseCost - obs.actualSkillCost) * rule.perCost;
+}
+
 function damageContext(prepared, obs) {
   if (obs.direction === 'hp') return {};
   const { session, catalog, target } = prepared;
@@ -145,6 +154,9 @@ function damageContext(prepared, obs) {
   if (!skill || skill.supported !== true || !['physical', 'magical'].includes(skill.category) || !isNumber(skill.basePower) || skill.basePower <= 0 || skill.basePower > 10000) {
     return { error: '该技能尚未纳入简单单击白名单，暂不参与反推。' };
   }
+  let basePower;
+  try { basePower = resolveObservationPower(skill, obs); }
+  catch (error) { return { error: error.message }; }
   if (obs.direction === 'outgoing' && target.wildDefenseRaceStats == null) return { error: missingWildRaceReason(target, 'defense') };
   if (obs.direction === 'incoming' && target.wildAttackRaceStats == null) return { error: missingWildRaceReason(target, 'attack') };
   if (obs.direction === 'incoming' && ![1, 2, 3].includes(target.wildStrengthStage)) return { error: '野怪强度阶段缺失或无效，双攻计算需要明确的1至3阶段。' };
@@ -166,7 +178,7 @@ function damageContext(prepared, obs) {
   const stab = attacker.types.includes(skill.type)
     ? getAwakeningBonuses(obs.direction === 'incoming' ? 0 : profile.awakening).sameTypeMultiplier
     : 1;
-  return { profile, skill, stab, traitWarnings };
+  return { profile, skill, basePower, stab, traitWarnings };
 }
 
 // Compare integer display intervals without floating-point tolerances.
@@ -206,7 +218,7 @@ function calculatePrediction(prepared, obs, nature, context, beforeStates) {
     damage = calculateDamage({
       attackerStat: incoming ? panel[attackStat] : context.profile.panel[attackStat],
       defenderDefense: incoming ? context.profile.panel[defenseStat] : panel[defenseStat],
-      displayedPower: context.skill.basePower * context.stab,
+      displayedPower: context.basePower * context.stab,
       level: incoming ? prepared.session.level : context.profile.level,
       damageReductionMultiplier: 1,
       hitCount: 1,
