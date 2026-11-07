@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { incomingSkillOptions, natureAxisState, observationMatch, readOutgoingObservations, skillPreviewNotices, splitNatureConditions, validatePreviewSettings } from '../../public/tools/s5-nature/matchup-ui.mjs';
+import { incomingSkillOptions, natureAxisState, observationDifference, observationMatch, readIncomingObservation, readOutgoingObservations, skillPreviewNotices, splitNatureConditions, validatePreviewSettings } from '../../public/tools/s5-nature/matchup-ui.mjs';
 
 const sessionWith = override => ({ profiles: [{ preview: { skillOverrides: { skill: override } } }],
   preview: { incomingOverridesList: [override] } });
@@ -253,4 +253,77 @@ test('enemy current-move options keep native skills first and retain recorded of
   const saved = { profiles: [], preview: { incomingSkillIds: [ghost.id, electric.id], incomingDamages: [37, 32] } };
   expect(() => validatePreviewSettings(saved)).not.toThrow();
   expect(JSON.parse(JSON.stringify(saved)).preview.incomingSkillIds.every(id => ids.includes(id))).toBe(true);
+});
+
+test('incoming observation keeps legacy values as total damage and converts explicit per-hit input', () => {
+  const row = { hitCount: 4 };
+  const legacy = readIncomingObservation({ incomingDamages: [24] }, 0, row);
+  expect(legacy).toMatchObject({ damage: 24 });
+  const total = readIncomingObservation({ incomingDamages: [24], incomingDamageUnits: ['total'] }, 0, row);
+  expect(total).toMatchObject({ damage: 24 });
+  const single = readIncomingObservation({ incomingDamages: [6], incomingDamageUnits: ['perHit'] }, 0, row);
+  expect(single).toMatchObject({ damage: 24, inputDamage: 6, unit: 'perHit' });
+  expect(observationMatch({ damage: 24 }, legacy)).toBe(true);
+  expect(observationMatch({ damage: 24 }, single)).toBe(true);
+  const wrongSingle = readIncomingObservation({ incomingDamages: [7], incomingDamageUnits: ['perHit'] }, 0, row);
+  expect(wrongSingle).toMatchObject({ damage: 28, inputDamage: 7, unit: 'perHit' });
+  expect(observationMatch({ damage: 24 }, wrongSingle)).toBe(false);
+});
+
+test('incoming observation reads the selected slot and preserves zero without creating absent observations', () => {
+  const encounter = { incomingDamages: [null, 6, 0], incomingDamageUnits: ['total', 'perHit', 'perHit'] };
+  expect(readIncomingObservation({}, 0, { hitCount: 4 })).toBeNull();
+  expect(readIncomingObservation(encounter, 0, { hitCount: 4 })).toBeNull();
+  expect(readIncomingObservation(encounter, 3, { hitCount: 4 })).toBeNull();
+  expect(readIncomingObservation(encounter, 1, { hitCount: 4 })).toMatchObject({ damage: 24, inputDamage: 6, unit: 'perHit' });
+  expect(readIncomingObservation(encounter, 2, { hitCount: 4 })).toMatchObject({ damage: 0 });
+  expect(readIncomingObservation({ incomingDamages: [1000000] }, 0, { hitCount: 4 })).toMatchObject({ damage: 1000000 });
+  expect(readIncomingObservation({ incomingDamages: [7], incomingDamageUnits: ['perHit'] }, 0, { hitCount: 1 }))
+    .toMatchObject({ damage: 7 });
+});
+
+test('invalid incoming observations remain visible validation failures rather than being ignored', () => {
+  for (const damage of [-1, .5, NaN, Infinity, 1000001, '6', '', false, {}]) {
+    const result = readIncomingObservation({ incomingDamages: [damage] }, 0, { hitCount: 4 });
+    expect(result).toEqual({ invalid: true });
+    expect(observationMatch({ damage: 24 }, result)).toBe(false);
+  }
+  for (const unit of ['single', '', null, false, 4, {}]) {
+    expect(readIncomingObservation({ incomingDamages: [6], incomingDamageUnits: [unit] }, 0, { hitCount: 4 }))
+      .toEqual({ invalid: true });
+  }
+  for (const hitCount of [undefined, null, 0, -1, 1.5, NaN, Infinity, '4']) {
+    expect(readIncomingObservation({ incomingDamages: [6], incomingDamageUnits: ['perHit'] }, 0, { hitCount }))
+      .toEqual({ invalid: true });
+  }
+});
+
+test('preview settings validate explicit incoming units while leaving legacy total-damage records compatible', () => {
+  for (const incomingDamageUnits of [undefined, [], ['total'], ['perHit'], ['total', 'perHit', 'total', 'perHit']]) {
+    const preview = { incomingDamages: [24, 6], ...(incomingDamageUnits === undefined ? {} : { incomingDamageUnits }) };
+    expect(() => validatePreviewSettings({ profiles: [], preview })).not.toThrow();
+  }
+  for (const incomingDamageUnits of [null, 'total', {}, Array(5).fill('total'), ['single'], [null], [false], [1], ['']]) {
+    expect(() => validatePreviewSettings({ profiles: [], preview: { incomingDamageUnits } })).toThrow();
+  }
+});
+
+test('incoming difference reports exact total-damage mismatch without accepting a nearby value', () => {
+  const water = rowWith([{ damage: 20 }, { damage: 24 }, { damage: 24 }]);
+  expect(observationDifference(water, { damage: 24 })).toBe('');
+  const roar = rowWith([{ damage: 147 }, { damage: 161 }, { damage: 176 }]);
+  expect(observationDifference(roar, { damage: 7 })).toBe('计算 147–176，实测比最近值少 140');
+  expect(observationDifference(water, { damage: 28 })).toBe('计算 20–24，实测比最近值多 4');
+  expect(observationDifference(water, { invalid: true })).toBe('');
+});
+
+test('matching damage with a different remaining percentage identifies only the HP mismatch', () => {
+  const row = rowWith([
+    prediction('same-damage-low-hp', 'physicalDefense', 26.1, { damage: 311 }),
+    prediction('same-damage-high-hp', 'hp', 29.1, { damage: 311 }),
+    prediction('other-damage', 'magicalDefense', 54.1, { damage: 350 }),
+  ]);
+  expect(observationDifference(row, { damage: 311, remainingPercent: 28 }))
+    .toBe('伤害吻合，计算余血 27–30%');
+  expect(observationDifference(row, { damage: 311, remainingPercent: 27 })).toBe('');
 });

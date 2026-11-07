@@ -2,6 +2,7 @@ import { createPicker } from './picker.mjs';
 import { previewMatchup, canPreviewBasePower, defaultSkillHitCount, firstActionPowerBonus } from './matchup-preview.mjs';
 import { traitControls, traitPanelPercents } from './own-trait.mjs';
 import { formatGamePercent } from './hp-inverse.mjs';
+import { compareObservedHp } from './measurement-comparison.mjs';
 import { getOwnSkillIds } from './own-presets.mjs';
 import { WILD_DEFENSE_MODEL } from './wild-defense.mjs';
 
@@ -127,6 +128,7 @@ export function validatePreviewSettings(session) {
       for (const value of holder.incomingOverridesList) overrides(value);
     }
     if (holder.incomingDamages!==undefined && (!Array.isArray(holder.incomingDamages)||holder.incomingDamages.length>4||holder.incomingDamages.some(v=>v!=null&&(!Number.isInteger(v)||v<0||v>1000000)))) fail();
+    if (holder.incomingDamageUnits!==undefined && (!Array.isArray(holder.incomingDamageUnits)||holder.incomingDamageUnits.length>4||holder.incomingDamageUnits.some(v=>!['total','perHit'].includes(v)))) fail();
     for (const key of ['diceId','diceLast']) if(holder[key]!==undefined && !validDiceId(holder[key])) fail();
     if(holder.panelIncludesDice!==undefined && typeof holder.panelIncludesDice!=='boolean') fail();
     if(holder.diceEffects!==undefined) {
@@ -171,6 +173,7 @@ const inColumn = (p, key, columns, same) => key === 'other'
   : p.upStat === key || (key === same && !columns.some(([stat]) => stat === p.upStat));
 export function observationMatch(prediction, obs, format = 'game0') {
   if (!obs) return true;
+  if (obs.invalid) return false;
   return (obs.damage == null || prediction.damage === obs.damage)
     && (obs.remainingPercent == null || percentDisplay(format)(prediction.remainingPercent) === obs.remainingPercent);
 }
@@ -194,6 +197,29 @@ export function natureAxisState(natures, stat) {
   if (!natures.length) return '—';
   const effects = new Set(natures.map(n => n.upStat === stat ? '加' : n.downStat === stat ? '减' : '不变'));
   return effects.size === 1 ? [...effects][0] : !effects.has('加') ? '不加' : '—';
+}
+export function readIncomingObservation(encounter, index, row) {
+  const value = encounter.incomingDamages?.[index];
+  if (value == null) return null;
+  const unit = encounter.incomingDamageUnits?.[index] === undefined ? 'total' : encounter.incomingDamageUnits[index];
+  if (!Number.isInteger(value) || value < 0 || value > 1000000 || !['total','perHit'].includes(unit)) return { invalid: true };
+  const count = unit === 'perHit' ? row?.hitCount : 1;
+  if (!Number.isInteger(count) || count < 1 || count > 100) return { invalid: true };
+  return { damage: value * count, inputDamage: value, unit };
+}
+export function observationDifference(row, obs, format = 'game0') {
+  const predictions = row?.predictions ?? [];
+  if (!predictions.length || !obs || obs.invalid) return '';
+  if (predictions.some(p => observationMatch(p, obs, format))) return '';
+  if (obs.damage != null) {
+    const damageMatches = predictions.filter(p => p.damage === obs.damage);
+    if (damageMatches.length) return `伤害吻合，计算余血 ${range(damageMatches.map(p => percentDisplay(format)(p.remainingPercent)), format === 'round1' ? 1 : 0)}%`;
+    const damages = [...new Set(predictions.map(p => p.damage))];
+    const nearest = damages.reduce((a,b) => Math.abs(a-obs.damage) <= Math.abs(b-obs.damage) ? a : b);
+    const delta = obs.damage - nearest;
+    return `计算 ${range(damages)}，实测比最近值${delta > 0 ? '多' : '少'} ${Math.abs(delta)}`;
+  }
+  return `计算余血 ${range(predictions.map(p => percentDisplay(format)(p.remainingPercent)), format === 'round1' ? 1 : 0)}%`;
 }
 const levelLabel = level => level === 'all' ? '41–43' : level;
 const caseId = prediction => `${prediction.targetLevel}:${prediction.natureId}`;
@@ -285,7 +311,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     if (encounter.targetId !== session.targetId) {
       for (const key of ['incomingSkillId','incomingOverrides','incomingDamage']) delete encounter[key];
       Object.assign(encounter, {targetId:session.targetId,level:session.level,incomingSkillIds:defaultIncoming(session.targetId, spirits.get(profile.spiritId)),
-        incomingOverridesList:Array.from({length:INCOMING_SLOTS},()=>({})),incomingDamages:Array(INCOMING_SLOTS).fill(null),incomingPicks:Array(INCOMING_SLOTS).fill(null),shiny:false,diceId:'none',diceEffects:{}});
+        incomingOverridesList:Array.from({length:INCOMING_SLOTS},()=>({})),incomingDamages:Array(INCOMING_SLOTS).fill(null),incomingDamageUnits:Array(INCOMING_SLOTS).fill('total'),incomingPicks:Array(INCOMING_SLOTS).fill(null),shiny:false,diceId:'none',diceEffects:{}});
       for (const item of session.profiles) if(object(item.preview)) { item.preview.observed={}; item.preview.picked={}; }
     }
     if (encounter.level !== session.level) {
@@ -304,6 +330,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     encounter.incomingSkillIds = Array.from({length:INCOMING_SLOTS},(_,i)=>enemyRows.some(s=>s.id===encounter.incomingSkillIds[i])?encounter.incomingSkillIds[i]:'');
     encounter.incomingOverridesList = Array.from({length:INCOMING_SLOTS},(_,i)=>object(encounter.incomingOverridesList?.[i])?encounter.incomingOverridesList[i]:{});
     encounter.incomingDamages = Array.from({length:INCOMING_SLOTS},(_,i)=>encounter.incomingDamages?.[i] ?? null);
+    encounter.incomingDamageUnits = Array.from({length:INCOMING_SLOTS},(_,i)=>encounter.incomingDamageUnits?.[i] ?? 'total');
     encounter.incomingPicks = Array.from({length:INCOMING_SLOTS},(_,i)=>encounter.incomingPicks?.[i] ?? null);
     encounter.shiny = encounter.shiny === true;
     // 我方受击掉血属于当前出战精灵，换档案或换精灵后不沿用。
@@ -324,7 +351,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   $('preview-outgoing').innerHTML = heading(OUT_COLUMNS,'实测<button id="preview-reset-observed" type="button" class="text-button pth-action">清空</button>') + Array.from({length:4},(_,i) =>
     `<div class="prow" data-preview-row="${i}">${skillControl(`preview-skill-${i}`,`preview-skill-picker-${i}`,`preview-skill-meta-${i}`,`preview-condition-${i}`,i+1)}<div class="pcells" id="preview-cells-${i}"></div><div class="pobservations"><label class="pobs"><span>伤害</span><input id="preview-observed-${i}" inputmode="numeric" autocomplete="off" aria-label="技能 ${i+1} 实测伤害"/></label><label class="pobs"><span>剩余 %</span><input id="preview-remaining-${i}" inputmode="decimal" autocomplete="off" aria-label="技能 ${i+1} 实测剩余百分比"/></label></div></div>`).join('');
   $('preview-incoming').innerHTML = Array.from({length:INCOMING_SLOTS},(_,k) =>
-    `<div class="prow" data-incoming-row="${k}">${skillControl(`preview-incoming-skill-${k}`,`preview-incoming-picker-${k}`,`preview-incoming-meta-${k}`,`preview-incoming-condition-${k}`,'敌')}<div class="pcells" id="preview-incoming-cells-${k}"></div><label class="pobs"><span>掉血</span><input id="preview-incoming-damage-${k}" type="number" min="0" max="1000000" step="1" inputmode="numeric" aria-label="敌方技能 ${k+1} 我方掉血"/></label></div>`).join('');
+    `<div class="prow" data-incoming-row="${k}">${skillControl(`preview-incoming-skill-${k}`,`preview-incoming-picker-${k}`,`preview-incoming-meta-${k}`,`preview-incoming-condition-${k}`,'敌')}<div class="pcells" id="preview-incoming-cells-${k}"></div><div class="pobservations"><label class="pobs"><span id="preview-incoming-unit-label-${k}">总伤</span><input id="preview-incoming-damage-${k}" type="number" min="0" max="1000000" step="1" inputmode="numeric" aria-label="敌方技能 ${k+1} 我方掉血"/></label><select id="preview-incoming-unit-${k}" class="incoming-unit" aria-label="敌方技能 ${k+1} 伤害口径" hidden><option value="total">录入总伤</option><option value="perHit">录入单段</option></select></div></div>`).join('');
 
   const diceHolder = side => { const {own,encounter}=state(); return side==='own'?own:encounter; };
   const diceSummary = effects => diceFields.filter(([key,,fallback]) => Number.isFinite(effects?.[key]) && effects[key] !== fallback)
@@ -389,7 +416,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     }}));
     $(id).addEventListener('change',()=>commit(()=>{
       const {own,encounter}=state();
-      if(incoming) {encounter.incomingSkillIds[index]=$(id).value;encounter.incomingOverridesList[index]={};encounter.incomingDamages[index]=null;encounter.incomingPicks[index]=null;}
+      if(incoming) {encounter.incomingSkillIds[index]=$(id).value;encounter.incomingOverridesList[index]={};encounter.incomingDamages[index]=null;encounter.incomingDamageUnits[index]='total';encounter.incomingPicks[index]=null;}
       else {own.skillIds[index]=$(id).value;delete own.observed[index];delete own.picked[index];}
     }));
     const prefix=incoming?`preview-incoming-condition-${index}`:`preview-condition-${index}`;
@@ -439,6 +466,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     }
   }
   for(let k=0;k<INCOMING_SLOTS;k++) $(`preview-incoming-damage-${k}`).addEventListener('change',()=>commit(()=>{const {encounter}=state(); encounter.incomingDamages[k]=number($(`preview-incoming-damage-${k}`));}));
+  for(let k=0;k<INCOMING_SLOTS;k++) $(`preview-incoming-unit-${k}`).addEventListener('change',()=>commit(()=>{const {encounter}=state(); encounter.incomingDamageUnits[k]=$(`preview-incoming-unit-${k}`).value;}));
   // 点选只高亮，再点一次取消；实测记录独立保存。
   function togglePick(event) {
     const cell = event.target.closest('.pcell[data-nature-group]'); if (!cell) return;
@@ -519,17 +547,19 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     if(row.status!=='estimated' || !row.predictions?.length) return `<div class="pcell-note">${html(shortReason(row.reason))}</div>`;
     const picked = pickedKey ? pickedKey.split(':').slice(0,2).join(':').replace(/^([^:]+)$/,'$1:base') : null;
     return axisGroups(row).map(({key,label,group,condition,items}) => {
-      const mark = obs ? (items.some(p => observationMatch(p, obs)) ? ' hit' : ' miss') : '';
+      const mark = obs && !obs.invalid ? (items.some(p => observationMatch(p, obs)) ? ' hit' : ' miss') : '';
       const on = picked === `${group}:${condition}`;
-      return `<div class="pcell paxis paxis--${key}${mark}${on?' picked':''}" data-nature-group="${group}" data-nature-condition="${condition}" role="button" tabindex="0" aria-pressed="${on}"><strong class="dmg">${range(items.map(p=>p.damage))}</strong><span class="axis-label">${label}</span></div>`;
+      return `<div class="pcell paxis paxis--${key}${mark}${on?' picked':''}" data-nature-group="${group}" data-nature-condition="${condition}" role="button" tabindex="0" aria-pressed="${on}"><strong class="dmg">${range(items.map(p=>p.damage))}</strong>${hitFormula(row,items)}<span class="axis-label">${label}</span></div>`;
     }).join('');
   }
   function axisEvidence(row, obs) {
     const groups = axisGroups(row), hits = groups.filter(g => g.items.some(p => observationMatch(p, obs)));
-    if (!hits.length) return { text: '模型未吻合', tone: 'bad' };
-    if (hits.length === 1) return { text: `${hits[0].label}（参考）`, tone: 'good' };
-    if (hits.length < groups.length) return { text: `模型未匹配${groups.filter(g => !hits.includes(g)).map(g => g.label).join('/')}`, tone: 'cut' };
-    return { text: '无区分', tone: 'flat' };
+    if (!hits.length) return { text: observationDifference(row, obs), tone: 'bad' };
+    if (hits.length < groups.length) return { text: `吻合：${hits.map(g => g.label).join('／')}`, tone: 'good' };
+    return { text: '伤害吻合，无法区分攻击性格', tone: 'flat' };
+  }
+  function hitFormula(row, predictions) {
+    return row.hitCount > 1 ? `<span class="hit-formula">${range(predictions.map(p=>p.damage/row.hitCount))} × ${row.hitCount} 段</span>` : '';
   }
   function cellsMarkup(row, columns, incoming, obs, format, pickedKey) {
     if(!row) return `<div class="pcell-note">选择技能</div>`;
@@ -558,25 +588,20 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
             if (!entries.length) return '';
             return `<span class="rem" data-hp-nature="${hpKey}"><span>${hpLabel}</span><b>${range(entries.map(p => display(p.remainingPercent)),digits)}%</b></span>`;
           }).join('');
-        return `<div class="pcell${mark}${picked?' picked':''}${condition==='down'?' pcell-penalty':''}" data-nature-group="${key}" data-nature-condition="${condition}" role="button" tabindex="0" aria-pressed="${picked}">${conditionLabel?`<span class="condition-label">${conditionLabel}</span>`:''}<strong class="dmg">${range(own.map(p=>p.damage))}</strong>${tail}<span class="pcell-label">${label}${key==='other'?'':'↑'}</span></div>`;
+        return `<div class="pcell${mark}${picked?' picked':''}${condition==='down'?' pcell-penalty':''}" data-nature-group="${key}" data-nature-condition="${condition}" role="button" tabindex="0" aria-pressed="${picked}">${conditionLabel?`<span class="condition-label">${conditionLabel}</span>`:''}<strong class="dmg">${range(own.map(p=>p.damage))}</strong>${hitFormula(row,own)}${tail}<span class="pcell-label">${label}${key==='other'?'':'↑'}</span></div>`;
       }).join('')}</div>`;
     }).join('');
   }
   function evidenceTag(row, columns, incoming, obs, format) {
     const skill = skills.get(row.skillId), same = sameAsOtherColumn(skill, incoming);
-    const hits = [], misses = [];
+    const hits = [];
     for (const [key,label] of columns) {
       const items = row.predictions.filter(p => inColumn(p, key, columns, same));
-      (items.some(p => observationMatch(p, obs, format)) ? hits : misses).push({ key, label, same: key === same });
+      if (items.some(p => observationMatch(p, obs, format))) hits.push({ key, label, same: key === same });
     }
-    if (!hits.length) return { text: '模型未吻合', tone: 'bad' };
-    if (hits.length === 1 && !hits[0].same) return { text: `${hits[0].label}${hits[0].key==='other'?'':'↑'}（参考）`, tone: 'good' };
-    if (misses.length) return { text: `${misses.map(m=>`${m.label}${m.key==='other'?'':'↑'}`).join('/')}未吻合`, tone: 'cut' };
-    return { text: '无区分', tone: 'flat' };
-  }
-  function incomingObservation(encounter, k) {
-    const value = encounter.incomingDamages[k];
-    return Number.isInteger(value) && value >= 0 ? { damage: value } : null;
+    if (!row.predictions.some(p=>observationMatch(p,obs,format))) return { text: observationDifference(row, obs, format), tone: 'bad' };
+    if (hits.length === 1 && !hits[0].same) return { text: `吻合：${hits[0].label}↑`, tone: 'good' };
+    return { text: '实测吻合，需结合其他招区分', tone: 'good' };
   }
   function coefficientEvidence(result, target) {
     const stage = result.wildStrengthStage ?? target?.wildStrengthStage;
@@ -605,12 +630,21 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     return `<details class="nature-details coefficient-details"><summary>阶位与系数</summary><p>强度阶位 ${stage} · ${verified ? '包体字段已核对' : '尚无包体确认'}</p>${lines.size ? `<ul>${[...lines].map(line => `<li>${html(line)}</li>`).join('')}</ul>` : ''}<p>攻防沿用经验模型，原始伤害公式尚未还原。</p></details>`;
   }
   function renderVerdict(result, own, encounter, target, format) {
-    const { observed, invalid } = readOutgoingObservations(own, format);
+    const { observed, invalid: outgoingInvalid } = readOutgoingObservations(own, format);
+    const incomingObserved = Array.from({length:INCOMING_SLOTS},(_,k)=>readIncomingObservation(encounter,k,result.incomingList?.[k]));
+    const invalid = outgoingInvalid || incomingObserved.some(obs=>obs?.invalid);
+    const hpPredictions = (result.targetHpByLevel ?? []).flatMap(row=>catalog.natures.map(n=>({
+      targetLevel:row.level, natureId:n.id, upStat:n.upStat, downStat:n.downStat,
+      hpMax:row[n.upStat==='hp'?'up':n.downStat==='hp'?'down':'neutral'],
+    })));
+    const hpComparison = compareObservedHp({ outgoing:result.outgoing, observed, format, hpPredictions });
     const levels = result.targetLevels ?? [getSession().level];
     let candidates = new Set(levels.flatMap(level => catalog.natures.map(n => `${level}:${n.id}`))), used = 0;
     const evidence = [];
     const addEvidence = (row, obs, incoming) => {
-      if (!obs || obs.invalid || row?.status !== 'estimated') return;
+      if (!obs) return;
+      if (obs.invalid) { evidence.push({ label: row?.skillName || (incoming ? '敌方出招' : '我方出招'), incoming, text:'输入格式有误', tone:'bad' }); return; }
+      if (row?.status !== 'estimated') { evidence.push({ label: row?.skillName || '未选技能', incoming, unavailable:true, text:shortReason(row?.reason), tone:'bad' }); return; }
       const hits = row.predictions.filter(p => observationMatch(p, obs, format));
       // Outgoing knockout observations do not distinguish the target's HP.
       // Incoming displayed damage remains an attack-stat observation even when
@@ -618,19 +652,28 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       if (!incoming && hits.length && hits.every(p => p.damage >= p.hpMax)) return;
       const ids = new Set(hits.map(caseId));
       candidates = new Set([...candidates].filter(id => ids.has(id))); used++;
-      const values = [obs.damage == null ? '' : `${incoming ? '掉血' : '伤害'} ${obs.damage}`,
+      const values = [obs.damage == null ? '' : incoming && obs.unit === 'perHit' ? `单段 ${obs.inputDamage} × ${row.hitCount} = ${obs.damage}` : `${incoming ? '总伤' : '伤害'} ${obs.damage}`,
         obs.remainingPercent == null ? '' : `余 ${obs.remainingPercent}%`].filter(Boolean).join(' · ');
-      evidence.push({ label: `${row.skillName} ${values}`, ...(incoming ? axisEvidence(row, obs) : evidenceTag(row, OUT_COLUMNS, false, obs, format)) });
+      evidence.push({ label: `${row.skillName} ${values}`, matched: hits.length > 0, incoming, ...(incoming ? axisEvidence(row, obs) : evidenceTag(row, OUT_COLUMNS, false, obs, format)) });
     };
     for (let i=0;i<4;i++) addEvidence(result.outgoing?.[i], observed[i], false);
-    for (let k=0;k<INCOMING_SLOTS;k++) addEvidence(result.incomingList?.[k], incomingObservation(encounter,k), true);
+    for (let k=0;k<INCOMING_SLOTS;k++) addEvidence(result.incomingList?.[k], incomingObserved[k], true);
     const matching = catalog.natures.filter(n => levels.some(level => candidates.has(`${level}:${n.id}`)));
-    const ready = !invalid && used > 0 && matching.length > 0;
-    const summary = invalid ? '输入有误' : !used ? '待实测' : !matching.length ? '模型未吻合' : `${matching.length} 个模型候选`;
+    const incomplete = evidence.some(e=>e.unavailable);
+    const ready = !invalid && !incomplete && used > 0 && matching.length > 0;
+    const summary = invalid ? '输入有误' : incomplete ? '有技能未计算' : !used ? '待实测' : !matching.length ? '模型未吻合' : `${matching.length} 个模型候选`;
+    const hpNatures = catalog.natures.filter(n=>hpComparison.matchedPredictions.some(p=>p.natureId===n.id));
     const axes = ['hp','physicalDefense','magicalDefense','physicalAttack','magicalAttack'].map(key => {
-      const value = ready ? natureAxisState(matching,key) : '—';
-      return `<div class="nature-axis" data-stat="${key}"><span class="axis-name">${catalog.assets?.stats?.[key]?`<img src="${html(catalog.assets.stats[key])}" alt=""/>`:''}${statNames[key]}</span><b class="${value==='加'?'up':value==='减'?'down':value==='—'?'empty':''}">${value}</b></div>`;
+      const hpIndependent = key === 'hp' && hpComparison.status === 'matched';
+      const value = hpIndependent ? natureAxisState(hpNatures,key) : ready ? natureAxisState(matching,key) : '—';
+      return `<div class="nature-axis" data-stat="${key}"><span class="axis-name">${catalog.assets?.stats?.[key]?`<img src="${html(catalog.assets.stats[key])}" alt=""/>`:''}${statNames[key]}${hpIndependent?'<small>血量实测</small>':''}</span><b class="${value==='加'?'up':value==='减'?'down':value==='—'?'empty':''}">${value}</b></div>`;
     }).join('');
+    const hpRanges = hpComparison.ranges.map(r=>r.max===null?`≥${r.min}`:r.min===r.max?`${r.min}`:`${r.min}–${r.max}`).join('／');
+    const hpText = hpComparison.status === 'empty' ? '' : `<div class="hp-comparison" data-status="${hpComparison.status}"><b>实测总血量 ${hpRanges || '记录互相冲突'}</b><p>${hpComparison.status === 'matched' ? `血量吻合：${[...new Set(hpComparison.matchedPredictions.map(p=>`${p.targetLevel}级 · ${p.upStat==='hp'?'加生命':p.downStat==='hp'?'减生命':'普通'}`))].join('／')}` : hpRanges ? hpComparison.hasHpModel ? '与上方三档血量均不符，请核对目标、异色、等级和本次是否从满血出招。' : '目标血量资料不足，暂无法对照生命性格。' : '各招按独立满血出招计算，请核对实测记录。'}</p><small>由实测伤害与余血反推 · 各招均从满血开始</small></div>`;
+    const counts = [false,true].map(incoming=>{
+      const rows = evidence.filter(e=>e.incoming===incoming);
+      return rows.length ? `${incoming?'敌方':'我方'} ${rows.filter(e=>e.matched).length}/${rows.length} 招吻合` : '';
+    }).filter(Boolean).join(' · ');
     const chips = ready ? `<details class="nature-details" ${matching.length <= 5 ? 'open' : ''}><summary>模型候选 · ${matching.length}</summary><div class="nature-chips">${matching.map(n=>`<span>${html(n.name)}<em>${statNames[n.upStat]}↑ ${statNames[n.downStat]}↓</em></span>`).join('')}</div></details>` : '';
     const calibration=WILD_DEFENSE_MODEL.sourceFormCalibrations[target?.wildDefenseRaceStats?.sourcePetbaseId];
     const measured=calibration?.measuredLevels ?? [];
@@ -648,7 +691,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const levelValue=levelMatched?'42 ✓':levelLabel(encounter.level);
     const levelNote=levelMatched?'与 42 级实测校准相符':measured.includes(encounter.level)?'该等级有物防校准；等级按游戏选择':'按游戏显示选择等级';
     const levelRow=`<div class="verdict-level"><span>等级</span><b${levelMatched?' class="up-ok"':''}>${html(levelValue)}</b><em>${html(levelNote)}</em></div>`;
-    $('preview-verdict').innerHTML = `<div class="rail-cap"><span>性格计算</span><span>${html(target?.name ?? '')}</span></div>${levelRow}<div class="verdict-big${invalid || (used && !matching.length) ? ' bad' : !used ? ' empty' : ''}">${summary}</div><p id="preview-comparison" class="verdict-note">经验模型，未吻合不能排除性格</p><div class="nature-axes">${axes}</div>${chips}${evidence.length?`<div class="evidence">${evidence.map(e=>`<div><i class="dot ${e.tone}"></i><span>${html(e.label)}</span><b class="${e.tone}">${html(e.text)}</b></div>`).join('')}</div>`:''}${coefficientEvidence(result, target)}`;
+    $('preview-verdict').innerHTML = `<div class="rail-cap"><span>性格计算</span><span>${html(target?.name ?? '')}</span></div>${levelRow}<div class="verdict-big${invalid || (used && !matching.length) ? ' bad' : !used ? ' empty' : ''}">${summary}</div><p id="preview-comparison" class="verdict-note">${counts || '各招从满血出发，填写实际伤害与余血'}</p>${hpText}<div class="nature-axes">${axes}</div>${chips}${evidence.length?`<div class="evidence">${evidence.map(e=>`<div class="evidence-item"><i class="dot ${e.tone}"></i><div><span>${html(e.label)}</span><b class="${e.tone}">${html(e.text)}</b></div></div>`).join('')}</div>`:''}${coefficientEvidence(result, target)}`;
     $('preview-result-brief').textContent = ready && matching.length === 1 ? `${matching[0].name}（参考）` : summary;
     return { matching, used, invalid };
   }
@@ -780,10 +823,15 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       }
     }
     for(let k=0;k<INCOMING_SLOTS;k++) {
-      const obs = incomingObservation(encounter, k);
+      const row = currentPreview.incomingList?.[k];
+      const obs = readIncomingObservation(encounter, k, row);
       renderDisplayedPower(`preview-incoming-meta-${k}`, `preview-incoming-condition-${k}`, currentPreview.incomingList?.[k], autoPreview.incomingList?.[k]);
       $(`preview-incoming-cells-${k}`).innerHTML=axisMarkup(encounter.incomingSkillIds[k]?currentPreview.incomingList?.[k]:null,obs,encounter.incomingPicks[k]);
       $(`preview-incoming-damage-${k}`).classList.toggle('filled',obs?.damage != null);
+      $(`preview-incoming-damage-${k}`).classList.toggle('invalid',Boolean(obs?.invalid));
+      $(`preview-incoming-unit-${k}`).hidden = !(row?.hitCount > 1);
+      $(`preview-incoming-unit-${k}`).value = encounter.incomingDamageUnits[k];
+      $(`preview-incoming-unit-label-${k}`).textContent = encounter.incomingDamageUnits[k] === 'perHit' ? '单段' : '总伤';
     }
     const targetHp = currentPreview.targetHpByNature;
     $('target-hp-range').innerHTML = [['down','减生命'],['neutral','普通'],['up','加生命']].map(([key,label]) => `<span data-hp-nature="${key}">${label} <b>${typeof targetHp?.[key] === 'object' ? range([targetHp[key].min,targetHp[key].max]) : targetHp?.[key] ?? '—'}</b></span>`).join('');
