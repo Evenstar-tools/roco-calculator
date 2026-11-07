@@ -86,6 +86,26 @@ function dispatchFetch(listener, path, { mode = "cors", headers = {} } = {}) {
 }
 
 describe("service worker cache policy", () => {
+  test("S5 tool startup can confirm the controller's network-first policy", () => {
+    const harness = createHarness();
+    const reply = vi.fn();
+    harness.listeners.message({ data: { type: "GET_S5_TOOL_CACHE_POLICY" }, ports: [{ postMessage: reply }] });
+    expect(reply).toHaveBeenCalledWith({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v1", path: "/tools/s5-nature/" });
+  });
+
+  test.each(["/tools/s5-nature/ui.mjs", "/tools/s5-nature/matchup.css", "/tools/s5-nature/data/catalog.json"])(
+    "S5 %s returns the current online revision and keeps it for offline reuse", async path => {
+      const key = `https://calculator.test${path}`;
+      const fetchImpl = vi.fn(async () => new Response("current S5"));
+      const harness = createHarness({ cached: { [key]: new Response("legacy S5") }, fetchImpl });
+      const online = dispatchFetch(harness.listeners.fetch, path);
+      await expect((await online.responsePromise).text()).resolves.toBe("current S5");
+      expect(fetchImpl).toHaveBeenCalledWith(expect.objectContaining({ url: key }), { cache: "no-cache" });
+      fetchImpl.mockRejectedValue(new Error("offline"));
+      const offline = dispatchFetch(harness.listeners.fetch, path);
+      await expect((await offline.responsePromise).text()).resolves.toBe("current S5");
+    });
+
   test("visited asset messages cache lazy resources once and reject external/API/data URLs", async () => {
     const existing = "https://calculator.test/assets/main-Ab12_cd9.js";
     const lazy = "https://calculator.test/assets/GlobalWorkspace-NewBuild.js";
