@@ -15,7 +15,6 @@ const diceFields = [
   ['magicalAttackMultiplier','魔攻倍率',1,10,0.01],
   ['physicalDefenseMultiplier','物防倍率',1,10,0.01],
   ['magicalDefenseMultiplier','魔防倍率',1,10,0.01],
-  ['speedMultiplier','速度倍率',1,10,0.01],
 ];
 // 分组只用于展示，实测始终对完整性格集合求交集。
 const OUT_COLUMNS = [['hp','生命'],['physicalDefense','物防'],['magicalDefense','魔防']];
@@ -27,6 +26,40 @@ const diceDescription = row => [19,33].includes(row?.gameEffectId)
   ? `双攻、双防、速度 +${row.gameEffectId===19?30:100}%（不含生命）` : row?.description ?? '';
 const validDiceId = value => ['none','manual-power-plus-40','custom','unresolved-all-stats-plus-30'].includes(value)
   || typeof value === 'string' && /^game-dice-effect-(?:[1-9]|[1-3][0-9]|40)$/.test(value);
+
+// Keep the complete source catalog as evidence; offer only effects consumed by this calculator.
+export function calculableDiceRecords(diceCatalog) {
+  return (diceCatalog?.dice ?? []).filter(row => Number.isInteger(row.gameEffectId) && row.supported === true
+    && (row.typeCoefficient || diceFields.some(([key,,fallback]) => Number.isFinite(row.effects?.[key]) && row.effects[key] !== fallback)));
+}
+
+export function normalizeDiceSettings(session, diceCatalog) {
+  if (!diceCatalog?.dice?.length) return { changed: false, removed: [] };
+  const allowed = new Set(['none', 'custom', ...calculableDiceRecords(diceCatalog).map(row => row.id)]);
+  const names = new Map((diceCatalog?.dice ?? []).map(row => [row.id, row.name]));
+  const removed = []; let changed = false;
+  for (const [holder, side] of [...session.profiles.map(p => [p.preview, p.name || '我方']), [session.preview, '野怪']]) {
+    if (!object(holder)) continue;
+    for (const key of ['diceId', 'diceLast']) {
+      const id = holder[key];
+      if (id === undefined) continue;
+      const next = id === 'manual-power-plus-40' ? 'game-dice-effect-17' : allowed.has(id) ? id : 'none';
+      if (next === id) continue;
+      holder[key] = next; changed = true;
+      if (key === 'diceId' && next === 'none') removed.push(`${side}·${names.get(id) ?? id}`);
+    }
+    // Read old custom records, but do not keep a speed-only input that has no damage/HP consumer.
+    if (object(holder.diceEffects) && Object.hasOwn(holder.diceEffects, 'speedMultiplier')) {
+      if (holder.diceId === 'custom' && holder.diceEffects.speedMultiplier !== 1) removed.push(`${side}·速度加成`);
+      delete holder.diceEffects.speedMultiplier; changed = true;
+      if (!diceFields.some(([key,,fallback]) => Number.isFinite(holder.diceEffects[key]) && holder.diceEffects[key] !== fallback)) {
+        if (holder.diceId === 'custom') holder.diceId = 'none';
+        if (holder.diceLast === 'custom') holder.diceLast = 'none';
+      }
+    }
+  }
+  return { changed, removed };
+}
 
 export function skillPreviewNotices(row, skill) {
   if (row?.status !== 'estimated') return [];
@@ -99,7 +132,7 @@ export function validatePreviewSettings(session) {
     if(holder.diceEffects!==undefined) {
       if(!object(holder.diceEffects)) fail();
       for(const [key,v] of Object.entries(holder.diceEffects)) {
-        if(!diceFields.some(([field])=>field===key)||!Number.isFinite(v)) fail();
+        if(!(key==='speedMultiplier'||diceFields.some(([field])=>field===key))||!Number.isFinite(v)) fail();
         if(key==='skillPowerAdd' ? v < -10000 || v > 10000 : v < 0.001 || v > 100) fail();
       }
     }
@@ -297,14 +330,12 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   const diceSummary = effects => diceFields.filter(([key,,fallback]) => Number.isFinite(effects?.[key]) && effects[key] !== fallback)
     .map(([key,label]) => key === 'skillPowerAdd' ? `威力 +${effects[key]}` : `${label.replace('倍率','')} ×${effects[key]}`).join(' · ');
   function configureDice(side) {
-    const records = (diceCatalog?.dice ?? []).filter(row => Number.isInteger(row.gameEffectId));
+    const records = calculableDiceRecords(diceCatalog);
     const group = (label, rows) => rows.length ? `<optgroup label="${label}">${rows.map(row=>`<option value="${html(row.id)}">${html(row.name)} · ${html(diceDescription(row))}</option>`).join('')}</optgroup>` : '';
     $(`${side}-dice`).innerHTML = '<option value="none">无加成</option>'
-      + group('属性与威力 · 试算', records.filter(row=>row.supported&&!row.typeCoefficient))
-      + group('系别关系 · 单关系试算', records.filter(row=>row.typeCoefficient))
-      + group('回合与特殊效果 · 仅资料', records.filter(row=>!row.supported&&!row.typeCoefficient))
-      + '<option value="custom">自填合计加成</option>'
-      + (diceCatalog?.dice ?? []).filter(row=>['manual-power-plus-40','unresolved-all-stats-plus-30'].includes(row.id)).map(row=>`<option value="${row.id}" hidden>${html(row.name)}（旧配置）</option>`).join('');
+      + group('属性与威力', records.filter(row=>!row.typeCoefficient))
+      + group('克制与抵抗', records.filter(row=>row.typeCoefficient))
+      + '<option value="custom">自填合计加成</option>';
     $(`${side}-dice-custom`).innerHTML = '<p>倍率 1.30 即 +30%；留空不额外加成。面板已含属性时勾选下方标记。</p><div class="dice-values">' + diceFields.map(([key,label,value,max,step])=>`<label>${label}<input id="${side}-dice-${key}" type="number" placeholder="${value}" min="${key === 'skillPowerAdd' ? -10000 : 0.001}" max="${max}" step="${step}" /></label>`).join('') + '</div>';
     $(`${side}-dice`).addEventListener('change',()=>commit(()=> {
       const holder=diceHolder(side);

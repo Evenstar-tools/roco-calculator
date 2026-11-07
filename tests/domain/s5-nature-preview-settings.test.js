@@ -109,6 +109,19 @@ test('outgoing damage and remaining percentage must match the same prediction', 
   expect(matchingIds(rowWith(row.predictions.slice(0, 2)), observed[0])).toEqual([]);
 });
 
+test('damage and displayed percentage never accept one-point or four-point tolerance', () => {
+  const item = prediction('exact', 'hp', 76.9, { damage: 108 });
+  expect(observationMatch(item, { damage: 108 })).toBe(true);
+  expect(observationMatch(item, { damage: 108, remainingPercent: 77 })).toBe(true);
+  for (const delta of [-4, -1, 1, 4]) {
+    // Incoming damage-only and outgoing paired observations share this matcher.
+    expect(observationMatch(item, { damage: 108 + delta })).toBe(false);
+    expect(observationMatch(item, { damage: 108 + delta, remainingPercent: 77 })).toBe(false);
+    expect(observationMatch(item, { remainingPercent: 77 + delta })).toBe(false);
+    expect(observationMatch(item, { damage: 108, remainingPercent: 77 + delta })).toBe(false);
+  }
+});
+
 test('either observation field works independently and uses the displayed percentage', () => {
   const row = rowWith([
     prediction('same-damage', 'hp', 75, { damage: 103 }),

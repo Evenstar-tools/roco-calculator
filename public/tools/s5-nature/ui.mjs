@@ -1,5 +1,5 @@
 import { restoreS5RuntimeRelations } from "./vendor/s5-runtime-relations.js";
-import { createMatchupUi, validatePreviewSettings } from "./matchup-ui.mjs";
+import { createMatchupUi, normalizeDiceSettings, validatePreviewSettings } from "./matchup-ui.mjs";
 import { solve } from "./engine.mjs";
 import { calculateOwnPanel } from "./own-panel.mjs";
 import { resolveOwnPreset } from "./own-presets.mjs";
@@ -816,7 +816,8 @@ function renderResults() {
       : "");
 }
 
-function render() {
+function render(message) {
+  const diceCleanup = normalizeDiceSettings(session, diceCatalog);
   renderTargetPicker();
   renderMatchup();
   $("undo").disabled = !history.length;
@@ -835,6 +836,9 @@ function render() {
   renderRecords();
   renderResults();
   matchupUi?.render();
+  if (diceCleanup.changed) persist();
+  if (diceCleanup.removed.length) notice(`已取消未参与计算的骰子：${diceCleanup.removed.join('、')}。请核对当前骰子配置。`, true);
+  else if (message !== undefined) notice(message);
 }
 
 function validateImport(value) {
@@ -1284,8 +1288,7 @@ function attachEvents() {
     persist();
     clearEditor();
     renderProfiles();
-    render();
-    notice("已撤销上一步。");
+    render("已撤销上一步。");
   });
   $("export-json").addEventListener("click", () => {
     const blob = new Blob(
@@ -1328,8 +1331,7 @@ function attachEvents() {
       persist();
       clearEditor();
       renderProfiles();
-      render();
-      notice(
+      render(
         incoming.demo ? "已导入合成演示记录。" : "记录已导入。",
       );
     } catch (error) {
@@ -1347,9 +1349,8 @@ function attachEvents() {
       history = [];
       clearEditor();
       renderProfiles();
-      render();
+      render("");
       $("profiles-section").open = false;
-      notice("");
     } catch (error) {
       notice(`未载入演示：${error.message}`, true);
     }
@@ -1362,8 +1363,7 @@ function attachEvents() {
     persist();
     clearEditor();
     renderProfiles();
-    render();
-    notice("已返回你的本机记录。");
+    render("已返回你的本机记录。");
   });
 }
 
@@ -1374,7 +1374,9 @@ try {
   const fieldResponse = await fetch("./data/field-samples.json");
   if (fieldResponse.ok) fieldData = await fieldResponse.json();
   const diceResponse = await fetch("./data/dice.json");
-  if (diceResponse.ok) diceCatalog = await diceResponse.json();
+  if (!diceResponse.ok) throw new Error("骰子数据加载失败，请刷新页面重试。");
+  diceCatalog = await diceResponse.json();
+  if (!Array.isArray(diceCatalog?.dice) || !diceCatalog.dice.length) throw new Error("骰子数据不完整，请刷新页面重试。");
   const traitResponse = await fetch("./data/traits.json");
   if (traitResponse.ok) traitCatalog = await traitResponse.json();
   try {

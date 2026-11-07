@@ -2,6 +2,7 @@ import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { previewMatchup } from '../../public/tools/s5-nature/matchup-preview.mjs';
+import { calculableDiceRecords, normalizeDiceSettings, validatePreviewSettings } from '../../public/tools/s5-nature/matchup-ui.mjs';
 
 const catalog = JSON.parse(readFileSync('public/tools/s5-nature/data/catalog.json', 'utf8'));
 const species = name => catalog.spirits.find(row => row.name === name);
@@ -22,6 +23,68 @@ const dice = { dice: [
       name: relation === 'resistance' ? '抵抗' : '克制', supported: false, effects: {}, typeCoefficient: { relation, value } })),
 ] };
 const preview = (x, data = catalog, effects = dice) => previewMatchup(x, data, effects);
+
+const sourceDice = JSON.parse(readFileSync('public/tools/s5-nature/data/dice.json', 'utf8'));
+test('dice menu keeps only damage/HP effects, including resistance, without deleting source records', () => {
+  assert.deepEqual(calculableDiceRecords(sourceDice).map(row => row.gameEffectId).sort((a,b) => a-b),
+    [1, 2, 3, 7, 8, 11, 12, 13, 14, 15, 17, 19, 33, 35, 37]);
+  assert.equal(sourceDice.dice.filter(row => Number.isInteger(row.gameEffectId)).length, 40);
+  for (const selected of calculableDiceRecords(sourceDice)) {
+    for (const side of ['ownDiceIds', 'targetDiceIds']) {
+      const x = input(); x[side] = [selected.id]; x.incomingSkillId = move.id;
+      const result = preview(x, catalog, sourceDice);
+      assert.equal(result.status, 'estimated', `${side}: ${selected.name}`);
+      assert.ok(result.targetHpRange.min > 0);
+      assert.ok(result.outgoing[0].predictions.every(p => Number.isInteger(p.damage)));
+      assert.ok(result.incoming.predictions.every(p => Number.isInteger(p.damage)));
+    }
+  }
+});
+
+test('old unsupported dice and remembered selections cannot blank calculations after reload or import', () => {
+  const observations = { 0: { damage: 311, remainingPercent: 27 } };
+  const session = { profiles: [
+    { name: '圣代甜甜', preview: { diceId: 'game-dice-effect-18', diceLast: 'game-dice-effect-18', observed: observations } },
+    { name: '迪莫', preview: { diceId: 'unresolved-all-stats-plus-30', diceLast: 'game-dice-effect-36' } },
+  ], preview: { diceId: 'game-dice-effect-4', diceLast: 'game-dice-effect-4', incomingDamages: [24, 7] } };
+  validatePreviewSettings(session);
+  const cleanup = normalizeDiceSettings(session, sourceDice);
+  assert.equal(cleanup.changed, true);
+  assert.equal(cleanup.removed.length, 3);
+  for (const holder of [...session.profiles.map(p => p.preview), session.preview]) {
+    assert.equal(holder.diceId, 'none'); assert.equal(holder.diceLast, 'none');
+  }
+  assert.deepEqual(session.profiles[0].preview.observed, observations);
+  assert.deepEqual(session.preview.incomingDamages, [24, 7]);
+  assert.deepEqual(normalizeDiceSettings(JSON.parse(JSON.stringify(session)), sourceDice), { changed: false, removed: [] });
+});
+
+test('supported dice and custom combat stats survive migration; old power alias keeps its exact effect', () => {
+  const session = { profiles: [
+    { preview: { diceId: 'manual-power-plus-40', diceLast: 'manual-power-plus-40' } },
+    { preview: { diceId: 'custom', diceEffects: { physicalAttackMultiplier: 1.1, speedMultiplier: 1.5 } } },
+  ], preview: { diceId: 'game-dice-effect-8', diceLast: 'game-dice-effect-15' } };
+  validatePreviewSettings(session);
+  normalizeDiceSettings(session, sourceDice);
+  assert.equal(session.profiles[0].preview.diceId, 'game-dice-effect-17');
+  assert.equal(session.profiles[0].preview.diceLast, 'game-dice-effect-17');
+  assert.deepEqual(session.profiles[1].preview.diceEffects, { physicalAttackMultiplier: 1.1 });
+  assert.deepEqual(session.preview, { diceId: 'game-dice-effect-8', diceLast: 'game-dice-effect-15' });
+  validatePreviewSettings(session);
+});
+
+test('an unavailable dice catalog never erases stored choices; a migrated speed-only custom dice switches off', () => {
+  const session = { profiles: [{ preview: { diceId: 'game-dice-effect-17' } }],
+    preview: { diceId: 'custom', diceLast: 'custom', diceEffects: { speedMultiplier: 1.5 } } };
+  const original = structuredClone(session);
+  assert.deepEqual(normalizeDiceSettings(session, { dice: [] }), { changed: false, removed: [] });
+  assert.deepEqual(session, original);
+  normalizeDiceSettings(session, sourceDice);
+  assert.equal(session.profiles[0].preview.diceId, 'game-dice-effect-17');
+  assert.deepEqual(session.preview, { diceId: 'none', diceLast: 'none', diceEffects: {} });
+  const freshCustom = { profiles: [{ preview: { diceId: 'custom', diceEffects: {} } }] };
+  assert.deepEqual(normalizeDiceSettings(freshCustom, sourceDice), { changed: false, removed: [] });
+});
 
 test.each(['wildAttackRaceStats', 'wildDefenseRaceStats'])('missing %s blocks only its damage direction during dice integration', field => {
   const x = input(), data = structuredClone(catalog);
