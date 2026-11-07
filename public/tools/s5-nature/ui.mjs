@@ -1,6 +1,6 @@
 import { restoreS5RuntimeRelations } from "./vendor/s5-runtime-relations.js";
 import { createMatchupUi, normalizeDiceSettings, validatePreviewSettings } from "./matchup-ui.mjs";
-import { solve } from "./engine.mjs";
+import { solve, resolveObservationPower } from "./engine.mjs";
 import { calculateOwnPanel } from "./own-panel.mjs";
 import { resolveOwnPreset } from "./own-presets.mjs";
 import { createPicker } from "./picker.mjs";
@@ -574,13 +574,23 @@ function renderSkills(preferredId) {
 }
 
 function renderSkillDescription() {
+  const skill = skillMap.get($("record-skill").value);
+  const costRule = ["incoming", "outgoing"].includes(direction) && skill?.recordCostPower;
+  const costInput = $("record-skill-cost");
+  $("record-cost-settings").hidden = !costRule;
+  costInput.disabled = !costRule;
+  costInput.required = Boolean(costRule);
+  const costKey = `${direction}:${skill?.id ?? ""}`;
+  if (costInput.dataset.skill !== costKey) {
+    costInput.dataset.skill = costKey;
+    costInput.value = costRule ? costRule.baseCost : "";
+  }
   if (direction === "poison") {
     $("skill-description").textContent = "记录中毒的单个跳字。毒孢子施加5层；额外触发的第二跳分开记录。";
     $("skill-description").classList.remove("blocked");
     $("rail-skill").textContent = "中毒单跳 · 生命上限反推";
     return;
   }
-  const skill = skillMap.get($("record-skill").value);
   const reason = skill ? skillSupport(skill) : "请更换搜索词。";
   $("skill-description").textContent =
     direction === "hp"
@@ -588,8 +598,13 @@ function renderSkillDescription() {
       : skill
         ? `${skill.type}系 · ${skill.description}${reason ? `　${reason}` : "　按单次伤害匹配；请填写实际掉血与回合状态。"}`
         : reason;
+  let power = skill?.basePower;
+  if (costRule) {
+    try { power = resolveObservationPower(skill, { actualSkillCost: readNumber("record-skill-cost") }); }
+    catch { power = "?"; }
+  }
   $("skill-power").textContent = skill
-    ? `${skill.category === "physical" ? "物" : skill.category === "magical" ? "魔" : "变"} ${skill.basePower ?? ""}`
+    ? `${skill.category === "physical" ? "物" : skill.category === "magical" ? "魔" : "变"} ${power ?? ""}`
     : "";
   $("rail-skill").textContent =
     direction === "hp"
@@ -644,6 +659,7 @@ function clearEditor() {
   editingId = null;
   const profileId = $("record-profile").value;
   $("observation-form").reset();
+  $("record-skill-cost").dataset.skill = "";
   if (session.profiles.some((profile) => profile.id === profileId))
     $("record-profile").value = profileId;
   $("observation-heading").textContent = "添加战斗记录";
@@ -661,7 +677,7 @@ function descriptionForObservation(observation) {
   const target = spiritMap.get(session.targetId)?.name ?? "未知目标";
   if (observation.direction === "hp") return `${target} · 生命验证`;
   if (observation.direction === "poison") return `${target} · ${observation.poison?.layers ?? "?"}层中毒单跳`;
-  return `${observation.direction === "incoming" ? `${target} → ${profile?.name ?? "未知档案"}` : `${profile?.name ?? "未知档案"} → ${target}`} · ${skill?.name ?? "未知技能"}`;
+  return `${observation.direction === "incoming" ? `${target} → ${profile?.name ?? "未知档案"}` : `${profile?.name ?? "未知档案"} → ${target}`} · ${skill?.name ?? "未知技能"}${skill?.recordCostPower ? ` · 实际能耗 ${observation.actualSkillCost ?? "未确认"}` : ""}`;
 }
 
 function renderRecords() {
@@ -1130,6 +1146,7 @@ function attachEvents() {
     render();
   });
   $("record-skill").addEventListener("change", renderSkillDescription);
+  $("record-skill-cost").addEventListener("input", renderSkillDescription);
   $("skill-search").addEventListener("input", () => renderSkills());
   $("before-full").addEventListener("click", () => {
     $("before-percent").value = 100;
@@ -1188,6 +1205,7 @@ function attachEvents() {
       profileId: ["hp", "poison"].includes(direction) ? null : $("record-profile").value,
       direction,
       skillId: direction === "hp" ? null : direction === "poison" ? "skill_e8ae25185fcd9973" : $("record-skill").value,
+      ...(!$("record-skill-cost").disabled ? { actualSkillCost: readNumber("record-skill-cost") } : {}),
       damage,
       beforePercent,
       afterPercent,
@@ -1234,6 +1252,8 @@ function attachEvents() {
     renderProfiles();
     $("record-profile").value = activeProfile;
     setDirection(observation.direction, observation.skillId);
+    $("record-skill-cost").value = observation.actualSkillCost ?? "";
+    renderSkillDescription();
     $("record-damage").value = observation.damage ?? "";
     $("before-percent").value = observation.beforePercent ?? "";
     $("before-full-confirmed").checked = observation.beforeFull === true;
