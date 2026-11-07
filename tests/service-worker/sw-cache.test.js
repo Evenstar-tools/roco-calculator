@@ -86,6 +86,17 @@ function dispatchFetch(listener, path, { mode = "cors", headers = {} } = {}) {
 }
 
 describe("service worker cache policy", () => {
+  test("a verified S5 startup can activate the installed policy worker", async () => {
+    const harness = createHarness();
+    let activation;
+    harness.listeners.message({ data: { type: "ACTIVATE_S5_TOOL_CACHE_POLICY", policy: "network-first-v1" },
+      waitUntil(value) { activation = value; } });
+    await activation;
+    expect(harness.self.skipWaiting).toHaveBeenCalledOnce();
+    harness.listeners.message({ data: { type: "ACTIVATE_S5_TOOL_CACHE_POLICY", policy: "unknown" } });
+    expect(harness.self.skipWaiting).toHaveBeenCalledOnce();
+  });
+
   test("S5 tool startup can confirm the controller's network-first policy", () => {
     const harness = createHarness();
     const reply = vi.fn();
