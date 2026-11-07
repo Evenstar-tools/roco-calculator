@@ -6,6 +6,33 @@ import { resetUiuxStorage, waitForAppReady } from "./helpers/uiux-helpers.js";
 
 const toolPath = "/tools/s5-nature/index.html";
 
+test('S5 nature startup uses one bundled program and requests independent data while the catalog is slow', async ({ page }) => {
+  let releaseCatalog;
+  const gate = new Promise(resolve => { releaseCatalog = resolve; });
+  const modules = [];
+  page.on('request', request => {
+    const url = new URL(request.url()).pathname;
+    if (url.startsWith('/tools/s5-nature/') && /\.(?:mjs|js)$/.test(url)) modules.push(url);
+  });
+  await page.route('**/tools/s5-nature/data/catalog.json', async route => {
+    await gate;
+    await route.continue();
+  });
+  const datasets = ['field-samples', 'dice', 'traits'].map(name =>
+    page.waitForRequest(`**/tools/s5-nature/data/${name}.json`));
+  datasets.push(page.waitForRequest('**/data/presets/pvp-popular-configs.json'));
+  try {
+    await page.goto(toolPath);
+    await Promise.all(datasets);
+    expect(await page.evaluate(() => Boolean(window.pveNatureUi))).toBe(false);
+    releaseCatalog();
+    await expect.poll(() => page.evaluate(() => Boolean(window.pveNatureUi))).toBe(true);
+    expect(modules).toEqual(['/tools/s5-nature/web-startup.mjs', expect.stringMatching(/^\/tools\/s5-nature\/ui-[\w-]+\.js$/)]);
+    await expect(page.locator('#tool-startup-status')).toHaveCount(0);
+    await expect(page.getByRole('combobox', { name: '选择我方精灵', exact: true })).toBeVisible();
+  } finally { releaseCatalog(); }
+});
+
 test('S5 nature type dice calculate single resistance and preserve entered power without double counting', async ({ page }) => {
   await page.goto(toolPath);
   await page.locator('[data-profile="luoyin"]').click();
