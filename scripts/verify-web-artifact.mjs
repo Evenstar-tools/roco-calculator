@@ -7,6 +7,7 @@ import { load } from "cheerio";
 export const DEFAULT_WEB_ENTRIES = Object.freeze([
   "index.html", "cn/index.html", "dianlu/index.html", "en/index.html", "jp/index.html",
   "global/zh-CN/index.html", "global/ja/index.html",
+  "tools/s5-nature/index.html",
 ]);
 const PORTRAIT_DATA = [
   { url: "/data/runtime.json", base: "/" },
@@ -53,6 +54,11 @@ export function extractWebReferences(text, resourcePath, { kind = resourceKind(r
   if (kind === "html") {
     const $ = load(text);
     $("script[src]").each((_, element) => add($(element).attr("src"), "html", "relative", "js"));
+    $('script[type="module"]:not([src])').each((_, element) => {
+      for (const ref of extractWebReferences($(element).text(), resourcePath, { kind: "js" })) {
+        add(ref.specifier, ref.via, ref.base, ref.kind);
+      }
+    });
     $("link[href]").each((_, element) => {
       const rel = ($(element).attr("rel") ?? "").toLowerCase().split(/\s+/u);
       if (rel.some((item) => ["stylesheet", "modulepreload", "preload"].includes(item))) {
@@ -60,6 +66,8 @@ export function extractWebReferences(text, resourcePath, { kind = resourceKind(r
         add($(element).attr("href"), "html", "relative", forcedKind);
       }
     });
+    $('link[rel="stylesheet"][data-tool-style]').each((_, element) =>
+      add($(element).attr("data-tool-style"), "html", "relative", "css"));
   } else if (kind === "js") {
     const ast = parse(text, { sourceType: "unambiguous" });
     walk(ast, (node) => {

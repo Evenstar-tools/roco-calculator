@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.3.17-20261107-v3-completion";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.17-20261107-v3-completion-r2";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 // 图片长期缓存不随发布清空；摘要由 scripts/stamp-image-cache.mjs 按图片内容写入。
 const IMAGE_CACHE_PREFIX = "rock-calculator-images-";
@@ -241,9 +241,9 @@ async function loadImage(request, background) {
   }
 }
 
-async function refreshCache(cache, request) {
+async function refreshCache(cache, request, fetchOptions) {
   try {
-    const response = await fetch(request);
+    const response = await (fetchOptions ? fetch(request, fetchOptions) : fetch(request));
     if (response.ok) {
       try {
         await cache.put(request, response.clone());
@@ -278,9 +278,9 @@ async function staleWhileRevalidate(event, request, fallbackRequest = request) {
   return (await refresh) ?? cache.match(fallbackRequest);
 }
 
-async function networkFirst(request, fallbackRequests) {
+async function networkFirst(request, fallbackRequests, fetchOptions) {
   const cache = await caches.open(CACHE_NAME);
-  const response = (await refreshCache(cache, request)) ?? (await cache.match(request));
+  const response = (await refreshCache(cache, request, fetchOptions)) ?? (await cache.match(request));
   if (response) return response;
   for (const fallback of fallbackRequests) {
     const cached = await cache.match(fallback);
@@ -306,6 +306,17 @@ self.addEventListener("fetch", (event) => {
 
   if (url.pathname.startsWith("/api/")) {
     event.respondWith(fetch(event.request, { cache: "no-store" }));
+    return;
+  }
+
+  // S5 工具的模块、样式和数据没有文件指纹，必须和当前 HTML 一起更新。
+  // 同时重验证 HTTP 缓存；断网时仍使用这个 URL 最近一次成功加载的内容。
+  if (url.pathname === "/tools/s5-nature" || url.pathname.startsWith("/tools/s5-nature/")) {
+    event.respondWith(
+      networkFirst(event.request, [], { cache: "no-cache" }).then(
+        (response) => response ?? Response.error(),
+      ),
+    );
     return;
   }
 

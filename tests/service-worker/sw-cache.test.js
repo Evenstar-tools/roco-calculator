@@ -298,6 +298,60 @@ describe("service worker cache policy", () => {
     );
   });
 
+  test.each(["/tools/s5-nature/matchup-ui.mjs", "/tools/s5-nature/matchup.css", "/tools/s5-nature/data/catalog.json"])(
+    "S5 %s waits for the online revision instead of mixing cached resources with new HTML", async (path) => {
+      const key = `https://calculator.test${path}`;
+      const network = deferred();
+      const fetchImpl = vi.fn(() => network.promise);
+      const harness = createHarness({ cached: { [key]: new Response("old S5 revision") }, fetchImpl });
+      const event = dispatchFetch(harness.listeners.fetch, path);
+      let settled = false;
+      event.responsePromise.then(() => { settled = true; });
+      await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
+      expect(settled).toBe(false);
+      expect(event.background).toEqual([]);
+      expect(fetchImpl).toHaveBeenCalledWith(expect.objectContaining({ url: key }), { cache: "no-cache" });
+
+      network.resolve(new Response("current S5 revision"));
+      await expect((await event.responsePromise).text()).resolves.toBe("current S5 revision");
+      expect(harness.cacheApi.put).toHaveBeenCalledOnce();
+      fetchImpl.mockRejectedValue(new Error("offline"));
+      const offline = dispatchFetch(harness.listeners.fetch, path);
+      await expect((await offline.responsePromise).text()).resolves.toBe("current S5 revision");
+    });
+
+  test.each(["/tools/s5-nature/ui.mjs", "/tools/s5-nature/styles.css", "/tools/s5-nature/data/traits.json"])(
+    "S5 %s keeps the previously cached revision available offline", async (path) => {
+      const harness = createHarness({
+        cached: { [`https://calculator.test${path}`]: new Response("offline S5 revision") },
+        fetchImpl: vi.fn(async () => { throw new Error("offline"); }),
+      });
+      const event = dispatchFetch(harness.listeners.fetch, path);
+      await expect((await event.responsePromise).text()).resolves.toBe("offline S5 revision");
+      expect(harness.cacheApi.put).not.toHaveBeenCalled();
+      expect(event.background).toEqual([]);
+    });
+
+  test.each(["/tools/other-tool/ui.mjs", "/tools/s5-nature-other/ui.mjs"])(
+    "S5 network-first rule leaves the existing stale-while-revalidate policy for %s", async (path) => {
+      const network = deferred();
+      const fetchImpl = vi.fn(() => network.promise);
+      const harness = createHarness({ cached: { [`https://calculator.test${path}`]: new Response("cached tool") }, fetchImpl });
+      const event = dispatchFetch(harness.listeners.fetch, path);
+      await expect((await event.responsePromise).text()).resolves.toBe("cached tool");
+      expect(fetchImpl).toHaveBeenCalledWith(expect.objectContaining({ url: `https://calculator.test${path}` }));
+      network.resolve(new Response("updated tool"));
+      await Promise.all(event.background);
+      expect(harness.cacheApi.put).toHaveBeenCalledOnce();
+    });
+
+  test("an uncached offline S5 module cannot receive the calculator HTML fallback", async () => {
+    const harness = createHarness({ cached: { "/": new Response("calculator shell") },
+      fetchImpl: vi.fn(async () => { throw new Error("offline"); }) });
+    const event = dispatchFetch(harness.listeners.fetch, "/tools/s5-nature/ui.mjs");
+    expect((await event.responsePromise).type).toBe("error");
+  });
+
   test("keeps the most recent runtime available when the network fails", async () => {
     const cachedResponse = new Response("cached-runtime");
     const harness = createHarness({

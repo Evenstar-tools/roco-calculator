@@ -64,3 +64,23 @@ test("exact filename case is checked on Windows too", () => {
   const wrongCase = { ...files, "assets/main.js": 'import "./typequerypanel-C0dTPZ0b.js";' };
   expect(() => verifyWebArtifact({ distRoot: fixture(wrongCase), entries })).toThrow("/assets/typequerypanel-C0dTPZ0b.js");
 });
+
+test("S5 deferred styles and inline startup imports remain in the full artifact graph", () => {
+  const toolFiles = { ...files,
+    "tools/s5-nature/index.html": '<link rel="stylesheet" data-tool-style="./matchup.css"><script type="module">import { startTool } from "./web-startup.mjs"; await startTool();</script>',
+    "tools/s5-nature/web-startup.mjs": 'export const startTool = () => import("./ui.mjs");',
+    "tools/s5-nature/ui.mjs": 'import "./engine.mjs";',
+    "tools/s5-nature/engine.mjs": 'export const ready = true;',
+    "tools/s5-nature/matchup.css": 'body { color: black; }',
+  };
+  const options = { entries: ['tools/s5-nature/index.html'] };
+  const result = verifyWebArtifact({ ...options, distRoot: fixture(toolFiles) });
+  expect(result.counts.js).toBe(3);
+  expect(result.counts.css).toBe(1);
+  for (const resource of ['web-startup.mjs', 'ui.mjs', 'engine.mjs', 'matchup.css']) {
+    const incomplete = { ...toolFiles };
+    delete incomplete[`tools/s5-nature/${resource}`];
+    expect(() => verifyWebArtifact({ ...options, distRoot: fixture(incomplete) }))
+      .toThrow(`/tools/s5-nature/${resource}`);
+  }
+});
