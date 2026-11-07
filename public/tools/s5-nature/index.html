@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="color-scheme" content="light" />
     <title>S5奇异性格计算 · 洛克计算器</title>
-    <link rel="stylesheet" href="./styles.css" />
-    <link rel="stylesheet" href="./picker.css" />
-    <link rel="stylesheet" href="./matchup.css" />
-    <link rel="stylesheet" href="./web.css" />
+    <link rel="stylesheet" data-tool-style="./styles.css" />
+    <link rel="stylesheet" data-tool-style="./picker.css" />
+    <link rel="stylesheet" data-tool-style="./matchup.css" />
+    <link rel="stylesheet" data-tool-style="./web.css" />
     <link rel="icon" href="/assets/spirits/spirit_4e7acb9d14c8f373.png" />
   </head>
-  <body data-workspace-mode="preview">
+  <body data-workspace-mode="preview" style="visibility: hidden">
+    <p id="tool-startup-status" role="status" style="visibility: visible; margin: 24px; font: 16px/1.5 system-ui; color: #374151">正在加载工具…</p>
     <header class="app-header">
       <div class="web-brand">
         <a class="web-back" href="/" aria-label="返回国服计算器">← <span>返回计算器</span></a>
@@ -416,6 +417,13 @@
         ><select id="profile-nature" tabindex="-1"></select>
       </div>
     </main>
-    <script type="module" src="./ui.mjs"></script>
+    <script type="module">
+      try {
+        const { startTool } = await import('./web-startup.mjs');
+        await startTool();
+      } catch {
+        document.getElementById('tool-startup-status').textContent = '加载失败，请刷新重试。';
+      }
+    </script>
   </body>
 </html>
