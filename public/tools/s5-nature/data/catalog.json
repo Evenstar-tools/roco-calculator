@@ -46,7 +46,7 @@
       "originalGameFormulaRecovered": false
     },
     "wildDefenseModel": {
-      "id": "s5-source-defense-v3",
+      "id": "s5-source-defense-v4",
       "source": "user-authorized-encounter-formula-handoff-20261106",
       "kind": "empirical-formula",
       "raceStrengthStage": 3,
@@ -56,7 +56,7 @@
       "shinyMultiplier": 1,
       "originalGameFormulaRecovered": false,
       "liveObservationSource": "pve-live-20261107-003806-000353",
-      "evidenceRevision": "20261107-shield-phases",
+      "evidenceRevision": "20261108-whale-rounded-defense",
       "observedPointScope": "shield-start observations, including separately marked breaking hits; source-form, level, defense-nature band, race and strength-stage; blood and awakening are not runtime-matched",
       "coefficients": {
         "1": {
@@ -106,6 +106,68 @@
               "conditions": "PA312; ten-star249 interpreted as ground-spike; seven-star PA312 carried forward; no extra damage modifiers assumed"
             }
           ],
+          "roundedDefenseFit": {
+            "coefficient": 1.38,
+            "strengthStage": 3,
+            "raceStats": {
+              "physicalDefense": 125,
+              "magicalDefense": 141
+            },
+            "rounding": "round-half-up-base-nature-final",
+            "kind": "empirical-formula",
+            "valueMeaning": "effective-damage-divisor",
+            "rawPanelVerified": false,
+            "natureBandEvidence": "inverse-damage-fit-except-user-confirmed-level41-physical-defense-up",
+            "measuredScopes": [
+              {
+                "level": 41,
+                "stat": "physicalDefense",
+                "naturePercents": [
+                  100,
+                  110
+                ]
+              },
+              {
+                "level": 42,
+                "stat": "physicalDefense",
+                "naturePercents": [
+                  90,
+                  100,
+                  110
+                ]
+              },
+              {
+                "level": 43,
+                "stat": "physicalDefense",
+                "naturePercents": [
+                  100
+                ]
+              },
+              {
+                "level": 41,
+                "stat": "magicalDefense",
+                "naturePercents": [
+                  100
+                ]
+              },
+              {
+                "level": 43,
+                "stat": "magicalDefense",
+                "naturePercents": [
+                  100
+                ]
+              }
+            ],
+            "conflictingSample": {
+              "level": 42,
+              "stat": "magicalDefense",
+              "naturePercent": 100,
+              "attackerStat": 176,
+              "displayedPower": 176,
+              "observedDamage": 138,
+              "fittedDamage": 134
+            }
+          },
           "formulaVerified": false
         },
         "3398": {

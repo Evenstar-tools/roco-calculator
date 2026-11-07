@@ -4,7 +4,7 @@
 // Observed effective-defense points match only their recorded level/nature band
 // and source mapping. The fallback keeps its original fractional growth model.
 export const WILD_DEFENSE_MODEL = Object.freeze({
-  id: 's5-source-defense-v3',
+  id: 's5-source-defense-v4',
   source: 'user-authorized-encounter-formula-handoff-20261106',
   kind: 'empirical-formula',
   raceStrengthStage: 3,
@@ -14,7 +14,7 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
   shinyMultiplier: 1,
   originalGameFormulaRecovered: false,
   liveObservationSource: 'pve-live-20261107-003806-000353',
-  evidenceRevision: '20261107-shield-phases',
+  evidenceRevision: '20261108-whale-rounded-defense',
   observedPointScope: 'shield-start observations, including separately marked breaking hits; source-form, level, defense-nature band, race and strength-stage; blood and awakening are not runtime-matched',
   coefficients: Object.freeze({
     1: Object.freeze({ physicalDefense: 1.806, magicalDefense: 1.806 }),
@@ -33,7 +33,7 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
     // follows the independent full-health HP intersection508. Neutral ground
     // hits249/193 constrain D to(202.724,203.51295336787564]; fire124 cross-checks
     // the current K1.8. This representative effective divisor is not a recovered
-    // raw integer panel, a common species coefficient, or a magical-defense fit.
+    // raw integer panel. Keep this direct observation ahead of the later fit.
     3381: Object.freeze({
       physicalDefensePoints: Object.freeze([
         Object.freeze({ level: 41, naturePercent: 110, raceDefense: 125, strengthStage: 3,
@@ -44,6 +44,25 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
           positiveNatureConfirmed: true, negativeNatureConfirmed: false,
           conditions: 'PA312; ten-star249 interpreted as ground-spike; seven-star PA312 carried forward; no extra damage modifiers assumed' }),
       ]),
+      roundedDefenseFit: Object.freeze({
+        coefficient: 1.38, strengthStage: 3,
+        raceStats: Object.freeze({ physicalDefense: 125, magicalDefense: 141 }),
+        rounding: 'round-half-up-base-nature-final',
+        kind: 'empirical-formula', valueMeaning: 'effective-damage-divisor',
+        rawPanelVerified: false,
+        natureBandEvidence: 'inverse-damage-fit-except-user-confirmed-level41-physical-defense-up',
+        measuredScopes: Object.freeze([
+          Object.freeze({ level: 41, stat: 'physicalDefense', naturePercents: Object.freeze([100, 110]) }),
+          Object.freeze({ level: 42, stat: 'physicalDefense', naturePercents: Object.freeze([90, 100, 110]) }),
+          Object.freeze({ level: 43, stat: 'physicalDefense', naturePercents: Object.freeze([100]) }),
+          Object.freeze({ level: 41, stat: 'magicalDefense', naturePercents: Object.freeze([100]) }),
+          Object.freeze({ level: 43, stat: 'magicalDefense', naturePercents: Object.freeze([100]) }),
+        ]),
+        // A176/P176 ->138 at level42 remains a mismatch (this fit gives134).
+        // A181 gives138, but that conditional replay cannot replace its record.
+        conflictingSample: Object.freeze({ level: 42, stat: 'magicalDefense', naturePercent: 100,
+          attackerStat: 176, displayedPower: 176, observedDamage: 138, fittedDamage: 134 }),
+      }),
       formulaVerified: false }),
     // Only super-effective observations exist here; D174 is conditional on K1.8.
     3398: Object.freeze({
@@ -112,6 +131,19 @@ export function resolveWildDefense(raceDefense, level, nature, stat, strengthSta
     formulaVerified: false };
   if (observed) return { ...evidence, ...observed, value: observed.effectiveDefense,
     kind: 'effective-defense-point', coefficient: null };
+  const roundedFit = calibration?.roundedDefenseFit;
+  if (roundedFit?.strengthStage === strengthStage && roundedFit.raceStats[stat] === raceDefense) {
+    const roundedBase = Math.round(base);
+    const roundedNature = Math.round(roundedBase * naturePercent / 100);
+    return { ...evidence,
+      value: Math.round((roundedNature + WILD_DEFENSE_MODEL.baseTail) * roundedFit.coefficient),
+      kind: 'source-fit', coefficient: roundedFit.coefficient,
+      rounding: roundedFit.rounding, roundedBase, roundedNature,
+      valueMeaning: roundedFit.valueMeaning, rawPanelVerified: false,
+      natureBandEvidence: roundedFit.natureBandEvidence, measuredScopes: roundedFit.measuredScopes,
+      sampleScopeMatches: roundedFit.measuredScopes.some(scope => scope.level === level
+        && scope.stat === stat && scope.naturePercents.includes(naturePercent)) };
+  }
   const coefficient = calibration?.[stat]
     ?? WILD_DEFENSE_MODEL.coefficients[strengthStage][stat];
   const sourceFit = calibration?.[stat] !== undefined;

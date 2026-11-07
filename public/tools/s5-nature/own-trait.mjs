@@ -10,7 +10,10 @@ const NEUTRAL = Object.freeze({
 export function traitInfo(traitCatalog, traitName) {
   const row = traitCatalog?.traits?.[traitName];
   if (!row) return { damage: 'none', attacker: null, defender: null };
-  return { damage: row.damage, attacker: row.attacker ?? null, defender: row.defender ?? null };
+  return { damage: row.damage, attacker: row.attacker ?? null, defender: row.defender ?? null,
+    // Package BUFF20010011 repeats the exact +10% attribute bases used by
+    // dice BUFF20010285. Keep this verified composition local to Best Partner.
+    ...(traitName === '最好的伙伴' ? { statBonusComposition: 'additive' } : {}) };
 }
 
 /** 统一的输入项：层数（数字）或触发开关（勾选），两个方向共用同一状态。 */
@@ -25,8 +28,24 @@ export function traitControls(info) {
 // 固定CN源 skill-result/numeric.js 限制能力等级为[-99,99]；本模块只导出正向增益。
 const clampStage = stage => Math.min(99, Math.max(0, stage));
 
-function stageAdjusted(value, stage) {
+function stageAdjusted(value, stage, effect, diceMultiplier) {
+  if (effect.statBonusComposition === 'additive' && diceMultiplier !== 1) {
+    const adjusted = value * diceTraitMultiplier(diceMultiplier, stage, effect) / diceMultiplier;
+    const whole = Math.round(adjusted);
+    // A mathematically integral 132 * 1.3 / 1.1 can be 155.99999999999997
+    // in binary floating point. Repair only machine precision before flooring;
+    // this does not change the exact observed-damage matching rule.
+    return Math.floor(Math.abs(adjusted - whole) <= Number.EPSILON * Math.max(1, Math.abs(adjusted)) * 2
+      ? whole : adjusted);
+  }
   return Math.floor(value * (100 + clampStage(stage) * 10) / 100);
+}
+
+/** Value already includes the dice; replace only its combination with a trait. */
+export function diceTraitMultiplier(diceMultiplier, stage, effect) {
+  const bonus = clampStage(stage ?? 0) / 10;
+  return effect.statBonusComposition === 'additive'
+    ? diceMultiplier + bonus : diceMultiplier * (1 + bonus);
 }
 
 /**
@@ -55,6 +74,7 @@ export function resolveOwnTrait(info, role, state = {}, skill = {}, skillTypes =
   const amount = rule.kind === 'decay_attack_percent' ? Math.max(0, (rule.baseEffect ?? 100) - stacks * effect) : effect * stacks;
   const defenseAmount = Math.max(0, rule.defenseEffect ?? rule.effect ?? 0) * stacks;
   const result = { ...NEUTRAL };
+  if (info.statBonusComposition) result.statBonusComposition = info.statBonusComposition;
   const attacker = role === 'attacker';
   switch (rule.kind) {
     case 'attack_percent':
@@ -97,8 +117,12 @@ export function resolveOwnTrait(info, role, state = {}, skill = {}, skillTypes =
   return result;
 }
 
-export function applyAttackStage(value, effect) { return effect.attackStage ? stageAdjusted(value, effect.attackStage) : value; }
-export function applyDefenseStage(value, effect) { return effect.defenseStage ? stageAdjusted(value, effect.defenseStage) : value; }
+export function applyAttackStage(value, effect, diceMultiplier = 1) {
+  return effect.attackStage ? stageAdjusted(value, effect.attackStage, effect, diceMultiplier) : value;
+}
+export function applyDefenseStage(value, effect, diceMultiplier = 1) {
+  return effect.defenseStage ? stageAdjusted(value, effect.defenseStage, effect, diceMultiplier) : value;
+}
 
 /** 面板展示用：返回各属性的加成百分比（不含骰子）。 */
 export function traitPanelPercents(info, state = {}, skillTypes = []) {

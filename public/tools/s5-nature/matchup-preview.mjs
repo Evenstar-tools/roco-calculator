@@ -6,7 +6,7 @@ import { WILD_HP_MODEL, wildTargetShiny } from './wild-hp.mjs';
 import { resolveWildAttack } from './wild-attack.mjs';
 import { resolveWildDefense } from './wild-defense.mjs';
 export { SHINY_HP_MULTIPLIER } from './wild-hp.mjs';
-import { traitInfo, resolveOwnTrait, applyAttackStage, applyDefenseStage } from './own-trait.mjs';
+import { traitInfo, resolveOwnTrait, applyAttackStage, applyDefenseStage, diceTraitMultiplier } from './own-trait.mjs';
 
 const STATS = ['hp', 'physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense', 'speed'];
 const STAT_LABELS = { hp: '生命', physicalAttack: '物攻', magicalAttack: '魔攻', physicalDefense: '物防', magicalDefense: '魔防', speed: '速度' };
@@ -228,13 +228,6 @@ function resolvePower(skill, override, attacker, defender, attackerAwakening, de
   ] };
 }
 
-// Same display convention as the calculator's abilityLevelMultiplier. The
-// auto damage path still uses actual adjusted stats, not a rounded UI number.
-function abilityPowerMultiplier(attackStage, defenseStage) {
-  return (1 + Math.max(attackStage, 0) / 10 + Math.max(-defenseStage, 0) / 10)
-    / (1 + Math.max(-attackStage, 0) / 10 + Math.max(defenseStage, 0) / 10);
-}
-
 function damageEntry(skillId, overrideValue, direction, context) {
   try {
     const { input, catalog, ownSpirit, target, ownDice, targetDice, ownPanel, candidates, ownTrait, ownTraitState, ownSkillTypes } = context;
@@ -269,10 +262,10 @@ function damageEntry(skillId, overrideValue, direction, context) {
       const manualDisplay = power.powerMode === 'displayed';
       const attackerStat = manualDisplay
         ? (incoming ? candidate.basePanel[attackStat] : input.profile.panel[attackStat])
-        : incoming ? attackerPanel[attackStat] : applyAttackStage(attackerPanel[attackStat], trait);
+        : incoming ? attackerPanel[attackStat] : applyAttackStage(attackerPanel[attackStat], trait, ownDice.effects[`${attackStat}Multiplier`]);
       const defenderDefense = manualDisplay
         ? (incoming ? input.profile.panel[defenseStat] : candidate.basePanel[defenseStat])
-        : incoming ? applyDefenseStage(defenderPanel[defenseStat], trait) : defenderPanel[defenseStat];
+        : incoming ? applyDefenseStage(defenderPanel[defenseStat], trait, ownDice.effects[`${defenseStat}Multiplier`]) : defenderPanel[defenseStat];
       const damage = calculateDamage({
         attackerStat, defenderDefense,
         displayedPower: power.power, level: incoming ? input.level : input.profile.level,
@@ -303,8 +296,8 @@ function damageEntry(skillId, overrideValue, direction, context) {
     const displayRatio = power.powerMode === 'auto'
       // Report the selected modifiers in skill-bar power even when the input
       // combat panel already contains them. This ratio never enters damage.
-      ? attackerDice.effects[`${attackStat}Multiplier`] / defenderDice.effects[`${defenseStat}Multiplier`]
-        * abilityPowerMultiplier(incoming ? 0 : trait.attackStage, incoming ? trait.defenseStage : 0) : 1;
+      ? diceTraitMultiplier(attackerDice.effects[`${attackStat}Multiplier`], incoming ? 0 : trait.attackStage, trait)
+        / diceTraitMultiplier(defenderDice.effects[`${defenseStat}Multiplier`], incoming ? trait.defenseStage : 0, trait) : 1;
     return { skillId, skillName: skill.name, direction, status: 'estimated',
       reason: power.notes.join(' '),
       displayedPower: power.displayedPower === null ? null : Number((power.displayedPower * displayRatio).toFixed(10)),

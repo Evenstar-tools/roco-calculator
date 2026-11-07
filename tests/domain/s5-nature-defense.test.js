@@ -67,7 +67,6 @@ test('live defense points leave unmeasured levels, nature bands, forms and mappi
   for (const [source, race, stage, measuredLevel, direction] of [
     [3444, 85, 3, 42, 'neutral'], [3444, 85, 3, 43, 'down'],
     [3398, 76, 1, 42, 'neutral'], [3802, 127, 1, 43, 'neutral'],
-    [3381, 125, 3, 41, 'up'],
   ]) {
     const nature = natureFor(PD, direction);
     const otherLevel = measuredLevel === 41 ? 42 : 41;
@@ -129,13 +128,34 @@ test('whale41 calibration keeps the independent manual sand-trap and whale42 gro
   const sandRow = sand.predictions.find(row => row.natureId === neutralDefense.id);
   assert.equal(sand.displayedPower, 124);
   assert.equal(sandRow.damage, 187);
-  assert.equal(sandRow.wildStatEvidence.kind, 'stage-extrapolation');
+  assert.equal(sandRow.wildStatEvidence.kind, 'source-fit');
+  assert.equal(sandRow.defenderDefense, 186);
   const next = previewMatchup({ targetId: target.id, level: 42,
     profile: { ...profile, awakening: 5 }, skillIds: [ground.id] }, catalog).outgoing[0];
   const nextRow = next.predictions.find(row => row.upStat === 'magicalAttack' && row.downStat === PD);
   assert.equal(nextRow.damage, 296);
   assert.equal(formatGamePercent(nextRow.remainingPercent), 43);
-  assert.equal(nextRow.wildStatEvidence.kind, 'stage-extrapolation');
+  assert.equal(nextRow.wildStatEvidence.kind, 'source-fit');
+  assert.equal(nextRow.defenderDefense, 171);
+});
+
+test('whale rounded fit replays the independent levels and both defenses without changing the damage core', () => {
+  const samples = [
+    ['深蓝鲸', 41, PD, 'neutral', 192, 272 * 1.8, 456],
+    ['深蓝鲸', 41, MD, 'neutral', 181, 160, 126],
+    ['深蓝鲸', 41, MD, 'neutral', 181, 360, 285],
+    ['深蓝鲸', 42, PD, 'neutral', 312, 180, 269],
+    ['深蓝鲸', 42, PD, 'up', 312, 60.5, 82],
+    ['深蓝鲸', 42, PD, 'up', 312, 121, 165],
+    ['深蓝鲸', 42, PD, 'up', 312, 198, 270],
+    ['深蓝鲸', 42, PD, 'down', 312, 50 * 1.8, 148],
+    ['深蓝鲸', 43, PD, 'neutral', 312 * 1.1, 180, 294],
+    ['深蓝鲸', 43, PD, 'neutral', 312 * 1.1, 100 * .4 * 1.8, 117],
+    ['深蓝鲸', 43, PD, 'neutral', 312 * 1.1, 300, 491],
+    ['深蓝鲸', 43, MD, 'neutral', 181 * 1.1, 160, 136],
+    ['深蓝鲸', 43, MD, 'neutral', 181 * 1.1, 360, 308],
+  ];
+  for (const sample of samples) assert.equal(replay(sample), sample[6], sample.join('/'));
 });
 
 test('stage coefficients reproduce the unrounded defense handoff across levels, natures and both categories', () => {
@@ -155,13 +175,6 @@ test('stage coefficients reproduce the unrounded defense handoff across levels, 
     ['伊雷龙', 41, PD, 'neutral', 312, 180, 364],
     ['伊雷龙', 41, PD, 'neutral', 312, 55, 111],
     ['伊雷龙', 41, MD, 'down', 176, 160, 157],
-    ['深蓝鲸', 42, PD, 'neutral', 312, 180, 269],
-    // Sample 11's defense nature is corrected by handoff section 4: PD up.
-    ['深蓝鲸', 42, PD, 'up', 312, 60.5, 82],
-    ['深蓝鲸', 42, PD, 'up', 312, 121, 165],
-    ['深蓝鲸', 42, PD, 'up', 312, 198, 270],
-    ['深蓝鲸', 42, MD, 'neutral', 176, 176, 138],
-    ['深蓝鲸', 42, PD, 'down', 312, 50 * 1.8, 148],
     // Display power already includes enemy guard dice; do not multiply D again.
     ['锤头鹳', 43, PD, 'neutral', 312, 44, 77],
     ['锤头鹳', 43, PD, 'neutral', 312, 40 * 1.8, 127],
@@ -180,12 +193,16 @@ test('handoff discrepancies stay visible instead of changing coefficients for ea
     // The old fire cut contradicts the same dragon's ground-spike observation.
     ['伊雷龙', 41, PD, 'up', 312, 40 * 1.8, 157, 134],
     ['锤头鹳', 43, MD, 'neutral', 176, 90 * 3 * 1.8 / 1.25, 481, 480],
-    ['深蓝鲸', 41, PD, 'neutral', 192, 272 * 1.8, 456, 454],
+    // Original handoff assumed A176. Keep that input and its mismatch visible.
+    ['深蓝鲸', 42, MD, 'neutral', 176, 176, 138, 134],
   ];
   for (const sample of samples) {
     assert.equal(replay(sample), sample[7], sample.join('/'));
     assert.notEqual(sample[6], sample[7]);
   }
+  // The later Dimo panel is181. This explains138 conditionally, without
+  // silently rewriting the original A176 observation above.
+  assert.equal(replay(['深蓝鲸', 42, MD, 'neutral', 181, 176]), 138);
 });
 
 test('42-level calm wing-dragon matches the observed three moves without changing level or HP', () => {

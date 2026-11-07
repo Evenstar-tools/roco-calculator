@@ -89,7 +89,7 @@ test('bird42 defense is conditional on its shield-breaking ground hit, not the p
 });
 
 
-test('whale calibration exposes only its confirmed positive defense band and never claims a raw panel', () => {
+test('whale direct observation keeps priority over its rounded fit and never claims a raw panel', () => {
   const point = resolveWildDefense(125, 41, defenseUp, 'physicalDefense', 3, 3381);
   expect(point.kind).toBe('effective-defense-point');
   expect(point.value).toBe(203);
@@ -102,17 +102,54 @@ test('whale calibration exposes only its confirmed positive defense band and nev
   expect(point.formulaVerified).toBe(false);
   expect(point.levelEvidence).toBe('independent-hp-intersection508');
   for (const [race, level, nature, stat, stage, source] of [
-    [125, 42, defenseUp, 'physicalDefense', 3, 3381],
-    [125, 43, defenseUp, 'physicalDefense', 3, 3381],
-    [125, 41, neutral, 'physicalDefense', 3, 3381],
-    [125, 41, { upStat: 'speed', downStat: 'physicalDefense' }, 'physicalDefense', 3, 3381],
-    [141, 41, defenseUp, 'magicalDefense', 3, 3381],
     [126, 41, defenseUp, 'physicalDefense', 3, 3381],
     [125, 41, defenseUp, 'physicalDefense', 2, 3381],
     [125, 41, defenseUp, 'physicalDefense', 3, 3382],
+    [140, 43, neutral, 'magicalDefense', 3, 3381],
+    [141, 43, neutral, 'magicalDefense', 2, 3381],
+    [141, 43, neutral, 'magicalDefense', 3, 3382],
+    [141, 43, neutral, 'physicalDefense', 3, 3381],
+    [125, 43, neutral, 'magicalDefense', 3, 3381],
   ]) {
     const actual = resolveWildDefense(race, level, nature, stat, stage, source);
     expect(actual.kind).toBe('stage-extrapolation');
     expect(actual.value).toBe(calculateWildDefense(race, level, nature, stat, stage));
+  }
+});
+
+test('whale rounded source fit marks measured bands and extrapolation separately', () => {
+  const scopes = [
+    { level: 41, stat: 'physicalDefense', naturePercents: [100, 110] },
+    { level: 42, stat: 'physicalDefense', naturePercents: [90, 100, 110] },
+    { level: 43, stat: 'physicalDefense', naturePercents: [100] },
+    { level: 41, stat: 'magicalDefense', naturePercents: [100] },
+    { level: 43, stat: 'magicalDefense', naturePercents: [100] },
+  ];
+  for (const stat of ['physicalDefense', 'magicalDefense']) {
+    const race = stat === 'physicalDefense' ? 125 : 141;
+    for (const level of [41, 42, 43]) {
+      for (const naturePercent of [90, 100, 110]) {
+        const nature = naturePercent === 100 ? neutral : naturePercent === 110
+          ? { upStat: stat, downStat: 'speed' } : { upStat: 'speed', downStat: stat };
+        const result = resolveWildDefense(race, level, nature, stat, 3, 3381);
+        if (stat === 'physicalDefense' && level === 41 && naturePercent === 110) {
+          expect(result.kind).toBe('effective-defense-point');
+          expect(result.value).toBe(203);
+          continue;
+        }
+        expect(result.kind).toBe('source-fit');
+        expect(result.coefficient).toBe(1.38);
+        expect(result.rounding).toBe('round-half-up-base-nature-final');
+        expect(result.roundedBase).toBe(Math.round(10 + race * (level + 50) / 100));
+        expect(result.roundedNature).toBe(Math.round(result.roundedBase * naturePercent / 100));
+        expect(result.value).toBe(Math.round((result.roundedNature + 11) * 1.38));
+        expect(result.measuredScopes).toEqual(scopes);
+        expect(result.sampleScopeMatches).toBe(scopes.some(scope => scope.level === level
+          && scope.stat === stat && scope.naturePercents.includes(naturePercent)));
+        expect(result.natureBandEvidence).toMatch(/^inverse-damage-fit/);
+        expect(result.rawPanelVerified).toBe(false);
+        expect(result.formulaVerified).toBe(false);
+      }
+    }
   }
 });
