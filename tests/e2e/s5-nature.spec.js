@@ -680,7 +680,7 @@ test("S5 nature separates HP evidence and exact per-hit observations without dro
 });
 
 
-test('S5 whale dice calibration renders both defense scopes and Dimo trait timing', async ({ page }) => {
+test('S5 nature whale dice calibration renders both defense scopes and Dimo trait timing', async ({ page }) => {
   await page.goto(toolPath);
   await expect(page.locator('#load-own-preset')).toBeEnabled();
   const configure = async (name, moves, panel) => page.evaluate(async ({ name, moves, panel }) => {
@@ -718,6 +718,7 @@ test('S5 whale dice calibration renders both defense scopes and Dimo trait timin
   await page.locator('#preview-remaining-0').fill('74');
   await page.locator('#preview-remaining-0').press('Tab');
   await expect(page.locator('#preview-verdict')).toContainText('吻合');
+  await page.keyboard.press('Escape');
   await page.getByRole('button', { name: '增加层数', exact: true }).click();
   expect((await damages())[2]).toBe(80);
   await expect(page.locator('#preview-cells-2 .dmg')).toContainText(['80']);
