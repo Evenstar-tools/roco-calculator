@@ -70,7 +70,7 @@ export function Toolbox({ actions, onOpen, onWarm, activeTool }) {
             onClick={() => { setOpen(false); trigger.current?.focus(); actions[id](); }}>{icon}{t(title)}</button>)}
           {label === "计算" && showNatureTool && <a className="app-menu__nature-tool" href="/tools/s5-nature/index.html"
             onClick={() => { setOpen(false); trigger.current?.focus(); }}>
-            <MagnifyingGlass size={18} aria-hidden="true" />S5奇异性格计算
+            <MagnifyingGlass size={18} aria-hidden="true" />S5奇遇性格计算
           </a>}
         </div>
       </section>)}
