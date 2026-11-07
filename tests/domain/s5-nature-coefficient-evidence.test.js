@@ -74,3 +74,16 @@ test('preview evidence follows the exact pre-dice source used for each direction
     expect(row.wildStatEvidence.formulaVerified).toBe(false);
   }
 });
+
+
+test('bird42 defense is conditional on its shield-breaking ground hit, not the post-shield fire hit', () => {
+  const point = resolveWildDefense(85, 42, neutral, 'physicalDefense', 3, 3444);
+  expect(point.kind).toBe('effective-defense-point');
+  expect(point.value).toBe(137);
+  expect(point.evidencePhase).toBe('shield-break');
+  expect(point.observedDamage).toBe(1331);
+  expect(point.fixedOutgoingCorrectionMultiplier).toBe(1.8);
+  expect(point.interval[0]).toBeCloseTo(182452 / 1332, 8);
+  expect(point.interval[1]).toBeCloseTo(182452 / 1331, 8);
+  expect(point.formulaVerified).toBe(false);
+});

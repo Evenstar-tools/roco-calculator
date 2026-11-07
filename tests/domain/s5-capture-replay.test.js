@@ -8,11 +8,11 @@ import { WILD_DEFENSE_MODEL } from '../../public/tools/s5-nature/wild-defense.mj
 const fixture = JSON.parse(readFileSync('tests/fixtures/s5-capture-20261107.json', 'utf8'));
 const audit = replayCapturedDamage(fixture);
 
-test('all sessions remain in the audit, including old missing input and every incoming mismatch', () => {
+test('all sessions remain in the audit without fitting post-shield hits', () => {
   assert.equal(audit.encounterCount, 11);
   assert.equal(audit.capturedDamageEvents, 22);
-  assert.deepEqual(audit.counts, { 'missing-input': 1, 'model-mismatch': 1,
-    'separate-resource-cost': 6, 'conditional-match': 14 });
+  assert.deepEqual(audit.counts, { 'excluded-post-shield': 3, 'model-mismatch': 1,
+    'separate-resource-cost': 6, 'conditional-match': 12 });
   assert.deepEqual(audit.rows.filter(r => r.kind === 'incoming').map(r => [r.observed, r.predicted]),
     [[29, 19], [37, 37], [37, 37], [32, 32]]);
   assert.equal(audit.rows.find(r => r.skill === '天旋地转').burst90Candidate.predicted, 29);
@@ -27,12 +27,12 @@ test('all sessions remain in the audit, including old missing input and every in
   assert.throws(() => replayCapturedDamage(removed), /coverage/);
 });
 
-test('recorded target power and empirical calibration replay all eleven newer outgoing hits', () => {
+test('replay keeps raw outgoing hits but only compares shield-stage and break-boundary predictions', () => {
   const rows = audit.rows.filter(r => r.kind === 'outgoing' && r.session === '20261107-003806-000353');
   const values = [1331, 205, 223, 446, 223, 582, 582, 718, 110, 110, 332];
   assert.deepEqual(rows.map(r => r.observed), values);
-  assert.deepEqual(rows.map(r => r.predicted), values);
-  assert(rows.every(r => r.status === 'conditional-match' && r.formulaVerified === false));
+  assert.deepEqual(rows.map(r => r.predicted), [1331, null, 223, 446, null, 582, 582, 718, 110, 110, 332]);
+  assert(rows.filter(r => r.phase !== 'post-shield').every(r => r.status === 'conditional-match' && r.formulaVerified === false));
   assert.equal(rows.find(r => r.observed === 446).modelInputs.criticalMultiplier, 2);
 });
 
@@ -63,4 +63,48 @@ test('pollution reveal, changed HP maximum and later healing do not backfill the
   const point = WILD_DEFENSE_MODEL.sourceFormCalibrations[3398].physicalDefensePoints[0];
   assert.deepEqual(point.observedPreHitBloodIds, [11, 24]);
   assert.deepEqual(point.observedBloodIds, [23, 24]);
+});
+
+
+test('phase eligibility follows the wild pet shield rather than the damaged player shield', () => {
+  assert.deepEqual(audit.phaseCounts, { 'post-shield': 3, 'pre-shield': 7, 'resource-cost': 6, 'shield-break': 6 });
+  const pre = audit.rows.filter(row => row.preShieldEligible);
+  assert.deepEqual(pre.filter(row => row.kind === 'outgoing').map(row => row.observed), [223, 110, 110]);
+  assert.deepEqual(pre.filter(row => row.kind === 'incoming').map(row => row.observed), [29, 37, 37, 32]);
+  assert(pre.filter(row => row.kind === 'incoming').every(row => row.wildShieldBefore > 0 && row.pools.shieldBefore === 0));
+  assert.deepEqual(audit.rows.filter(row => row.phase === 'shield-break').map(row => row.observed), [1331, 446, 582, 582, 718, 332]);
+  assert(audit.rows.filter(row => row.phase !== 'pre-shield').every(row => row.preShieldEligible === false));
+  assert.deepEqual(audit.rows.filter(row => row.phase === 'post-shield').map(row => row.observed), [228, 205, 223]);
+  assert(audit.rows.filter(row => row.phase === 'post-shield').every(row => row.predicted === null && row.error === null));
+  assert.equal(audit.preShieldAudit.damageEvents, 7);
+  assert.equal(audit.preShieldAudit.dynamicPowerComplete, false);
+  assert.equal(audit.preShieldAudit.acceptancePassed, false);
+});
+
+test('unknown shield state does not become a pre-shield sample or a numeric zero', () => {
+  const missing = structuredClone(fixture);
+  const hit = missing.hits.find(row => row.kind === 'incoming');
+  delete hit.caster_state.attributes.shield;
+  const result = replayCapturedDamage(missing).rows.find(row => row.id === hit.id);
+  assert.equal(result.phase, 'unknown');
+  assert.equal(result.wildShieldBefore, null);
+  assert.equal(result.preShieldEligible, false);
+  assert.equal(result.predicted, null);
+  assert.equal(result.status, 'missing-phase');
+});
+
+
+test('a matching pre-shield hit cannot pass while its resource synchronization is unresolved', () => {
+  const one = structuredClone(fixture);
+  const hit = one.hits.find(row => row.raw_damage === 223 && row.target_state_before.attributes.shield > 0);
+  const encounter = one.encounters.find(row => row.session === hit.session && row.encounter === hit.encounter);
+  one.hits = [hit]; one.encounters = [encounter];
+  one.counts.damage_events = 1; one.counts.encounters = 1;
+  encounter.sync_inconsistencies = []; encounter.pool_changes = [];
+  assert.equal(replayCapturedDamage(one).preShieldAudit.acceptancePassed, true);
+  encounter.sync_inconsistencies.push({ field: 'shield', expected: 139, observed: 140 });
+  assert.equal(replayCapturedDamage(one).preShieldAudit.acceptancePassed, false);
+  encounter.sync_inconsistencies = [];
+  encounter.pool_changes.push({ kind: 'snapshot_gap', field: 'shield', before: 139, after: 140 });
+  assert.equal(replayCapturedDamage(one).preShieldAudit.acceptancePassed, false);
 });

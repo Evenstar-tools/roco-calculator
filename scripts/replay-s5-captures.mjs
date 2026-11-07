@@ -11,10 +11,26 @@ const statKeys = { hp: 'max_hp', physicalAttack: 'physical_attack', magicalAttac
   physicalDefense: 'physical_defense', magicalDefense: 'magical_defense', speed: 'speed' };
 const loss = (before, after) => Number.isFinite(before) && Number.isFinite(after) ? before - after : null;
 
+// Incoming damage consumes the player HP, so its phase must use the caster's
+// shield. A breaking hit stays separate from a hit wholly inside the shield.
+function shieldPhase(hit) {
+  const incoming = hit.kind === 'incoming';
+  const before = (incoming ? hit.caster_state : hit.target_state_before)?.attributes?.shield;
+  const after = incoming ? undefined : hit.target_state_after?.attributes?.shield;
+  const wildShieldBefore = Number.isFinite(before) ? before : null;
+  const wildShieldAfter = Number.isFinite(after) ? after : null;
+  const phase = hit.kind === 'self_cost' ? 'resource-cost'
+    : wildShieldBefore === null || wildShieldBefore < 0 ? 'unknown'
+      : wildShieldBefore === 0 ? 'post-shield'
+        : incoming || wildShieldAfter > 0 ? 'pre-shield'
+          : wildShieldAfter === 0 ? 'shield-break' : 'unknown';
+  return { phase, wildShieldBefore, wildShieldAfter, preShieldEligible: phase === 'pre-shield' };
+}
+
 function replayHit(hit, fixture, catalog) {
   const before = hit.target_state_before?.attributes ?? {}, after = hit.target_state_after?.attributes ?? {};
   const result = { id: hit.id, session: hit.session, encounter: hit.encounter, pointer: hit.event_pointer,
-    kind: hit.kind, skill: fixture.skill_names[hit.skill_config_id] ?? null,
+    kind: hit.kind, skill: fixture.skill_names[hit.skill_config_id] ?? null, ...shieldPhase(hit),
     observed: hit.raw_damage, predicted: null, error: null, observedPower: hit.observed_power,
     pools: { hpBefore: before.hp ?? null, hpAfter: after.hp ?? null, hpLoss: loss(before.hp, after.hp),
       shieldBefore: before.shield ?? null, shieldAfter: after.shield ?? null,
@@ -23,6 +39,12 @@ function replayHit(hit, fixture, catalog) {
   if (hit.kind === 'self_cost') return { ...result, status: 'separate-resource-cost',
     limitations: ['Self-cost is recorded independently; not fitted with the ordinary damage formula.'] };
   if (!['outgoing', 'incoming'].includes(hit.kind)) return { ...result, limitations: ['Unsupported damage channel.'] };
+  if (result.phase === 'post-shield') return { ...result, status: 'excluded-post-shield',
+    limitations: ['Preserved in the raw ledger; post-shield damage is outside the encounter-shield model.'] };
+  if (result.phase === 'unknown') return { ...result, status: 'missing-phase',
+    limitations: ['Wild shield state is missing; do not infer it from player HP or the damage flag.'] };
+  if (result.phase === 'shield-break') result.limitations.push(
+    'Shield-breaking boundary only; raw damage is not shield loss and is not a wholly pre-shield calibration sample.');
   const incoming = hit.kind === 'incoming';
   const wild = incoming ? hit.caster_state : hit.target_state_before;
   const own = incoming ? hit.target_state_before : hit.caster_state;
@@ -87,12 +109,21 @@ export function replayCapturedDamage(fixture = read(fixtureUrl), catalog = read(
   const rows = fixture.hits.map(hit => replayHit(hit, fixture, catalog));
   const counts = Object.fromEntries([...new Set(rows.map(r => r.status))]
     .map(status => [status, rows.filter(r => r.status === status).length]));
+  const phaseCounts = Object.fromEntries([...new Set(rows.map(r => r.phase))]
+    .map(phase => [phase, rows.filter(r => r.phase === phase).length]));
+  const preShieldRows = rows.filter(r => r.preShieldEligible);
+  const preShieldPowerComplete = preShieldRows.length > 0 && preShieldRows.every(r => Number.isFinite(r.observedPower));
+  const preShieldAudit = { damageEvents: preShieldRows.length,
+    dynamicPowerComplete: preShieldPowerComplete,
+    acceptancePassed: preShieldPowerComplete && preShieldRows.every(r => r.status === 'conditional-match'),
+    scope: 'Only hits wholly before shield break; boundary hits, post-shield hits and resource costs excluded.' };
   const syncErrors = fixture.encounters.flatMap(e => e.sync_inconsistencies);
   const unexplainedPoolChanges = fixture.encounters.flatMap(e => e.pool_changes.filter(p => p.kind === 'snapshot_gap')
     .map(p => ({ session: e.session, encounter: e.encounter, ...p })));
-  const numericallyComplete = !rows.some(r => ['model-mismatch', 'missing-input'].includes(r.status));
+  preShieldAudit.acceptancePassed &&= syncErrors.length === 0 && unexplainedPoolChanges.length === 0;
+  const numericallyComplete = !rows.some(r => ['model-mismatch', 'missing-input', 'missing-phase'].includes(r.status));
   const dynamicPowerComplete = fixture.hits.filter(h => h.kind !== 'self_cost').every(h => Number.isFinite(h.observed_power));
-  return { scope: fixture.scope, counts, capturedDamageEvents: rows.length,
+  return { scope: fixture.scope, counts, phaseCounts, preShieldAudit, capturedDamageEvents: rows.length,
     encounterCount: fixture.encounters.length, emptySessions: fixture.empty_sessions,
     recordedHealing: fixture.heals, unexplainedPoolChanges, syncErrors,
     numericallyComplete, dynamicPowerComplete, originalGameFormulaRecovered: false,
@@ -108,9 +139,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   } else {
     const result = replayCapturedDamage();
     if (args[1]) fs.writeFileSync(args[1], `${JSON.stringify(result, null, 2)}\n`, 'utf8');
-    console.log(JSON.stringify({ fixture: fileURLToPath(fixtureUrl), counts: result.counts,
+    console.log(JSON.stringify({ fixture: fileURLToPath(fixtureUrl), counts: result.counts, phaseCounts: result.phaseCounts, preShieldAudit: result.preShieldAudit,
       acceptancePassed: result.acceptancePassed, originalGameFormulaRecovered: false,
-      unresolved: result.rows.filter(r => ['model-mismatch', 'missing-input'].includes(r.status)) }, null, 2));
+      unresolved: result.rows.filter(r => ['model-mismatch', 'missing-input', 'missing-phase'].includes(r.status)) }, null, 2));
     // Fail closed: a regression suite can pass while this whole-record gate fails.
     if (!result.acceptancePassed) process.exitCode = 1;
   }

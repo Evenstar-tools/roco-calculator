@@ -14,7 +14,8 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
   shinyMultiplier: 1,
   originalGameFormulaRecovered: false,
   liveObservationSource: 'pve-live-20261107-003806-000353',
-  observedPointScope: 'source-form, level, defense-nature band, race and strength-stage; blood and awakening are not runtime-matched',
+  evidenceRevision: '20261107-shield-phases',
+  observedPointScope: 'shield-start observations, including separately marked breaking hits; source-form, level, defense-nature band, race and strength-stage; blood and awakening are not runtime-matched',
   coefficients: Object.freeze({
     1: Object.freeze({ physicalDefense: 1.806, magicalDefense: 1.806 }),
     2: Object.freeze({ physicalDefense: 1.65725, magicalDefense: 1.6005 }),
@@ -33,7 +34,7 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
       physicalDefensePoints: Object.freeze([
         Object.freeze({ level: 42, naturePercent: 100, raceDefense: 76, strengthStage: 1,
           effectiveDefense: 174, interval: Object.freeze([173.8627787307, 174.1615120275]),
-          intervalBounds: '(lower,upper]', fixedOutgoingCorrectionMultiplier: 1.8,
+          intervalBounds: '(lower,upper]', evidencePhase: 'shield-break', fixedOutgoingCorrectionMultiplier: 1.8,
           encounters: Object.freeze([4, 5]), observedBloodIds: Object.freeze([23, 24]),
           // Encounter 4 reveals pollution only after the hit (blood11 ->23).
           // Keep hit-time evidence separate from retrospective form/blood IDs.
@@ -44,20 +45,29 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
     3444: Object.freeze({
       physicalDefensePoints: Object.freeze([
         Object.freeze({ level: 42, naturePercent: 100, raceDefense: 85, strengthStage: 3,
-          effectiveDefense: 137, interval: Object.freeze([136.6796116505, 137.3463414634]),
-          intervalBounds: '(lower,upper]', encounters: Object.freeze([1]), observedBloodIds: Object.freeze([9]) }),
+          // Ground360 ->1331 starts on the shield and breaks it; conditional on K1.8.
+          // The later fire205 is post-shield and supplies no defense/type constraint.
+          effectiveDefense: 137, interval: Object.freeze([136.9759759760, 137.0788880541]),
+          intervalBounds: '(lower,upper]', evidencePhase: 'shield-break',
+          fixedOutgoingCorrectionMultiplier: 1.8, observedDamage: 1331,
+          encounters: Object.freeze([1]), observedBloodIds: Object.freeze([9]) }),
         Object.freeze({ level: 43, naturePercent: 90, raceDefense: 85, strengthStage: 3,
           effectiveDefense: 126, interval: Object.freeze([125.6964285714, 126.2600896861]),
-          intervalBounds: '(lower,upper]', encounters: Object.freeze([2]), observedBloodIds: Object.freeze([13]) }),
+          intervalBounds: '(lower,upper]', evidencePhase: 'pre-shield', encounters: Object.freeze([2]), observedBloodIds: Object.freeze([13]) }),
       ]),
       formulaVerified: false }),
-    // Neutral fire100 ->110 and dark300 ->332 jointly constrain D; ground360
-    // ->718 with K1.8 cross-checks another encounter with equal initial snapshots.
+    // Fire100 ->110 remains within the shield and only gives (253.6577,255.9636].
+    // The narrower point uses the later breaking hit dark300 ->332, conditional
+    // on intervening effects not changing effective defense. Ground360 ->718 is
+    // another breaking hit with K1.8, not an independent recovery of either D or K.
     3802: Object.freeze({
       physicalDefensePoints: Object.freeze([
         Object.freeze({ level: 43, naturePercent: 100, raceDefense: 127, strengthStage: 1,
           effectiveDefense: 254, interval: Object.freeze([253.6576576577, 254.4216867470]),
-          intervalBounds: '(lower,upper]', encounters: Object.freeze([6, 7]), observedBloodIds: Object.freeze([24]) }),
+          intervalBounds: '(lower,upper]', evidencePhase: 'pre-shield-and-break',
+          preShieldInterval: Object.freeze([253.6576576577, 255.9636363636]),
+          boundaryAssumption: 'intervening effects do not change effective defense',
+          encounters: Object.freeze([6, 7]), observedBloodIds: Object.freeze([24]) }),
       ]),
       formulaVerified: false }),
   }),

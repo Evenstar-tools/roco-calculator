@@ -56,7 +56,8 @@
       "shinyMultiplier": 1,
       "originalGameFormulaRecovered": false,
       "liveObservationSource": "pve-live-20261107-003806-000353",
-      "observedPointScope": "source-form, level, defense-nature band, race and strength-stage; blood and awakening are not runtime-matched",
+      "evidenceRevision": "20261107-shield-phases",
+      "observedPointScope": "shield-start observations, including separately marked breaking hits; source-form, level, defense-nature band, race and strength-stage; blood and awakening are not runtime-matched",
       "coefficients": {
         "1": {
           "physicalDefense": 1.806,
@@ -95,6 +96,7 @@
                 174.1615120275
               ],
               "intervalBounds": "(lower,upper]",
+              "evidencePhase": "shield-break",
               "fixedOutgoingCorrectionMultiplier": 1.8,
               "encounters": [
                 4,
@@ -121,10 +123,13 @@
               "strengthStage": 3,
               "effectiveDefense": 137,
               "interval": [
-                136.6796116505,
-                137.3463414634
+                136.975975976,
+                137.0788880541
               ],
               "intervalBounds": "(lower,upper]",
+              "evidencePhase": "shield-break",
+              "fixedOutgoingCorrectionMultiplier": 1.8,
+              "observedDamage": 1331,
               "encounters": [
                 1
               ],
@@ -143,6 +148,7 @@
                 126.2600896861
               ],
               "intervalBounds": "(lower,upper]",
+              "evidencePhase": "pre-shield",
               "encounters": [
                 2
               ],
@@ -166,6 +172,12 @@
                 254.421686747
               ],
               "intervalBounds": "(lower,upper]",
+              "evidencePhase": "pre-shield-and-break",
+              "preShieldInterval": [
+                253.6576576577,
+                255.9636363636
+              ],
+              "boundaryAssumption": "intervening effects do not change effective defense",
               "encounters": [
                 6,
                 7

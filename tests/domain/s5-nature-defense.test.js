@@ -23,9 +23,10 @@ function replay([name, level, stat, direction, attack, power]) {
 }
 const PD = 'physicalDefense', MD = 'magicalDefense';
 
-test('archived live target powers reproduce measured damage through automatic and manual previews', () => {
+test('archived shield-origin powers reproduce conditional damage including separately recorded breaking hits', () => {
   const cases = [
-    ['噼啪鸟', 42, 'brave', ['地刺', '火焰切割'], [360, 100], [1331, 205]],
+    // Fire205 belongs to the later post-shield hit; it is not a shield-model check.
+    ['噼啪鸟', 42, 'brave', ['地刺'], [360], [1331]],
     ['噼啪鸟', 43, 'gentle', ['火焰切割'], [100], [223]],
     ['星尘虫', 42, 'adamant', ['火焰切割'], [200], [582]],
     ['星尘虫', 42, 'timid', ['火焰切割'], [200], [582]],
