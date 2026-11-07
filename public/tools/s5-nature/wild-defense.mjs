@@ -29,6 +29,22 @@ export const WILD_DEFENSE_MODEL = Object.freeze({
     3209: Object.freeze({ physicalDefense: 1.643,
       measuredLevels: Object.freeze([42]),
       measuredPhysicalDefenseNatures: Object.freeze(['neutral', 'up']) }),
+    // Whale A: positive physical-defense nature confirmed by the user; level41
+    // follows the independent full-health HP intersection508. Neutral ground
+    // hits249/193 constrain D to(202.724,203.51295336787564]; fire124 cross-checks
+    // the current K1.8. This representative effective divisor is not a recovered
+    // raw integer panel, a common species coefficient, or a magical-defense fit.
+    3381: Object.freeze({
+      physicalDefensePoints: Object.freeze([
+        Object.freeze({ level: 41, naturePercent: 110, raceDefense: 125, strengthStage: 3,
+          effectiveDefense: 203, interval: Object.freeze([202.724, 203.51295336787564]),
+          intervalBounds: '(lower,upper]', evidencePhase: 'full-health-encounter',
+          sampleId: 'whale-a-paired-20261107', valueMeaning: 'effective-damage-divisor',
+          rawPanelVerified: false, levelEvidence: 'independent-hp-intersection508',
+          positiveNatureConfirmed: true, negativeNatureConfirmed: false,
+          conditions: 'PA312; ten-star249 interpreted as ground-spike; seven-star PA312 carried forward; no extra damage modifiers assumed' }),
+      ]),
+      formulaVerified: false }),
     // Only super-effective observations exist here; D174 is conditional on K1.8.
     3398: Object.freeze({
       physicalDefensePoints: Object.freeze([

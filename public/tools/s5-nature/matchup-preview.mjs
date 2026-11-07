@@ -177,9 +177,10 @@ export function firstActionPowerBonus(skill) {
   return skill?.name === '天旋地转' ? 30 : 0;
 }
 
-function resolvePower(skill, override, attacker, defender, attackerAwakening, defenderAwakening, dice, catalog, trait = {}, defenderDice) {
+function resolvePower(skill, override, attacker, defender, attackerAwakening, defenderAwakening, dice, catalog, trait = {}, defenderDice, incomingLevel = null) {
   const powerMode = has(override, 'displayedPower') ? 'displayed' : has(override, 'effectivePower') ? 'final' : 'auto';
   const manual = powerMode !== 'auto';
+  const hitCount = override.hitCount ?? (powerMode === 'final' ? 1 : defaultSkillHitCount(skill));
   if (!['physical', 'magical'].includes(skill.category)) throw new RangeError('该技能没有明确的物理／魔法直接命中。');
   // supported is the legacy record filter, not a gate on base-power preview.
   // Resolve the current direct hit; optional power/count overrides model triggers.
@@ -196,6 +197,26 @@ function resolvePower(skill, override, attacker, defender, attackerAwakening, de
     const diceType = singleRelationDice(type, dice, defenderDice);
     const mixed = type.multiplier === 1 && type.factors.some(factor => factor !== 1);
     typeInteraction = resolveAwakeningType(type.multiplier, attackerAwakening, defenderAwakening, mixed);
+    // Three same-encounter water hits calibrate this matchup, not the complete
+    // star curve. Apply one coefficient to every nature to preserve ordering;
+    // neutral/down attacks still come from the existing wild-attack model.
+    if (incomingLevel === 42 && attacker.wildAttackRaceStats?.sourcePetbaseId === 3381
+      && defender.id === 'spirit_4e7acb9d14c8f373' && attackerAwakening === 0 && defenderAwakening === 5
+      && skill.type === '水' && skill.category === 'magical' && hitCount === 1
+      && type.multiplier === 2 && typeDice.length === 0) {
+      typeInteraction = { ...typeInteraction,
+        model: 's5-whale42-roco10-water-incoming-v1', multiplier: type.multiplier * .6,
+        correctionMultiplier: .6, formulaVerified: false, approximate: true,
+        fieldCalibration: {
+          source: 'user-same-encounter-sample-D', targetSourcePetbaseId: 3381,
+          targetLevel: 42, defenderStars: 10, measuredDefenderMagicalDefense: 137,
+          measuredNatureBand: 'magicalAttack-up', otherNatureBands: 'wild-attack-model-derived',
+          measuredHits: [{ skillName: '气泡', damage: 222 }, { skillName: '激流', damage: 266 },
+            { skillName: '天洪', damage: 333 }],
+          originalGameFormulaRecovered: false,
+        },
+      };
+    }
     if (typeDice.length) typeInteraction = { ...typeInteraction,
       multiplier: diceType.multiplier * typeInteraction.correctionMultiplier,
       diceBaseMultiplier: diceType.multiplier, recordedDiceEffects: typeDice, appliedDiceEffects: diceType.applied,
@@ -218,7 +239,7 @@ function resolvePower(skill, override, attacker, defender, attackerAwakening, de
   power *= extra;
   if (displayedPower !== null) displayedPower *= extra;
   if (!finite(power) || power < 0 || power > 10000000) throw new RangeError('本次威力超出可核算范围。');
-  return { power, displayedPower, powerMode, firstActionPowerAdd, typeMultiplier, typeInteraction, stab, hitCount: override.hitCount ?? (powerMode === 'final' ? 1 : defaultSkillHitCount(skill)), manual, notes: [
+  return { power, displayedPower, powerMode, firstActionPowerAdd, typeMultiplier, typeInteraction, stab, hitCount, manual, notes: [
     ...(powerMode === 'displayed' ? ['按手填显示威力结算，已包含的特性及骰子攻防、威力加成不重复叠加。'] : []),
     ...(powerMode === 'final' ? ['按最终威力口径结算，系别与觉醒不再额外换算；恢复自动后按当前条件试算。'] : []),
     ...(powerMode === 'final' && typeDice.length ? ['本次按显式最终威力绕过骰子系数换算；其与极化／钝化的公式尚未验证。'] : []),
@@ -258,7 +279,7 @@ function damageEntry(skillId, overrideValue, direction, context) {
       // reliably. Dividing it here would invent a rounding rule.
       throw new RangeError('显示威力与已含骰子攻防的我方面板会重复编码同一加成；请恢复未含骰子的基础面板，或清空显示威力使用自动试算。');
     }
-    const power = resolvePower(skill, override, attacker, defender, incoming ? 0 : input.profile.awakening, incoming ? input.profile.awakening : 0, attackerDice, catalog, incoming ? {} : trait, defenderDice);
+    const power = resolvePower(skill, override, attacker, defender, incoming ? 0 : input.profile.awakening, incoming ? input.profile.awakening : 0, attackerDice, catalog, incoming ? {} : trait, defenderDice, incoming ? input.level : null);
     const needed = incoming ? [defenseStat, 'hp'] : [attackStat];
     if (!needed.every(stat => finite(ownPanel[stat]) && ownPanel[stat] >= 1 && ownPanel[stat] <= 10000000)) throw new RangeError(`请补齐我方${needed.map(stat => STAT_LABELS[stat]).join('、')}实际面板。`);
     const predictions = candidates.map(candidate => {

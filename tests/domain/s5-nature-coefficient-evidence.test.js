@@ -87,3 +87,32 @@ test('bird42 defense is conditional on its shield-breaking ground hit, not the p
   expect(point.interval[1]).toBeCloseTo(182452 / 1331, 8);
   expect(point.formulaVerified).toBe(false);
 });
+
+
+test('whale calibration exposes only its confirmed positive defense band and never claims a raw panel', () => {
+  const point = resolveWildDefense(125, 41, defenseUp, 'physicalDefense', 3, 3381);
+  expect(point.kind).toBe('effective-defense-point');
+  expect(point.value).toBe(203);
+  expect(point.interval).toEqual([50681 / 250, 39278 / 193]);
+  expect(point.intervalBounds).toBe('(lower,upper]');
+  expect(point.valueMeaning).toBe('effective-damage-divisor');
+  expect(point.rawPanelVerified).toBe(false);
+  expect(point.positiveNatureConfirmed).toBe(true);
+  expect(point.negativeNatureConfirmed).toBe(false);
+  expect(point.formulaVerified).toBe(false);
+  expect(point.levelEvidence).toBe('independent-hp-intersection508');
+  for (const [race, level, nature, stat, stage, source] of [
+    [125, 42, defenseUp, 'physicalDefense', 3, 3381],
+    [125, 43, defenseUp, 'physicalDefense', 3, 3381],
+    [125, 41, neutral, 'physicalDefense', 3, 3381],
+    [125, 41, { upStat: 'speed', downStat: 'physicalDefense' }, 'physicalDefense', 3, 3381],
+    [141, 41, defenseUp, 'magicalDefense', 3, 3381],
+    [126, 41, defenseUp, 'physicalDefense', 3, 3381],
+    [125, 41, defenseUp, 'physicalDefense', 2, 3381],
+    [125, 41, defenseUp, 'physicalDefense', 3, 3382],
+  ]) {
+    const actual = resolveWildDefense(race, level, nature, stat, stage, source);
+    expect(actual.kind).toBe('stage-extrapolation');
+    expect(actual.value).toBe(calculateWildDefense(race, level, nature, stat, stage));
+  }
+});

@@ -98,14 +98,14 @@ test('legacy final overrides retain meaning and conflicting override kinds fail 
   assert.match(preview(x).outgoing[0].reason, /不可同时/);
 });
 
-test('empirical incoming dulling is visible as approximate and preserves neutral whale readings', () => {
+test('field-calibrated incoming dulling preserves evidence status and confirmed whale damage', () => {
   const x = input('深蓝鲸', 42);
   x.incomingSkillId = skill('气泡').id;
   const row = preview(x).incoming;
-  assert.equal(row.typeInteraction.correctionMultiplier, .72);
+  assert.equal(row.typeInteraction.correctionMultiplier, .6);
   assert.equal(row.typeInteraction.approximate, true);
   assert.equal(row.typeInteraction.formulaVerified, false);
-  assert.equal(natureRow(row, 'magicalAttack', 'speed').damage, 266);
+  assert.equal(natureRow(row, 'magicalAttack', 'speed').damage, 222);
 });
 
 test('recorded first-action Heaven Spin adds its burst once and preserves manual power', () => {

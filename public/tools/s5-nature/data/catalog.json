@@ -83,6 +83,31 @@
             "up"
           ]
         },
+        "3381": {
+          "physicalDefensePoints": [
+            {
+              "level": 41,
+              "naturePercent": 110,
+              "raceDefense": 125,
+              "strengthStage": 3,
+              "effectiveDefense": 203,
+              "interval": [
+                202.724,
+                203.51295336787564
+              ],
+              "intervalBounds": "(lower,upper]",
+              "evidencePhase": "full-health-encounter",
+              "sampleId": "whale-a-paired-20261107",
+              "valueMeaning": "effective-damage-divisor",
+              "rawPanelVerified": false,
+              "levelEvidence": "independent-hp-intersection508",
+              "positiveNatureConfirmed": true,
+              "negativeNatureConfirmed": false,
+              "conditions": "PA312; ten-star249 interpreted as ground-spike; seven-star PA312 carried forward; no extra damage modifiers assumed"
+            }
+          ],
+          "formulaVerified": false
+        },
         "3398": {
           "physicalDefensePoints": [
             {

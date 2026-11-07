@@ -67,13 +67,15 @@ test('live defense points leave unmeasured levels, nature bands, forms and mappi
   for (const [source, race, stage, measuredLevel, direction] of [
     [3444, 85, 3, 42, 'neutral'], [3444, 85, 3, 43, 'down'],
     [3398, 76, 1, 42, 'neutral'], [3802, 127, 1, 43, 'neutral'],
+    [3381, 125, 3, 41, 'up'],
   ]) {
     const nature = natureFor(PD, direction);
-    const otherLevel = 41;
+    const otherLevel = measuredLevel === 41 ? 42 : 41;
     assert.equal(calculateWildDefense(race, otherLevel, nature, PD, stage, source),
       calculateWildDefense(race, otherLevel, nature, PD, stage));
-    assert.equal(calculateWildDefense(race, measuredLevel, natureFor(PD, 'up'), PD, stage, source),
-      calculateWildDefense(race, measuredLevel, natureFor(PD, 'up'), PD, stage));
+    const otherBand = direction === 'up' ? 'neutral' : 'up';
+    assert.equal(calculateWildDefense(race, measuredLevel, natureFor(PD, otherBand), PD, stage, source),
+      calculateWildDefense(race, measuredLevel, natureFor(PD, otherBand), PD, stage));
     assert.equal(calculateWildDefense(race + 1, measuredLevel, nature, PD, stage, source),
       calculateWildDefense(race + 1, measuredLevel, nature, PD, stage));
     const otherStage = stage === 1 ? 2 : 1;
@@ -84,6 +86,56 @@ test('live defense points leave unmeasured levels, nature bands, forms and mappi
     calculateWildDefense(127, 43, natureFor(MD, 'neutral'), MD, 1));
   assert.equal(calculateWildDefense(127, 43, natureFor(PD, 'neutral'), PD, 1, 3804),
     calculateWildDefense(127, 43, natureFor(PD, 'neutral'), PD, 1));
+});
+
+test('confirmed whale41 physical-defense-up reproduces the two star levels and exact full-health percentages', () => {
+  const target = species('深蓝鲸');
+  const ground = catalog.skills.find(row => row.name === '地刺');
+  const fire = catalog.skills.find(row => row.name === '火焰切割');
+  const nature = natureFor(PD, 'up');
+  for (const [awakening, expectedGround, expectedPercent] of [[5, 249, 51], [2, 193, 63]]) {
+    const profile = { id: 'own', spiritId: species('罗隐').id, level: 60, awakening,
+      panel: { hp: 403, physicalAttack: 312, magicalAttack: 136, physicalDefense: 183, magicalDefense: 137, speed: 176 } };
+    const input = { targetId: target.id, level: 41, profile,
+      skillIds: awakening === 5 ? [ground.id, fire.id] : [ground.id] };
+    const preview = previewMatchup(input, catalog);
+    const rows = preview.outgoing.map(entry => entry.predictions.find(row => row.natureId === nature.id));
+    assert.deepEqual(rows.map(row => row.damage), awakening === 5 ? [249, 124] : [193]);
+    assert.deepEqual(rows.map(row => formatGamePercent(row.remainingPercent)), awakening === 5 ? [51, 76] : [63]);
+    assert(rows.every(row => row.hpMax === 508 && row.defenderDefense === 203));
+    const observation = { id: 'whale-ground', profileId: profile.id, skillId: ground.id,
+      direction: 'outgoing', damage: expectedGround, context: 'clean', reduction: 1,
+      beforePercent: 100, afterPercent: expectedPercent, percentDigits: 0, percentMode: 'game' };
+    const recorded = predictObservation({ targetId: target.id, level: 41, profiles: [profile] },
+      observation, nature, catalog);
+    // The archived-record engine still accepts only its neutral simple-hit
+    // whitelist; preview calibration must not silently expand that contract.
+    assert.equal(recorded.status, 'blocked');
+    assert.equal(recorded.compatible, false);
+    assert.match(recorded.reason, /简单单击白名单/);
+  }
+});
+
+test('whale41 calibration keeps the independent manual sand-trap and whale42 ground observations', () => {
+  const target = species('深蓝鲸');
+  const trap = catalog.skills.find(row => row.name === '鸣沙陷阱');
+  const ground = catalog.skills.find(row => row.name === '地刺');
+  const profile = { spiritId: species('罗隐').id, level: 60, awakening: 2,
+    panel: { hp: 403, physicalAttack: 312, magicalAttack: 136, physicalDefense: 183, magicalDefense: 137, speed: 176 } };
+  // The displayed124 is an observed input, not a recovered rule38 branch.
+  const sand = previewMatchup({ targetId: target.id, level: 41, profile, skillIds: [trap.id],
+    skillOverrides: { [trap.id]: { displayedPower: 124 } } }, catalog).outgoing[0];
+  const neutralDefense = natureFor(PD, 'neutral');
+  const sandRow = sand.predictions.find(row => row.natureId === neutralDefense.id);
+  assert.equal(sand.displayedPower, 124);
+  assert.equal(sandRow.damage, 187);
+  assert.equal(sandRow.wildStatEvidence.kind, 'stage-extrapolation');
+  const next = previewMatchup({ targetId: target.id, level: 42,
+    profile: { ...profile, awakening: 5 }, skillIds: [ground.id] }, catalog).outgoing[0];
+  const nextRow = next.predictions.find(row => row.upStat === 'magicalAttack' && row.downStat === PD);
+  assert.equal(nextRow.damage, 296);
+  assert.equal(formatGamePercent(nextRow.remainingPercent), 43);
+  assert.equal(nextRow.wildStatEvidence.kind, 'stage-extrapolation');
 });
 
 test('stage coefficients reproduce the unrounded defense handoff across levels, natures and both categories', () => {
