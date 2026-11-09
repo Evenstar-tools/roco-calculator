@@ -113,29 +113,30 @@ test('S5 nature chess roots are searchable separately and keep color when return
     expect(await page.evaluate(() => window.pveNatureUi.getPreview())).toEqual(baseline);
     await page.locator('#target-filter').selectOption('all');
     await picker.fill(form.evolved);
-    await options.getByText(form.evolved, { exact: true }).click();
+    await expect(options).toHaveCount(1);
+    await options.getByText(form.name, { exact: true }).click();
     await expect(picker).toHaveValue(form.name);
     await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('75');
     const session = await page.evaluate(() => window.pveNatureUi.getSession());
     expect(session.targetId).toBe(form.id);
     expect(session.wildStatFormId).toBe(form.legacy);
-    await page.locator('#target-filter').selectOption('initial');
   }
   await page.locator('#target-filter').selectOption('all');
   for (const form of forms) {
     await picker.click();
     await picker.fill(form.evolved);
-    await options.getByText(form.evolved, { exact: true }).click();
+    await expect(options).toHaveCount(1);
+    await options.getByText(form.name, { exact: true }).click();
     await expect(picker).toHaveValue(form.name);
     expect(await page.evaluate(() => window.pveNatureUi.getSession().wildStatFormId)).toBe('');
   }
   await page.reload();
   await expect(picker).toHaveValue('棋棋（白子）');
-  await page.locator('#target-filter').selectOption('chess');
+  await page.locator('#target-filter').selectOption('all');
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await picker.click();
-    await picker.fill('');
+    await picker.fill('棋棋');
     await expect(options).toHaveCount(2);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: `output/playwright/s5-chess-targets-${width}.png`, fullPage: true });
@@ -144,11 +145,16 @@ test('S5 nature chess roots are searchable separately and keep color when return
 });
 
 
-test('S5 nature searches all ten battlepass initial forms in the default and dedicated filters', async ({ page }) => {
+test('S5 nature offers three initial-form scopes, supported shiny targets and contained controls', async ({ page }) => {
   test.setTimeout(60000);
   const names = ['绒绒', '犀角鸟', '小雪人', '爆焰仔', '咬咬小子', '足尖元件', '热团团', '新月鹭', '地银链', '沉金兽'];
   await page.goto(toolPath);
-  await expect(page.locator('#target-filter')).toHaveValue('initial');
+  const filter = page.locator('#target-filter');
+  await expect(filter).toHaveValue('all');
+  expect(await filter.locator('option').evaluateAll(options => options.map(option => option.value))).toEqual(['all', 'shiny', 'battlepass']);
+  await expect(filter.locator('option[value=all]')).toContainText('全部精灵');
+  await expect(filter.locator('option[value=shiny]')).toHaveText(/S2\s*\/\s*S5.*异色/);
+  await expect(filter.locator('option[value=battlepass]')).toHaveText(/通行证.*火红尾.*江豚/);
   const source = await page.evaluate(async () => {
     const catalog = await (await fetch('./data/catalog.json')).json();
     const seasons = await (await fetch('./data/season-targets.json')).json();
@@ -172,26 +178,48 @@ test('S5 nature searches all ten battlepass initial forms in the default and ded
     '绒绒': 1, '犀角鸟': 1, '小雪人': 2, '爆焰仔': 2, '咬咬小子': 2,
     '足尖元件': 2, '热团团': 1, '新月鹭': 1, '地银链': 1, '沉金兽': 1,
   });
-  for (const name of names) {
+  const scopeNames = [...names, '火红尾', '云梦豚'];
+  for (const name of scopeNames) {
     await chooseTarget(page, name);
-    expect(await page.evaluate(() => window.pveNatureUi.getSession().targetId)).toBe(source.spirits.find(row => row.name === name).id);
+    const expected = source.spirits.find(row => row.name === name);
+    if (expected) expect(await page.evaluate(() => window.pveNatureUi.getSession().targetId)).toBe(expected.id);
     await expect(page.locator('#target-hp-range')).toContainText('普通');
   }
   await page.locator('#target-filter').selectOption('battlepass');
   const picker = page.getByRole('combobox', { name: '选择野生目标', exact: true });
   await picker.click();
   const options = page.locator('#target-picker-listbox [role="option"]');
-  await expect(options).toHaveCount(10);
-  expect(await options.locator('strong').allTextContents()).toEqual(expect.arrayContaining(names));
-  await expect(options.first()).toContainText('通行证');
+  await expect(options).toHaveCount(12);
+  expect((await options.locator('strong').allTextContents()).sort()).toEqual([...scopeNames].sort());
   await picker.fill('沉金');
   await expect(options).toHaveCount(1);
   await expect(options).toContainText('沉金兽');
   await picker.press('Escape');
-  for (const [filter, target] of [['S2', '恶魔叮'], ['S5', '深蓝鲸']]) {
-    await page.locator('#target-filter').selectOption(filter);
-    await chooseTarget(page, target);
-  }
+  await filter.selectOption('shiny');
+  for (const target of ['恶魔叮', '深蓝鲸']) await chooseTarget(page, target);
+  const shiny = page.locator('#target-shiny');
+  await expect(shiny).toBeVisible();
+  await shiny.check();
+  await expect(shiny).toBeChecked();
+  await filter.selectOption('all');
+  await chooseTarget(page, '棋棋（白子）');
+  await expect(shiny.locator('..')).toBeHidden();
+  expect(await page.evaluate(() => window.pveNatureUi.getSession().preview.shiny)).toBe(false);
+  const ordinaryHp = await page.locator('#target-hp-range').textContent();
+  // Old saves can contain a checked shiny flag for an unsupported target.
+  await page.evaluate(() => {
+    const session = window.pveNatureUi.getSession();
+    session.preview.shiny = true;
+    window.pveNatureUi.setSession(session);
+  });
+  await expect(shiny.locator('..')).toBeHidden();
+  expect(await page.evaluate(() => window.pveNatureUi.getSession().preview.shiny)).toBe(false);
+  await expect(page.locator('#target-hp-range')).toHaveText(ordinaryHp);
+  await page.reload();
+  await page.waitForFunction(() => Boolean(window.pveNatureUi));
+  await expect(shiny.locator('..')).toBeHidden();
+  expect(await page.evaluate(() => window.pveNatureUi.getSession().preview.shiny)).toBe(false);
+  await expect(page.locator('#target-hp-range')).toHaveText(ordinaryHp);
   await page.locator('#target-filter').selectOption('battlepass');
   await chooseTarget(page, '沉金兽');
   const coefficientDetails = page.locator('.coefficient-details');
@@ -202,14 +230,35 @@ test('S5 nature searches all ten battlepass initial forms in the default and ded
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 900 });
     await picker.click();
-    await expect(options).toHaveCount(10);
+    await expect(options).toHaveCount(12);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await expectWildControlsContained(page);
     await page.screenshot({ path: `output/playwright/s5-battlepass-targets-${width}.png` });
     await picker.press('Escape');
+    await page.screenshot({ path: `output/playwright/s5-target-scope-closed-${width}.png` });
+  }
+  await filter.selectOption('all');
+  await chooseTarget(page, '缇塔');
+  await setDice(page, 'target', 'game-dice-effect-15');
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expectWildControlsContained(page);
+    await expect(shiny).toBeVisible();
+    await page.screenshot({ path: `output/playwright/s5-target-scope-${width}.png`, fullPage: true });
   }
 });
 
-
+async function expectWildControlsContained(page) {
+  const outside = await page.locator('#wild-side').evaluate(side => {
+    const bounds = side.getBoundingClientRect();
+    return [...side.querySelectorAll('#target-picker, #target-filter, #level-seg, #target-hp-range, .dice-ui, .switch-label, input, select')]
+      .filter(node => node.getClientRects().length && getComputedStyle(node).visibility !== 'hidden')
+      .filter(node => { const rect = node.getBoundingClientRect(); return rect.left < bounds.left - 1 || rect.right > bounds.right + 1; })
+      .map(node => node.id || node.className);
+  });
+  expect(outside).toEqual([]);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+}
 
 for (const activation of ['automatic', 'waiting']) test(`S5 nature delays old cached modules until a real worker confirms its policy and retries after a slow install (${activation})`, async ({ page, context }) => {
   const publicRoot = path.resolve(process.env.S5_UPGRADE_PUBLIC_ROOT || 'dist/client');
