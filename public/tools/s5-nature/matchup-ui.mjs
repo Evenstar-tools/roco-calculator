@@ -339,7 +339,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     encounter.incomingDamages = Array.from({length:INCOMING_SLOTS},(_,i)=>encounter.incomingDamages?.[i] ?? null);
     encounter.incomingDamageUnits = Array.from({length:INCOMING_SLOTS},(_,i)=>encounter.incomingDamageUnits?.[i] ?? 'total');
     encounter.incomingPicks = Array.from({length:INCOMING_SLOTS},(_,i)=>encounter.incomingPicks?.[i] ?? null);
-    encounter.shiny = encounter.shiny === true;
+    encounter.shiny = encounter.shiny === true && spirits.get(session.targetId)?.hasShinyForm === true;
     // 我方受击掉血属于当前出战精灵，换档案或换精灵后不沿用。
     const defenderKey = `${profile.id}:${profile.spiritId}`;
     if (encounter.incomingDefender !== defenderKey) { encounter.incomingDamages = Array(INCOMING_SLOTS).fill(null); encounter.incomingPicks = Array(INCOMING_SLOTS).fill(null); encounter.incomingDefender = defenderKey; }
@@ -811,6 +811,8 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     $('own-dice-panel-included').disabled=!includedAllowed;
     $('own-dice-panel-note').textContent=includedAllowed?'已包含时不再叠加骰子属性；技能威力加值仍单独处理。':'基础面板不含临场增益；技能计算时计入。';
     $('preview-percent-format').value=format;
+    $('target-shiny-control').hidden=target?.hasShinyForm !== true;
+    $('target-shiny').disabled=target?.hasShinyForm !== true;
     $('target-shiny').checked=encounter.shiny;
     koCache = new Map();
     for(const picker of pickers) picker.refresh();

@@ -146,21 +146,17 @@
                   <input id="target-picker-input" autocomplete="off" placeholder="选择野生目标" /><span
                     class="picker-caret" aria-hidden="true">⌄</span>
                 </div>
-                <div class="eyebrow-end">
-                  <select id="target-filter" aria-label="目标范围">
-                    <option value="initial">初始形态 · 含通行证</option>
-                    <option value="priority">奇遇 / 通行证优先</option>
-                    <option value="all">全部精灵</option>
-                    <option value="S2">S2</option>
-                    <option value="S5">S5</option>
-                    <option value="battlepass">通行证初始形态</option>
-                    <option value="chess">棋棋初始形态</option>
-                  </select>
-                  <div id="level-seg" class="seg" role="group" aria-label="野怪等级"></div>
-                  <select id="target-level" class="compat-hidden" tabindex="-1" aria-label="野生目标等级">
-                    <option value="41">41 级</option><option value="42" selected>42 级</option><option value="43">43 级</option><option value="all">41–43级全部</option>
-                  </select>
-                </div>
+              </div>
+              <div class="target-controls">
+                <select id="target-filter" aria-label="目标范围">
+                  <option value="all">全部精灵（初始形态）</option>
+                  <option value="shiny">S2/S5异色</option>
+                  <option value="battlepass">通行证精灵＋火红尾＋江豚</option>
+                </select>
+                <div id="level-seg" class="seg" role="group" aria-label="野怪等级"></div>
+                <select id="target-level" class="compat-hidden" tabindex="-1" aria-label="野生目标等级">
+                  <option value="41">41 级</option><option value="42" selected>42 级</option><option value="43">43 级</option><option value="all">41–43级全部</option>
+                </select>
               </div>
               <div class="spirit-card compat-hidden" aria-hidden="true">
                 <strong id="target-name">翼龙</strong>
@@ -171,7 +167,7 @@
               <div class="config-rows">
                 <div class="config-row preview-only">
                   <span class="config-key">血量</span><div id="target-hp-range" class="hp-line" aria-label="奇遇血量" aria-live="polite"></div>
-                  <label class="switch-label"><input id="target-shiny" type="checkbox" class="switch" aria-label="异色 · 生命×1.5" />异色</label>
+                  <label id="target-shiny-control" class="switch-label" hidden><input id="target-shiny" type="checkbox" class="switch" aria-label="异色 · 生命×1.5" />异色</label>
                 </div>
                 <div class="config-row dice-line">
                   <span class="config-key">骰子</span><div id="target-dice-ui" class="dice-ui"></div>

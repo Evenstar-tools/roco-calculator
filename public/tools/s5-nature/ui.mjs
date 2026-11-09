@@ -63,7 +63,8 @@ let demoBackup = null;
 let skillMap;
 let spiritMap;
 let seasonGroups = [];
-let targetFilter = "initial";
+let targetFilter = "all";
+let targetSearchText = new Map();
 let workspaceMode = "preview";
 let matchupUi;
 let diceCatalog = { dice: [] };
@@ -139,12 +140,6 @@ function hasCompleteRaceStats(spirit) {
   );
 }
 
-function groupIdsFor(spiritId) {
-  return seasonGroups
-    .filter((group) => group.spiritIds?.includes(spiritId))
-    .map((group) => group.id);
-}
-
 function groupLabelsFor(spiritId) {
   return seasonGroups
     .filter((group) => group.spiritIds?.includes(spiritId))
@@ -183,29 +178,28 @@ function spiritLabel(spirit) {
 }
 
 function renderSpiritOptions(select, query, currentId, filter = "all") {
-  const rows = catalog.spirits.filter(
-    (spirit) =>
-      matchesSpirit(spirit, query) &&
-      (["all", "priority"].includes(filter) ||
-        filter === "initial" && groupIdsFor(spirit.id).length > 0 && spirit.stage === "一阶" ||
-        groupIdsFor(spirit.id).includes(filter)),
-  );
-  rows.sort((a, b) => {
-    const priority =
-      Number(groupIdsFor(b.id).length > 0) -
-      Number(groupIdsFor(a.id).length > 0);
-    return (
-      (select.id === "target-species" && filter === "priority"
-        ? priority
-        : 0) ||
-      (Number(a.dexNo) || 9999) - (Number(b.dexNo) || 9999) ||
-      a.name.localeCompare(b.name, "zh-CN") ||
-      a.id.localeCompare(b.id)
-    );
+  const isTarget = select.id === "target-species";
+  const groupIds = new Set(seasonGroups
+    .filter(group => filter === "shiny" ? ["S2", "S5"].includes(group.id) : group.id === filter)
+    .flatMap(group => group.spiritIds ?? []).map(initialTargetId));
+  if (filter === "battlepass") {
+    for (const name of ["火红尾", "云梦豚"]) {
+      const extra = catalog.spirits.find(row => row.name === name);
+      if (extra) groupIds.add(initialTargetId(extra.id));
+    }
+  }
+  const rows = catalog.spirits.filter(spirit => {
+    if (!isTarget) return matchesSpirit(spirit, query);
+    if (initialTargetId(spirit.id) !== spirit.id) return false;
+    if (filter !== "all" && !groupIds.has(spirit.id)) return false;
+    const needle = query.trim().toLocaleLowerCase().replace(/\s+/g, "").replace(/^#/, "");
+    return !needle || targetSearchText.get(spirit.id)?.toLocaleLowerCase().replace(/\s+/g, "").includes(needle);
   });
+  rows.sort((a, b) => (Number(a.dexNo) || 9999) - (Number(b.dexNo) || 9999)
+    || a.name.localeCompare(b.name, "zh-CN") || a.id.localeCompare(b.id));
   const current = spiritMap.get(currentId);
   const outside = current && !rows.some((row) => row.id === currentId);
-  select.innerHTML = `${outside ? `<option value="${escapeHtml(currentId)}">当前选择（筛选外）：${escapeHtml(spiritLabel(current))}</option>` : ""}${rows.map((spirit) => `<option value="${escapeHtml(spirit.id)}">${escapeHtml(spiritLabel(spirit))}</option>`).join("")}`;
+  select.innerHTML = `${outside ? `<option data-filter-outside="true" value="${escapeHtml(currentId)}">当前选择（筛选外）：${escapeHtml(spiritLabel(current))}</option>` : ""}${rows.map((spirit) => `<option value="${escapeHtml(spirit.id)}">${escapeHtml(spiritLabel(spirit))}</option>`).join("")}`;
   if (!rows.length && !current)
     select.innerHTML = '<option value="">没有匹配的精灵</option>';
   select.value = currentId;
@@ -223,12 +217,9 @@ function renderTargetPicker() {
     session.targetId,
     targetFilter,
   );
-  const group = seasonGroups.find((row) => row.id === targetFilter);
-  const selectedGroups = ["all", "priority", "initial"].includes(targetFilter)
-    ? seasonGroups
-    : seasonGroups.filter((row) => row.id === targetFilter);
-  $("target-catalog-note").textContent =
-    `${count} 项${outside ? " · 当前目标在筛选外" : ""}${targetFilter === "priority" ? " · 奇遇与通行证目标优先排列" : targetFilter === "all" ? " · 全目录" : targetFilter === "initial" ? " · 奇遇与通行证初始形态" : ` · ${group?.label ?? targetFilter}`}`;
+  const selectedGroups = targetFilter === "all" ? seasonGroups
+    : seasonGroups.filter(row => targetFilter === "shiny" ? ["S2", "S5"].includes(row.id) : row.id === "battlepass");
+  $("target-catalog-note").textContent = `${count} 项 · 初始形态${outside ? " · 当前目标在筛选外" : ""}`;
   $("season-source-details").hidden = !selectedGroups.length;
   $("season-source-notes").innerHTML = selectedGroups
     .map((row) => `<p>${escapeHtml(row.sourceNote ?? row.label)}</p>`)
@@ -367,11 +358,11 @@ function autoGenerateProfile() {
 function initializePickers() {
   const spiritRows = (selectId) =>
     Array.from($(selectId).options)
-      .map((option) => spiritMap.get(option.value))
-      .filter(Boolean)
+      .filter(option => spiritMap.has(option.value))
+      .map(option => ({ ...spiritMap.get(option.value), hiddenFromSearch: option.dataset.filterOutside === "true" }))
       .map((spirit) => ({
         ...spirit,
-        searchText: [
+        searchText: selectId === "target-species" ? targetSearchText.get(spirit.id) : [
           spirit.name,
           spirit.pinyin,
           spirit.initials,
@@ -918,10 +909,13 @@ function validateImport(value) {
     observationIds.add(observation.id);
   }
   validatePreviewSettings(incoming, spiritMap.get(incoming.targetId));
+  if (incoming.preview && spiritMap.get(incoming.targetId)?.hasShinyForm !== true) incoming.preview.shiny = false;
   return clone(incoming);
 }
 
 function initialTargetId(id) {
+  const mappedId = spiritMap.get(id)?.initialFormId;
+  if (mappedId && spiritMap.has(mappedId)) return mappedId;
   const explicit = fieldData.formMappings.find(row => row.sourceId === id);
   if (explicit && spiritMap.has(explicit.initialId)) return explicit.initialId;
   const spirit = spiritMap.get(id);
@@ -1393,6 +1387,13 @@ try {
   }
   if (!seasonGroups.length && Array.isArray(catalog.targetGroups))
     seasonGroups = catalog.targetGroups;
+  // Search evolution names while presenting each initial form only once.
+  for (const spirit of catalog.spirits) {
+    const id = initialTargetId(spirit.id);
+    const terms = [spirit.name, spirit.pinyin, spirit.initials, spirit.dexNo,
+      ...(spirit.aliases ?? []), ...(spirit.formerNames ?? [])];
+    targetSearchText.set(id, `${targetSearchText.get(id) ?? ""} ${terms.join(" ")}`);
+  }
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {

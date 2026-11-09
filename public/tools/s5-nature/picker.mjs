@@ -90,11 +90,11 @@ export function createPicker({
       .replace(/^#/, "");
     candidates = rows().filter(
       (row) =>
-        !needle ||
+        !row.hiddenFromSearch && (!needle ||
         String(row.searchText ?? row.name)
           .toLocaleLowerCase()
           .replace(/\s+/g, "")
-          .includes(needle),
+          .includes(needle)),
     );
     active = candidates.length ? 0 : -1;
     limit = 24;

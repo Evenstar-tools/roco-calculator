@@ -574,7 +574,8 @@
         "field": "stength_stage",
         "petbaseId": 3004,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_f60e2755ae42cf41",
@@ -627,7 +628,9 @@
         "field": "stength_stage",
         "petbaseId": 5025,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_db5a2cb398dc0385"
     },
     {
       "id": "spirit_ec2230c14154bb52",
@@ -681,7 +684,9 @@
         "field": "stength_stage",
         "petbaseId": 5026,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_db5a2cb398dc0385"
     },
     {
       "id": "spirit_dd14e867313fad1d",
@@ -735,7 +740,9 @@
         "field": "stength_stage",
         "petbaseId": 5027,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_db5a2cb398dc0385"
     },
     {
       "id": "spirit_32aed655cbbf0db6",
@@ -789,7 +796,9 @@
         "field": "stength_stage",
         "petbaseId": 5028,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_db5a2cb398dc0385"
     },
     {
       "id": "spirit_d345729d1593bff7",
@@ -844,7 +853,8 @@
         "field": "stength_stage",
         "petbaseId": 3001,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_cb8c0ff92ae64653",
@@ -897,7 +907,9 @@
         "field": "stength_stage",
         "petbaseId": 3025,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d345729d1593bff7"
     },
     {
       "id": "spirit_d7a201531161488e",
@@ -952,7 +964,9 @@
         "field": "stength_stage",
         "petbaseId": 3007,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d345729d1593bff7"
     },
     {
       "id": "spirit_dc6dbc4055d0d9dd",
@@ -1005,7 +1019,9 @@
         "field": "stength_stage",
         "petbaseId": 5003,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d345729d1593bff7"
     },
     {
       "id": "spirit_a62b9a9c4ae00665",
@@ -1081,7 +1097,9 @@
         "field": "stength_stage",
         "petbaseId": 5061,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d345729d1593bff7"
     },
     {
       "id": "spirit_8b8175b97cd7e6a7",
@@ -1134,7 +1152,8 @@
         "field": "stength_stage",
         "petbaseId": 3003,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_e128d935f4ac4fb5",
@@ -1187,7 +1206,9 @@
         "field": "stength_stage",
         "petbaseId": 3032,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_8b8175b97cd7e6a7"
     },
     {
       "id": "spirit_537679016e3ec4bb",
@@ -1240,7 +1261,9 @@
         "field": "stength_stage",
         "petbaseId": 3006,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_8b8175b97cd7e6a7"
     },
     {
       "id": "spirit_4c280ecf82adb90e",
@@ -1293,7 +1316,9 @@
         "field": "stength_stage",
         "petbaseId": 5017,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_8b8175b97cd7e6a7"
     },
     {
       "id": "spirit_77c2085d2f6e8e87",
@@ -1349,7 +1374,8 @@
         "field": "stength_stage",
         "petbaseId": 3002,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_cb69e7131cce6f17",
@@ -1402,7 +1428,9 @@
         "field": "stength_stage",
         "petbaseId": 3033,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_77c2085d2f6e8e87"
     },
     {
       "id": "spirit_4ec76429db5748d4",
@@ -1455,7 +1483,9 @@
         "field": "stength_stage",
         "petbaseId": 3005,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_77c2085d2f6e8e87"
     },
     {
       "id": "spirit_30c62645090ee8af",
@@ -1508,7 +1538,9 @@
         "field": "stength_stage",
         "petbaseId": 5010,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_77c2085d2f6e8e87"
     },
     {
       "id": "spirit_6d78e04a6736155b",
@@ -1561,7 +1593,8 @@
         "field": "stength_stage",
         "petbaseId": 3012,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_39d8b867216c267d",
@@ -1614,7 +1647,8 @@
         "field": "stength_stage",
         "petbaseId": 3036,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_35643e306cb87bad",
@@ -1667,7 +1701,8 @@
         "field": "stength_stage",
         "petbaseId": 3452,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_cf730244912ada6a",
@@ -1720,7 +1755,8 @@
         "field": "stength_stage",
         "petbaseId": 3453,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_4b1d7354d6b9e310",
@@ -1773,7 +1809,8 @@
         "field": "stength_stage",
         "petbaseId": 3495,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_946f5527d5bee7f4",
@@ -1826,7 +1863,8 @@
         "field": "stength_stage",
         "petbaseId": 3742,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_94bd47e9b24b4bac",
@@ -1879,7 +1917,9 @@
         "field": "stength_stage",
         "petbaseId": 5006,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_6d78e04a6736155b"
     },
     {
       "id": "spirit_d307ebe71125e46b",
@@ -1932,7 +1972,9 @@
         "field": "stength_stage",
         "petbaseId": 5036,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_39d8b867216c267d"
     },
     {
       "id": "spirit_6a800b542b03bd39",
@@ -1985,7 +2027,9 @@
         "field": "stength_stage",
         "petbaseId": 5037,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_35643e306cb87bad"
     },
     {
       "id": "spirit_270232652eb15184",
@@ -2038,7 +2082,9 @@
         "field": "stength_stage",
         "petbaseId": 5038,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_cf730244912ada6a"
     },
     {
       "id": "spirit_99c5805b2d1cedb3",
@@ -2091,7 +2137,9 @@
         "field": "stength_stage",
         "petbaseId": 5039,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4b1d7354d6b9e310"
     },
     {
       "id": "spirit_14603e412a770707",
@@ -2144,7 +2192,9 @@
         "field": "stength_stage",
         "petbaseId": 5052,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_946f5527d5bee7f4"
     },
     {
       "id": "spirit_4a0e048421bc230a",
@@ -2197,7 +2247,8 @@
         "field": "stength_stage",
         "petbaseId": 3055,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_050d153e443fca0f",
@@ -2250,7 +2301,8 @@
         "field": "stength_stage",
         "petbaseId": 3516,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_ccfd03dcf48a75c3",
@@ -2303,7 +2355,9 @@
         "field": "stength_stage",
         "petbaseId": 3056,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4a0e048421bc230a"
     },
     {
       "id": "spirit_185f4b5d56551d14",
@@ -2356,7 +2410,9 @@
         "field": "stength_stage",
         "petbaseId": 3517,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_050d153e443fca0f"
     },
     {
       "id": "spirit_2d9ea3b47bd52a54",
@@ -2409,7 +2465,9 @@
         "field": "stength_stage",
         "petbaseId": 3057,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4a0e048421bc230a"
     },
     {
       "id": "spirit_fd0cadca98778205",
@@ -2462,7 +2520,9 @@
         "field": "stength_stage",
         "petbaseId": 3518,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_050d153e443fca0f"
     },
     {
       "id": "spirit_e2a270484d0b90ea",
@@ -2515,7 +2575,8 @@
         "field": "stength_stage",
         "petbaseId": 3045,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_65f19c00f2d4117f",
@@ -2568,7 +2629,9 @@
         "field": "stength_stage",
         "petbaseId": 3046,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_e2a270484d0b90ea"
     },
     {
       "id": "spirit_5147f20d585e4b28",
@@ -2622,7 +2685,9 @@
         "field": "stength_stage",
         "petbaseId": 3047,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_e2a270484d0b90ea"
     },
     {
       "id": "spirit_7641c889b2ba4895",
@@ -2675,7 +2740,8 @@
         "field": "stength_stage",
         "petbaseId": 3279,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_717a4c48527bea4f",
@@ -2728,7 +2794,8 @@
         "field": "stength_stage",
         "petbaseId": 3280,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_d6a714a1fc23b030",
@@ -2781,7 +2848,8 @@
         "field": "stength_stage",
         "petbaseId": 3281,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_7215049b23b5cdaf",
@@ -2834,7 +2902,8 @@
         "field": "stength_stage",
         "petbaseId": 3533,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_2d02e8b66152b89b",
@@ -2887,7 +2956,9 @@
         "field": "stength_stage",
         "petbaseId": 3028,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_7215049b23b5cdaf"
     },
     {
       "id": "spirit_ced3e29f598387b0",
@@ -2940,7 +3011,9 @@
         "field": "stength_stage",
         "petbaseId": 3282,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_7641c889b2ba4895"
     },
     {
       "id": "spirit_bf1d9907aaa7f83b",
@@ -2993,7 +3066,9 @@
         "field": "stength_stage",
         "petbaseId": 3283,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_717a4c48527bea4f"
     },
     {
       "id": "spirit_02ebf2dda5ea12ab",
@@ -3046,7 +3121,9 @@
         "field": "stength_stage",
         "petbaseId": 3284,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d6a714a1fc23b030"
     },
     {
       "id": "spirit_4bd15e249d6653b9",
@@ -3101,7 +3178,9 @@
         "field": "stength_stage",
         "petbaseId": 3037,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_7215049b23b5cdaf"
     },
     {
       "id": "spirit_82158f2918351dd1",
@@ -3156,7 +3235,9 @@
         "field": "stength_stage",
         "petbaseId": 3285,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_7641c889b2ba4895"
     },
     {
       "id": "spirit_c0d3e1738a6ed392",
@@ -3211,7 +3292,9 @@
         "field": "stength_stage",
         "petbaseId": 3286,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_717a4c48527bea4f"
     },
     {
       "id": "spirit_ba1773a7b0d7f2cc",
@@ -3266,7 +3349,9 @@
         "field": "stength_stage",
         "petbaseId": 3287,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d6a714a1fc23b030"
     },
     {
       "id": "spirit_7eb586d6475d99d4",
@@ -3319,7 +3404,9 @@
         "field": "stength_stage",
         "petbaseId": 5014,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_7215049b23b5cdaf"
     },
     {
       "id": "spirit_dcd9dd30a0ad5c7f",
@@ -3372,7 +3459,9 @@
         "field": "stength_stage",
         "petbaseId": 5030,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_7641c889b2ba4895"
     },
     {
       "id": "spirit_9f8c8d8139b244ab",
@@ -3425,7 +3514,9 @@
         "field": "stength_stage",
         "petbaseId": 5031,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_717a4c48527bea4f"
     },
     {
       "id": "spirit_4509a6b87740551b",
@@ -3478,7 +3569,9 @@
         "field": "stength_stage",
         "petbaseId": 5032,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d6a714a1fc23b030"
     },
     {
       "id": "spirit_5b7a55721521545f",
@@ -3531,7 +3624,8 @@
         "field": "stength_stage",
         "petbaseId": 3145,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_6a82dae2525231bb",
@@ -3585,7 +3679,9 @@
         "field": "stength_stage",
         "petbaseId": 3146,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_5b7a55721521545f"
     },
     {
       "id": "spirit_da28fd0a0beef1a6",
@@ -3639,7 +3735,9 @@
         "field": "stength_stage",
         "petbaseId": 3147,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_5b7a55721521545f"
     },
     {
       "id": "spirit_77fd5fcc0d4d85f0",
@@ -3692,7 +3790,8 @@
         "field": "stength_stage",
         "petbaseId": 3106,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_1d98beac89d9de18",
@@ -3745,7 +3844,8 @@
         "field": "stength_stage",
         "petbaseId": 3500,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_0f268324272b589e",
@@ -3798,7 +3898,9 @@
         "field": "stength_stage",
         "petbaseId": 3107,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_77fd5fcc0d4d85f0"
     },
     {
       "id": "spirit_125322df9fdba77e",
@@ -3851,7 +3953,9 @@
         "field": "stength_stage",
         "petbaseId": 3501,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_1d98beac89d9de18"
     },
     {
       "id": "spirit_10fa789e8a2d1a1d",
@@ -3904,7 +4008,9 @@
         "field": "stength_stage",
         "petbaseId": 3108,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_77fd5fcc0d4d85f0"
     },
     {
       "id": "spirit_4757c9c4bcaee886",
@@ -3957,7 +4063,9 @@
         "field": "stength_stage",
         "petbaseId": 3502,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_1d98beac89d9de18"
     },
     {
       "id": "spirit_d52594cbbf48906b",
@@ -4010,7 +4118,8 @@
         "field": "stength_stage",
         "petbaseId": 3103,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_07aa4349f64588ad",
@@ -4063,7 +4172,9 @@
         "field": "stength_stage",
         "petbaseId": 3104,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d52594cbbf48906b"
     },
     {
       "id": "spirit_0573dd499a17d300",
@@ -4116,7 +4227,9 @@
         "field": "stength_stage",
         "petbaseId": 3105,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d52594cbbf48906b"
     },
     {
       "id": "spirit_3fb98e0a461b35c8",
@@ -4172,7 +4285,9 @@
         "field": "stength_stage",
         "petbaseId": 5008,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d52594cbbf48906b"
     },
     {
       "id": "spirit_2a9b7b8d99dba59e",
@@ -4228,7 +4343,8 @@
         "field": "stength_stage",
         "petbaseId": 3010,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_db847c8849145a7c",
@@ -4284,7 +4400,9 @@
         "field": "stength_stage",
         "petbaseId": 3039,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_2a9b7b8d99dba59e"
     },
     {
       "id": "spirit_67dcbe51f817669a",
@@ -4338,7 +4456,9 @@
         "field": "stength_stage",
         "petbaseId": 5055,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_2a9b7b8d99dba59e"
     },
     {
       "id": "spirit_0aa69ad38f66402d",
@@ -4399,7 +4519,8 @@
         "petbase-3470",
         "petbase-3471",
         "petbase-3472"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_552a95c89d0867e1",
@@ -4464,7 +4585,9 @@
         "petbase-3470",
         "petbase-3471",
         "petbase-3472"
-      ]
+      ],
+      "hasShinyForm": false,
+      "initialFormId": "spirit_0aa69ad38f66402d"
     },
     {
       "id": "spirit_9dd866cafbbf24f3",
@@ -4522,7 +4645,9 @@
         "field": "stength_stage",
         "petbaseId": 3138,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_0aa69ad38f66402d"
     },
     {
       "id": "spirit_30c4c0a5620c04b2",
@@ -4580,7 +4705,9 @@
         "field": "stength_stage",
         "petbaseId": 3470,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_0aa69ad38f66402d"
     },
     {
       "id": "spirit_aab4cd6a788bef56",
@@ -4638,7 +4765,9 @@
         "field": "stength_stage",
         "petbaseId": 3471,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_0aa69ad38f66402d"
     },
     {
       "id": "spirit_7ec0b892b12a44fc",
@@ -4696,7 +4825,9 @@
         "field": "stength_stage",
         "petbaseId": 3472,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_0aa69ad38f66402d"
     },
     {
       "id": "spirit_7c92f75ee0e707ea",
@@ -4752,7 +4883,8 @@
         "field": "stength_stage",
         "petbaseId": 3064,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_95c8a0f91aec8a68",
@@ -4806,7 +4938,9 @@
         "field": "stength_stage",
         "petbaseId": 5019,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_7c92f75ee0e707ea"
     },
     {
       "id": "spirit_4dbadf64799c9e23",
@@ -4860,7 +4994,8 @@
         "field": "stength_stage",
         "petbaseId": 3315,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_750fb3fba9325823",
@@ -4914,7 +5049,9 @@
         "field": "stength_stage",
         "petbaseId": 3316,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4dbadf64799c9e23"
     },
     {
       "id": "spirit_e3c66cd78f05665a",
@@ -4968,7 +5105,9 @@
         "field": "stength_stage",
         "petbaseId": 3317,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4dbadf64799c9e23"
     },
     {
       "id": "spirit_671f6866e48a615e",
@@ -5031,7 +5170,8 @@
         "petbase-3450",
         "petbase-3451",
         "petbase-3486"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_8daefb99ffb3a3b8",
@@ -5085,7 +5225,9 @@
         "field": "stength_stage",
         "petbaseId": 3308,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_671f6866e48a615e"
     },
     {
       "id": "spirit_c3d7e5b349b3d691",
@@ -5139,7 +5281,9 @@
         "field": "stength_stage",
         "petbaseId": 3448,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_671f6866e48a615e"
     },
     {
       "id": "spirit_f23b2e2f30fda5ef",
@@ -5193,7 +5337,9 @@
         "field": "stength_stage",
         "petbaseId": 3449,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_671f6866e48a615e"
     },
     {
       "id": "spirit_39a66778bae3c0d2",
@@ -5247,7 +5393,9 @@
         "field": "stength_stage",
         "petbaseId": 3450,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_671f6866e48a615e"
     },
     {
       "id": "spirit_f79e08f3515b255d",
@@ -5301,7 +5449,9 @@
         "field": "stength_stage",
         "petbaseId": 3451,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_671f6866e48a615e"
     },
     {
       "id": "spirit_14755429d3be9ca8",
@@ -5355,7 +5505,9 @@
         "field": "stength_stage",
         "petbaseId": 3486,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_671f6866e48a615e"
     },
     {
       "id": "spirit_4c5b5c6c97c28e2e",
@@ -5409,7 +5561,8 @@
         "field": "stength_stage",
         "petbaseId": 5001,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_ee3cfe5d3b6216b0",
@@ -5463,7 +5616,8 @@
         "field": "stength_stage",
         "petbaseId": 5047,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_47ffaf8c6ef0b369",
@@ -5517,7 +5671,8 @@
         "field": "stength_stage",
         "petbaseId": 5048,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_f5b53954bf0bee7d",
@@ -5571,7 +5726,8 @@
         "field": "stength_stage",
         "petbaseId": 5049,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_4e4f2c59a5d34b72",
@@ -5625,7 +5781,8 @@
         "field": "stength_stage",
         "petbaseId": 5050,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_e1a54a70644c23a8",
@@ -5679,7 +5836,8 @@
         "field": "stength_stage",
         "petbaseId": 5051,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_170ef71f536a3f8e",
@@ -5732,7 +5890,8 @@
         "field": "stength_stage",
         "petbaseId": 3029,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_4843bd1e3723d3f2",
@@ -5785,7 +5944,9 @@
         "field": "stength_stage",
         "petbaseId": 3030,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_170ef71f536a3f8e"
     },
     {
       "id": "spirit_dcaca25adb2a9978",
@@ -5838,7 +5999,9 @@
         "field": "stength_stage",
         "petbaseId": 3031,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_170ef71f536a3f8e"
     },
     {
       "id": "spirit_6ca793b3a062580e",
@@ -5891,7 +6054,9 @@
         "field": "stength_stage",
         "petbaseId": 5005,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_170ef71f536a3f8e"
     },
     {
       "id": "spirit_e4ee051aa2a60ad3",
@@ -5944,7 +6109,8 @@
         "field": "stength_stage",
         "petbaseId": 3040,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_6a6a9e45ba10677d",
@@ -5998,7 +6164,8 @@
         "field": "stength_stage",
         "petbaseId": 3288,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_805d4adf8c5e0765",
@@ -6052,7 +6219,8 @@
         "field": "stength_stage",
         "petbaseId": 3289,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_abb342c097633cd1",
@@ -6106,7 +6274,8 @@
         "field": "stength_stage",
         "petbaseId": 3290,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_5e815e3cf519c95a",
@@ -6159,7 +6328,9 @@
         "field": "stength_stage",
         "petbaseId": 3041,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_e4ee051aa2a60ad3"
     },
     {
       "id": "spirit_4f29eeb58d7ac639",
@@ -6213,7 +6384,9 @@
         "field": "stength_stage",
         "petbaseId": 3291,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_6a6a9e45ba10677d"
     },
     {
       "id": "spirit_5290b35904ac4423",
@@ -6267,7 +6440,9 @@
         "field": "stength_stage",
         "petbaseId": 3292,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_805d4adf8c5e0765"
     },
     {
       "id": "spirit_6b8c8facedcb5b11",
@@ -6321,7 +6496,9 @@
         "field": "stength_stage",
         "petbaseId": 3293,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_abb342c097633cd1"
     },
     {
       "id": "spirit_6ae23f7dd507f7a2",
@@ -6374,7 +6551,9 @@
         "field": "stength_stage",
         "petbaseId": 3042,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_e4ee051aa2a60ad3"
     },
     {
       "id": "spirit_22727fe2d2d93a69",
@@ -6428,7 +6607,9 @@
         "field": "stength_stage",
         "petbaseId": 3294,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_6a6a9e45ba10677d"
     },
     {
       "id": "spirit_a5b9ac10091ca495",
@@ -6482,7 +6663,9 @@
         "field": "stength_stage",
         "petbaseId": 3295,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_805d4adf8c5e0765"
     },
     {
       "id": "spirit_0486d96ed0ca509b",
@@ -6536,7 +6719,9 @@
         "field": "stength_stage",
         "petbaseId": 3296,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_abb342c097633cd1"
     },
     {
       "id": "spirit_1b795d4da2571041",
@@ -6644,7 +6829,8 @@
         "field": "stength_stage",
         "petbaseId": 3071,
         "status": "verified"
-      }
+      },
+      "initialFormId": "spirit_1b795d4da2571041"
     },
     {
       "id": "spirit_41a9a2fb4a1d89c0",
@@ -6720,7 +6906,9 @@
         "field": "stength_stage",
         "petbaseId": 5018,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_1b795d4da2571041"
     },
     {
       "id": "spirit_356f9596b83c83c0",
@@ -6773,7 +6961,8 @@
         "field": "stength_stage",
         "petbaseId": 3098,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_a9403546de6b0a52",
@@ -6826,7 +7015,9 @@
         "field": "stength_stage",
         "petbaseId": 3099,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_356f9596b83c83c0"
     },
     {
       "id": "spirit_f8063bcf10b237fc",
@@ -6879,7 +7070,9 @@
         "field": "stength_stage",
         "petbaseId": 3100,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_356f9596b83c83c0"
     },
     {
       "id": "spirit_a23862842c04d6d4",
@@ -6934,7 +7127,8 @@
         "field": "stength_stage",
         "petbaseId": 3367,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_20c4fe45219cff2b",
@@ -6989,7 +7183,9 @@
         "field": "stength_stage",
         "petbaseId": 3368,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_a23862842c04d6d4"
     },
     {
       "id": "spirit_a4a37b0f3ab65804",
@@ -7047,7 +7243,8 @@
       "legacyWildStatFormIds": [
         "petbase-3405",
         "petbase-3482"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_95b3e83d81371f98",
@@ -7100,7 +7297,9 @@
         "field": "stength_stage",
         "petbaseId": 3061,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_a4a37b0f3ab65804"
     },
     {
       "id": "spirit_6130490ca58b2fea",
@@ -7153,7 +7352,9 @@
         "field": "stength_stage",
         "petbaseId": 3481,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_a4a37b0f3ab65804"
     },
     {
       "id": "spirit_354b3e674bd83fd2",
@@ -7206,7 +7407,9 @@
         "field": "stength_stage",
         "petbaseId": 3405,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_a4a37b0f3ab65804"
     },
     {
       "id": "spirit_87cdf35a2f438123",
@@ -7259,7 +7462,9 @@
         "field": "stength_stage",
         "petbaseId": 3482,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_a4a37b0f3ab65804"
     },
     {
       "id": "spirit_6f4e18332831b7a3",
@@ -7312,7 +7517,8 @@
         "field": "stength_stage",
         "petbaseId": 3438,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_ca0283d98055f876",
@@ -7366,7 +7572,8 @@
         "field": "stength_stage",
         "petbaseId": 3440,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_7d94980b59e9598d",
@@ -7419,7 +7626,9 @@
         "field": "stength_stage",
         "petbaseId": 3439,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_6f4e18332831b7a3"
     },
     {
       "id": "spirit_7650ed24af7eea6e",
@@ -7473,7 +7682,9 @@
         "field": "stength_stage",
         "petbaseId": 3441,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_ca0283d98055f876"
     },
     {
       "id": "spirit_646ad89ac7e8a7e9",
@@ -7527,7 +7738,8 @@
         "field": "stength_stage",
         "petbaseId": 3492,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_0c057dc540477080",
@@ -7580,7 +7792,8 @@
         "field": "stength_stage",
         "petbaseId": 3165,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_615e3788c66e51a7",
@@ -7633,7 +7846,9 @@
         "field": "stength_stage",
         "petbaseId": 3166,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_0c057dc540477080"
     },
     {
       "id": "spirit_14a25ce7b8d65623",
@@ -7688,7 +7903,9 @@
         "field": "stength_stage",
         "petbaseId": 3167,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_0c057dc540477080"
     },
     {
       "id": "spirit_69c93794ef06164c",
@@ -7742,7 +7959,8 @@
         "field": "stength_stage",
         "petbaseId": 3017,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_03d529d7deb1ee47",
@@ -7796,7 +8014,8 @@
         "field": "stength_stage",
         "petbaseId": 3297,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_0d0e95efbe74ee35",
@@ -7850,7 +8069,8 @@
         "field": "stength_stage",
         "petbaseId": 3298,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_4cf8140b1acc6f10",
@@ -7904,7 +8124,8 @@
         "field": "stength_stage",
         "petbaseId": 3299,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_57ffece4f3d6fca2",
@@ -7958,7 +8179,9 @@
         "field": "stength_stage",
         "petbaseId": 3018,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_69c93794ef06164c"
     },
     {
       "id": "spirit_994843fd5002d6fc",
@@ -8012,7 +8235,9 @@
         "field": "stength_stage",
         "petbaseId": 3300,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_03d529d7deb1ee47"
     },
     {
       "id": "spirit_d79de088f4eeeb6a",
@@ -8066,7 +8291,9 @@
         "field": "stength_stage",
         "petbaseId": 3301,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_0d0e95efbe74ee35"
     },
     {
       "id": "spirit_164ed0d2dce866ce",
@@ -8120,7 +8347,9 @@
         "field": "stength_stage",
         "petbaseId": 3302,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4cf8140b1acc6f10"
     },
     {
       "id": "spirit_cc0a5cd3b0df0a05",
@@ -8174,7 +8403,9 @@
         "field": "stength_stage",
         "petbaseId": 3019,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_69c93794ef06164c"
     },
     {
       "id": "spirit_50f1e9142e01d262",
@@ -8228,7 +8459,9 @@
         "field": "stength_stage",
         "petbaseId": 3303,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_03d529d7deb1ee47"
     },
     {
       "id": "spirit_0706209a91c4d2dd",
@@ -8282,7 +8515,9 @@
         "field": "stength_stage",
         "petbaseId": 3304,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_0d0e95efbe74ee35"
     },
     {
       "id": "spirit_60c806c518c42d77",
@@ -8336,7 +8571,9 @@
         "field": "stength_stage",
         "petbaseId": 3305,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4cf8140b1acc6f10"
     },
     {
       "id": "spirit_2e19e8edb2a60bc2",
@@ -8393,7 +8630,9 @@
         "field": "stength_stage",
         "petbaseId": 5004,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_69c93794ef06164c"
     },
     {
       "id": "spirit_f52c89e7811d8af3",
@@ -8450,7 +8689,9 @@
         "field": "stength_stage",
         "petbaseId": 5033,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_03d529d7deb1ee47"
     },
     {
       "id": "spirit_ad6e62ee903dc2fe",
@@ -8507,7 +8748,9 @@
         "field": "stength_stage",
         "petbaseId": 5034,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_0d0e95efbe74ee35"
     },
     {
       "id": "spirit_49cd0386a45b533d",
@@ -8564,7 +8807,9 @@
         "field": "stength_stage",
         "petbaseId": 5035,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4cf8140b1acc6f10"
     },
     {
       "id": "spirit_4318b532ca40c05f",
@@ -8617,7 +8862,8 @@
         "field": "stength_stage",
         "petbaseId": 3190,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_152583e8aed619c0",
@@ -8670,7 +8916,9 @@
         "field": "stength_stage",
         "petbaseId": 3191,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4318b532ca40c05f"
     },
     {
       "id": "spirit_17446a2b41bf4052",
@@ -8725,7 +8973,9 @@
         "field": "stength_stage",
         "petbaseId": 3192,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4318b532ca40c05f"
     },
     {
       "id": "spirit_b36b110dabf9563f",
@@ -8779,7 +9029,8 @@
         "field": "stength_stage",
         "petbaseId": 3034,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_28ae7d1286fad58b",
@@ -8833,7 +9084,9 @@
         "field": "stength_stage",
         "petbaseId": 3027,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_b36b110dabf9563f"
     },
     {
       "id": "spirit_cbe29ac35310c7c6",
@@ -8886,7 +9139,8 @@
         "field": "stength_stage",
         "petbaseId": 3043,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_744bd48ae8d9568d",
@@ -8939,7 +9193,9 @@
         "field": "stength_stage",
         "petbaseId": 3044,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_cbe29ac35310c7c6"
     },
     {
       "id": "spirit_f777820010f77600",
@@ -8992,7 +9248,8 @@
         "field": "stength_stage",
         "petbaseId": 3049,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_a727717ad00e7342",
@@ -9046,7 +9303,9 @@
         "field": "stength_stage",
         "petbaseId": 3101,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f777820010f77600"
     },
     {
       "id": "spirit_c43a0b85bf30c248",
@@ -9102,7 +9361,9 @@
         "field": "stength_stage",
         "petbaseId": 3102,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f777820010f77600"
     },
     {
       "id": "spirit_46b0f0d4bc8a27ce",
@@ -9156,7 +9417,8 @@
         "field": "stength_stage",
         "petbaseId": 3330,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_04123d2d926753e5",
@@ -9210,7 +9472,8 @@
         "field": "stength_stage",
         "petbaseId": 3475,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_ac567756b7a95b52",
@@ -9264,7 +9527,9 @@
         "field": "stength_stage",
         "petbaseId": 3331,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_46b0f0d4bc8a27ce"
     },
     {
       "id": "spirit_d6b4788977838c16",
@@ -9318,7 +9583,9 @@
         "field": "stength_stage",
         "petbaseId": 3476,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_04123d2d926753e5"
     },
     {
       "id": "spirit_afdd04c5a8919716",
@@ -9372,7 +9639,9 @@
         "field": "stength_stage",
         "petbaseId": 3332,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_46b0f0d4bc8a27ce"
     },
     {
       "id": "spirit_3b32f292af96feec",
@@ -9426,7 +9695,9 @@
         "field": "stength_stage",
         "petbaseId": 3477,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_04123d2d926753e5"
     },
     {
       "id": "spirit_786924cd03526ca4",
@@ -9480,7 +9751,9 @@
         "field": "stength_stage",
         "petbaseId": 5012,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_46b0f0d4bc8a27ce"
     },
     {
       "id": "spirit_dbf6e5118a0b051e",
@@ -9534,7 +9807,9 @@
         "field": "stength_stage",
         "petbaseId": 5029,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_04123d2d926753e5"
     },
     {
       "id": "spirit_70a40653ea0eee33",
@@ -9589,7 +9864,8 @@
         "field": "stength_stage",
         "petbaseId": 3227,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_8e42310d48bd7fc7",
@@ -9642,7 +9918,8 @@
         "field": "stength_stage",
         "petbaseId": 3193,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_64a897c6b698c2a9",
@@ -9696,7 +9973,8 @@
         "field": "stength_stage",
         "petbaseId": 3442,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_56f8f0077302b8b4",
@@ -9749,7 +10027,9 @@
         "field": "stength_stage",
         "petbaseId": 3194,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_8e42310d48bd7fc7"
     },
     {
       "id": "spirit_e0fd67c2b0e5c25a",
@@ -9803,7 +10083,9 @@
         "field": "stength_stage",
         "petbaseId": 3443,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_64a897c6b698c2a9"
     },
     {
       "id": "spirit_56a89afc73148f54",
@@ -9857,7 +10139,8 @@
         "field": "stength_stage",
         "petbaseId": 3058,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_b6d5d374fe7a4115",
@@ -9911,7 +10194,9 @@
         "field": "stength_stage",
         "petbaseId": 3059,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_56a89afc73148f54"
     },
     {
       "id": "spirit_d8b0958a9710ee37",
@@ -9965,7 +10250,9 @@
         "field": "stength_stage",
         "petbaseId": 3157,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_56a89afc73148f54"
     },
     {
       "id": "spirit_7ae10f79a1849af1",
@@ -10019,7 +10306,9 @@
         "field": "stength_stage",
         "petbaseId": 5015,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_56a89afc73148f54"
     },
     {
       "id": "spirit_bfe02d4281b32ae4",
@@ -10074,7 +10363,8 @@
         "field": "stength_stage",
         "petbaseId": 3142,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_e9b50c26f5156efb",
@@ -10129,7 +10419,9 @@
         "field": "stength_stage",
         "petbaseId": 3143,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_bfe02d4281b32ae4"
     },
     {
       "id": "spirit_49ad5c69be90b5bf",
@@ -10184,7 +10476,9 @@
         "field": "stength_stage",
         "petbaseId": 3144,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_bfe02d4281b32ae4"
     },
     {
       "id": "spirit_cf5102684c14c331",
@@ -10243,7 +10537,8 @@
       "legacyWildStatFormIds": [
         "petbase-3346",
         "petbase-3571"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_e62f0702d019bbff",
@@ -10302,7 +10597,9 @@
       "legacyWildStatFormIds": [
         "petbase-3346",
         "petbase-3571"
-      ]
+      ],
+      "hasShinyForm": false,
+      "initialFormId": "spirit_cf5102684c14c331"
     },
     {
       "id": "spirit_b40543f05ede5824",
@@ -10356,7 +10653,9 @@
         "field": "stength_stage",
         "petbaseId": 3346,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_cf5102684c14c331"
     },
     {
       "id": "spirit_d68adbb57965af94",
@@ -10410,7 +10709,9 @@
         "field": "stength_stage",
         "petbaseId": 3571,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_cf5102684c14c331"
     },
     {
       "id": "spirit_96afa437f590cc96",
@@ -10466,7 +10767,8 @@
         "field": "stength_stage",
         "petbaseId": 3069,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_1b3ea496d11a0eab",
@@ -10520,7 +10822,8 @@
         "field": "stength_stage",
         "petbaseId": 3026,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_1336bf0fd9adf6ef",
@@ -10574,7 +10877,9 @@
         "field": "stength_stage",
         "petbaseId": 3035,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_1b3ea496d11a0eab"
     },
     {
       "id": "spirit_06c4fba64eb40bd2",
@@ -10627,7 +10932,8 @@
         "field": "stength_stage",
         "petbaseId": 3050,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_54ab5d440e31b493",
@@ -10681,7 +10987,8 @@
         "field": "stength_stage",
         "petbaseId": 3175,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_fc1fa6ffcb752915",
@@ -10735,7 +11042,9 @@
         "field": "stength_stage",
         "petbaseId": 3176,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_54ab5d440e31b493"
     },
     {
       "id": "spirit_8c4b702650e31f66",
@@ -10789,7 +11098,9 @@
         "field": "stength_stage",
         "petbaseId": 3177,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_54ab5d440e31b493"
     },
     {
       "id": "spirit_838a843160d26986",
@@ -10843,7 +11154,8 @@
         "field": "stength_stage",
         "petbaseId": 3139,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_bd8da42d42852406",
@@ -10897,7 +11209,9 @@
         "field": "stength_stage",
         "petbaseId": 3140,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_838a843160d26986"
     },
     {
       "id": "spirit_765165af4a4e54de",
@@ -10951,7 +11265,9 @@
         "field": "stength_stage",
         "petbaseId": 3141,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_838a843160d26986"
     },
     {
       "id": "spirit_3ec8454e3503abf9",
@@ -11005,7 +11321,8 @@
         "field": "stength_stage",
         "petbaseId": 3276,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_2009a4d521042694",
@@ -11059,7 +11376,9 @@
         "field": "stength_stage",
         "petbaseId": 3277,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3ec8454e3503abf9"
     },
     {
       "id": "spirit_23d8e46ab3759344",
@@ -11113,7 +11432,9 @@
         "field": "stength_stage",
         "petbaseId": 3278,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3ec8454e3503abf9"
     },
     {
       "id": "spirit_f0eb58fb18c9dca0",
@@ -11166,7 +11487,8 @@
         "field": "stength_stage",
         "petbaseId": 3014,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_608568e7fb1fc470",
@@ -11219,7 +11541,9 @@
         "field": "stength_stage",
         "petbaseId": 3015,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f0eb58fb18c9dca0"
     },
     {
       "id": "spirit_4e7acb9d14c8f373",
@@ -11273,7 +11597,9 @@
         "field": "stength_stage",
         "petbaseId": 3016,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f0eb58fb18c9dca0"
     },
     {
       "id": "spirit_897ad3f9223a851a",
@@ -11350,7 +11676,9 @@
         "field": "stength_stage",
         "petbaseId": 5053,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f0eb58fb18c9dca0"
     },
     {
       "id": "spirit_37e1d041ca12cf68",
@@ -11404,7 +11732,8 @@
         "field": "stength_stage",
         "petbaseId": 3115,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_8dbef89746bfb3af",
@@ -11458,7 +11787,9 @@
         "field": "stength_stage",
         "petbaseId": 3116,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_37e1d041ca12cf68"
     },
     {
       "id": "spirit_563a4e078a1d8cba",
@@ -11514,7 +11845,9 @@
         "field": "stength_stage",
         "petbaseId": 3117,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_37e1d041ca12cf68"
     },
     {
       "id": "spirit_ebb2563e2410bd6a",
@@ -11568,7 +11901,9 @@
         "field": "stength_stage",
         "petbaseId": 5011,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_37e1d041ca12cf68"
     },
     {
       "id": "spirit_6559cb4bdc43fc21",
@@ -11621,7 +11956,8 @@
         "field": "stength_stage",
         "petbaseId": 3170,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_6c627aa77d71cf89",
@@ -11675,7 +12011,9 @@
         "field": "stength_stage",
         "petbaseId": 3171,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_6559cb4bdc43fc21"
     },
     {
       "id": "spirit_ba59dde12b0c0431",
@@ -11729,7 +12067,8 @@
         "field": "stength_stage",
         "petbaseId": 3109,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_ccd65f12c28c6c89",
@@ -11783,7 +12122,9 @@
         "field": "stength_stage",
         "petbaseId": 3110,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_ba59dde12b0c0431"
     },
     {
       "id": "spirit_8f210e2e5fe10327",
@@ -11837,7 +12178,9 @@
         "field": "stength_stage",
         "petbaseId": 3111,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_ba59dde12b0c0431"
     },
     {
       "id": "spirit_c8484f0c0681b6ae",
@@ -11891,7 +12234,9 @@
         "field": "stength_stage",
         "petbaseId": 5009,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_ba59dde12b0c0431"
     },
     {
       "id": "spirit_efecf4d2f811fc11",
@@ -11946,7 +12291,8 @@
         "field": "stength_stage",
         "petbaseId": 3062,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_07cdb4d4a94ac1bd",
@@ -12003,7 +12349,9 @@
         "field": "stength_stage",
         "petbaseId": 3063,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_efecf4d2f811fc11"
     },
     {
       "id": "spirit_6a95a48463d87bef",
@@ -12058,7 +12406,9 @@
         "field": "stength_stage",
         "petbaseId": 5002,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_efecf4d2f811fc11"
     },
     {
       "id": "spirit_8a056366b4548195",
@@ -12112,7 +12462,8 @@
         "field": "stength_stage",
         "petbaseId": 3376,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_bec6a078b9380d64",
@@ -12166,7 +12517,8 @@
         "field": "stength_stage",
         "petbaseId": 3496,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_eaaf0316345348d1",
@@ -12220,7 +12572,9 @@
         "field": "stength_stage",
         "petbaseId": 3483,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_8a056366b4548195"
     },
     {
       "id": "spirit_f56a143b151ab432",
@@ -12274,7 +12628,9 @@
         "field": "stength_stage",
         "petbaseId": 3497,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_bec6a078b9380d64"
     },
     {
       "id": "spirit_47eda2b0ce0bbe10",
@@ -12328,7 +12684,9 @@
         "field": "stength_stage",
         "petbaseId": 3377,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_8a056366b4548195"
     },
     {
       "id": "spirit_520c19c877338dd4",
@@ -12382,7 +12740,9 @@
         "field": "stength_stage",
         "petbaseId": 3498,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_bec6a078b9380d64"
     },
     {
       "id": "spirit_7ddca2b7aaaf24c4",
@@ -12436,7 +12796,9 @@
         "field": "stength_stage",
         "petbaseId": 5056,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_8a056366b4548195"
     },
     {
       "id": "spirit_75f54f47b35b9e9c",
@@ -12490,7 +12852,9 @@
         "field": "stength_stage",
         "petbaseId": 5062,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_bec6a078b9380d64"
     },
     {
       "id": "spirit_16c94e4954935fac",
@@ -12543,7 +12907,8 @@
         "field": "stength_stage",
         "petbaseId": 3568,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_b0e254d60233952f",
@@ -12596,7 +12961,9 @@
         "field": "stength_stage",
         "petbaseId": 3569,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_16c94e4954935fac"
     },
     {
       "id": "spirit_7f2a9d80e7cec56e",
@@ -12649,7 +13016,9 @@
         "field": "stength_stage",
         "petbaseId": 5007,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_16c94e4954935fac"
     },
     {
       "id": "spirit_4e0dc7dc0b877594",
@@ -12703,7 +13072,8 @@
         "field": "stength_stage",
         "petbaseId": 3065,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_2d79fe35a27f9483",
@@ -12757,7 +13127,9 @@
         "field": "stength_stage",
         "petbaseId": 3066,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4e0dc7dc0b877594"
     },
     {
       "id": "spirit_be9941285a953245",
@@ -12811,7 +13183,8 @@
         "field": "stength_stage",
         "petbaseId": 3151,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_5a759518affc4d97",
@@ -12865,7 +13238,9 @@
         "field": "stength_stage",
         "petbaseId": 3152,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_be9941285a953245"
     },
     {
       "id": "spirit_704f8b90c87b1bf6",
@@ -12919,7 +13294,9 @@
         "field": "stength_stage",
         "petbaseId": 3153,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_be9941285a953245"
     },
     {
       "id": "spirit_9a811efcecccda12",
@@ -12972,7 +13349,8 @@
         "field": "stength_stage",
         "petbaseId": 3239,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_c55865acda344897",
@@ -13025,7 +13403,9 @@
         "field": "stength_stage",
         "petbaseId": 3240,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_9a811efcecccda12"
     },
     {
       "id": "spirit_d65c8e62b7f93bd8",
@@ -13078,7 +13458,9 @@
         "field": "stength_stage",
         "petbaseId": 3241,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_9a811efcecccda12"
     },
     {
       "id": "spirit_5e186c811af5ce3b",
@@ -13131,7 +13513,8 @@
         "field": "stength_stage",
         "petbaseId": 3011,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_f7e8528a743eaaf0",
@@ -13184,7 +13567,9 @@
         "field": "stength_stage",
         "petbaseId": 5016,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_5e186c811af5ce3b"
     },
     {
       "id": "spirit_49699925c6ec1c8f",
@@ -13238,7 +13623,8 @@
         "field": "stength_stage",
         "petbaseId": 3434,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_d1c13ba13b0d76ff",
@@ -13292,7 +13678,9 @@
         "field": "stength_stage",
         "petbaseId": 3435,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_49699925c6ec1c8f"
     },
     {
       "id": "spirit_57cf990eab0a0502",
@@ -13345,7 +13733,8 @@
         "field": "stength_stage",
         "petbaseId": 3172,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_37822bc1062c0c8e",
@@ -13398,7 +13787,9 @@
         "field": "stength_stage",
         "petbaseId": 3173,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_57cf990eab0a0502"
     },
     {
       "id": "spirit_510544553c4a7cbc",
@@ -13451,7 +13842,9 @@
         "field": "stength_stage",
         "petbaseId": 3174,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_57cf990eab0a0502"
     },
     {
       "id": "spirit_485ee637489f9ad5",
@@ -13505,7 +13898,8 @@
         "field": "stength_stage",
         "petbaseId": 3262,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_73f8f0f7a5af80e8",
@@ -13559,7 +13953,9 @@
         "field": "stength_stage",
         "petbaseId": 3263,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_485ee637489f9ad5"
     },
     {
       "id": "spirit_990cb4aa69aae116",
@@ -13612,7 +14008,8 @@
         "field": "stength_stage",
         "petbaseId": 3333,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_8ad67cef500f03bb",
@@ -13665,7 +14062,9 @@
         "field": "stength_stage",
         "petbaseId": 3334,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_990cb4aa69aae116"
     },
     {
       "id": "spirit_7abd8c5d14815f03",
@@ -13718,7 +14117,9 @@
         "field": "stength_stage",
         "petbaseId": 3335,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_990cb4aa69aae116"
     },
     {
       "id": "spirit_dcb0504a22dc89a2",
@@ -13774,7 +14175,8 @@
         "field": "stength_stage",
         "petbaseId": 3121,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_5a5fe946ec981a55",
@@ -13828,7 +14230,9 @@
         "field": "stength_stage",
         "petbaseId": 3122,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_dcb0504a22dc89a2"
     },
     {
       "id": "spirit_b5f7f523f4cb4178",
@@ -13884,7 +14288,9 @@
         "field": "stength_stage",
         "petbaseId": 3123,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_dcb0504a22dc89a2"
     },
     {
       "id": "spirit_504ad8ae5cd9a417",
@@ -13938,7 +14344,9 @@
         "field": "stength_stage",
         "petbaseId": 5013,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_dcb0504a22dc89a2"
     },
     {
       "id": "spirit_b7594c978ae26ecc",
@@ -13991,7 +14399,8 @@
         "field": "stength_stage",
         "petbaseId": 3410,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_befdd756d3d8b3dd",
@@ -14044,7 +14453,9 @@
         "field": "stength_stage",
         "petbaseId": 3411,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_b7594c978ae26ecc"
     },
     {
       "id": "spirit_500f4922dfc1cb1e",
@@ -14100,7 +14511,8 @@
         "field": "stength_stage",
         "petbaseId": 3075,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_0ff44d4938dbfb6d",
@@ -14156,7 +14568,9 @@
         "field": "stength_stage",
         "petbaseId": 3076,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_500f4922dfc1cb1e"
     },
     {
       "id": "spirit_2f24d4018a1545f7",
@@ -14214,7 +14628,9 @@
         "field": "stength_stage",
         "petbaseId": 3077,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_500f4922dfc1cb1e"
     },
     {
       "id": "spirit_a9dbb2fc3935e468",
@@ -14267,7 +14683,8 @@
         "field": "stength_stage",
         "petbaseId": 3395,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_9d2e8eeb9a1fe818",
@@ -14320,7 +14737,9 @@
         "field": "stength_stage",
         "petbaseId": 3396,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_a9dbb2fc3935e468"
     },
     {
       "id": "spirit_5ee78de2be28a163",
@@ -14373,7 +14792,9 @@
         "field": "stength_stage",
         "petbaseId": 3397,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_a9dbb2fc3935e468"
     },
     {
       "id": "spirit_a95bdb5c1c49960e",
@@ -14427,7 +14848,8 @@
         "field": "stength_stage",
         "petbaseId": 3594,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_8dbc85f59622c36a",
@@ -14481,7 +14903,9 @@
         "field": "stength_stage",
         "petbaseId": 3595,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_a95bdb5c1c49960e"
     },
     {
       "id": "spirit_de22accf29301363",
@@ -14537,7 +14961,9 @@
         "field": "stength_stage",
         "petbaseId": 3596,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_a95bdb5c1c49960e"
     },
     {
       "id": "spirit_d5db756766ab21aa",
@@ -14591,7 +15017,8 @@
         "field": "stength_stage",
         "petbaseId": 3600,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_e44802e1537dc447",
@@ -14645,7 +15072,9 @@
         "field": "stength_stage",
         "petbaseId": 3601,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d5db756766ab21aa"
     },
     {
       "id": "spirit_a339a9ece5b78fc4",
@@ -14699,7 +15128,9 @@
         "field": "stength_stage",
         "petbaseId": 3602,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d5db756766ab21aa"
     },
     {
       "id": "spirit_23bd8615aa9c02c8",
@@ -14753,7 +15184,8 @@
         "field": "stength_stage",
         "petbaseId": 3597,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_ac20eee6a2856869",
@@ -14807,7 +15239,9 @@
         "field": "stength_stage",
         "petbaseId": 3598,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_23bd8615aa9c02c8"
     },
     {
       "id": "spirit_40bee517b3857b1d",
@@ -14861,7 +15295,9 @@
         "field": "stength_stage",
         "petbaseId": 3599,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_23bd8615aa9c02c8"
     },
     {
       "id": "spirit_4009f06481c98efb",
@@ -14916,7 +15352,8 @@
         "field": "stength_stage",
         "petbaseId": 3499,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_c1a3ba0f110ff76b",
@@ -14969,7 +15406,8 @@
         "field": "stength_stage",
         "petbaseId": 3237,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_8e0dba092c6f9912",
@@ -15022,7 +15460,9 @@
         "field": "stength_stage",
         "petbaseId": 3238,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_c1a3ba0f110ff76b"
     },
     {
       "id": "spirit_7ec62cbf0327ea5a",
@@ -15075,7 +15515,8 @@
         "field": "stength_stage",
         "petbaseId": 3127,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_7b6d1cc11f6fe4f4",
@@ -15128,7 +15569,8 @@
         "field": "stength_stage",
         "petbaseId": 3467,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_0a51522c0bea266e",
@@ -15181,7 +15623,9 @@
         "field": "stength_stage",
         "petbaseId": 3128,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_7ec62cbf0327ea5a"
     },
     {
       "id": "spirit_f7f1fe9be39a310e",
@@ -15234,7 +15678,9 @@
         "field": "stength_stage",
         "petbaseId": 3468,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_7b6d1cc11f6fe4f4"
     },
     {
       "id": "spirit_95ff64ade5643af6",
@@ -15287,7 +15733,9 @@
         "field": "stength_stage",
         "petbaseId": 3129,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_7ec62cbf0327ea5a"
     },
     {
       "id": "spirit_97a0af606aaed34c",
@@ -15340,7 +15788,9 @@
         "field": "stength_stage",
         "petbaseId": 3469,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_7b6d1cc11f6fe4f4"
     },
     {
       "id": "spirit_70cdb58d677fc0c1",
@@ -15393,7 +15843,8 @@
         "field": "stength_stage",
         "petbaseId": 3130,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_68de87232e8ef07e",
@@ -15447,7 +15898,9 @@
         "field": "stength_stage",
         "petbaseId": 3131,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_70cdb58d677fc0c1"
     },
     {
       "id": "spirit_42ec7e9a6bdfd9fc",
@@ -15501,7 +15954,9 @@
         "field": "stength_stage",
         "petbaseId": 3132,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_70cdb58d677fc0c1"
     },
     {
       "id": "spirit_820232ca518d0543",
@@ -15555,7 +16010,8 @@
         "field": "stength_stage",
         "petbaseId": 3508,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_ee846adcf271635a",
@@ -15609,7 +16065,8 @@
         "field": "stength_stage",
         "petbaseId": 3511,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_6c137a25617820e8",
@@ -15663,7 +16120,9 @@
         "field": "stength_stage",
         "petbaseId": 3509,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_820232ca518d0543"
     },
     {
       "id": "spirit_4d5d8c026429b806",
@@ -15717,7 +16176,9 @@
         "field": "stength_stage",
         "petbaseId": 3512,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_ee846adcf271635a"
     },
     {
       "id": "spirit_4bc9a982e5888257",
@@ -15773,7 +16234,9 @@
         "field": "stength_stage",
         "petbaseId": 3510,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_820232ca518d0543"
     },
     {
       "id": "spirit_fae287769f80486c",
@@ -15827,7 +16290,9 @@
         "field": "stength_stage",
         "petbaseId": 3513,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_ee846adcf271635a"
     },
     {
       "id": "spirit_83db81196f100ca8",
@@ -15881,7 +16346,8 @@
         "field": "stength_stage",
         "petbaseId": 3378,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_d197cd68d0703776",
@@ -15935,7 +16401,9 @@
         "field": "stength_stage",
         "petbaseId": 3379,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_83db81196f100ca8"
     },
     {
       "id": "spirit_fc159a604efaf226",
@@ -15989,7 +16457,9 @@
         "field": "stength_stage",
         "petbaseId": 3380,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_83db81196f100ca8"
     },
     {
       "id": "spirit_3e425282b9a8c9ab",
@@ -16042,7 +16512,8 @@
         "field": "stength_stage",
         "petbaseId": 3534,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_3f90a2afd5df255c",
@@ -16095,7 +16566,9 @@
         "field": "stength_stage",
         "petbaseId": 3535,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_3e425282b9a8c9ab"
     },
     {
       "id": "spirit_a1120fe1443fe89f",
@@ -16148,7 +16621,8 @@
         "field": "stength_stage",
         "petbaseId": 3008,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_5f176b5856c40b8f",
@@ -16202,7 +16676,9 @@
         "field": "stength_stage",
         "petbaseId": 3067,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_a1120fe1443fe89f"
     },
     {
       "id": "spirit_46522758f37081eb",
@@ -16256,7 +16732,8 @@
         "field": "stength_stage",
         "petbaseId": 3215,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_a09a0cefefa72268",
@@ -16310,7 +16787,9 @@
         "field": "stength_stage",
         "petbaseId": 3216,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_46522758f37081eb"
     },
     {
       "id": "spirit_2ae6b5c4d6db7310",
@@ -16363,7 +16842,8 @@
         "field": "stength_stage",
         "petbaseId": 3529,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_83e3e8efde0199bf",
@@ -16416,7 +16896,9 @@
         "field": "stength_stage",
         "petbaseId": 3530,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_2ae6b5c4d6db7310"
     },
     {
       "id": "spirit_f675aae70d91a6ee",
@@ -16470,7 +16952,8 @@
         "field": "stength_stage",
         "petbaseId": 3112,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_e74caae57d4461fd",
@@ -16524,7 +17007,9 @@
         "field": "stength_stage",
         "petbaseId": 3113,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f675aae70d91a6ee"
     },
     {
       "id": "spirit_95db5c2218b2ed8f",
@@ -16578,7 +17063,9 @@
         "field": "stength_stage",
         "petbaseId": 3114,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f675aae70d91a6ee"
     },
     {
       "id": "spirit_4e1344e0cfd82bf9",
@@ -16643,7 +17130,8 @@
         "petbase-3552",
         "petbase-3553",
         "petbase-3554"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_28e59ee92341bf43",
@@ -16708,7 +17196,8 @@
         "petbase-3557",
         "petbase-3558",
         "petbase-3559"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_de999044bdf8e8c1",
@@ -16762,7 +17251,9 @@
         "field": "stength_stage",
         "petbaseId": 3551,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4e1344e0cfd82bf9"
     },
     {
       "id": "spirit_dcd2e90fe8de4c65",
@@ -16816,7 +17307,9 @@
         "field": "stength_stage",
         "petbaseId": 3556,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_28e59ee92341bf43"
     },
     {
       "id": "spirit_065c69728f30ce93",
@@ -16893,7 +17386,9 @@
         "field": "stength_stage",
         "petbaseId": 5023,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4e1344e0cfd82bf9"
     },
     {
       "id": "spirit_839cd7d34d2dd422",
@@ -16947,7 +17442,9 @@
         "field": "stength_stage",
         "petbaseId": 5043,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_28e59ee92341bf43"
     },
     {
       "id": "spirit_8748c0a6f05afc2d",
@@ -17024,7 +17521,9 @@
         "field": "stength_stage",
         "petbaseId": 3553,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4e1344e0cfd82bf9"
     },
     {
       "id": "spirit_218281240634725e",
@@ -17101,7 +17600,9 @@
         "field": "stength_stage",
         "petbaseId": 3553,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_28e59ee92341bf43"
     },
     {
       "id": "spirit_d4a7177497e7250e",
@@ -17180,7 +17681,9 @@
         "field": "stength_stage",
         "petbaseId": 5040,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4e1344e0cfd82bf9"
     },
     {
       "id": "spirit_3b52748976f979f2",
@@ -17259,7 +17762,9 @@
         "field": "stength_stage",
         "petbaseId": 5040,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_28e59ee92341bf43"
     },
     {
       "id": "spirit_e900600e3605dec4",
@@ -17336,7 +17841,9 @@
         "field": "stength_stage",
         "petbaseId": 3554,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4e1344e0cfd82bf9"
     },
     {
       "id": "spirit_213dd929c2abecd3",
@@ -17413,7 +17920,9 @@
         "field": "stength_stage",
         "petbaseId": 3554,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_28e59ee92341bf43"
     },
     {
       "id": "spirit_b9046792466d9675",
@@ -17490,7 +17999,9 @@
         "field": "stength_stage",
         "petbaseId": 5041,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4e1344e0cfd82bf9"
     },
     {
       "id": "spirit_2e04c8791a9f2542",
@@ -17567,7 +18078,9 @@
         "field": "stength_stage",
         "petbaseId": 5041,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_28e59ee92341bf43"
     },
     {
       "id": "spirit_b8395532616fe541",
@@ -17646,7 +18159,9 @@
         "field": "stength_stage",
         "petbaseId": 3552,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4e1344e0cfd82bf9"
     },
     {
       "id": "spirit_03d719be9841704e",
@@ -17725,7 +18240,9 @@
         "field": "stength_stage",
         "petbaseId": 3552,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_28e59ee92341bf43"
     },
     {
       "id": "spirit_7f340121dd6e8ed4",
@@ -17802,7 +18319,9 @@
         "field": "stength_stage",
         "petbaseId": 5042,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4e1344e0cfd82bf9"
     },
     {
       "id": "spirit_dca5b460922a95f9",
@@ -17879,7 +18398,9 @@
         "field": "stength_stage",
         "petbaseId": 5042,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_28e59ee92341bf43"
     },
     {
       "id": "spirit_e28371ed91d50b85",
@@ -17932,7 +18453,8 @@
         "field": "stength_stage",
         "petbaseId": 3255,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_892bc1a170d3f187",
@@ -17985,7 +18507,9 @@
         "field": "stength_stage",
         "petbaseId": 3256,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_e28371ed91d50b85"
     },
     {
       "id": "spirit_f19630c316a3bfd7",
@@ -18039,7 +18563,8 @@
         "field": "stength_stage",
         "petbaseId": 3093,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_539c71eb7ab51df2",
@@ -18093,7 +18618,9 @@
         "field": "stength_stage",
         "petbaseId": 3094,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f19630c316a3bfd7"
     },
     {
       "id": "spirit_55072e5b883cb75c",
@@ -18147,7 +18674,9 @@
         "field": "stength_stage",
         "petbaseId": 3095,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f19630c316a3bfd7"
     },
     {
       "id": "spirit_dd9f6c54fe833615",
@@ -18200,7 +18729,8 @@
         "field": "stength_stage",
         "petbaseId": 3373,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_f544e238b20d1b57",
@@ -18253,7 +18783,9 @@
         "field": "stength_stage",
         "petbaseId": 3374,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_dd9f6c54fe833615"
     },
     {
       "id": "spirit_6d33a16d98f35c14",
@@ -18306,7 +18838,9 @@
         "field": "stength_stage",
         "petbaseId": 3375,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_dd9f6c54fe833615"
     },
     {
       "id": "spirit_a9c19df7ed7f11ce",
@@ -18359,7 +18893,9 @@
         "field": "stength_stage",
         "petbaseId": 5024,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_dd9f6c54fe833615"
     },
     {
       "id": "spirit_a6c418b0b991f459",
@@ -18415,7 +18951,8 @@
         "field": "stength_stage",
         "petbaseId": 3506,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_181a3dd66ff76d4a",
@@ -18471,7 +19008,9 @@
         "field": "stength_stage",
         "petbaseId": 3507,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_a6c418b0b991f459"
     },
     {
       "id": "spirit_50b77eaae7361af5",
@@ -18526,7 +19065,8 @@
         "field": "stength_stage",
         "petbaseId": 3211,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_b2f1251352d5f670",
@@ -18581,7 +19121,9 @@
         "field": "stength_stage",
         "petbaseId": 3412,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_50b77eaae7361af5"
     },
     {
       "id": "spirit_cc4129b5ab2b9c0c",
@@ -18634,7 +19176,9 @@
         "field": "stength_stage",
         "petbaseId": 5022,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_50b77eaae7361af5"
     },
     {
       "id": "spirit_cb0f3e33d8b40885",
@@ -18687,7 +19231,8 @@
         "field": "stength_stage",
         "petbaseId": 3188,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_f26505a4b7777206",
@@ -18740,7 +19285,9 @@
         "field": "stength_stage",
         "petbaseId": 3189,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_cb0f3e33d8b40885"
     },
     {
       "id": "spirit_e0332c3637a510c6",
@@ -18816,7 +19363,9 @@
         "field": "stength_stage",
         "petbaseId": 5060,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_cb0f3e33d8b40885"
     },
     {
       "id": "spirit_6fc567ff2b56be9e",
@@ -18869,7 +19418,8 @@
         "field": "stength_stage",
         "petbaseId": 3195,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_e3880bbd97706d06",
@@ -18922,7 +19472,9 @@
         "field": "stength_stage",
         "petbaseId": 3196,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_6fc567ff2b56be9e"
     },
     {
       "id": "spirit_57fff877bf40ffd4",
@@ -18975,7 +19527,9 @@
         "field": "stength_stage",
         "petbaseId": 3197,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_6fc567ff2b56be9e"
     },
     {
       "id": "spirit_15d9cb4663223f27",
@@ -19029,7 +19583,8 @@
         "field": "stength_stage",
         "petbaseId": 3618,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_85bda8a55f4058a5",
@@ -19083,7 +19638,9 @@
         "field": "stength_stage",
         "petbaseId": 3619,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_15d9cb4663223f27"
     },
     {
       "id": "spirit_5310c12954fea6be",
@@ -19137,7 +19694,8 @@
         "field": "stength_stage",
         "petbaseId": 3225,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_9b74b8247cee82c7",
@@ -19191,7 +19749,9 @@
         "field": "stength_stage",
         "petbaseId": 3226,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_5310c12954fea6be"
     },
     {
       "id": "spirit_c169e905c91eeb74",
@@ -19244,7 +19804,8 @@
         "field": "stength_stage",
         "petbaseId": 3178,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_7c31fbd89f093c5d",
@@ -19300,7 +19861,9 @@
         "field": "stength_stage",
         "petbaseId": 3179,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_c169e905c91eeb74"
     },
     {
       "id": "spirit_5246e75d4b8d7592",
@@ -19353,7 +19916,8 @@
         "field": "stength_stage",
         "petbaseId": 3090,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_308f9aec3f5f045d",
@@ -19406,7 +19970,9 @@
         "field": "stength_stage",
         "petbaseId": 3091,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_5246e75d4b8d7592"
     },
     {
       "id": "spirit_8e02f5b94a74428b",
@@ -19461,7 +20027,9 @@
         "field": "stength_stage",
         "petbaseId": 3092,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_5246e75d4b8d7592"
     },
     {
       "id": "spirit_741c2be5526d185a",
@@ -19514,7 +20082,8 @@
         "field": "stength_stage",
         "petbaseId": 3521,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_9d8badfc01f62f16",
@@ -19568,7 +20137,8 @@
         "field": "stength_stage",
         "petbaseId": 3430,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_1ae8bf8691ced64f",
@@ -19622,7 +20192,8 @@
         "field": "stength_stage",
         "petbaseId": 3431,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_dcad4af678b05dcc",
@@ -19676,7 +20247,8 @@
         "field": "stength_stage",
         "petbaseId": 3432,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_e6f44a2b7c94c74f",
@@ -19730,7 +20302,8 @@
         "field": "stength_stage",
         "petbaseId": 3433,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_decbdcb651f9d96c",
@@ -19784,7 +20357,8 @@
         "field": "stength_stage",
         "petbaseId": 3206,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_57b9e1b098db23f2",
@@ -19838,7 +20412,9 @@
         "field": "stength_stage",
         "petbaseId": 3207,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_decbdcb651f9d96c"
     },
     {
       "id": "spirit_5441c31fc38c5015",
@@ -19892,7 +20468,9 @@
         "field": "stength_stage",
         "petbaseId": 3208,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_decbdcb651f9d96c"
     },
     {
       "id": "spirit_4901e4794bd32f40",
@@ -19948,7 +20526,8 @@
         "field": "stength_stage",
         "petbaseId": 3209,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_800a0042f52851cf",
@@ -20004,7 +20583,9 @@
         "field": "stength_stage",
         "petbaseId": 3210,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_4901e4794bd32f40"
     },
     {
       "id": "spirit_fb284359b27daddf",
@@ -20057,7 +20638,8 @@
         "field": "stength_stage",
         "petbaseId": 3357,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_5b7800d23a14248c",
@@ -20110,7 +20692,9 @@
         "field": "stength_stage",
         "petbaseId": 3358,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_fb284359b27daddf"
     },
     {
       "id": "spirit_906f78a278f66fb9",
@@ -20163,7 +20747,9 @@
         "field": "stength_stage",
         "petbaseId": 3359,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_fb284359b27daddf"
     },
     {
       "id": "spirit_7d22156a66708de3",
@@ -20218,7 +20804,9 @@
         "field": "stength_stage",
         "petbaseId": 5020,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_fb284359b27daddf"
     },
     {
       "id": "spirit_2663ae54113f96f0",
@@ -20273,7 +20861,8 @@
         "field": "stength_stage",
         "petbaseId": 3406,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_24ff0f0e3504e1ca",
@@ -20330,7 +20919,9 @@
         "field": "stength_stage",
         "petbaseId": 3407,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_2663ae54113f96f0"
     },
     {
       "id": "spirit_8929e2beb3386bf2",
@@ -20383,7 +20974,8 @@
         "field": "stength_stage",
         "petbaseId": 3250,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_641ef743b4f44873",
@@ -20436,7 +21028,9 @@
         "field": "stength_stage",
         "petbaseId": 3251,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_8929e2beb3386bf2"
     },
     {
       "id": "spirit_485289864e937335",
@@ -20489,7 +21083,9 @@
         "field": "stength_stage",
         "petbaseId": 3252,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_8929e2beb3386bf2"
     },
     {
       "id": "spirit_9dff1b22873c62a9",
@@ -20542,7 +21138,9 @@
         "field": "stength_stage",
         "petbaseId": 5054,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_8929e2beb3386bf2"
     },
     {
       "id": "spirit_3f805b382fb6670a",
@@ -20607,7 +21205,8 @@
         "petbase-3463",
         "petbase-3464",
         "petbase-3465"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_219690deb9569dc6",
@@ -20666,7 +21265,9 @@
         "petbase-3126",
         "petbase-3458",
         "petbase-3459"
-      ]
+      ],
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3f805b382fb6670a"
     },
     {
       "id": "spirit_f034858d5c81a2ae",
@@ -20725,7 +21326,9 @@
         "petbase-3463",
         "petbase-3464",
         "petbase-3465"
-      ]
+      ],
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3f805b382fb6670a"
     },
     {
       "id": "spirit_29b708f908c0d8a9",
@@ -20784,7 +21387,9 @@
         "petbase-3460",
         "petbase-3461",
         "petbase-3462"
-      ]
+      ],
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3f805b382fb6670a"
     },
     {
       "id": "spirit_41869713b59c286d",
@@ -20837,7 +21442,9 @@
         "field": "stength_stage",
         "petbaseId": 3126,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3f805b382fb6670a"
     },
     {
       "id": "spirit_837b4392da6139fa",
@@ -20890,7 +21497,9 @@
         "field": "stength_stage",
         "petbaseId": 3458,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3f805b382fb6670a"
     },
     {
       "id": "spirit_eeb5cb4fca4e17dd",
@@ -20943,7 +21552,9 @@
         "field": "stength_stage",
         "petbaseId": 3459,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3f805b382fb6670a"
     },
     {
       "id": "spirit_7e8447269b167ed9",
@@ -20996,7 +21607,9 @@
         "field": "stength_stage",
         "petbaseId": 3460,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3f805b382fb6670a"
     },
     {
       "id": "spirit_839523317c1f9cac",
@@ -21049,7 +21662,9 @@
         "field": "stength_stage",
         "petbaseId": 3461,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3f805b382fb6670a"
     },
     {
       "id": "spirit_f6d8309391798193",
@@ -21102,7 +21717,9 @@
         "field": "stength_stage",
         "petbaseId": 3462,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3f805b382fb6670a"
     },
     {
       "id": "spirit_82c2311d4036c4ee",
@@ -21155,7 +21772,9 @@
         "field": "stength_stage",
         "petbaseId": 3463,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3f805b382fb6670a"
     },
     {
       "id": "spirit_5f38897fa15dae2c",
@@ -21208,7 +21827,9 @@
         "field": "stength_stage",
         "petbaseId": 3464,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3f805b382fb6670a"
     },
     {
       "id": "spirit_659ec5a995873fbe",
@@ -21261,7 +21882,9 @@
         "field": "stength_stage",
         "petbaseId": 3465,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3f805b382fb6670a"
     },
     {
       "id": "spirit_09a6740ea932b071",
@@ -21315,7 +21938,8 @@
         "field": "stength_stage",
         "petbaseId": 3582,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_c3623ba0caf45206",
@@ -21369,7 +21993,8 @@
         "field": "stength_stage",
         "petbaseId": 3584,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_190ce77fc690d90a",
@@ -21423,7 +22048,9 @@
         "field": "stength_stage",
         "petbaseId": 3583,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_09a6740ea932b071"
     },
     {
       "id": "spirit_d9990ad61778d9ec",
@@ -21477,7 +22104,9 @@
         "field": "stength_stage",
         "petbaseId": 3585,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_c3623ba0caf45206"
     },
     {
       "id": "spirit_eef6c46566381bb0",
@@ -21531,7 +22160,8 @@
         "field": "stength_stage",
         "petbaseId": 3384,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_e0314e9c0f0f09fc",
@@ -21585,7 +22215,9 @@
         "field": "stength_stage",
         "petbaseId": 3385,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_eef6c46566381bb0"
     },
     {
       "id": "spirit_97b704a0026aab99",
@@ -21639,7 +22271,9 @@
         "field": "stength_stage",
         "petbaseId": 3386,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_eef6c46566381bb0"
     },
     {
       "id": "spirit_2f1f048f002870ce",
@@ -21693,7 +22327,8 @@
         "field": "stength_stage",
         "petbaseId": 3266,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_6aff1bd1d0653c7f",
@@ -21747,7 +22382,9 @@
         "field": "stength_stage",
         "petbaseId": 3267,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_2f1f048f002870ce"
     },
     {
       "id": "spirit_42d4dc4ef033e5b5",
@@ -21801,7 +22438,8 @@
         "field": "stength_stage",
         "petbaseId": 3119,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_bdc5a04507024396",
@@ -21855,7 +22493,9 @@
         "field": "stength_stage",
         "petbaseId": 3120,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_42d4dc4ef033e5b5"
     },
     {
       "id": "spirit_7122d669521799ee",
@@ -21908,7 +22548,8 @@
         "field": "stength_stage",
         "petbaseId": 3154,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_a652927efc54219c",
@@ -21961,7 +22602,9 @@
         "field": "stength_stage",
         "petbaseId": 3155,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_7122d669521799ee"
     },
     {
       "id": "spirit_586560ce9f28bbbc",
@@ -22014,7 +22657,9 @@
         "field": "stength_stage",
         "petbaseId": 3156,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_7122d669521799ee"
     },
     {
       "id": "spirit_d6bf08644fc68f43",
@@ -22069,7 +22714,8 @@
         "field": "stength_stage",
         "petbaseId": 3083,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_d45d38fdc672b014",
@@ -22124,7 +22770,9 @@
         "field": "stength_stage",
         "petbaseId": 3084,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_d6bf08644fc68f43"
     },
     {
       "id": "spirit_b7b7a4110258de78",
@@ -22179,7 +22827,9 @@
         "field": "stength_stage",
         "petbaseId": 3085,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_d6bf08644fc68f43"
     },
     {
       "id": "spirit_f7bb3405a8942817",
@@ -22232,7 +22882,8 @@
         "field": "stength_stage",
         "petbaseId": 3257,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_54215b23a210c8df",
@@ -22285,7 +22936,9 @@
         "field": "stength_stage",
         "petbaseId": 3258,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f7bb3405a8942817"
     },
     {
       "id": "spirit_e926effbf164759a",
@@ -22340,7 +22993,9 @@
         "field": "stength_stage",
         "petbaseId": 3259,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f7bb3405a8942817"
     },
     {
       "id": "spirit_df98091d3189ef45",
@@ -22394,7 +23049,8 @@
         "field": "stength_stage",
         "petbaseId": 3081,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_bbf5618c2d1a0750",
@@ -22448,7 +23104,9 @@
         "field": "stength_stage",
         "petbaseId": 3082,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_df98091d3189ef45"
     },
     {
       "id": "spirit_2e7dd5cabd9695cb",
@@ -22502,7 +23160,9 @@
         "field": "stength_stage",
         "petbaseId": 3350,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_df98091d3189ef45"
     },
     {
       "id": "spirit_28139e09cc2e10ba",
@@ -22556,7 +23216,8 @@
         "field": "stength_stage",
         "petbaseId": 3536,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_f3e25ac6f073239d",
@@ -22610,7 +23271,8 @@
         "field": "stength_stage",
         "petbaseId": 3539,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_be13027b1b8e6693",
@@ -22664,7 +23326,9 @@
         "field": "stength_stage",
         "petbaseId": 3537,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_28139e09cc2e10ba"
     },
     {
       "id": "spirit_d6fe54ebe357b3ff",
@@ -22718,7 +23382,9 @@
         "field": "stength_stage",
         "petbaseId": 3540,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f3e25ac6f073239d"
     },
     {
       "id": "spirit_b83bc4598f48c604",
@@ -22772,7 +23438,9 @@
         "field": "stength_stage",
         "petbaseId": 3538,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_28139e09cc2e10ba"
     },
     {
       "id": "spirit_25e1d71de867c7dc",
@@ -22826,7 +23494,9 @@
         "field": "stength_stage",
         "petbaseId": 3541,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_f3e25ac6f073239d"
     },
     {
       "id": "spirit_e2ca38af6ca8a535",
@@ -22880,7 +23550,8 @@
         "field": "stength_stage",
         "petbaseId": 3484,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_01295eab9380e02c",
@@ -22934,7 +23605,9 @@
         "field": "stength_stage",
         "petbaseId": 3547,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_e2ca38af6ca8a535"
     },
     {
       "id": "spirit_8f600a85a8feb5d8",
@@ -22987,7 +23660,8 @@
         "field": "stength_stage",
         "petbaseId": 3200,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_9270c733ca1d4bd8",
@@ -23040,7 +23714,9 @@
         "field": "stength_stage",
         "petbaseId": 3201,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_8f600a85a8feb5d8"
     },
     {
       "id": "spirit_53a5e4ccea57fdd0",
@@ -23093,7 +23769,9 @@
         "field": "stength_stage",
         "petbaseId": 3202,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_8f600a85a8feb5d8"
     },
     {
       "id": "spirit_73e11369a58445a9",
@@ -23151,7 +23829,8 @@
       "legacyWildStatFormIds": [
         "petbase-3088",
         "petbase-3089"
-      ]
+      ],
+      "hasShinyForm": true
     },
     {
       "id": "spirit_aab6e4b6314a2035",
@@ -23209,7 +23888,9 @@
       "legacyWildStatFormIds": [
         "petbase-3088",
         "petbase-3089"
-      ]
+      ],
+      "hasShinyForm": true,
+      "initialFormId": "spirit_73e11369a58445a9"
     },
     {
       "id": "spirit_38995924fb931da3",
@@ -23263,7 +23944,9 @@
         "field": "stength_stage",
         "petbaseId": 3088,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_73e11369a58445a9"
     },
     {
       "id": "spirit_197cf12461c4fb80",
@@ -23317,7 +24000,9 @@
         "field": "stength_stage",
         "petbaseId": 3089,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_73e11369a58445a9"
     },
     {
       "id": "spirit_87025d8e98fabe3c",
@@ -23371,7 +24056,8 @@
         "field": "stength_stage",
         "petbaseId": 3704,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_56b76e5cddf39081",
@@ -23427,7 +24113,9 @@
         "field": "stength_stage",
         "petbaseId": 3705,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_87025d8e98fabe3c"
     },
     {
       "id": "spirit_99f5d4bc7811d4a1",
@@ -23481,7 +24169,8 @@
         "field": "stength_stage",
         "petbaseId": 3444,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_37ea034163f3e376",
@@ -23536,7 +24225,8 @@
         "field": "stength_stage",
         "petbaseId": 3381,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_fdbf0fe966093747",
@@ -23589,7 +24279,8 @@
         "field": "stength_stage",
         "petbaseId": 3072,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_8c860bf0e5cbdc0b",
@@ -23642,7 +24333,9 @@
         "field": "stength_stage",
         "petbaseId": 3073,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_fdbf0fe966093747"
     },
     {
       "id": "spirit_8de88e249e9a78f0",
@@ -23695,7 +24388,9 @@
         "field": "stength_stage",
         "petbaseId": 3074,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_fdbf0fe966093747"
     },
     {
       "id": "spirit_87724eed654b46e2",
@@ -23748,7 +24443,8 @@
         "field": "stength_stage",
         "petbaseId": 3020,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_59ccfafcc79c03f0",
@@ -23801,7 +24497,8 @@
         "field": "stength_stage",
         "petbaseId": 3454,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_c2b48c73837fbed5",
@@ -23854,7 +24551,9 @@
         "field": "stength_stage",
         "petbaseId": 3021,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_87724eed654b46e2"
     },
     {
       "id": "spirit_e561ad5d9f280b7f",
@@ -23907,7 +24606,9 @@
         "field": "stength_stage",
         "petbaseId": 3455,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_59ccfafcc79c03f0"
     },
     {
       "id": "spirit_5e1e865bae83bc25",
@@ -23960,7 +24661,9 @@
         "field": "stength_stage",
         "petbaseId": 3022,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_87724eed654b46e2"
     },
     {
       "id": "spirit_7da7428d895df131",
@@ -24013,7 +24716,9 @@
         "field": "stength_stage",
         "petbaseId": 3456,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_59ccfafcc79c03f0"
     },
     {
       "id": "spirit_d218885988b9c5a0",
@@ -24071,7 +24776,8 @@
       "legacyWildStatFormIds": [
         "petbase-3578",
         "petbase-3579"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_3247e9dd6602e72c",
@@ -24127,7 +24833,9 @@
         "field": "stength_stage",
         "petbaseId": 3578,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d218885988b9c5a0"
     },
     {
       "id": "spirit_d4f6e1e80d4f396e",
@@ -24183,7 +24891,9 @@
         "field": "stength_stage",
         "petbaseId": 3579,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d218885988b9c5a0"
     },
     {
       "id": "spirit_aa014ec2634077c5",
@@ -24236,7 +24946,8 @@
         "field": "stength_stage",
         "petbaseId": 3038,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_16b76c39e12ca79d",
@@ -24289,7 +25000,9 @@
         "field": "stength_stage",
         "petbaseId": 3013,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_aa014ec2634077c5"
     },
     {
       "id": "spirit_311edd9f5c6873f8",
@@ -24342,7 +25055,8 @@
         "field": "stength_stage",
         "petbaseId": 3545,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_9c0a363768b55616",
@@ -24395,7 +25109,9 @@
         "field": "stength_stage",
         "petbaseId": 3546,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_311edd9f5c6873f8"
     },
     {
       "id": "spirit_79830b56df1224ea",
@@ -24448,7 +25164,9 @@
         "field": "stength_stage",
         "petbaseId": 5021,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_311edd9f5c6873f8"
     },
     {
       "id": "spirit_05f3242dd3ab1ac6",
@@ -24504,7 +25222,8 @@
         "field": "stength_stage",
         "petbaseId": 3490,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_3049dc50139f821a",
@@ -24560,7 +25279,9 @@
         "field": "stength_stage",
         "petbaseId": 3491,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_05f3242dd3ab1ac6"
     },
     {
       "id": "spirit_77851a382e3aad75",
@@ -24614,7 +25335,9 @@
         "field": "stength_stage",
         "petbaseId": 5057,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_05f3242dd3ab1ac6"
     },
     {
       "id": "spirit_c62e3343e392241f",
@@ -24668,7 +25391,8 @@
         "field": "stength_stage",
         "petbaseId": 3268,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_2c2d72d3c0bbe704",
@@ -24722,7 +25446,9 @@
         "field": "stength_stage",
         "petbaseId": 3269,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_c62e3343e392241f"
     },
     {
       "id": "spirit_9551dc47632fbe3e",
@@ -24776,7 +25502,8 @@
         "field": "stength_stage",
         "petbaseId": 3419,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_ed7ba8bc769c7d50",
@@ -24830,7 +25557,9 @@
         "field": "stength_stage",
         "petbaseId": 3420,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_9551dc47632fbe3e"
     },
     {
       "id": "spirit_5aa0cc9f4b2133c8",
@@ -24883,7 +25612,8 @@
         "field": "stength_stage",
         "petbaseId": 3180,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_178e6939722a30b8",
@@ -24936,7 +25666,9 @@
         "field": "stength_stage",
         "petbaseId": 3181,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_5aa0cc9f4b2133c8"
     },
     {
       "id": "spirit_684f5cd1fec1df27",
@@ -24989,7 +25721,9 @@
         "field": "stength_stage",
         "petbaseId": 3182,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_5aa0cc9f4b2133c8"
     },
     {
       "id": "spirit_cd5a04a9d9f170f9",
@@ -25048,7 +25782,8 @@
       "legacyWildStatFormIds": [
         "petbase-3604",
         "petbase-3605"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_7c5218a85eac0018",
@@ -25102,7 +25837,9 @@
         "field": "stength_stage",
         "petbaseId": 3604,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_cd5a04a9d9f170f9"
     },
     {
       "id": "spirit_cd669a9720f51fe4",
@@ -25159,7 +25896,9 @@
         "field": "stength_stage",
         "petbaseId": 3605,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_cd5a04a9d9f170f9"
     },
     {
       "id": "spirit_50b9ea1cf5a9f06c",
@@ -25217,7 +25956,8 @@
       "legacyWildStatFormIds": [
         "petbase-3608",
         "petbase-3609"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_6eefcea5a4902052",
@@ -25275,7 +26015,9 @@
       "legacyWildStatFormIds": [
         "petbase-3608",
         "petbase-3609"
-      ]
+      ],
+      "hasShinyForm": false,
+      "initialFormId": "spirit_50b9ea1cf5a9f06c"
     },
     {
       "id": "spirit_5d306a78398c4bcd",
@@ -25329,7 +26071,9 @@
         "field": "stength_stage",
         "petbaseId": 3608,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_50b9ea1cf5a9f06c"
     },
     {
       "id": "spirit_4a91bd3db13b8a07",
@@ -25383,7 +26127,9 @@
         "field": "stength_stage",
         "petbaseId": 3609,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_50b9ea1cf5a9f06c"
     },
     {
       "id": "spirit_595b959db1b3bdec",
@@ -25441,7 +26187,8 @@
       "legacyWildStatFormIds": [
         "petbase-3612",
         "petbase-3613"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_35c4507102bacd52",
@@ -25499,7 +26246,9 @@
       "legacyWildStatFormIds": [
         "petbase-3612",
         "petbase-3613"
-      ]
+      ],
+      "hasShinyForm": false,
+      "initialFormId": "spirit_595b959db1b3bdec"
     },
     {
       "id": "spirit_b75ef6a541e92530",
@@ -25555,7 +26304,9 @@
         "field": "stength_stage",
         "petbaseId": 3612,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_595b959db1b3bdec"
     },
     {
       "id": "spirit_fef49211939cd9fc",
@@ -25609,7 +26360,9 @@
         "field": "stength_stage",
         "petbaseId": 3613,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_595b959db1b3bdec"
     },
     {
       "id": "spirit_c48b78143a3d44b3",
@@ -25663,7 +26416,8 @@
         "field": "stength_stage",
         "petbaseId": 3244,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_e63ebdf7c40606e6",
@@ -25717,7 +26471,9 @@
         "field": "stength_stage",
         "petbaseId": 3245,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_c48b78143a3d44b3"
     },
     {
       "id": "spirit_a6a97c769f74a474",
@@ -25771,7 +26527,9 @@
         "field": "stength_stage",
         "petbaseId": 3246,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_c48b78143a3d44b3"
     },
     {
       "id": "spirit_dffa44a6fdca4257",
@@ -25824,7 +26582,8 @@
         "field": "stength_stage",
         "petbaseId": 3309,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_1ab64fdcf97bc5b4",
@@ -25877,7 +26636,9 @@
         "field": "stength_stage",
         "petbaseId": 3310,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_dffa44a6fdca4257"
     },
     {
       "id": "spirit_7212501b0d3c243e",
@@ -25930,7 +26691,9 @@
         "field": "stength_stage",
         "petbaseId": 3311,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_dffa44a6fdca4257"
     },
     {
       "id": "spirit_5c4297c8c8eab600",
@@ -25989,7 +26752,8 @@
         "petbase-3526",
         "petbase-3527",
         "petbase-3528"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_6aa27664c730f95a",
@@ -26045,7 +26809,9 @@
         "field": "stength_stage",
         "petbaseId": 3526,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_5c4297c8c8eab600"
     },
     {
       "id": "spirit_80fbf0bae1147e9c",
@@ -26101,7 +26867,9 @@
         "field": "stength_stage",
         "petbaseId": 3527,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_5c4297c8c8eab600"
     },
     {
       "id": "spirit_f99f67a3721ea123",
@@ -26157,7 +26925,9 @@
         "field": "stength_stage",
         "petbaseId": 3528,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_5c4297c8c8eab600"
     },
     {
       "id": "spirit_3e8be135916b7e76",
@@ -26210,7 +26980,8 @@
         "field": "stength_stage",
         "petbaseId": 3398,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_278f29da0bd4f52b",
@@ -26263,7 +27034,9 @@
         "field": "stength_stage",
         "petbaseId": 3399,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3e8be135916b7e76"
     },
     {
       "id": "spirit_6ba7b3af27da2625",
@@ -26316,7 +27089,9 @@
         "field": "stength_stage",
         "petbaseId": 3400,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_3e8be135916b7e76"
     },
     {
       "id": "spirit_9ca96ae79c231b4b",
@@ -26370,7 +27145,8 @@
         "field": "stength_stage",
         "petbaseId": 3382,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_fa1c63ad49fa3ffa",
@@ -26424,7 +27200,9 @@
         "field": "stength_stage",
         "petbaseId": 3383,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_9ca96ae79c231b4b"
     },
     {
       "id": "spirit_ee30eb99632df5ce",
@@ -26478,7 +27256,8 @@
         "field": "stength_stage",
         "petbaseId": 3457,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_5f0f752695a65545",
@@ -26532,7 +27311,8 @@
         "field": "stength_stage",
         "petbaseId": 3614,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_7709f87e848d6006",
@@ -26588,7 +27368,9 @@
         "field": "stength_stage",
         "petbaseId": 3615,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_5f0f752695a65545"
     },
     {
       "id": "spirit_534e8dc232e788d6",
@@ -26642,7 +27424,8 @@
         "field": "stength_stage",
         "petbaseId": 3436,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_6cf962ececae443b",
@@ -26696,7 +27479,9 @@
         "field": "stength_stage",
         "petbaseId": 3437,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_534e8dc232e788d6"
     },
     {
       "id": "spirit_afcb0198e268f000",
@@ -26749,7 +27534,8 @@
         "field": "stength_stage",
         "petbaseId": 3148,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_80151523a1bdecb1",
@@ -26802,7 +27588,9 @@
         "field": "stength_stage",
         "petbaseId": 3149,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_afcb0198e268f000"
     },
     {
       "id": "spirit_b0b427cf3d5241fa",
@@ -26855,7 +27643,9 @@
         "field": "stength_stage",
         "petbaseId": 3150,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_afcb0198e268f000"
     },
     {
       "id": "spirit_2d04c5a107c33674",
@@ -26908,7 +27698,9 @@
         "field": "stength_stage",
         "petbaseId": 5059,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_afcb0198e268f000"
     },
     {
       "id": "spirit_e5e8224c029e15ec",
@@ -26962,7 +27754,8 @@
         "field": "stength_stage",
         "petbaseId": 3198,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_307957883064ab4d",
@@ -27016,7 +27809,9 @@
         "field": "stength_stage",
         "petbaseId": 3199,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_e5e8224c029e15ec"
     },
     {
       "id": "spirit_cc6013b1574cc28b",
@@ -27070,7 +27865,8 @@
         "field": "stength_stage",
         "petbaseId": 3203,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_aacf610856d05cc9",
@@ -27124,7 +27920,9 @@
         "field": "stength_stage",
         "petbaseId": 3204,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_cc6013b1574cc28b"
     },
     {
       "id": "spirit_e7f61f6680a77cd5",
@@ -27178,7 +27976,9 @@
         "field": "stength_stage",
         "petbaseId": 3205,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_cc6013b1574cc28b"
     },
     {
       "id": "spirit_3e28ee2df02a761f",
@@ -27236,7 +28036,8 @@
       "legacyWildStatFormIds": [
         "petbase-3320",
         "petbase-3485"
-      ]
+      ],
+      "hasShinyForm": true
     },
     {
       "id": "spirit_8508bbff0538ba3e",
@@ -27289,7 +28090,9 @@
         "field": "stength_stage",
         "petbaseId": 3320,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_3e28ee2df02a761f"
     },
     {
       "id": "spirit_802fd62adaba698b",
@@ -27343,7 +28146,9 @@
         "field": "stength_stage",
         "petbaseId": 3485,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_3e28ee2df02a761f"
     },
     {
       "id": "spirit_e56cfb17e927501f",
@@ -27396,7 +28201,8 @@
         "field": "stength_stage",
         "petbaseId": 3473,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_895ceb36f1099b3b",
@@ -27449,7 +28255,9 @@
         "field": "stength_stage",
         "petbaseId": 3474,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_e56cfb17e927501f"
     },
     {
       "id": "spirit_e68a6ec53f0dafff",
@@ -27502,7 +28310,8 @@
         "field": "stength_stage",
         "petbaseId": 3744,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_e268b7cfd84f0a1f",
@@ -27557,7 +28366,9 @@
         "field": "stength_stage",
         "petbaseId": 3745,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_e68a6ec53f0dafff"
     },
     {
       "id": "spirit_5861aaece6abbc5f",
@@ -27610,7 +28421,8 @@
         "field": "stength_stage",
         "petbaseId": 3161,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_b4e949b761334e12",
@@ -27663,7 +28475,9 @@
         "field": "stength_stage",
         "petbaseId": 3162,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_5861aaece6abbc5f"
     },
     {
       "id": "spirit_698ad3439af7d73a",
@@ -27716,7 +28530,9 @@
         "field": "stength_stage",
         "petbaseId": 3372,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_5861aaece6abbc5f"
     },
     {
       "id": "spirit_9e9fbd0d21db6a27",
@@ -27769,7 +28585,8 @@
         "field": "stength_stage",
         "petbaseId": 3369,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_868fe3816f18b653",
@@ -27823,7 +28640,9 @@
         "field": "stength_stage",
         "petbaseId": 3370,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_9e9fbd0d21db6a27"
     },
     {
       "id": "spirit_11c4e6d87a317e03",
@@ -27877,7 +28696,9 @@
         "field": "stength_stage",
         "petbaseId": 3371,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_9e9fbd0d21db6a27"
     },
     {
       "id": "spirit_853e9c4372c22fd7",
@@ -27930,7 +28751,8 @@
         "field": "stength_stage",
         "petbaseId": 3733,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_fadb3978eea5093f",
@@ -27983,7 +28805,9 @@
         "field": "stength_stage",
         "petbaseId": 3734,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_853e9c4372c22fd7"
     },
     {
       "id": "spirit_37e0a0d6a0d4b993",
@@ -28036,7 +28860,9 @@
         "field": "stength_stage",
         "petbaseId": 3735,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_853e9c4372c22fd7"
     },
     {
       "id": "spirit_944959c9abc3c627",
@@ -28089,7 +28915,8 @@
         "field": "stength_stage",
         "petbaseId": 3392,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_bcb2369c1b3bf65e",
@@ -28142,7 +28969,9 @@
         "field": "stength_stage",
         "petbaseId": 3393,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_944959c9abc3c627"
     },
     {
       "id": "spirit_c245104fe73fad25",
@@ -28195,7 +29024,9 @@
         "field": "stength_stage",
         "petbaseId": 3394,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_944959c9abc3c627"
     },
     {
       "id": "spirit_cd1a308eb48c6ee7",
@@ -28248,7 +29079,8 @@
         "field": "stength_stage",
         "petbaseId": 3531,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_d7890eda12ee6281",
@@ -28301,7 +29133,9 @@
         "field": "stength_stage",
         "petbaseId": 3532,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_cd1a308eb48c6ee7"
     },
     {
       "id": "spirit_91b6b1d0ba27d34f",
@@ -28355,7 +29189,8 @@
         "field": "stength_stage",
         "petbaseId": 3572,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_08f17ac819b76607",
@@ -28409,7 +29244,9 @@
         "field": "stength_stage",
         "petbaseId": 3573,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_91b6b1d0ba27d34f"
     },
     {
       "id": "spirit_38ee49982b9585c9",
@@ -28465,7 +29302,8 @@
         "field": "stength_stage",
         "petbaseId": 3729,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_1e6e7946ef781309",
@@ -28521,7 +29359,9 @@
         "field": "stength_stage",
         "petbaseId": 3730,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_38ee49982b9585c9"
     },
     {
       "id": "spirit_ea44560ba353ca44",
@@ -28582,7 +29422,8 @@
       "legacyWildStatFormIds": [
         "petbase-3660",
         "petbase-3743"
-      ]
+      ],
+      "hasShinyForm": true
     },
     {
       "id": "spirit_07b444210032f19b",
@@ -28640,7 +29481,9 @@
         "field": "stength_stage",
         "petbaseId": 3660,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_ea44560ba353ca44"
     },
     {
       "id": "spirit_190dc8281c5049b1",
@@ -28698,7 +29541,9 @@
         "field": "stength_stage",
         "petbaseId": 3743,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_ea44560ba353ca44"
     },
     {
       "id": "spirit_531f78b52160b070",
@@ -28753,7 +29598,8 @@
         "field": "stength_stage",
         "petbaseId": 3487,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_78f96b030afc52ad",
@@ -28808,7 +29654,9 @@
         "field": "stength_stage",
         "petbaseId": 3488,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_531f78b52160b070"
     },
     {
       "id": "spirit_a0dd7aaab165d94a",
@@ -28863,7 +29711,9 @@
         "field": "stength_stage",
         "petbaseId": 3489,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_531f78b52160b070"
     },
     {
       "id": "spirit_9ea91035b620d764",
@@ -28919,7 +29769,8 @@
         "field": "stength_stage",
         "petbaseId": 3677,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_765e2b577e6118df",
@@ -28975,7 +29826,9 @@
         "field": "stength_stage",
         "petbaseId": 3678,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_9ea91035b620d764"
     },
     {
       "id": "spirit_72d2072cd2a176d0",
@@ -29030,7 +29883,8 @@
         "field": "stength_stage",
         "petbaseId": 3683,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_a35d11156a88dcac",
@@ -29085,7 +29939,9 @@
         "field": "stength_stage",
         "petbaseId": 3684,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_72d2072cd2a176d0"
     },
     {
       "id": "spirit_86bbcbdab1a84627",
@@ -29141,7 +29997,8 @@
         "field": "stength_stage",
         "petbaseId": 3736,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_60f921afbc37ef1d",
@@ -29197,7 +30054,9 @@
         "field": "stength_stage",
         "petbaseId": 3737,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_86bbcbdab1a84627"
     },
     {
       "id": "spirit_063422817e8deefc",
@@ -29252,7 +30111,8 @@
         "field": "stength_stage",
         "petbaseId": 3708,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_faed11065c114c00",
@@ -29309,7 +30169,9 @@
         "field": "stength_stage",
         "petbaseId": 3709,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_063422817e8deefc"
     },
     {
       "id": "spirit_6aa9095643b483ba",
@@ -29364,7 +30226,8 @@
         "field": "stength_stage",
         "petbaseId": 3234,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_9915319f405cd921",
@@ -29419,7 +30282,9 @@
         "field": "stength_stage",
         "petbaseId": 3235,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_6aa9095643b483ba"
     },
     {
       "id": "spirit_bda93c9052c59fb1",
@@ -29472,7 +30337,8 @@
         "field": "stength_stage",
         "petbaseId": 3620,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_ccf6a088d572393c",
@@ -29526,7 +30392,8 @@
         "field": "stength_stage",
         "petbaseId": 3078,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_a540cc055e4fa502",
@@ -29580,7 +30447,9 @@
         "field": "stength_stage",
         "petbaseId": 3079,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_ccf6a088d572393c"
     },
     {
       "id": "spirit_fbd420db80dc3a39",
@@ -29634,7 +30503,9 @@
         "field": "stength_stage",
         "petbaseId": 3080,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_ccf6a088d572393c"
     },
     {
       "id": "spirit_b4aa42d433371d0c",
@@ -29688,7 +30559,8 @@
         "field": "stength_stage",
         "petbaseId": 3752,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_03d19450769b55c0",
@@ -29742,7 +30614,9 @@
         "field": "stength_stage",
         "petbaseId": 3753,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_b4aa42d433371d0c"
     },
     {
       "id": "spirit_462cd79c7165004e",
@@ -29796,7 +30670,8 @@
         "field": "stength_stage",
         "petbaseId": 3402,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_25d82643f5f69e28",
@@ -29850,7 +30725,9 @@
         "field": "stength_stage",
         "petbaseId": 3403,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_462cd79c7165004e"
     },
     {
       "id": "spirit_3ba0ecc3da584c40",
@@ -29904,7 +30781,9 @@
         "field": "stength_stage",
         "petbaseId": 3404,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_462cd79c7165004e"
     },
     {
       "id": "spirit_0dc6996242a7fc7f",
@@ -29957,7 +30836,8 @@
         "field": "stength_stage",
         "petbaseId": 3749,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_862ab314c1bbe236",
@@ -30010,7 +30890,9 @@
         "field": "stength_stage",
         "petbaseId": 3750,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_0dc6996242a7fc7f"
     },
     {
       "id": "spirit_59367d8effdf8a49",
@@ -30063,7 +30945,9 @@
         "field": "stength_stage",
         "petbaseId": 3751,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_0dc6996242a7fc7f"
     },
     {
       "id": "spirit_b361152983cb5fcf",
@@ -30116,7 +31000,8 @@
         "field": "stength_stage",
         "petbaseId": 3351,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_8372a9cff5cfd614",
@@ -30169,7 +31054,9 @@
         "field": "stength_stage",
         "petbaseId": 3352,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_b361152983cb5fcf"
     },
     {
       "id": "spirit_09c86b84dc2e2fe2",
@@ -30222,7 +31109,9 @@
         "field": "stength_stage",
         "petbaseId": 3353,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_b361152983cb5fcf"
     },
     {
       "id": "spirit_754a6d48ff3008ca",
@@ -30275,7 +31164,8 @@
         "field": "stength_stage",
         "petbaseId": 3341,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_eea3305074d126d7",
@@ -30328,7 +31218,9 @@
         "field": "stength_stage",
         "petbaseId": 3342,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_754a6d48ff3008ca"
     },
     {
       "id": "spirit_c0b03ac594c86309",
@@ -30381,7 +31273,9 @@
         "field": "stength_stage",
         "petbaseId": 3343,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_754a6d48ff3008ca"
     },
     {
       "id": "spirit_5f3409c518edcf84",
@@ -30434,7 +31328,8 @@
         "field": "stength_stage",
         "petbaseId": 3754,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_f02313f5c7b8270f",
@@ -30487,7 +31382,9 @@
         "field": "stength_stage",
         "petbaseId": 3755,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_5f3409c518edcf84"
     },
     {
       "id": "spirit_0955dfad72f8debd",
@@ -30540,7 +31437,9 @@
         "field": "stength_stage",
         "petbaseId": 3756,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_5f3409c518edcf84"
     },
     {
       "id": "spirit_d09c113d91ed876b",
@@ -30593,7 +31492,8 @@
         "field": "stength_stage",
         "petbaseId": 3228,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_b9382967288bd429",
@@ -30646,7 +31546,9 @@
         "field": "stength_stage",
         "petbaseId": 3229,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_d09c113d91ed876b"
     },
     {
       "id": "spirit_e00d520c0883489b",
@@ -30700,7 +31602,8 @@
         "field": "stength_stage",
         "petbaseId": 3747,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_77a7d75ef5d795a1",
@@ -30754,7 +31657,9 @@
         "field": "stength_stage",
         "petbaseId": 3748,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_e00d520c0883489b"
     },
     {
       "id": "spirit_beeaa0eedf384647",
@@ -30808,7 +31713,8 @@
         "field": "stength_stage",
         "petbaseId": 3183,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_1e1a54ce9df3fa73",
@@ -30862,7 +31768,9 @@
         "field": "stength_stage",
         "petbaseId": 3184,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_beeaa0eedf384647"
     },
     {
       "id": "spirit_697c9e478c126d8b",
@@ -30916,7 +31824,9 @@
         "field": "stength_stage",
         "petbaseId": 3185,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_beeaa0eedf384647"
     },
     {
       "id": "spirit_5a7139c375f14f75",
@@ -30969,7 +31879,8 @@
         "field": "stength_stage",
         "petbaseId": 3321,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_4621dc00a0a34768",
@@ -31022,7 +31933,9 @@
         "field": "stength_stage",
         "petbaseId": 3322,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_5a7139c375f14f75"
     },
     {
       "id": "spirit_9113b86360b2a162",
@@ -31076,7 +31989,9 @@
         "field": "stength_stage",
         "petbaseId": 3323,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_5a7139c375f14f75"
     },
     {
       "id": "spirit_633f294762a4edb7",
@@ -31130,7 +32045,8 @@
         "field": "stength_stage",
         "petbaseId": 3347,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_7b9235bec269eae3",
@@ -31184,7 +32100,9 @@
         "field": "stength_stage",
         "petbaseId": 3348,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_633f294762a4edb7"
     },
     {
       "id": "spirit_569cad56dd846019",
@@ -31238,7 +32156,9 @@
         "field": "stength_stage",
         "petbaseId": 3349,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_633f294762a4edb7"
     },
     {
       "id": "spirit_c81d428eaaa8e87b",
@@ -31292,7 +32212,8 @@
         "field": "stength_stage",
         "petbaseId": 3466,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_bad7d47694c21629",
@@ -31345,7 +32266,8 @@
         "field": "stength_stage",
         "petbaseId": 3757,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_ec7062cf16b55b35",
@@ -31398,7 +32320,9 @@
         "field": "stength_stage",
         "petbaseId": 3758,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_bad7d47694c21629"
     },
     {
       "id": "spirit_530c8af0ca46270f",
@@ -31452,7 +32376,8 @@
         "field": "stength_stage",
         "petbaseId": 3616,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_847ceda3de74ce90",
@@ -31506,7 +32431,9 @@
         "field": "stength_stage",
         "petbaseId": 3617,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_530c8af0ca46270f"
     },
     {
       "id": "spirit_58d9e599a25aa153",
@@ -31565,7 +32492,8 @@
       "legacyWildStatFormIds": [
         "petbase-3232",
         "petbase-3233"
-      ]
+      ],
+      "hasShinyForm": false
     },
     {
       "id": "spirit_e1507f26b7fe0fd7",
@@ -31624,7 +32552,9 @@
       "legacyWildStatFormIds": [
         "petbase-3232",
         "petbase-3233"
-      ]
+      ],
+      "hasShinyForm": false,
+      "initialFormId": "spirit_58d9e599a25aa153"
     },
     {
       "id": "spirit_837f83264c04abe9",
@@ -31678,7 +32608,9 @@
         "field": "stength_stage",
         "petbaseId": 3232,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_58d9e599a25aa153"
     },
     {
       "id": "spirit_20d0512761016266",
@@ -31732,7 +32664,9 @@
         "field": "stength_stage",
         "petbaseId": 3233,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_58d9e599a25aa153"
     },
     {
       "id": "spirit_7852c4374166c897",
@@ -31785,7 +32719,8 @@
         "field": "stength_stage",
         "petbaseId": 3710,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_972e038b6e427f6b",
@@ -31838,7 +32773,9 @@
         "field": "stength_stage",
         "petbaseId": 3711,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_7852c4374166c897"
     },
     {
       "id": "spirit_87ae52b86587400d",
@@ -31892,7 +32829,8 @@
         "field": "stength_stage",
         "petbaseId": 3718,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_99a8fba5f269c210",
@@ -31946,7 +32884,9 @@
         "field": "stength_stage",
         "petbaseId": 3719,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_87ae52b86587400d"
     },
     {
       "id": "spirit_4572605541ea5410",
@@ -31999,7 +32939,8 @@
         "field": "stength_stage",
         "petbaseId": 3360,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_cde6b16e331c998f",
@@ -32053,7 +32994,9 @@
         "field": "stength_stage",
         "petbaseId": 3361,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_4572605541ea5410"
     },
     {
       "id": "spirit_2b2a9041fef7f98b",
@@ -32107,7 +33050,9 @@
         "field": "stength_stage",
         "petbaseId": 3362,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_4572605541ea5410"
     },
     {
       "id": "spirit_e5d60f63ebdd049f",
@@ -32161,7 +33106,8 @@
         "field": "stength_stage",
         "petbaseId": 3759,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_d6dda154d3258734",
@@ -32215,7 +33161,9 @@
         "field": "stength_stage",
         "petbaseId": 3760,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_e5d60f63ebdd049f"
     },
     {
       "id": "spirit_3184ea3b2586daef",
@@ -32268,7 +33216,8 @@
         "field": "stength_stage",
         "petbaseId": 3591,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_8792e27bbf3c11a4",
@@ -32321,7 +33270,9 @@
         "field": "stength_stage",
         "petbaseId": 3592,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_3184ea3b2586daef"
     },
     {
       "id": "spirit_93e6120c353ab24b",
@@ -32375,7 +33326,9 @@
         "field": "stength_stage",
         "petbaseId": 3593,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_3184ea3b2586daef"
     },
     {
       "id": "spirit_5469448171f0ed00",
@@ -32428,7 +33381,8 @@
         "field": "stength_stage",
         "petbaseId": 3264,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_275dd104cb33f7c4",
@@ -32481,7 +33435,9 @@
         "field": "stength_stage",
         "petbaseId": 3265,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_5469448171f0ed00"
     },
     {
       "id": "spirit_e421bd362627ef57",
@@ -32535,7 +33491,8 @@
         "field": "stength_stage",
         "petbaseId": 3675,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_94a85e8f16adabcf",
@@ -32589,7 +33546,9 @@
         "field": "stength_stage",
         "petbaseId": 3676,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_e421bd362627ef57"
     },
     {
       "id": "spirit_55b0f9a33ceb0415",
@@ -32645,7 +33604,8 @@
         "field": "stength_stage",
         "petbaseId": 3706,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_3c13248ddfa2a129",
@@ -32701,7 +33661,9 @@
         "field": "stength_stage",
         "petbaseId": 3707,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_55b0f9a33ceb0415"
     },
     {
       "id": "spirit_318f0eeb215e3f31",
@@ -32755,7 +33717,8 @@
         "field": "stength_stage",
         "petbaseId": 3697,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_db6b6d95ebcaa2e3",
@@ -32809,7 +33772,9 @@
         "field": "stength_stage",
         "petbaseId": 3698,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_318f0eeb215e3f31"
     },
     {
       "id": "spirit_740d8925b0f9e3f9",
@@ -32863,7 +33828,8 @@
         "field": "stength_stage",
         "petbaseId": 3565,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_90fe6de063fbcbcd",
@@ -32917,7 +33883,9 @@
         "field": "stength_stage",
         "petbaseId": 3566,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_740d8925b0f9e3f9"
     },
     {
       "id": "spirit_b7e38cd586b1d05c",
@@ -32971,7 +33939,8 @@
         "field": "stength_stage",
         "petbaseId": 3746,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_5f3eaa6f91c32c93",
@@ -33024,7 +33993,8 @@
         "field": "stength_stage",
         "petbaseId": 3740,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_ad25e8d39ea8f904",
@@ -33077,7 +34047,9 @@
         "field": "stength_stage",
         "petbaseId": 3741,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_5f3eaa6f91c32c93"
     },
     {
       "id": "spirit_7d159935c8b45ec3",
@@ -33131,7 +34103,8 @@
         "field": "stength_stage",
         "petbaseId": 3663,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_8735efa1d0793f6a",
@@ -33185,7 +34158,9 @@
         "field": "stength_stage",
         "petbaseId": 3664,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_7d159935c8b45ec3"
     },
     {
       "id": "spirit_655fae6ca57866f1",
@@ -33239,7 +34214,8 @@
         "field": "stength_stage",
         "petbaseId": 3767,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_18d38a10544a16ea",
@@ -33293,7 +34269,9 @@
         "field": "stength_stage",
         "petbaseId": 3768,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_655fae6ca57866f1"
     },
     {
       "id": "spirit_669c6c48798e31e2",
@@ -33346,7 +34324,8 @@
         "field": "stength_stage",
         "petbaseId": 3589,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_fa429ea152f6bdad",
@@ -33401,7 +34380,9 @@
         "field": "stength_stage",
         "petbaseId": 3590,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_669c6c48798e31e2"
     },
     {
       "id": "spirit_fcf79e905db987ed",
@@ -33454,7 +34435,8 @@
         "field": "stength_stage",
         "petbaseId": 3773,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_d8e175477972f74d",
@@ -33507,7 +34489,9 @@
         "field": "stength_stage",
         "petbaseId": 3774,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_fcf79e905db987ed"
     },
     {
       "id": "spirit_200b70f549b632c9",
@@ -33561,7 +34545,8 @@
         "field": "stength_stage",
         "petbaseId": 3542,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_14b3a744170db48f",
@@ -33614,7 +34599,8 @@
         "field": "stength_stage",
         "petbaseId": 3771,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_586b8e1567f949f6",
@@ -33667,7 +34653,9 @@
         "field": "stength_stage",
         "petbaseId": 3772,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_14b3a744170db48f"
     },
     {
       "id": "spirit_38e4783bc0ea21e7",
@@ -33721,7 +34709,8 @@
         "field": "stength_stage",
         "petbaseId": 3775,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_de488be076aaad90",
@@ -33775,7 +34764,9 @@
         "field": "stength_stage",
         "petbaseId": 3776,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_38e4783bc0ea21e7"
     },
     {
       "id": "spirit_9f9a5018b4cb3927",
@@ -33828,7 +34819,8 @@
         "field": "stength_stage",
         "petbaseId": 3236,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_44fd7ec28737bb00",
@@ -33882,7 +34874,8 @@
         "field": "stength_stage",
         "petbaseId": 3764,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_31414d060023c608",
@@ -33936,7 +34929,9 @@
         "field": "stength_stage",
         "petbaseId": 3765,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_44fd7ec28737bb00"
     },
     {
       "id": "spirit_2e66129c499359af",
@@ -33990,7 +34985,9 @@
         "field": "stength_stage",
         "petbaseId": 3766,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_44fd7ec28737bb00"
     },
     {
       "id": "spirit_62628958b4cc94fd",
@@ -34044,7 +35041,8 @@
         "field": "stength_stage",
         "petbaseId": 3574,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_d77a1d73a14413be",
@@ -34098,7 +35096,9 @@
         "field": "stength_stage",
         "petbaseId": 3575,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_62628958b4cc94fd"
     },
     {
       "id": "spirit_5f3ff5817d7871b8",
@@ -34154,7 +35154,9 @@
         "field": "stength_stage",
         "petbaseId": 3576,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_62628958b4cc94fd"
     },
     {
       "id": "spirit_b63c5f1a909fe37d",
@@ -34208,7 +35210,8 @@
         "field": "stength_stage",
         "petbaseId": 3761,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_46a9e1d341b657aa",
@@ -34262,7 +35265,9 @@
         "field": "stength_stage",
         "petbaseId": 3762,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_b63c5f1a909fe37d"
     },
     {
       "id": "spirit_b689c0de815c95ef",
@@ -34316,7 +35321,9 @@
         "field": "stength_stage",
         "petbaseId": 3763,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_b63c5f1a909fe37d"
     },
     {
       "id": "spirit_8ac693cfd57fea1c",
@@ -34369,7 +35376,9 @@
         "field": "stength_stage",
         "petbaseId": 5063,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_5246e75d4b8d7592"
     },
     {
       "id": "spirit_59a68cf08569c4a7",
@@ -34423,7 +35432,9 @@
         "field": "stength_stage",
         "petbaseId": 5065,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_c3623ba0caf45206"
     },
     {
       "id": "spirit_6b6f44bd83a5f495",
@@ -34477,7 +35488,8 @@
         "field": "stength_stage",
         "petbaseId": 3777,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_eb091eba9d871d80",
@@ -34608,7 +35620,9 @@
         "field": "stength_stage",
         "petbaseId": 5064,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_09a6740ea932b071"
     },
     {
       "id": "spirit_preview_s5_little-ming-dragon",
@@ -34662,7 +35676,8 @@
         "field": "stength_stage",
         "petbaseId": 3797,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_minggulong",
@@ -34716,7 +35731,9 @@
         "field": "stength_stage",
         "petbaseId": 3798,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_preview_s5_little-ming-dragon"
     },
     {
       "id": "spirit_preview_s5_abu",
@@ -34768,7 +35785,8 @@
         "field": "stength_stage",
         "petbaseId": 3168,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_silver-chain",
@@ -34821,7 +35839,8 @@
         "field": "stength_stage",
         "petbaseId": 3799,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_preview_s5_underground-silver-scale",
@@ -34874,7 +35893,9 @@
         "field": "stength_stage",
         "petbaseId": 3800,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_silver-chain"
     },
     {
       "id": "spirit_preview_s5_underground-silver-dragon",
@@ -34929,7 +35950,9 @@
         "field": "stength_stage",
         "petbaseId": 3801,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_silver-chain"
     },
     {
       "id": "spirit_preview_s5_sinking-gold-beast",
@@ -34982,7 +36005,8 @@
         "field": "stength_stage",
         "petbaseId": 3802,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_preview_s5_dragonhead-gold",
@@ -35035,7 +36059,9 @@
         "field": "stength_stage",
         "petbaseId": 3803,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_sinking-gold-beast"
     },
     {
       "id": "spirit_preview_s5_gold-vein-dragon",
@@ -35090,7 +36116,9 @@
         "field": "stength_stage",
         "petbaseId": 3804,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_sinking-gold-beast"
     },
     {
       "id": "spirit_preview_s5_boss-ice-bruce",
@@ -35145,7 +36173,8 @@
         "field": "stength_stage",
         "petbaseId": 5067,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_boss-glass-jellyfish",
@@ -35201,7 +36230,8 @@
         "field": "stength_stage",
         "petbaseId": 5066,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_jingyu",
@@ -35257,7 +36287,8 @@
         "field": "stength_stage",
         "petbaseId": 3812,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_preview_s5_doulie",
@@ -35312,7 +36343,8 @@
         "field": "stength_stage",
         "petbaseId": 3814,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_preview_s5_watermelon-bug",
@@ -35368,7 +36400,8 @@
         "field": "stength_stage",
         "petbaseId": 3816,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_preview_s5_diliutun",
@@ -35424,7 +36457,8 @@
         "field": "stength_stage",
         "petbaseId": 3820,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_preview_s5_lele-shark",
@@ -35484,7 +36518,8 @@
       "legacyWildStatFormIds": [
         "petbase-3806",
         "petbase-3807"
-      ]
+      ],
+      "hasShinyForm": true
     },
     {
       "id": "spirit_preview_s5_egg-wrap",
@@ -35540,7 +36575,8 @@
         "field": "stength_stage",
         "petbaseId": 3808,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_preview_s5_crab-coconut",
@@ -35596,7 +36632,8 @@
         "field": "stength_stage",
         "petbaseId": 3810,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_preview_s5_little-scissor",
@@ -35651,7 +36688,8 @@
         "field": "stength_stage",
         "petbaseId": 3818,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_preview_s5_lily-of-valley",
@@ -35704,7 +36742,9 @@
         "field": "stength_stage",
         "petbaseId": 3824,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_daidailing"
     },
     {
       "id": "spirit_preview_s5_boss-abu",
@@ -35853,7 +36893,9 @@
         "field": "stength_stage",
         "petbaseId": 5068,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_preview_s5_abu"
     },
     {
       "id": "spirit_preview_s5_shadow-papercut",
@@ -35910,7 +36952,9 @@
         "field": "stength_stage",
         "petbaseId": 3819,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_little-scissor"
     },
     {
       "id": "spirit_preview_s5_diniantun",
@@ -35966,7 +37010,9 @@
         "field": "stength_stage",
         "petbaseId": 3821,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_diliutun"
     },
     {
       "id": "spirit_preview_s5_winter-bug-summer-melon",
@@ -36024,7 +37070,9 @@
         "field": "stength_stage",
         "petbaseId": 3817,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_watermelon-bug"
     },
     {
       "id": "spirit_preview_s5_snow-shoveling-goose",
@@ -36079,7 +37127,9 @@
         "field": "stength_stage",
         "petbaseId": 3815,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_doulie"
     },
     {
       "id": "spirit_preview_s5_halo-jingyu",
@@ -36135,7 +37185,9 @@
         "field": "stength_stage",
         "petbaseId": 3813,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_jingyu"
     },
     {
       "id": "spirit_preview_s5_sand-crab",
@@ -36191,7 +37243,9 @@
         "field": "stength_stage",
         "petbaseId": 3811,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_crab-coconut"
     },
     {
       "id": "spirit_preview_s5_chicken-mama",
@@ -36247,7 +37301,9 @@
         "field": "stength_stage",
         "petbaseId": 3809,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_egg-wrap"
     },
     {
       "id": "spirit_preview_s5_awa-shark-lemon",
@@ -36302,7 +37358,9 @@
         "field": "stength_stage",
         "petbaseId": 3806,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_lele-shark"
     },
     {
       "id": "spirit_preview_s5_awa-shark-tiger",
@@ -36357,7 +37415,9 @@
         "field": "stength_stage",
         "petbaseId": 3807,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_lele-shark"
     },
     {
       "id": "spirit_preview_s5_hidden-3217",
@@ -36389,7 +37449,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_hidden-3218",
@@ -36421,7 +37482,9 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_preview_s5_hidden-3217"
     },
     {
       "id": "spirit_preview_s5_hidden-3219",
@@ -36453,7 +37516,9 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_preview_s5_hidden-3217"
     },
     {
       "id": "spirit_preview_s5_hidden-3408",
@@ -36485,7 +37550,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_hidden-3409",
@@ -36517,7 +37583,9 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_preview_s5_hidden-3408"
     },
     {
       "id": "spirit_preview_s5_hidden-3416",
@@ -36549,7 +37617,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_hidden-3417",
@@ -36581,7 +37650,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_hidden-3418",
@@ -36613,7 +37683,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_hidden-3825",
@@ -36677,7 +37748,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "initialFormId": "spirit_preview_s5_hidden-3825"
     },
     {
       "id": "spirit_preview_s5_hidden-5070",
@@ -36775,7 +37847,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "initialFormId": "spirit_preview_s5_hidden-3849"
     },
     {
       "id": "spirit_preview_s5_hidden-3851",
@@ -36808,7 +37881,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "initialFormId": "spirit_preview_s5_hidden-3849"
     },
     {
       "id": "spirit_preview_s5_hidden-3863",
@@ -36874,7 +37948,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "initialFormId": "spirit_preview_s5_hidden-3863"
     },
     {
       "id": "spirit_preview_s5_hidden-3865",
@@ -36907,7 +37982,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "initialFormId": "spirit_preview_s5_hidden-3863"
     },
     {
       "id": "spirit_preview_s5_hidden-5069",
@@ -36939,7 +38015,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_hidden-3640",
@@ -36971,7 +38048,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_hidden-3641",
@@ -37003,7 +38081,9 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_preview_s5_hidden-3640"
     },
     {
       "id": "spirit_preview_s5_hidden-3642",
@@ -37035,7 +38115,9 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_preview_s5_hidden-3640"
     },
     {
       "id": "spirit_preview_s5_hidden-3643",
@@ -37067,7 +38149,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_hidden-3644",
@@ -37099,7 +38182,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_hidden-3645",
@@ -37131,7 +38215,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_hidden-3646",
@@ -37163,7 +38248,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_hidden-3647",
@@ -37195,7 +38281,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_preview_s5_hidden-3648",
@@ -37227,7 +38314,8 @@
         "field": "stength_stage",
         "status": "unconfirmed",
         "reason": "unreleased-or-incomplete-race-stats"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_42e0cf61b04cb1ab",
@@ -37279,7 +38367,8 @@
         "field": "stength_stage",
         "petbaseId": 3784,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_a601e182f9b30ba0",
@@ -37331,7 +38420,9 @@
         "field": "stength_stage",
         "petbaseId": 3785,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_42e0cf61b04cb1ab"
     },
     {
       "id": "spirit_4ba8f07d34a4e247",
@@ -37435,7 +38526,8 @@
         "field": "stength_stage",
         "petbaseId": 3071,
         "status": "verified"
-      }
+      },
+      "initialFormId": "spirit_4ba8f07d34a4e247"
     },
     {
       "id": "spirit_95aaf0ee94680c86",
@@ -37489,7 +38581,8 @@
         "field": "stength_stage",
         "petbaseId": 3499,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_576805f2cd1bbd11",
@@ -37565,7 +38658,9 @@
         "field": "stength_stage",
         "petbaseId": 5018,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_4ba8f07d34a4e247"
     },
     {
       "id": "spirit_e09a7b2376f6e518",
@@ -37617,7 +38712,8 @@
         "field": "stength_stage",
         "petbaseId": 3255,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false
     },
     {
       "id": "spirit_95d31f7040c570b2",
@@ -37669,7 +38765,9 @@
         "field": "stength_stage",
         "petbaseId": 3256,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": false,
+      "initialFormId": "spirit_e09a7b2376f6e518"
     },
     {
       "id": "spirit_bf63c954e18a8852",
@@ -37724,7 +38822,8 @@
         "field": "stength_stage",
         "petbaseId": 3506,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_45095a4991f540a4",
@@ -37779,7 +38878,9 @@
         "field": "stength_stage",
         "petbaseId": 3507,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_bf63c954e18a8852"
     },
     {
       "id": "spirit_0aff77799da7257f",
@@ -37832,7 +38933,8 @@
         "field": "stength_stage",
         "petbaseId": 3697,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_9383a26b3b5da4c5",
@@ -37885,7 +38987,9 @@
         "field": "stength_stage",
         "petbaseId": 3698,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_0aff77799da7257f"
     },
     {
       "id": "spirit_preview_s5_daidailing",
@@ -37938,7 +39042,8 @@
         "field": "stength_stage",
         "petbaseId": 3822,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true
     },
     {
       "id": "spirit_preview_s5_tiaotiaoling",
@@ -37991,7 +39096,9 @@
         "field": "stength_stage",
         "petbaseId": 3823,
         "status": "verified"
-      }
+      },
+      "hasShinyForm": true,
+      "initialFormId": "spirit_preview_s5_daidailing"
     }
   ],
   "skills": [

@@ -277,7 +277,6 @@ body[data-workspace-mode="validation"] .versus-grid .trait-grid { display:none; 
   .picker-option strong, .picker-option small { overflow-wrap:anywhere; }
 }
 @media (max-width:440px) {
-  .eyebrow-end select { max-width:96px; }
   .dice-values { grid-template-columns:1fr 1fr; }
   .pcell .dmg { font-size:18px; }
   .pcell-penalty .dmg { font-size:14px; }
@@ -387,7 +386,20 @@ input.switch:focus-visible { outline:2px solid var(--accent); outline-offset:2px
 .config-row .quick-ivs { gap:3px; }
 .config-rows .config-row { gap:8px; }
 .side-head .eyebrow-end { margin-left:auto; }
-.side-head #target-filter { width:96px; min-width:0; font-size:12px; padding:2px 4px; }
+/* Keep the complete scope label and level buttons inside the target column. */
+.target-controls { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:10px; min-width:0; }
+#target-filter { flex:1 1 240px; width:100%; min-width:0; max-width:100%; font-size:13px; padding:5px 8px; }
+.target-controls .seg { flex:0 0 auto; max-width:100%; }
+.target-controls .seg button { white-space:nowrap; }
+#target-shiny-control[hidden] { display:none; }
+.hp-line > span { white-space:nowrap; }
+.dice-note { overflow-wrap:anywhere; }
+.side-head, .config-rows, .dice-ui { max-width:100%; }
+.dice-chip { max-width:100%; overflow-wrap:anywhere; text-align:left; }
+@media (max-width:440px) {
+  .target-controls { gap:8px; }
+  #target-filter { flex-basis:100%; }
+}
 .config-row .row-end { margin-left:auto; color:var(--blue); }
 .dice-line .dice-selector { flex:1 1 180px; width:180px; min-width:0; max-width:100%; font-size:12px; }
 .config-row .config-key { flex-shrink:0; }
