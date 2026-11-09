@@ -477,3 +477,40 @@ test('shared incoming correction keeps normal panel and dice processing without 
   assert.deepEqual(displayed.predictions.map(row => row.damage), automatic.predictions.map(row => row.damage));
   assert.equal(displayed.typeInteraction.correctionMultiplier, .6);
 });
+
+
+test('live 5-8-star trials replay both directions with one compatible nature per encounter', () => {
+  const fixture = JSON.parse(readFileSync('tests/fixtures/s5-luoyin-star-trial-20261109.json', 'utf8'));
+  const traits = read('traits');
+  for (const encounter of fixture.encounters) {
+    let compatible = new Set(catalog.natures.map(nature => nature.id));
+    for (const record of encounter.records) {
+      const own = fixture.profiles[record.profile];
+      const input = { targetId: species(encounter.target).id, level: encounter.level,
+        profile: { spiritId: species(own.spirit).id, level: own.level,
+          awakening: record.stars - 5, panel: own.panel },
+        skillIds: record.outgoing.map(([name]) => skill(name).id),
+        incomingSkillIds: record.incoming.map(([name]) => skill(name).id),
+        ownDiceIds: [], targetDiceIds: [], targetDiceEffects: encounter.targetDiceEffects,
+        ownTrait: { stacks: record.ownTraitStacks, active: record.ownTraitStacks > 0 },
+        skillOverrides: Object.fromEntries(Object.entries(record.skillPowerMultipliers ?? {})
+          .map(([name, powerMultiplier]) => [skill(name).id, { powerMultiplier }])),
+      };
+      const result = previewMatchup(input, catalog, dice, traits);
+      const rows = [...result.outgoing, ...result.incomingList];
+      const observations = [...record.outgoing, ...record.incoming];
+      assert.equal(rows.length, observations.length);
+      for (const [index, [name, damage]] of observations.entries()) {
+        const row = rows[index];
+        const label = encounter.id + '/' + own.spirit + '/' + record.stars + ' stars/' + name;
+        assert.equal(row.status, 'estimated', label + ': ' + row.reason);
+        assert.equal(row.manualPower, false, label);
+        const exact = new Set(row.predictions.filter(prediction => prediction.damage === damage
+          && observationMatch(prediction, { damage })).map(prediction => prediction.natureId));
+        compatible = new Set([...compatible].filter(id => exact.has(id)));
+        assert(compatible.size > 0, label + ': no shared nature across measured skills and stars');
+      }
+    }
+    assert([...compatible].every(id => catalog.natures.find(nature => nature.id === id).upStat === encounter.expectedUpStat), encounter.id);
+  }
+});

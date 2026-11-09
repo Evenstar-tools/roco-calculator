@@ -1,0 +1,529 @@
+{
+  "meta": {
+    "schemaVersion": 1,
+    "date": "2026-11-09",
+    "source": "User live measurements in the current Codex chat",
+    "measuredLuoyinStars": [
+      5,
+      6,
+      7,
+      8
+    ],
+    "pendingLuoyinStars": [],
+    "natureStatus": "Damage-compatible only; no capture-confirmed nature in this trial",
+    "conditions": "Same target labels and inherited levels; clean direct hits before Web defense reduction; actual turn order not established by listing order",
+    "apeBuff": "User confirmed physical attack +50% and explicitly denied magical attack increase",
+    "blueShift": "Unresolved observations retained separately; do not add a magical-attack buff to force a match",
+    "wildAwakening": "0 polarization/dulling; this does not verify opposing nonzero awakening or every type combination",
+    "unmeasuredLuoyinStars": [
+      9,
+      10
+    ],
+    "unmeasuredStarDisposition": "User chose not to measure 9/10 stars; retain existing formula, do not label as this trial measurements or pending work"
+  },
+  "profiles": {
+    "luoyin": {
+      "spirit": "罗隐",
+      "level": 60,
+      "panel": {
+        "hp": 403,
+        "physicalAttack": 312,
+        "magicalAttack": 136,
+        "physicalDefense": 216,
+        "magicalDefense": 137,
+        "speed": 143
+      }
+    },
+    "dimo": {
+      "spirit": "迪莫",
+      "level": 60,
+      "panel": {
+        "hp": 425,
+        "physicalAttack": 138,
+        "magicalAttack": 181,
+        "physicalDefense": 175,
+        "magicalDefense": 175,
+        "speed": 223
+      },
+      "nature": "胆小",
+      "panelSource": "Previously supplied panel, carried forward"
+    }
+  },
+  "encounters": [
+    {
+      "id": "hammer-1",
+      "target": "锤头鹳",
+      "level": 42,
+      "targetDiceEffects": {},
+      "expectedUpStat": "physicalDefense",
+      "records": [
+        {
+          "profile": "luoyin",
+          "stars": 5,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              82
+            ],
+            [
+              "地刺",
+              185
+            ]
+          ],
+          "incoming": [
+            [
+              "翼击",
+              28
+            ]
+          ]
+        },
+        {
+          "profile": "luoyin",
+          "stars": 6,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              119
+            ],
+            [
+              "地刺",
+              207
+            ],
+            [
+              "蝙蝠",
+              149
+            ]
+          ],
+          "incoming": [
+            [
+              "翼击",
+              19
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hammer-2",
+      "target": "锤头鹳",
+      "level": 42,
+      "targetDiceEffects": {},
+      "expectedUpStat": "magicalDefense",
+      "records": [
+        {
+          "profile": "luoyin",
+          "stars": 5,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              89
+            ],
+            [
+              "地刺",
+              201
+            ]
+          ],
+          "incoming": [
+            [
+              "水炮",
+              254
+            ]
+          ],
+          "originalIncomingLabel": "水泡"
+        },
+        {
+          "profile": "luoyin",
+          "stars": 6,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              130
+            ],
+            [
+              "地刺",
+              225
+            ]
+          ],
+          "incoming": [
+            [
+              "水炮",
+              175
+            ]
+          ]
+        },
+        {
+          "profile": "luoyin",
+          "stars": 7,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              161
+            ],
+            [
+              "地刺",
+              250
+            ]
+          ],
+          "incoming": [
+            [
+              "水炮",
+              152
+            ]
+          ]
+        },
+        {
+          "profile": "luoyin",
+          "stars": 8,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              161
+            ],
+            [
+              "地刺",
+              274
+            ]
+          ],
+          "incoming": [
+            [
+              "水炮",
+              152
+            ]
+          ]
+        },
+        {
+          "profile": "dimo",
+          "stars": 10,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "超导",
+              547
+            ]
+          ],
+          "incoming": []
+        }
+      ]
+    },
+    {
+      "id": "stardust",
+      "target": "星尘虫",
+      "level": 43,
+      "targetDiceEffects": {},
+      "expectedUpStat": "physicalAttack",
+      "records": [
+        {
+          "profile": "luoyin",
+          "stars": 5,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              318
+            ],
+            [
+              "地刺",
+              178
+            ],
+            [
+              "蝙蝠",
+              129
+            ]
+          ],
+          "incoming": [
+            [
+              "先发制人",
+              17
+            ],
+            [
+              "网缚",
+              97
+            ]
+          ]
+        },
+        {
+          "profile": "luoyin",
+          "stars": 6,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              461
+            ],
+            [
+              "地刺",
+              200
+            ]
+          ],
+          "incoming": [
+            [
+              "先发制人",
+              12
+            ],
+            [
+              "网缚",
+              67
+            ]
+          ]
+        },
+        {
+          "profile": "luoyin",
+          "stars": 7,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              572
+            ],
+            [
+              "地刺",
+              221
+            ]
+          ],
+          "incoming": [
+            [
+              "网缚",
+              58
+            ],
+            [
+              "先发制人",
+              10
+            ]
+          ]
+        },
+        {
+          "profile": "luoyin",
+          "stars": 8,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              572
+            ],
+            [
+              "地刺",
+              243
+            ]
+          ],
+          "incoming": [
+            [
+              "网缚",
+              58
+            ],
+            [
+              "先发制人",
+              10
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ape",
+      "target": "可爱猿",
+      "level": 41,
+      "targetDiceEffects": {
+        "physicalAttackMultiplier": 1.5
+      },
+      "expectedUpStat": "physicalDefense",
+      "records": [
+        {
+          "profile": "luoyin",
+          "stars": 5,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              94
+            ],
+            [
+              "地刺",
+              212
+            ]
+          ],
+          "incoming": [
+            [
+              "炎息",
+              36
+            ]
+          ]
+        },
+        {
+          "profile": "luoyin",
+          "stars": 6,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              94
+            ],
+            [
+              "地刺",
+              345
+            ]
+          ],
+          "incoming": [
+            [
+              "炎息",
+              25
+            ]
+          ]
+        },
+        {
+          "profile": "luoyin",
+          "stars": 7,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              94
+            ],
+            [
+              "地刺",
+              474
+            ]
+          ],
+          "incoming": [
+            [
+              "炎息",
+              22
+            ]
+          ]
+        },
+        {
+          "profile": "luoyin",
+          "stars": 8,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "火焰切割",
+              94
+            ],
+            [
+              "地刺",
+              520
+            ]
+          ],
+          "incoming": [
+            [
+              "炎息",
+              22
+            ],
+            [
+              "先发制人",
+              24
+            ]
+          ]
+        },
+        {
+          "profile": "dimo",
+          "stars": 10,
+          "ownTraitStacks": 0,
+          "outgoing": [
+            [
+              "潮涌",
+              120
+            ],
+            [
+              "气泡",
+              520
+            ],
+            [
+              "光球",
+              115
+            ]
+          ],
+          "incoming": [],
+          "skillPowerMultipliers": {
+            "气泡": 2
+          },
+          "criticalNote": "User reported critical520; power-doubling and damage-doubling happen to coincide here, so rounding order is not established by this sample"
+        }
+      ]
+    }
+  ],
+  "unresolved": [
+    {
+      "encounter": "ape",
+      "profile": "luoyin",
+      "stars": 6,
+      "skill": "蓝移",
+      "damage": 128,
+      "direction": "incoming",
+      "status": "unexplained",
+      "magicalAttackBonus": 0
+    },
+    {
+      "encounter": "ape",
+      "profile": "dimo",
+      "stars": 10,
+      "skill": "蓝移",
+      "damage": 25,
+      "direction": "incoming",
+      "status": "unexplained",
+      "magicalAttackBonus": 0
+    },
+    {
+      "id": "shiny-hammer42-hp-shield-conflict",
+      "target": "锤头鹳",
+      "level": 42,
+      "shiny": true,
+      "capturedNature": "莽撞",
+      "capturedPanel": {
+        "hp": 224,
+        "physicalAttack": 81,
+        "magicalAttack": 83,
+        "physicalDefense": 107,
+        "magicalDefense": 77,
+        "speed": 121
+      },
+      "attacker": "深渊罗隐",
+      "stars": 10,
+      "attackerPanelStatus": "Actual panel not supplied; 312 physical attack reproduces the screenshot under the current model",
+      "reportedTargetDice": "Resistance coefficient 40%; neutral earth/dark moves unchanged in current model",
+      "reportedOwnDice": "Energy-cost reduction only",
+      "independentFullPoolHits": [
+        {
+          "skill": "鸣沙陷阱",
+          "displayedPower": 280,
+          "damage": 502,
+          "remainingPercent": 38
+        },
+        {
+          "skill": "彼岸之手",
+          "displayedPower": 300,
+          "damage": 538,
+          "remainingPercent": 34
+        },
+        {
+          "skill": "地震",
+          "displayedPower": 380,
+          "damage": 681,
+          "remainingPercent": 16
+        },
+        {
+          "skill": "地刺",
+          "displayedPower": 180,
+          "damage": 322,
+          "remainingPercent": 60
+        }
+      ],
+      "freezeExecution": 738,
+      "freezeExecutionSource": "User reports maximum-HP freeze execution; earlier 718 explicitly corrected as a typo",
+      "currentNeutralShinyHp": 738,
+      "samePoolEquivalentRange": {
+        "min": 803,
+        "max": 805
+      },
+      "samePoolRangeAssumption": "Each hit starts full; displayed damage equals loss in the pool whose percentage is shown; game integer percentage rounding",
+      "packageEvidence": "AT_HPMAX and AI_BOX_SHIELD_MAX are independent fields; shield-active UI reads currentShield/maxShield",
+      "status": "Unresolved HP/shield or displayed-damage/loss mapping; do not fit HP or defense to this case and do not infer increased HP nature"
+    }
+  ]
+}
