@@ -4,6 +4,8 @@
   "scope": "Every catalog source identity and original strength-stage field; not proof of wild damage coefficients or final formulas.",
   "strengthField": "stength_stage",
   "displayStageField": "stage",
+  "defenseRaceSource": "selected-form",
+  "legacyDefenseBranchUse": "session-migration-only",
   "source": {
     "table": "PETBASE_CONF",
     "rowCount": 1302,
@@ -128,7 +130,10 @@
           5028
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3004
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -173,7 +178,10 @@
           16000007
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5025
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -218,7 +226,10 @@
           16000007
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5026
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -263,7 +274,10 @@
           16000007
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5027
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -308,7 +322,10 @@
           16000007
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5028
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -358,7 +375,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3001
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -420,7 +440,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3025
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -473,7 +496,10 @@
           5061
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3007
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -514,7 +540,10 @@
           3007
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5003
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -567,7 +596,11 @@
           3007
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5061,
+        8201
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -617,7 +650,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3003
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -670,7 +706,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3032
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -722,7 +761,10 @@
           5017
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3006
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -763,7 +805,10 @@
           3006
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5017
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -813,7 +858,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3002
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -866,7 +914,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3033
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -918,7 +969,10 @@
           5010
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3005
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -959,7 +1013,10 @@
           3005
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5010
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1006,7 +1063,10 @@
           5006
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3012
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1053,7 +1113,10 @@
           5036
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3036
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1100,7 +1163,10 @@
           5037
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3452
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1147,7 +1213,10 @@
           5038
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3453
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1194,7 +1263,10 @@
           5039
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3495
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1241,7 +1313,10 @@
           5052
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3742
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1281,7 +1356,10 @@
           3012
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5006
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1321,7 +1399,10 @@
           3036
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5036
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1361,7 +1442,10 @@
           3452
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5037
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1401,7 +1485,10 @@
           3453
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5038
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1441,7 +1528,10 @@
           3495
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5039
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1481,7 +1571,10 @@
           3742
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5052
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1531,7 +1624,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3055
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1580,7 +1676,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3516
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1632,7 +1731,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3056
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1683,7 +1785,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3517
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1733,7 +1838,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3057
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1782,7 +1890,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3518
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1832,7 +1943,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3045
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1884,7 +1998,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3046
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1934,7 +2051,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3047
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -1983,7 +2103,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3279
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2032,7 +2155,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3280
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2081,7 +2207,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3281
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2131,7 +2260,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3533
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2183,7 +2315,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3028
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2234,7 +2369,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3282
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2285,7 +2423,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3283
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2336,7 +2477,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3284
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2388,7 +2532,10 @@
           5014
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3037
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2439,7 +2586,10 @@
           5030
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3285
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2490,7 +2640,10 @@
           5031
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3286
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2541,7 +2694,10 @@
           5032
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3287
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2582,7 +2738,10 @@
           3037
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5014
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2622,7 +2781,10 @@
           3285
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5030
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2662,7 +2824,10 @@
           3286
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5031
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2702,7 +2867,10 @@
           3287
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5032
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2752,7 +2920,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3145
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2804,7 +2975,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3146
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2854,7 +3028,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3147
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2904,7 +3081,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3106
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -2953,7 +3133,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3500
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3005,7 +3188,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3107
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3057,7 +3243,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3501
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3107,7 +3296,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3108
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3156,7 +3348,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3502
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3206,7 +3401,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3103
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3258,7 +3456,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3104
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3310,7 +3511,10 @@
           5008
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3105
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3351,7 +3555,10 @@
           3105
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5008
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3400,7 +3607,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3010
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3452,7 +3662,10 @@
           5055
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3039
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3493,7 +3706,10 @@
           3039
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5055
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3543,7 +3759,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3136
+      ],
+      "legacyDefenseBranchIds": [
         3138,
         3470,
         3471,
@@ -3603,7 +3822,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3137
+      ],
+      "legacyDefenseBranchIds": [
         3138,
         3470,
         3471,
@@ -3657,7 +3879,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3138
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3706,7 +3931,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3470
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3755,7 +3983,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3471
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3804,7 +4035,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3472
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3852,7 +4086,10 @@
           5019
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3064
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3894,7 +4131,10 @@
           3777
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5019
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3944,7 +4184,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3315
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -3996,7 +4239,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3316
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4046,7 +4292,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3317
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4100,7 +4349,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3307
+      ],
+      "legacyDefenseBranchIds": [
         3308,
         3448,
         3449,
@@ -4157,7 +4409,10 @@
           5001
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3308
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4207,7 +4462,10 @@
           5047
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3448
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4257,7 +4515,10 @@
           5048
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3449
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4307,7 +4568,10 @@
           5049
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3450
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4357,7 +4621,10 @@
           5050
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3451
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4407,7 +4674,10 @@
           5051
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3486
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4447,7 +4717,10 @@
           3308
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5001
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4487,7 +4760,10 @@
           3448
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5047
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4527,7 +4803,10 @@
           3449
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5048
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4567,7 +4846,10 @@
           3450
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5049
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4607,7 +4889,10 @@
           3451
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5050
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4647,7 +4932,10 @@
           3486
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5051
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4697,7 +4985,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3029
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4749,7 +5040,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3030
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4801,7 +5095,10 @@
           5005
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3031
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4843,7 +5140,10 @@
           8208
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5005
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4892,7 +5192,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3040
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4941,7 +5244,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3288
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -4990,7 +5296,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3289
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5039,7 +5348,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3290
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5090,7 +5402,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3041
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5141,7 +5456,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3291
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5192,7 +5510,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3292
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5243,7 +5564,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3293
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5292,7 +5616,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3042
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5341,7 +5668,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3294
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5390,7 +5720,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3295
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5439,7 +5772,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3296
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5488,7 +5824,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3070
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5539,7 +5878,10 @@
           5018
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3071
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5592,7 +5934,11 @@
           3071
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5018,
+        5075
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5642,7 +5988,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3098
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5694,7 +6043,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3099
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5744,7 +6096,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3100
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5793,7 +6148,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3367
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5843,7 +6201,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3368
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5894,7 +6255,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3060
+      ],
+      "legacyDefenseBranchIds": [
         3405,
         3482
       ],
@@ -5948,7 +6312,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3061
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -5999,7 +6366,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3481
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6048,7 +6418,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3405
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6097,7 +6470,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3482
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6145,7 +6521,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3438
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6193,7 +6572,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3440
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6241,7 +6623,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3439
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6289,7 +6674,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3441
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6335,7 +6723,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3492
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6385,7 +6776,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3165
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6437,7 +6831,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3166
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6487,7 +6884,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3167
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6536,7 +6936,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3017
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6585,7 +6988,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3297
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6634,7 +7040,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3298
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6683,7 +7092,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3299
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6734,7 +7146,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3018
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6785,7 +7200,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3300
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6836,7 +7254,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3301
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6887,7 +7308,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3302
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6938,7 +7362,10 @@
           5004
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3019
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -6989,7 +7416,10 @@
           5033
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3303
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7040,7 +7470,10 @@
           5034
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3304
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7091,7 +7524,10 @@
           5035
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3305
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7131,7 +7567,10 @@
           3019
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5004
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7171,7 +7610,10 @@
           3303
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5033
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7211,7 +7653,10 @@
           3304
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5034
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7251,7 +7696,10 @@
           3305
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5035
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7301,7 +7749,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3190
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7353,7 +7804,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3191
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7403,7 +7857,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3192
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7452,7 +7909,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3034
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7501,7 +7961,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3027
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7550,7 +8013,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3043
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7599,7 +8065,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3044
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7649,7 +8118,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3049
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7701,7 +8173,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3101
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7751,7 +8226,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3102
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7801,7 +8279,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3330
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7850,7 +8331,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3475
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7902,7 +8386,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3331
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -7953,7 +8440,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3476
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8005,7 +8495,10 @@
           5012
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3332
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8056,7 +8549,10 @@
           5029
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3477
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8097,7 +8593,10 @@
           3332
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5012
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8137,7 +8636,10 @@
           3477
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5029
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8183,7 +8685,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3227
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8231,7 +8736,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3193
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8279,7 +8787,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3442
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8327,7 +8838,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3194
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8375,7 +8889,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3443
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8425,7 +8942,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3058
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8477,7 +8997,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3059
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8529,7 +9052,10 @@
           5015
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3157
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8570,7 +9096,10 @@
           3157
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5015
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8620,7 +9149,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3142
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8672,7 +9204,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3143
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8722,7 +9257,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3144
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8772,7 +9310,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3344
+      ],
+      "legacyDefenseBranchIds": [
         3346,
         3571
       ],
@@ -8828,7 +9369,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3345
+      ],
+      "legacyDefenseBranchIds": [
         3346,
         3571
       ],
@@ -8881,7 +9425,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3346
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8931,7 +9478,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3571
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -8977,7 +9527,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3069
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9026,7 +9579,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3026
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9075,7 +9631,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3035
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9121,7 +9680,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3050
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9171,7 +9733,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3175
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9223,7 +9788,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3176
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9273,7 +9841,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3177
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9323,7 +9894,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3139
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9375,7 +9949,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3140
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9425,7 +10002,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3141
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9475,7 +10055,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3276
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9527,7 +10110,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3277
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9577,7 +10163,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3278
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9627,7 +10216,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3014
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9679,7 +10271,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3015
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9731,7 +10326,10 @@
           5053
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3016
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9784,7 +10382,11 @@
           3016
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5053,
+        13000169
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9834,7 +10436,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3115
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9886,7 +10491,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3116
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9938,7 +10546,10 @@
           5011
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3117
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -9979,7 +10590,10 @@
           3117
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5011
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10028,7 +10642,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3170
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10077,7 +10694,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3171
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10127,7 +10747,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3109
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10179,7 +10802,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3110
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10231,7 +10857,10 @@
           5009
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3111
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10272,7 +10901,10 @@
           3111
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5009
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10321,7 +10953,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3062
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10372,7 +11007,10 @@
           5002
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3063
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10413,7 +11051,10 @@
           3063
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5002
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10462,7 +11103,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3376
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10511,7 +11155,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3496
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10562,7 +11209,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3483
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10613,7 +11263,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3497
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10664,7 +11317,10 @@
           5056
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3377
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10715,7 +11371,10 @@
           5062
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3498
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10755,7 +11414,10 @@
           3377
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5056
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10795,7 +11457,10 @@
           3498
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5062
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10844,7 +11509,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3568
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10896,7 +11564,10 @@
           5007
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3569
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10937,7 +11608,10 @@
           3569
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5007
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -10986,7 +11660,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3065
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11035,7 +11712,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3066
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11085,7 +11765,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3151
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11137,7 +11820,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3152
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11187,7 +11873,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3153
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11237,7 +11926,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3239
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11289,7 +11981,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3240
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11339,7 +12034,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3241
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11387,7 +12085,10 @@
           5016
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3011
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11428,7 +12129,10 @@
           3011
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5016
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11477,7 +12181,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3434
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11526,7 +12233,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3435
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11576,7 +12286,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3172
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11628,7 +12341,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3173
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11679,7 +12395,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3174
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11728,7 +12447,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3262
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11777,7 +12499,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3263
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11827,7 +12552,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3333
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11879,7 +12607,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3334
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11929,7 +12660,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3335
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -11979,7 +12713,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3121
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12032,7 +12769,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3122
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12085,7 +12825,10 @@
           5013
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3123
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12126,7 +12869,10 @@
           3123
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5013
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12175,7 +12921,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3410
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12224,7 +12973,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3411
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12274,7 +13026,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3075
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12326,7 +13081,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3076
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12376,7 +13134,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3077
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12426,7 +13187,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3395
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12478,7 +13242,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3396
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12528,7 +13295,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3397
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12578,7 +13348,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3594
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12630,7 +13403,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3595
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12681,7 +13457,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3596
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12731,7 +13510,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3600
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12783,7 +13565,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3601
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12834,7 +13619,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3602
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12884,7 +13672,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3597
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12936,7 +13727,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3598
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -12987,7 +13781,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3599
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13033,7 +13830,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3499
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13082,7 +13882,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3237
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13131,7 +13934,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3238
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13180,7 +13986,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3127
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13229,7 +14038,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3467
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13280,7 +14092,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3128
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13331,7 +14146,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3468
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13380,7 +14198,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3129
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13429,7 +14250,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3469
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13479,7 +14303,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3130
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13531,7 +14358,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3131
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13581,7 +14411,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3132
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13631,7 +14464,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3508
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13680,7 +14516,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3511
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13732,7 +14571,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3509
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13783,7 +14625,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3512
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13833,7 +14678,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3510
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13882,7 +14730,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3513
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13932,7 +14783,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3378
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -13984,7 +14838,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3379
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14034,7 +14891,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3380
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14083,7 +14943,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3534
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14133,7 +14996,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3535
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14182,7 +15048,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3008
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14231,7 +15100,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3067
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14280,7 +15152,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3215
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14329,7 +15204,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3216
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14378,7 +15256,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3529
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14427,7 +15308,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3530
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14477,7 +15361,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3112
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14529,7 +15416,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3113
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14579,7 +15469,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3114
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14630,7 +15523,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3550
+      ],
+      "legacyDefenseBranchIds": [
         3551,
         3552,
         3553,
@@ -14686,7 +15582,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3555
+      ],
+      "legacyDefenseBranchIds": [
         3556,
         3557,
         3558,
@@ -14741,7 +15640,10 @@
           5023
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3551
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14791,7 +15693,10 @@
           5043
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3556
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14842,7 +15747,11 @@
           3551
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5023,
+        640001
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14882,7 +15791,10 @@
           3556
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5043
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -14943,7 +15855,11 @@
           5041
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3553,
+        3558
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15004,7 +15920,11 @@
           5041
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3553,
+        3558
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15055,7 +15975,11 @@
           3552
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5040,
+        5044
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15106,7 +16030,11 @@
           3552
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5040,
+        5044
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15167,7 +16095,11 @@
           5042
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3554,
+        3559
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15228,7 +16160,11 @@
           5042
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3554,
+        3559
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15279,7 +16215,11 @@
           3553
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5041,
+        5045
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15330,7 +16270,11 @@
           3553
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5041,
+        5045
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15391,7 +16335,11 @@
           5040
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3552,
+        3557
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15452,7 +16400,11 @@
           5040
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3552,
+        3557
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15503,7 +16455,11 @@
           3554
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5042,
+        5046
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15554,7 +16510,11 @@
           3554
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5042,
+        5046
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15603,7 +16563,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3255
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15652,7 +16615,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3256
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15702,7 +16668,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3093
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15754,7 +16723,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3094
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15804,7 +16776,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3095
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15854,7 +16829,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3373
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15906,7 +16884,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3374
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15958,7 +16939,10 @@
           5024
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3375
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -15999,7 +16983,10 @@
           3375
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5024
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16048,7 +17035,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3506
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16097,7 +17087,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3507
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16146,7 +17139,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3211
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16197,7 +17193,10 @@
           5022
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3412
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16238,7 +17237,10 @@
           3412
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5022
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16287,7 +17289,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3188
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16338,7 +17343,10 @@
           5060
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3189
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16391,7 +17399,11 @@
           3189
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5060,
+        13000171
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16441,7 +17453,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3195
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16493,7 +17508,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3196
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16543,7 +17561,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3197
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16592,7 +17613,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3618
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16641,7 +17665,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3619
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16690,7 +17717,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3225
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16739,7 +17769,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3226
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16788,7 +17821,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3178
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16837,7 +17873,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3179
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16887,7 +17926,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3090
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16939,7 +17981,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3091
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -16991,7 +18036,10 @@
           5063
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3092
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17037,7 +18085,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3521
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17082,7 +18133,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3430
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17127,7 +18181,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3431
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17172,7 +18229,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3432
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17217,7 +18277,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3433
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17267,7 +18330,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3206
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17319,7 +18385,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3207
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17369,7 +18438,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3208
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17418,7 +18490,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3209
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17467,7 +18542,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3210
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17517,7 +18595,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3357
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17569,7 +18650,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3358
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17621,7 +18705,10 @@
           5020
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3359
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17662,7 +18749,10 @@
           3359
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5020
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17711,7 +18801,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3406
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17760,7 +18853,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3407
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17810,7 +18906,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3250
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17862,7 +18961,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3251
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17914,7 +19016,10 @@
           5054
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3252
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -17955,7 +19060,10 @@
           3252
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5054
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18007,7 +19115,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3124
+      ],
+      "legacyDefenseBranchIds": [
         3126,
         3458,
         3459,
@@ -18070,7 +19181,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3125
+      ],
+      "legacyDefenseBranchIds": [
         3126,
         3458,
         3459
@@ -18127,7 +19241,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3478
+      ],
+      "legacyDefenseBranchIds": [
         3463,
         3464,
         3465
@@ -18184,7 +19301,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3479
+      ],
+      "legacyDefenseBranchIds": [
         3460,
         3461,
         3462
@@ -18238,7 +19358,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3126
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18288,7 +19411,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3458
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18338,7 +19464,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3459
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18387,7 +19516,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3460
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18436,7 +19568,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3461
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18485,7 +19620,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3462
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18534,7 +19672,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3463
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18583,7 +19724,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3464
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18632,7 +19776,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3465
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18680,7 +19827,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3582
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18728,7 +19878,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3584
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18778,7 +19931,10 @@
           5064
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3583
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18828,7 +19984,10 @@
           5065
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3585
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18878,7 +20037,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3384
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18930,7 +20092,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3385
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -18980,7 +20145,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3386
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19029,7 +20197,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3266
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19078,7 +20249,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3267
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19127,7 +20301,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3119
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19178,7 +20355,10 @@
           5066
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3120
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19228,7 +20408,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3154
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19280,7 +20463,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3155
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19330,7 +20516,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3156
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19380,7 +20569,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3083
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19432,7 +20624,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3084
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19482,7 +20677,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3085
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19532,7 +20730,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3257
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19584,7 +20785,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3258
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19636,7 +20840,10 @@
           5067
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3259
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19686,7 +20893,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3081
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19738,7 +20948,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3082
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19788,7 +21001,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3350
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19837,7 +21053,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3536
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19886,7 +21105,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3539
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19937,7 +21159,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3537
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -19988,7 +21213,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3540
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20037,7 +21265,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3538
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20086,7 +21317,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3541
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20135,7 +21369,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3484
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20184,7 +21421,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3547
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20234,7 +21474,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3200
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20286,7 +21529,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3201
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20336,7 +21582,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3202
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20386,7 +21635,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3086
+      ],
+      "legacyDefenseBranchIds": [
         3088,
         3089
       ],
@@ -20444,7 +21696,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3087
+      ],
+      "legacyDefenseBranchIds": [
         3088,
         3089
       ],
@@ -20497,7 +21752,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3088
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20547,7 +21805,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3089
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20596,7 +21857,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3704
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20645,7 +21909,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3705
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20691,7 +21958,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3444
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20737,7 +22007,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3381
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20787,7 +22060,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3072
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20839,7 +22115,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3073
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20889,7 +22168,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3074
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20938,7 +22220,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3020
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -20987,7 +22272,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3454
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21039,7 +22327,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3021
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21090,7 +22381,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3455
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21139,7 +22433,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3022
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21188,7 +22485,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3456
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21238,7 +22538,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3577
+      ],
+      "legacyDefenseBranchIds": [
         3578,
         3579
       ],
@@ -21290,7 +22593,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3578
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21339,7 +22645,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3579
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21388,7 +22697,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3038
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21437,7 +22749,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3013
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21486,7 +22801,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3545
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21537,7 +22855,10 @@
           5021
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3546
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21578,7 +22899,10 @@
           3546
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5021
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21627,7 +22951,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3490
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21678,7 +23005,10 @@
           5057
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3491
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21720,7 +23050,10 @@
           8204
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5057
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21769,7 +23102,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3268
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21818,7 +23154,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3269
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21867,7 +23206,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3419
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21916,7 +23258,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3420
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -21966,7 +23311,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3180
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22019,7 +23367,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3181
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22070,7 +23421,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3182
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22120,7 +23474,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3603
+      ],
+      "legacyDefenseBranchIds": [
         3604,
         3605
       ],
@@ -22172,7 +23529,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3604
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22221,7 +23581,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3605
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22271,7 +23634,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3606
+      ],
+      "legacyDefenseBranchIds": [
         3608,
         3609
       ],
@@ -22327,7 +23693,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3607
+      ],
+      "legacyDefenseBranchIds": [
         3608,
         3609
       ],
@@ -22380,7 +23749,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3608
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22430,7 +23802,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3609
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22480,7 +23855,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3610
+      ],
+      "legacyDefenseBranchIds": [
         3612,
         3613
       ],
@@ -22536,7 +23914,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3611
+      ],
+      "legacyDefenseBranchIds": [
         3612,
         3613
       ],
@@ -22589,7 +23970,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3612
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22639,7 +24023,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3613
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22689,7 +24076,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3244
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22741,7 +24131,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3245
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22791,7 +24184,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3246
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22841,7 +24237,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3309
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22893,7 +24292,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3310
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22943,7 +24345,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3311
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -22994,7 +24399,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3118
+      ],
+      "legacyDefenseBranchIds": [
         3526,
         3527,
         3528
@@ -23050,7 +24458,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3526
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23102,7 +24513,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3527
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23154,7 +24568,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3528
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23204,7 +24621,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3398
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23256,7 +24676,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3399
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23306,7 +24729,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3400
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23355,7 +24781,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3382
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23404,7 +24833,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3383
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23450,7 +24882,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3457
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23499,7 +24934,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3614
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23548,7 +24986,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3615
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23597,7 +25038,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3436
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23646,7 +25090,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3437
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23696,7 +25143,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3148
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23748,7 +25198,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3149
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23800,7 +25253,10 @@
           5059
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3150
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23841,7 +25297,10 @@
           3150
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5059
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23890,7 +25349,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3198
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23939,7 +25401,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3199
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -23989,7 +25454,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3203
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24041,7 +25509,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3204
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24091,7 +25562,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3205
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24141,7 +25615,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3319
+      ],
+      "legacyDefenseBranchIds": [
         3320,
         3485
       ],
@@ -24193,7 +25670,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3320
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24242,7 +25722,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3485
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24291,7 +25774,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3473
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24340,7 +25826,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3474
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24389,7 +25878,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3744
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24438,7 +25930,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3745
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24488,7 +25983,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3161
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24541,7 +26039,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3162
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24591,7 +26092,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3372
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24641,7 +26145,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3369
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24693,7 +26200,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3370
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24743,7 +26253,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3371
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24793,7 +26306,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3733
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24846,7 +26362,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3734
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24896,7 +26415,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3735
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24946,7 +26468,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3392
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -24998,7 +26523,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3393
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25050,7 +26578,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3394
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25099,7 +26630,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3531
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25148,7 +26682,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3532
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25197,7 +26734,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3572
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25246,7 +26786,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3573
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25295,7 +26838,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3729
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25344,7 +26890,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3730
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25394,7 +26943,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3659
+      ],
+      "legacyDefenseBranchIds": [
         3660,
         3743
       ],
@@ -25445,7 +26997,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3660
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25493,7 +27048,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3743
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25543,7 +27101,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3487
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25595,7 +27156,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3488
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25645,7 +27209,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3489
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25694,7 +27261,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3677
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25743,7 +27313,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3678
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25792,7 +27365,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3683
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25841,7 +27417,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3684
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25890,7 +27469,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3736
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25939,7 +27521,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3737
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -25988,7 +27573,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3708
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26037,7 +27625,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3709
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26086,7 +27677,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3234
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26135,7 +27729,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3235
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26181,7 +27778,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3620
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26231,7 +27831,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3078
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26283,7 +27886,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3079
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26333,7 +27939,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3080
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26382,7 +27991,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3752
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26431,7 +28043,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3753
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26481,7 +28096,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3402
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26533,7 +28151,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3403
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26583,7 +28204,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3404
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26633,7 +28257,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3749
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26685,7 +28312,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3750
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26735,7 +28365,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3751
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26785,7 +28418,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3351
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26837,7 +28473,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3352
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26887,7 +28526,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3353
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26937,7 +28579,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3341
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -26989,7 +28634,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3342
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27039,7 +28687,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3343
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27089,7 +28740,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3754
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27141,7 +28795,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3755
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27191,7 +28848,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3756
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27240,7 +28900,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3228
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27289,7 +28952,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3229
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27338,7 +29004,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3747
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27388,7 +29057,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3748
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27438,7 +29110,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3183
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27491,7 +29166,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3184
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27541,7 +29219,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3185
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27591,7 +29272,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3321
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27644,7 +29328,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3322
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27694,7 +29381,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3323
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27744,7 +29434,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3347
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27797,7 +29490,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3348
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27847,7 +29543,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3349
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27893,7 +29592,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3466
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27942,7 +29644,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3757
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -27991,7 +29696,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3758
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28040,7 +29748,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3616
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28090,7 +29801,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3617
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28140,7 +29854,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3230
+      ],
+      "legacyDefenseBranchIds": [
         3232,
         3233
       ],
@@ -28196,7 +29913,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3231
+      ],
+      "legacyDefenseBranchIds": [
         3232,
         3233
       ],
@@ -28249,7 +29969,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3232
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28299,7 +30022,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3233
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28348,7 +30074,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3710
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28397,7 +30126,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3711
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28446,7 +30178,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3718
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28495,7 +30230,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3719
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28545,7 +30283,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3360
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28597,7 +30338,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3361
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28647,7 +30391,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3362
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28696,7 +30443,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3759
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28745,7 +30495,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3760
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28795,7 +30548,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3591
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28847,7 +30603,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3592
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28897,7 +30656,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3593
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28946,7 +30708,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3264
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -28996,7 +30761,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3265
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29045,7 +30813,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3675
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29094,7 +30865,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3676
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29143,7 +30917,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3706
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29192,7 +30969,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3707
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29241,7 +31021,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3697
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29290,7 +31073,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3698
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29339,7 +31125,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3565
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29388,7 +31177,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3566
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29434,7 +31226,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3746
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29483,7 +31278,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3740
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29532,7 +31330,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3741
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29581,7 +31382,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3663
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29631,7 +31435,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3664
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29680,7 +31487,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3767
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29729,7 +31539,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3768
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29778,7 +31591,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3589
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29827,7 +31643,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3590
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29876,7 +31695,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3773
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29925,7 +31747,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3774
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -29971,7 +31796,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3542
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30020,7 +31848,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3771
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30069,7 +31900,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3772
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30118,7 +31952,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3775
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30167,7 +32004,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3776
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30213,7 +32053,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3236
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30263,7 +32106,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3764
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30315,7 +32161,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3765
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30365,7 +32214,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3766
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30415,7 +32267,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3574
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30467,7 +32322,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3575
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30517,7 +32375,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3576
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30567,7 +32428,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3761
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30619,7 +32483,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3762
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30669,7 +32536,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3763
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30710,7 +32580,10 @@
           3092
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5063
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30750,7 +32623,10 @@
           3585
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5065
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30797,7 +32673,10 @@
           5019
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3777
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30843,7 +32722,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3796
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30894,7 +32776,11 @@
           3583
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5064,
+        13000173
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30943,7 +32829,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3797
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -30992,7 +32881,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3798
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31040,7 +32932,10 @@
           5068
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3168
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31090,7 +32985,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3799
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31142,7 +33040,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3800
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31192,7 +33093,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3801
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31242,7 +33146,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3802
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31294,7 +33201,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3803
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31344,7 +33254,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3804
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31385,7 +33298,10 @@
           3259
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5067
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31426,7 +33342,10 @@
           3120
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5066
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31475,7 +33394,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3812
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31524,7 +33446,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3814
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31573,7 +33498,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3816
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31622,7 +33550,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3820
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31672,7 +33603,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [
+      "defenseRacePetbaseIds": [
+        3805
+      ],
+      "legacyDefenseBranchIds": [
         3806,
         3807
       ],
@@ -31724,7 +33658,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3808
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31773,7 +33710,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3810
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31822,7 +33762,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3818
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31872,7 +33815,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3824
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31893,7 +33839,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31938,7 +33885,10 @@
           8065
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5068
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -31987,7 +33937,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3819
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32036,7 +33989,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3821
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32085,7 +34041,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3817
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32134,7 +34093,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3815
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32183,7 +34145,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3813
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32232,7 +34197,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3811
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32281,7 +34249,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3809
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32329,7 +34300,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3806
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32377,7 +34351,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3807
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32398,7 +34375,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32419,7 +34397,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32440,7 +34419,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32461,7 +34441,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32482,7 +34463,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32503,7 +34485,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32524,7 +34507,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32545,7 +34529,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32566,7 +34551,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32587,7 +34573,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32608,7 +34595,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32629,7 +34617,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32650,7 +34639,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32671,7 +34661,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32692,7 +34683,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32713,7 +34705,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32734,7 +34727,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32755,7 +34749,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32776,7 +34771,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32797,7 +34793,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32818,7 +34815,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32839,7 +34837,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32860,7 +34859,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32881,7 +34881,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32902,7 +34903,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32923,7 +34925,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32944,7 +34947,8 @@
       "expectedStrengthStage": null,
       "displayStageDiffersFromStrength": false,
       "evolution": null,
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -32993,7 +34997,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3784
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33042,7 +35049,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3785
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33090,7 +35100,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3070
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33140,7 +35153,10 @@
           5018
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3071
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33185,7 +35201,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3499
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33236,7 +35255,11 @@
           3071
         ]
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        5018,
+        5075
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33284,7 +35307,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3255
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33332,7 +35358,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3256
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33380,7 +35409,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3506
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33428,7 +35460,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3507
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33476,7 +35511,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3697
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33524,7 +35562,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3698
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33574,7 +35615,10 @@
         "sourceParentIds": [],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3822
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     },
     {
@@ -33626,7 +35670,10 @@
         ],
         "sourceBossIds": []
       },
-      "defenseBranchIds": [],
+      "defenseRacePetbaseIds": [
+        3823
+      ],
+      "legacyDefenseBranchIds": [],
       "unconfirmedIdentityMatchesAreNotPromotionEvidence": false
     }
   ],

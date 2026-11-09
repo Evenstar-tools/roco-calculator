@@ -22,7 +22,7 @@
     "completion": {
       "source": "PETBASE_CONF",
       "evidence": "data/reviewed/s5-wild-race-completion-20261107.json",
-      "branchPolicy": "selected-form-attack-and-explicit-defense-selection",
+      "branchPolicy": "selected-form-stats;legacy-evolution-ids-only",
       "bossPolicy": "unique-ordinary-stage3-parent"
     }
   },
@@ -5109,10 +5109,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3136,
-          "defensePetbaseId": 3138,
-          "defenseFormName": "化蝶（平常的样子）",
-          "physicalDefense": 66,
-          "magicalDefense": 66
+          "defensePetbaseId": 3136,
+          "defenseFormName": "毛毛",
+          "physicalDefense": 40,
+          "magicalDefense": 40,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5128,10 +5129,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3136,
-          "defensePetbaseId": 3470,
-          "defenseFormName": "化蝶（幽冥眼的样子）",
-          "physicalDefense": 67,
-          "magicalDefense": 70
+          "defensePetbaseId": 3136,
+          "defenseFormName": "毛毛",
+          "physicalDefense": 40,
+          "magicalDefense": 40,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5147,10 +5149,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3136,
-          "defensePetbaseId": 3471,
-          "defenseFormName": "化蝶（喵喵的样子）",
-          "physicalDefense": 67,
-          "magicalDefense": 67
+          "defensePetbaseId": 3136,
+          "defenseFormName": "毛毛",
+          "physicalDefense": 40,
+          "magicalDefense": 40,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5166,10 +5169,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3136,
-          "defensePetbaseId": 3472,
-          "defenseFormName": "化蝶（奇丽花的样子）",
-          "physicalDefense": 62,
-          "magicalDefense": 65
+          "defensePetbaseId": 3136,
+          "defenseFormName": "毛毛",
+          "physicalDefense": 40,
+          "magicalDefense": 40,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -5187,10 +5191,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3137,
-          "defensePetbaseId": 3138,
-          "defenseFormName": "化蝶（平常的样子）",
-          "physicalDefense": 66,
-          "magicalDefense": 66
+          "defensePetbaseId": 3137,
+          "defenseFormName": "爬爬",
+          "physicalDefense": 53,
+          "magicalDefense": 53,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5206,10 +5211,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3137,
-          "defensePetbaseId": 3470,
-          "defenseFormName": "化蝶（幽冥眼的样子）",
-          "physicalDefense": 67,
-          "magicalDefense": 70
+          "defensePetbaseId": 3137,
+          "defenseFormName": "爬爬",
+          "physicalDefense": 53,
+          "magicalDefense": 53,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5225,10 +5231,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3137,
-          "defensePetbaseId": 3471,
-          "defenseFormName": "化蝶（喵喵的样子）",
-          "physicalDefense": 67,
-          "magicalDefense": 67
+          "defensePetbaseId": 3137,
+          "defenseFormName": "爬爬",
+          "physicalDefense": 53,
+          "magicalDefense": 53,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5244,10 +5251,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3137,
-          "defensePetbaseId": 3472,
-          "defenseFormName": "化蝶（奇丽花的样子）",
-          "physicalDefense": 62,
-          "magicalDefense": 65
+          "defensePetbaseId": 3137,
+          "defenseFormName": "爬爬",
+          "physicalDefense": 53,
+          "magicalDefense": 53,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -5265,10 +5273,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3307,
-          "defensePetbaseId": 3308,
-          "defenseFormName": "晶石蜗（西瓜碧玺的样子）",
-          "physicalDefense": 128,
-          "magicalDefense": 94
+          "defensePetbaseId": 3307,
+          "defenseFormName": "矿晶虫",
+          "physicalDefense": 102,
+          "magicalDefense": 75,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5284,10 +5293,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3307,
-          "defensePetbaseId": 3448,
-          "defenseFormName": "晶石蜗（莲花刚玉的样子）",
-          "physicalDefense": 137,
-          "magicalDefense": 91
+          "defensePetbaseId": 3307,
+          "defenseFormName": "矿晶虫",
+          "physicalDefense": 102,
+          "magicalDefense": 75,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5303,10 +5313,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3307,
-          "defensePetbaseId": 3449,
-          "defenseFormName": "晶石蜗（星彩榴石的样子）",
-          "physicalDefense": 128,
-          "magicalDefense": 91
+          "defensePetbaseId": 3307,
+          "defenseFormName": "矿晶虫",
+          "physicalDefense": 102,
+          "magicalDefense": 75,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5322,10 +5333,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3307,
-          "defensePetbaseId": 3450,
-          "defenseFormName": "晶石蜗（火山琉璃的样子）",
-          "physicalDefense": 132,
-          "magicalDefense": 91
+          "defensePetbaseId": 3307,
+          "defenseFormName": "矿晶虫",
+          "physicalDefense": 102,
+          "magicalDefense": 75,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5341,10 +5353,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3307,
-          "defensePetbaseId": 3451,
-          "defenseFormName": "晶石蜗（蓝锥矿的样子）",
-          "physicalDefense": 124,
-          "magicalDefense": 91
+          "defensePetbaseId": 3307,
+          "defenseFormName": "矿晶虫",
+          "physicalDefense": 102,
+          "magicalDefense": 75,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5360,10 +5373,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3307,
-          "defensePetbaseId": 3486,
-          "defenseFormName": "晶石蜗（烧蓝黄金的样子）",
-          "physicalDefense": 130,
-          "magicalDefense": 91
+          "defensePetbaseId": 3307,
+          "defenseFormName": "矿晶虫",
+          "physicalDefense": 102,
+          "magicalDefense": 75,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -5381,10 +5395,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3060,
-          "defensePetbaseId": 3405,
-          "defenseFormName": "幽冥眼（睁眼的样子）",
-          "physicalDefense": 98,
-          "magicalDefense": 135
+          "defensePetbaseId": 3060,
+          "defenseFormName": "小灵面",
+          "physicalDefense": 59,
+          "magicalDefense": 81,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5400,10 +5415,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3060,
-          "defensePetbaseId": 3482,
-          "defenseFormName": "幽冥眼（闭眼的样子）",
-          "physicalDefense": 104,
-          "magicalDefense": 110
+          "defensePetbaseId": 3060,
+          "defenseFormName": "小灵面",
+          "physicalDefense": 59,
+          "magicalDefense": 81,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -5421,10 +5437,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3344,
-          "defensePetbaseId": 3346,
-          "defenseFormName": "翠顶夫人",
-          "physicalDefense": 138,
-          "magicalDefense": 97
+          "defensePetbaseId": 3344,
+          "defenseFormName": "乖乖鹄",
+          "physicalDefense": 83,
+          "magicalDefense": 58,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5440,10 +5457,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3344,
-          "defensePetbaseId": 3571,
-          "defenseFormName": "黑羽夫人",
-          "physicalDefense": 130,
-          "magicalDefense": 90
+          "defensePetbaseId": 3344,
+          "defenseFormName": "乖乖鹄",
+          "physicalDefense": 83,
+          "magicalDefense": 58,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -5461,10 +5479,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3345,
-          "defensePetbaseId": 3346,
-          "defenseFormName": "翠顶夫人",
-          "physicalDefense": 138,
-          "magicalDefense": 97
+          "defensePetbaseId": 3345,
+          "defenseFormName": "蓝珠天鹅",
+          "physicalDefense": 110,
+          "magicalDefense": 78,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5480,10 +5499,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3345,
-          "defensePetbaseId": 3571,
-          "defenseFormName": "黑羽夫人",
-          "physicalDefense": 130,
-          "magicalDefense": 90
+          "defensePetbaseId": 3345,
+          "defenseFormName": "蓝珠天鹅",
+          "physicalDefense": 110,
+          "magicalDefense": 78,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -5501,10 +5521,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3550,
-          "defensePetbaseId": 3551,
-          "defenseFormName": "棋骑士（白子）",
-          "physicalDefense": 88,
-          "magicalDefense": 69
+          "defensePetbaseId": 3550,
+          "defenseFormName": "棋棋",
+          "physicalDefense": 70,
+          "magicalDefense": 56,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5520,10 +5541,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3550,
-          "defensePetbaseId": 3552,
-          "defenseFormName": "棋绮后（白子）",
-          "physicalDefense": 82,
-          "magicalDefense": 75
+          "defensePetbaseId": 3550,
+          "defenseFormName": "棋棋",
+          "physicalDefense": 70,
+          "magicalDefense": 56,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5539,10 +5561,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3550,
-          "defensePetbaseId": 3553,
-          "defenseFormName": "棋齐垒（白子）",
-          "physicalDefense": 116,
-          "magicalDefense": 77
+          "defensePetbaseId": 3550,
+          "defenseFormName": "棋棋",
+          "physicalDefense": 70,
+          "magicalDefense": 56,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5558,10 +5581,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3550,
-          "defensePetbaseId": 3554,
-          "defenseFormName": "棋祈督（白子）",
-          "physicalDefense": 90,
-          "magicalDefense": 72
+          "defensePetbaseId": 3550,
+          "defenseFormName": "棋棋",
+          "physicalDefense": 70,
+          "magicalDefense": 56,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -5579,10 +5603,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3555,
-          "defensePetbaseId": 3556,
-          "defenseFormName": "棋骑士（黑子）",
-          "physicalDefense": 84,
-          "magicalDefense": 66
+          "defensePetbaseId": 3555,
+          "defenseFormName": "棋棋",
+          "physicalDefense": 67,
+          "magicalDefense": 53,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5598,10 +5623,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3555,
-          "defensePetbaseId": 3557,
-          "defenseFormName": "棋绮后（黑子）",
-          "physicalDefense": 82,
-          "magicalDefense": 75
+          "defensePetbaseId": 3555,
+          "defenseFormName": "棋棋",
+          "physicalDefense": 67,
+          "magicalDefense": 53,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5617,10 +5643,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3555,
-          "defensePetbaseId": 3558,
-          "defenseFormName": "棋齐垒（黑子）",
-          "physicalDefense": 116,
-          "magicalDefense": 77
+          "defensePetbaseId": 3555,
+          "defenseFormName": "棋棋",
+          "physicalDefense": 67,
+          "magicalDefense": 53,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5636,10 +5663,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3555,
-          "defensePetbaseId": 3559,
-          "defenseFormName": "棋祈督（黑子）",
-          "physicalDefense": 90,
-          "magicalDefense": 72
+          "defensePetbaseId": 3555,
+          "defenseFormName": "棋棋",
+          "physicalDefense": 67,
+          "magicalDefense": 53,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -5657,10 +5685,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3124,
-          "defensePetbaseId": 3126,
-          "defenseFormName": "圣代甜甜（樱桃巧克力口味）",
-          "physicalDefense": 70,
-          "magicalDefense": 92
+          "defensePetbaseId": 3124,
+          "defenseFormName": "脆筒甜甜",
+          "physicalDefense": 42,
+          "magicalDefense": 55,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5676,10 +5705,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3124,
-          "defensePetbaseId": 3458,
-          "defenseFormName": "圣代甜甜（樱桃草莓口味）",
-          "physicalDefense": 81,
-          "magicalDefense": 96
+          "defensePetbaseId": 3124,
+          "defenseFormName": "脆筒甜甜",
+          "physicalDefense": 42,
+          "magicalDefense": 55,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5695,10 +5725,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3124,
-          "defensePetbaseId": 3459,
-          "defenseFormName": "圣代甜甜（樱桃抹茶口味）",
-          "physicalDefense": 79,
-          "magicalDefense": 92
+          "defensePetbaseId": 3124,
+          "defenseFormName": "脆筒甜甜",
+          "physicalDefense": 42,
+          "magicalDefense": 55,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5714,10 +5745,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3124,
-          "defensePetbaseId": 3460,
-          "defenseFormName": "圣代甜甜（蓝莓巧克力口味）",
-          "physicalDefense": 79,
-          "magicalDefense": 92
+          "defensePetbaseId": 3124,
+          "defenseFormName": "脆筒甜甜",
+          "physicalDefense": 42,
+          "magicalDefense": 55,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5733,10 +5765,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3124,
-          "defensePetbaseId": 3461,
-          "defenseFormName": "圣代甜甜（蓝莓草莓口味）",
-          "physicalDefense": 90,
-          "magicalDefense": 96
+          "defensePetbaseId": 3124,
+          "defenseFormName": "脆筒甜甜",
+          "physicalDefense": 42,
+          "magicalDefense": 55,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5752,10 +5785,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3124,
-          "defensePetbaseId": 3462,
-          "defenseFormName": "圣代甜甜（蓝莓抹茶口味）",
-          "physicalDefense": 86,
-          "magicalDefense": 92
+          "defensePetbaseId": 3124,
+          "defenseFormName": "脆筒甜甜",
+          "physicalDefense": 42,
+          "magicalDefense": 55,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5771,10 +5805,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3124,
-          "defensePetbaseId": 3463,
-          "defenseFormName": "圣代甜甜（杨桃巧克力口味）",
-          "physicalDefense": 73,
-          "magicalDefense": 96
+          "defensePetbaseId": 3124,
+          "defenseFormName": "脆筒甜甜",
+          "physicalDefense": 42,
+          "magicalDefense": 55,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5790,10 +5825,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3124,
-          "defensePetbaseId": 3464,
-          "defenseFormName": "圣代甜甜（杨桃草莓口味）",
-          "physicalDefense": 84,
-          "magicalDefense": 99
+          "defensePetbaseId": 3124,
+          "defenseFormName": "脆筒甜甜",
+          "physicalDefense": 42,
+          "magicalDefense": 55,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5809,10 +5845,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3124,
-          "defensePetbaseId": 3465,
-          "defenseFormName": "圣代甜甜（杨桃抹茶口味）",
-          "physicalDefense": 82,
-          "magicalDefense": 96
+          "defensePetbaseId": 3124,
+          "defenseFormName": "脆筒甜甜",
+          "physicalDefense": 42,
+          "magicalDefense": 55,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -5830,10 +5867,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3125,
-          "defensePetbaseId": 3126,
-          "defenseFormName": "圣代甜甜（樱桃巧克力口味）",
-          "physicalDefense": 70,
-          "magicalDefense": 92
+          "defensePetbaseId": 3125,
+          "defenseFormName": "香草甜甜",
+          "physicalDefense": 56,
+          "magicalDefense": 74,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5849,10 +5887,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3125,
-          "defensePetbaseId": 3458,
-          "defenseFormName": "圣代甜甜（樱桃草莓口味）",
-          "physicalDefense": 81,
-          "magicalDefense": 96
+          "defensePetbaseId": 3125,
+          "defenseFormName": "香草甜甜",
+          "physicalDefense": 56,
+          "magicalDefense": 74,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5868,10 +5907,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3125,
-          "defensePetbaseId": 3459,
-          "defenseFormName": "圣代甜甜（樱桃抹茶口味）",
-          "physicalDefense": 79,
-          "magicalDefense": 92
+          "defensePetbaseId": 3125,
+          "defenseFormName": "香草甜甜",
+          "physicalDefense": 56,
+          "magicalDefense": 74,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -5889,10 +5929,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3478,
-          "defensePetbaseId": 3463,
-          "defenseFormName": "圣代甜甜（杨桃巧克力口味）",
-          "physicalDefense": 73,
-          "magicalDefense": 96
+          "defensePetbaseId": 3478,
+          "defenseFormName": "香草甜甜",
+          "physicalDefense": 58,
+          "magicalDefense": 77,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5908,10 +5949,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3478,
-          "defensePetbaseId": 3464,
-          "defenseFormName": "圣代甜甜（杨桃草莓口味）",
-          "physicalDefense": 84,
-          "magicalDefense": 99
+          "defensePetbaseId": 3478,
+          "defenseFormName": "香草甜甜",
+          "physicalDefense": 58,
+          "magicalDefense": 77,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5927,10 +5969,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3478,
-          "defensePetbaseId": 3465,
-          "defenseFormName": "圣代甜甜（杨桃抹茶口味）",
-          "physicalDefense": 82,
-          "magicalDefense": 96
+          "defensePetbaseId": 3478,
+          "defenseFormName": "香草甜甜",
+          "physicalDefense": 58,
+          "magicalDefense": 77,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -5948,10 +5991,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3479,
-          "defensePetbaseId": 3460,
-          "defenseFormName": "圣代甜甜（蓝莓巧克力口味）",
-          "physicalDefense": 79,
-          "magicalDefense": 92
+          "defensePetbaseId": 3479,
+          "defenseFormName": "香草甜甜",
+          "physicalDefense": 63,
+          "magicalDefense": 74,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5967,10 +6011,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3479,
-          "defensePetbaseId": 3461,
-          "defenseFormName": "圣代甜甜（蓝莓草莓口味）",
-          "physicalDefense": 90,
-          "magicalDefense": 96
+          "defensePetbaseId": 3479,
+          "defenseFormName": "香草甜甜",
+          "physicalDefense": 63,
+          "magicalDefense": 74,
+          "resolution": "selected-form"
         }
       },
       {
@@ -5986,10 +6031,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3479,
-          "defensePetbaseId": 3462,
-          "defenseFormName": "圣代甜甜（蓝莓抹茶口味）",
-          "physicalDefense": 86,
-          "magicalDefense": 92
+          "defensePetbaseId": 3479,
+          "defenseFormName": "香草甜甜",
+          "physicalDefense": 63,
+          "magicalDefense": 74,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6007,10 +6053,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3086,
-          "defensePetbaseId": 3088,
-          "defenseFormName": "绅士鸡",
-          "physicalDefense": 102,
-          "magicalDefense": 87
+          "defensePetbaseId": 3086,
+          "defenseFormName": "可立鸡",
+          "physicalDefense": 61,
+          "magicalDefense": 52,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6026,10 +6073,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3086,
-          "defensePetbaseId": 3089,
-          "defenseFormName": "武者鸡",
-          "physicalDefense": 111,
-          "magicalDefense": 70
+          "defensePetbaseId": 3086,
+          "defenseFormName": "可立鸡",
+          "physicalDefense": 61,
+          "magicalDefense": 52,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6047,10 +6095,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3087,
-          "defensePetbaseId": 3088,
-          "defenseFormName": "绅士鸡",
-          "physicalDefense": 102,
-          "magicalDefense": 87
+          "defensePetbaseId": 3087,
+          "defenseFormName": "晕晕鸡",
+          "physicalDefense": 82,
+          "magicalDefense": 70,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6066,10 +6115,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3087,
-          "defensePetbaseId": 3089,
-          "defenseFormName": "武者鸡",
-          "physicalDefense": 111,
-          "magicalDefense": 70
+          "defensePetbaseId": 3087,
+          "defenseFormName": "晕晕鸡",
+          "physicalDefense": 82,
+          "magicalDefense": 70,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6087,10 +6137,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3577,
-          "defensePetbaseId": 3578,
-          "defenseFormName": "混乱鱿彩",
-          "physicalDefense": 131,
-          "magicalDefense": 99
+          "defensePetbaseId": 3577,
+          "defenseFormName": "墨鱿士",
+          "physicalDefense": 105,
+          "magicalDefense": 79,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6106,10 +6157,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3577,
-          "defensePetbaseId": 3579,
-          "defenseFormName": "秩序鱿墨",
-          "physicalDefense": 117,
-          "magicalDefense": 106
+          "defensePetbaseId": 3577,
+          "defenseFormName": "墨鱿士",
+          "physicalDefense": 105,
+          "magicalDefense": 79,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6127,10 +6179,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3603,
-          "defensePetbaseId": 3604,
-          "defenseFormName": "捕尘长绒",
-          "physicalDefense": 116,
-          "magicalDefense": 99
+          "defensePetbaseId": 3603,
+          "defenseFormName": "毛头小蛛",
+          "physicalDefense": 93,
+          "magicalDefense": 79,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6146,10 +6199,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3603,
-          "defensePetbaseId": 3605,
-          "defenseFormName": "食尘短绒",
-          "physicalDefense": 113,
-          "magicalDefense": 97
+          "defensePetbaseId": 3603,
+          "defenseFormName": "毛头小蛛",
+          "physicalDefense": 93,
+          "magicalDefense": 79,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6167,10 +6221,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3606,
-          "defensePetbaseId": 3608,
-          "defenseFormName": "画间法师手",
-          "physicalDefense": 94,
-          "magicalDefense": 120
+          "defensePetbaseId": 3606,
+          "defenseFormName": "画精灵",
+          "physicalDefense": 56,
+          "magicalDefense": 72,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6186,10 +6241,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3606,
-          "defensePetbaseId": 3609,
-          "defenseFormName": "画间沉铁兽",
-          "physicalDefense": 100,
-          "magicalDefense": 76
+          "defensePetbaseId": 3606,
+          "defenseFormName": "画精灵",
+          "physicalDefense": 56,
+          "magicalDefense": 72,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6207,10 +6263,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3607,
-          "defensePetbaseId": 3608,
-          "defenseFormName": "画间法师手",
-          "physicalDefense": 94,
-          "magicalDefense": 120
+          "defensePetbaseId": 3607,
+          "defenseFormName": "画像守护",
+          "physicalDefense": 75,
+          "magicalDefense": 96,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6226,10 +6283,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3607,
-          "defensePetbaseId": 3609,
-          "defenseFormName": "画间沉铁兽",
-          "physicalDefense": 100,
-          "magicalDefense": 76
+          "defensePetbaseId": 3607,
+          "defenseFormName": "画像守护",
+          "physicalDefense": 75,
+          "magicalDefense": 96,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6247,10 +6305,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3610,
-          "defensePetbaseId": 3612,
-          "defenseFormName": "古卷执政官",
-          "physicalDefense": 80,
-          "magicalDefense": 122
+          "defensePetbaseId": 3610,
+          "defenseFormName": "书魔虫",
+          "physicalDefense": 48,
+          "magicalDefense": 73,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6266,10 +6325,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3610,
-          "defensePetbaseId": 3613,
-          "defenseFormName": "古卷匣魔像",
-          "physicalDefense": 130,
-          "magicalDefense": 86
+          "defensePetbaseId": 3610,
+          "defenseFormName": "书魔虫",
+          "physicalDefense": 48,
+          "magicalDefense": 73,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6287,10 +6347,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3611,
-          "defensePetbaseId": 3612,
-          "defenseFormName": "古卷执政官",
-          "physicalDefense": 80,
-          "magicalDefense": 122
+          "defensePetbaseId": 3611,
+          "defenseFormName": "书卷守护",
+          "physicalDefense": 64,
+          "magicalDefense": 98,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6306,10 +6367,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3611,
-          "defensePetbaseId": 3613,
-          "defenseFormName": "古卷匣魔像",
-          "physicalDefense": 130,
-          "magicalDefense": 86
+          "defensePetbaseId": 3611,
+          "defenseFormName": "书卷守护",
+          "physicalDefense": 64,
+          "magicalDefense": 98,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6327,10 +6389,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3118,
-          "defensePetbaseId": 3526,
-          "defenseFormName": "抹茶布丁",
-          "physicalDefense": 94,
-          "magicalDefense": 98
+          "defensePetbaseId": 3118,
+          "defenseFormName": "果冻",
+          "physicalDefense": 75,
+          "magicalDefense": 78,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6346,10 +6409,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3118,
-          "defensePetbaseId": 3527,
-          "defenseFormName": "椰浆布丁",
-          "physicalDefense": 81,
-          "magicalDefense": 105
+          "defensePetbaseId": 3118,
+          "defenseFormName": "果冻",
+          "physicalDefense": 75,
+          "magicalDefense": 78,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6365,10 +6429,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3118,
-          "defensePetbaseId": 3528,
-          "defenseFormName": "熔岩布丁",
-          "physicalDefense": 112,
-          "magicalDefense": 84
+          "defensePetbaseId": 3118,
+          "defenseFormName": "果冻",
+          "physicalDefense": 75,
+          "magicalDefense": 78,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6386,10 +6451,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3319,
-          "defensePetbaseId": 3320,
-          "defenseFormName": "粉耳星兔",
-          "physicalDefense": 73,
-          "magicalDefense": 127
+          "defensePetbaseId": 3319,
+          "defenseFormName": "粉星仔",
+          "physicalDefense": 58,
+          "magicalDefense": 102,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6405,10 +6471,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3319,
-          "defensePetbaseId": 3485,
-          "defenseFormName": "落陨星兔",
-          "physicalDefense": 87,
-          "magicalDefense": 141
+          "defensePetbaseId": 3319,
+          "defenseFormName": "粉星仔",
+          "physicalDefense": 58,
+          "magicalDefense": 102,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6426,10 +6493,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3659,
-          "defensePetbaseId": 3660,
-          "defenseFormName": "加油蟹（两只海葵的样子）",
-          "physicalDefense": 128,
-          "magicalDefense": 128
+          "defensePetbaseId": 3659,
+          "defenseFormName": "加油海葵",
+          "physicalDefense": 103,
+          "magicalDefense": 103,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6445,10 +6513,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3659,
-          "defensePetbaseId": 3743,
-          "defenseFormName": "加油蟹（单只海葵的样子）",
-          "physicalDefense": 128,
-          "magicalDefense": 128
+          "defensePetbaseId": 3659,
+          "defenseFormName": "加油海葵",
+          "physicalDefense": 103,
+          "magicalDefense": 103,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6466,10 +6535,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3230,
-          "defensePetbaseId": 3232,
-          "defenseFormName": "加尔",
-          "physicalDefense": 84,
-          "magicalDefense": 124
+          "defensePetbaseId": 3230,
+          "defenseFormName": "加灵",
+          "physicalDefense": 50,
+          "magicalDefense": 74,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6485,10 +6555,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3230,
-          "defensePetbaseId": 3233,
-          "defenseFormName": "黑化加尔",
-          "physicalDefense": 94,
-          "magicalDefense": 124
+          "defensePetbaseId": 3230,
+          "defenseFormName": "加灵",
+          "physicalDefense": 50,
+          "magicalDefense": 74,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6506,10 +6577,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3231,
-          "defensePetbaseId": 3232,
-          "defenseFormName": "加尔",
-          "physicalDefense": 84,
-          "magicalDefense": 124
+          "defensePetbaseId": 3231,
+          "defenseFormName": "加益",
+          "physicalDefense": 67,
+          "magicalDefense": 99,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6525,10 +6597,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3231,
-          "defensePetbaseId": 3233,
-          "defenseFormName": "黑化加尔",
-          "physicalDefense": 94,
-          "magicalDefense": 124
+          "defensePetbaseId": 3231,
+          "defenseFormName": "加益",
+          "physicalDefense": 67,
+          "magicalDefense": 99,
+          "resolution": "selected-form"
         }
       }
     ],
@@ -6546,10 +6619,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3805,
-          "defensePetbaseId": 3806,
-          "defenseFormName": "阿瓦鲨（柠檬鲨的样子）",
-          "physicalDefense": 120,
-          "magicalDefense": 88
+          "defensePetbaseId": 3805,
+          "defenseFormName": "乐乐鲨",
+          "physicalDefense": 96,
+          "magicalDefense": 70,
+          "resolution": "selected-form"
         }
       },
       {
@@ -6565,10 +6639,11 @@
         },
         "defenseRaceStats": {
           "sourcePetbaseId": 3805,
-          "defensePetbaseId": 3807,
-          "defenseFormName": "阿瓦鲨（虎纹鲨的样子）",
-          "physicalDefense": 120,
-          "magicalDefense": 88
+          "defensePetbaseId": 3805,
+          "defenseFormName": "乐乐鲨",
+          "physicalDefense": 96,
+          "magicalDefense": 70,
+          "resolution": "selected-form"
         }
       }
     ]

@@ -22,11 +22,11 @@ function reviewedPackage() {
 
 test('all 666 confirmed targets have paired usable races; the 28 placeholders stay missing', () => {
   assert.equal(catalog.spirits.length, 694);
-  assert.equal(catalog.spirits.filter(spirit => spirit.wildStatForms?.length).length, 24);
+  assert.equal(catalog.spirits.filter(spirit => spirit.wildStatForms?.length).length, 0);
   assert.equal(Object.keys(attack.bySpiritId).length, 666);
-  assert.equal(Object.keys(defense.bySpiritId).length, 642);
+  assert.equal(Object.keys(defense.bySpiritId).length, 666);
   assert.equal(Object.keys(attack.candidatesBySpiritId).length, 26);
-  assert.equal(Object.keys(defense.candidatesBySpiritId).length, 24);
+  assert.equal(Object.keys(defense.candidatesBySpiritId).length, 0);
   for (const mapping of [attack, defense]) {
     assert.equal(mapping.meta.counts.available, 666);
     assert.equal(Object.keys(mapping.missing).length, 28);
@@ -37,12 +37,17 @@ test('all 666 confirmed targets have paired usable races; the 28 placeholders st
   assert.equal(available.length, 666);
   for (const spirit of available) {
     assert(attack.bySpiritId[spirit.id] || attack.candidatesBySpiritId[spirit.id], spirit.name);
-    assert(defense.bySpiritId[spirit.id] || defense.candidatesBySpiritId[spirit.id], spirit.name);
+    assert(defense.bySpiritId[spirit.id], spirit.name);
     assert([1, 2, 3].includes(spirit.wildStrengthStage), spirit.name);
+    const mapped = defense.bySpiritId[spirit.id];
+    assert.equal(mapped.defensePetbaseId, mapped.sourcePetbaseId, spirit.name);
+    assert.equal(mapped.physicalDefense, spirit.raceStats.physicalDefense, spirit.name);
+    assert.equal(mapped.magicalDefense, spirit.raceStats.magicalDefense, spirit.name);
+    assert.equal(mapped.resolution, 'selected-form', spirit.name);
   }
 });
 
-test('every selectable branch keeps the same package ID for both attacks and defenses', () => {
+test('legacy branch IDs preserve provenance while both attacks and defenses use the source form', () => {
   for (const branch of evidence.branches) {
     const spirit = byId.get(branch.spiritId);
     const choices = attack.candidatesBySpiritId[spirit.id];
@@ -55,15 +60,16 @@ test('every selectable branch keeps the same package ID for both attacks and def
       assert(source, `${spirit.name}/${form.id}`);
       assert.equal(source.strengthStage, 3);
       assert.equal(form.attackRaceStats.attackPetbaseId, branch.source.id);
-      assert.equal(form.defenseRaceStats.defensePetbaseId, source.id);
+      assert.equal(form.defenseRaceStats.defensePetbaseId, branch.source.id);
       assert.equal(form.attackRaceStats.sourcePetbaseId, branch.source.id);
       assert.equal(form.defenseRaceStats.sourcePetbaseId, branch.source.id);
       for (const key of ['physicalAttack', 'magicalAttack']) assert.equal(form.attackRaceStats[key], branch.source.raceStats[key]);
-      for (const key of ['physicalDefense', 'magicalDefense']) assert.equal(form.defenseRaceStats[key], source.raceStats[key]);
+      for (const key of ['physicalDefense', 'magicalDefense']) assert.equal(form.defenseRaceStats[key], branch.source.raceStats[key]);
     }
     assert.deepEqual(spirit.wildAttackRaceStats, attack.bySpiritId[spirit.id]);
-    assert.equal(spirit.wildStatForms?.length ?? 0, defense.bySpiritId[spirit.id] ? 0 : choices.length);
-    if (!defense.bySpiritId[spirit.id]) assert.deepEqual(defense.candidatesBySpiritId[spirit.id], spirit.wildStatForms);
+    assert.equal(spirit.wildStatForms, undefined);
+    assert.deepEqual(spirit.legacyWildStatFormIds, choices.map(form => form.id));
+    assert.deepEqual(spirit.wildDefenseRaceStats, defense.bySpiritId[spirit.id]);
   }
 });
 
@@ -74,19 +80,23 @@ test('Lele Shark and anemone use source-form attack without requiring equal-defe
   assert.equal(shark.wildAttackRaceStats.attackPetbaseId, 3805);
   assert.equal(shark.wildStrengthStage, 2);
   assert.deepEqual(shark.wildDefenseRaceStats, defense.bySpiritId[shark.id]);
-  assert.equal(shark.wildDefenseRaceStats.physicalDefense, 120);
-  assert.equal(shark.wildDefenseRaceStats.magicalDefense, 88);
+  assert.equal(shark.wildDefenseRaceStats.physicalDefense, shark.raceStats.physicalDefense);
+  assert.equal(shark.wildDefenseRaceStats.magicalDefense, shark.raceStats.magicalDefense);
+  assert.equal(shark.wildDefenseRaceStats.defensePetbaseId, 3805);
   assert.equal(defense.candidatesBySpiritId[shark.id], undefined);
   const anemone = byName('加油海葵');
   assert.equal(anemone.wildStatForms, undefined);
   assert.deepEqual(anemone.wildDefenseRaceStats, defense.bySpiritId[anemone.id]);
 });
 
-test('chess branches with identical races use the source black/white variant instead of a same-name guess', () => {
+test('black and white chess use distinct initial races without selecting a future defense branch', () => {
   for (const color of ['白子', '黑子']) {
     const spirit = byName(`棋棋（${color}）`);
-    assert.equal(spirit.wildStatForms.length, 4);
-    assert(spirit.wildStatForms.every(form => form.name.endsWith(`（${color}）`)));
+    assert.equal(spirit.wildStatForms, undefined);
+    assert.equal(spirit.legacyWildStatFormIds.length, 4);
+    assert(attack.candidatesBySpiritId[spirit.id].every(form => form.name.endsWith(`（${color}）`)));
+    assert.deepEqual([spirit.wildDefenseRaceStats.physicalDefense, spirit.wildDefenseRaceStats.magicalDefense],
+      color === '白子' ? [70, 56] : [67, 53]);
   }
 });
 
@@ -102,9 +112,11 @@ test('four Bouncing Fruit bosses use unique ordinary parents while retaining the
     assert(row.parent.bossPetbaseIds.includes(row.source.id));
     assert.deepEqual(row.source.raceStats, row.parent.raceStats);
     assert.equal(spirit.wildAttackRaceStats.attackPetbaseId, row.source.id);
-    assert.equal(spirit.wildDefenseRaceStats.defensePetbaseId, row.parent.id);
+    assert.equal(spirit.wildDefenseRaceStats.defensePetbaseId, row.source.id);
     assert.equal(spirit.wildDefenseRaceStats.sourcePetbaseId, row.source.id);
     assert.equal(spirit.wildAttackRaceStats.resolution, 'boss-parent-stage3');
+    assert.equal(spirit.wildDefenseRaceStats.resolution, 'selected-form');
+    assert.equal(spirit.wildDefenseRaceStats.ordinaryParentPetbaseId, row.parent.id);
   }
 });
 

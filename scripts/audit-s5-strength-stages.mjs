@@ -91,6 +91,10 @@ export function auditS5StrengthStages(catalog, attack, defense, petbase, provena
     const mappings = [attack.bySpiritId[id], defense.bySpiritId[id], ...branchForms.flatMap(form => [form.attackRaceStats, form.defenseRaceStats])].filter(Boolean);
     const referenceSets = mappings.map(sourceIds);
     const referencedIds = unique(referenceSets.flat());
+    const nativeDefense = defense.bySpiritId[id];
+    const defenseRacePetbaseIds = nativeDefense ? unique(nativeDefense.defensePetbaseIds ?? [nativeDefense.defensePetbaseId]) : [];
+    const legacyDefenseBranchIds = unique((spirit.legacyWildStatFormIds ?? [])
+      .map(formId => Number(/^petbase-(\d+)$/u.exec(formId)?.[1])).filter(Number.isInteger));
     const primaryId = attack.bySpiritId[id]?.sourcePetbaseId ?? defense.bySpiritId[id]?.sourcePetbaseId
       ?? branchForms[0]?.attackRaceStats?.sourcePetbaseId ?? null;
     const referenced = referencedIds.map(sourceId => byId.get(sourceId));
@@ -112,6 +116,9 @@ export function auditS5StrengthStages(catalog, attack, defense, petbase, provena
       if (expected === null) issues.push('source-strength-stage-not-unique-or-invalid');
       if (spirit.wildStrengthStage !== expected) issues.push('catalog-strength-stage-mismatch');
       if (defense.strengthStageBySpiritId[id] !== expected) issues.push('defense-map-strength-stage-mismatch');
+      if (JSON.stringify(defenseRacePetbaseIds) !== JSON.stringify(referencedIds)
+        || nativeDefense?.physicalDefense !== spirit.raceStats.physicalDefense
+        || nativeDefense?.magicalDefense !== spirit.raceStats.magicalDefense) issues.push('defense-race-not-selected-form');
       if (byId.get(primaryId)?.stage !== DISPLAY_STAGES[spirit.stage]) issues.push('display-stage-primary-source-mismatch');
       if (identityCandidates.some(row => row.stength_stage !== expected)) issues.push('exact-identity-candidates-disagree-on-strength');
     }
@@ -130,7 +137,7 @@ export function auditS5StrengthStages(catalog, attack, defense, petbase, provena
       expectedStrengthStage: unavailable ? null : expected,
       displayStageDiffersFromStrength: !unavailable && DISPLAY_STAGES[spirit.stage] !== expected,
       evolution: source ? evolutionEvidence(source) : null,
-      defenseBranchIds: unique(branchForms.map(form => form.defenseRaceStats?.defensePetbaseId).filter(Number.isInteger)),
+      defenseRacePetbaseIds, legacyDefenseBranchIds,
       unconfirmedIdentityMatchesAreNotPromotionEvidence: unavailable && identityCandidates.length > 0 };
   });
   const counts = { catalog: entries.length, verified: 0, unconfirmed: 0, mismatched: 0, byStrengthStage: { 1: 0, 2: 0, 3: 0 },
@@ -145,7 +152,8 @@ export function auditS5StrengthStages(catalog, attack, defense, petbase, provena
   }
   return { schemaVersion: 1, auditDate: '2026-11-07',
     scope: 'Every catalog source identity and original strength-stage field; not proof of wild damage coefficients or final formulas.',
-    strengthField: 'stength_stage', displayStageField: 'stage', source: provenance, counts, entries,
+    strengthField: 'stength_stage', displayStageField: 'stage', defenseRaceSource: 'selected-form', legacyDefenseBranchUse: 'session-migration-only',
+    source: provenance, counts, entries,
     sourceAnomalies: packageRecords.filter(row => ![1, 2, 3].includes(row.stength_stage)).map(row => ({ petbaseId: row.id,
       name: row.name, stage: row.stage, stength_stage: row.stength_stage, action: 'preserved-not-inferred' })),
     packageRecords };

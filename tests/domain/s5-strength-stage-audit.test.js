@@ -30,6 +30,7 @@ test('all 694 identities regenerate offline from the full portable 1302-row sour
     assert.equal(row.catalogStrengthStage, row.expectedStrengthStage, row.name);
     assert.equal(row.defenseMapStrengthStage, row.expectedStrengthStage, row.name);
     assert.deepEqual(row.issues, [], row.name);
+    assert.deepEqual(row.defenseRacePetbaseIds, row.sourcePetbaseIds, row.name);
   }
 });
 
@@ -61,7 +62,10 @@ test('boss source strength is not replaced with its parent stage; branch sources
   assert.equal(entry('超能阿布').sourcePetbaseId, 5068);
   assert.equal(entry('超能阿布').expectedStrengthStage, 3);
   assert.equal(entry('乐乐鲨').expectedStrengthStage, 2);
-  assert(entry('棋棋（白子）').defenseBranchIds.length > 1);
+  assert.deepEqual(entry('棋棋（白子）').defenseRacePetbaseIds, [3550]);
+  assert.deepEqual(entry('棋棋（白子）').legacyDefenseBranchIds, [3551, 3552, 3553, 3554]);
+  assert.equal(audit.defenseRaceSource, 'selected-form');
+  assert.equal(audit.legacyDefenseBranchUse, 'session-migration-only');
   assert.equal(entry('棋棋（白子）').expectedStrengthStage, 2);
 });
 
@@ -75,6 +79,11 @@ test('wrong source IDs, changed six stats and a map using a different stage cann
   const badAudit = regenerate(catalog, attack, d);
   assert(badAudit.entries.find(row => row.name === '伊雷龙').issues.includes('defense-map-strength-stage-mismatch'));
   assert.throws(() => applyAuditMetadata(catalog, badAudit), /without mismatches/u);
+  const futureDefense = structuredClone(defense);
+  futureDefense.bySpiritId[named('棋棋（白子）').id].defensePetbaseId = 3551;
+  const futureAudit = regenerate(catalog, attack, futureDefense);
+  assert(futureAudit.entries.find(row => row.name === '棋棋（白子）').issues.includes('defense-race-not-selected-form'));
+  assert.throws(() => applyAuditMetadata(catalog, futureAudit), /without mismatches/u);
 });
 
 test('the 28 unconfirmed entries stay unconfirmed even when template values have a matching package row', () => {

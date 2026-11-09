@@ -5,6 +5,28 @@ import { incomingSkillOptions, natureAxisState, observationDifference, observati
 const sessionWith = override => ({ profiles: [{ preview: { skillOverrides: { skill: override } } }],
   preview: { incomingOverridesList: [override] } });
 
+test('preview settings restore archived defense branch IDs only for the same initial target', () => {
+  const catalog = JSON.parse(readFileSync('public/tools/s5-nature/data/catalog.json', 'utf8'));
+  const white = catalog.spirits.find(spirit => spirit.name === '棋棋（白子）');
+  const black = catalog.spirits.find(spirit => spirit.name === '棋棋（黑子）');
+  for (const target of [white, black]) {
+    expect(target.wildStatForms).toBeUndefined();
+    expect(target.legacyWildStatFormIds).toHaveLength(4);
+    for (const legacyId of target.legacyWildStatFormIds) {
+      const session = { profiles: [], wildStatFormId: legacyId, preview: { incomingDamages: [75] } };
+      expect(() => validatePreviewSettings(session, target)).not.toThrow();
+      expect(session.wildStatFormId).toBe(legacyId);
+      expect(session.preview.incomingDamages).toEqual([75]);
+    }
+    const empty = { profiles: [] };
+    validatePreviewSettings(empty, target);
+    expect(empty.wildStatFormId).toBe('');
+  }
+  for (const legacyId of [...black.legacyWildStatFormIds, 'petbase-unknown', 3551, {}, false]) {
+    expect(() => validatePreviewSettings({ profiles: [], wildStatFormId: legacyId }, white)).toThrow();
+  }
+});
+
 test('skill result notices expose empirical corrections and never assume a burst trigger', () => {
   const row = { status: 'estimated', direction: 'incoming', powerMode: 'auto',
     typeInteraction: { formulaVerified: false, correctionMultiplier: .6, model: 's5-dulling-sample-fit' } };

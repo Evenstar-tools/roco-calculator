@@ -7,10 +7,19 @@ import { resolveWildAttack, calculateWildAttack } from '../../public/tools/s5-na
 const neutral = { upStat: 'hp', downStat: 'speed' };
 const defenseUp = { upStat: 'physicalDefense', downStat: 'speed' };
 
+test('decimal half boundaries round upward without floating-point coefficient drift', () => {
+  // 魔力猫42级加魔防：基础149 → 性格164 → 175 × 1.38 = 241.5。
+  expect(calculateWildDefense(151, 42, { upStat: 'magicalDefense', downStat: 'speed' }, 'magicalDefense', 3)).toBe(242);
+  // 棋骑士（黑子）42/43级减魔防：基础71 → 性格64 → 75 × 1.38 = 103.5。
+  for (const level of [42, 43]) {
+    expect(calculateWildDefense(66, level, { upStat: 'hp', downStat: 'magicalDefense' }, 'magicalDefense', 3)).toBe(104);
+  }
+});
+
 test('a confirmed source stage does not promote its fallback coefficient to a game constant', () => {
   const result = resolveWildDefense(99, 42, neutral, 'magicalDefense', 2, 3211);
   expect(result.kind).toBe('stage-extrapolation');
-  expect(result.coefficient).toBe(1.6005);
+  expect(result.coefficient).toBe(1.955);
   expect(result.formulaVerified).toBe(false);
   expect(result.value).toBe(calculateWildDefense(99, 42, neutral, 'magicalDefense', 2, 3211));
   const attack = resolveWildAttack(152, 42, neutral, 'magicalAttack', 2);
@@ -21,22 +30,23 @@ test('a confirmed source stage does not promote its fallback coefficient to a ga
 });
 
 test('a source-specific fit retains its limited level and nature evidence', () => {
-  const measured = resolveWildDefense(91, 42, defenseUp, 'physicalDefense', 2, 3209);
-  const unmeasured = resolveWildDefense(91, 43, defenseUp, 'physicalDefense', 2, 3209);
+  const measured = resolveWildDefense(73, 42, defenseUp, 'physicalDefense', 2, 3209);
+  const unmeasured = resolveWildDefense(73, 43, defenseUp, 'physicalDefense', 2, 3209);
   expect(measured.kind).toBe('source-fit');
   expect(measured.sampleScopeMatches).toBe(true);
-  expect(measured.measuredLevels).toEqual([42]);
+  expect(measured.measuredScopes.filter(scope => scope.stat === 'physicalDefense').map(scope => scope.level)).toEqual([42]);
   expect(unmeasured.kind).toBe('source-fit');
   expect(unmeasured.sampleScopeMatches).toBe(false);
   expect(unmeasured.formulaVerified).toBe(false);
-  expect(unmeasured.value).toBe(calculateWildDefense(91, 43, defenseUp, 'physicalDefense', 2, 3209));
+  expect(unmeasured.value).toBe(calculateWildDefense(73, 43, defenseUp, 'physicalDefense', 2, 3209));
 });
 
 test('recorded effective-defense points are conditional fits and cannot leak into another source or condition', () => {
-  const point = resolveWildDefense(76, 42, neutral, 'physicalDefense', 1, 3398);
+  const point = resolveWildDefense(46, 42, neutral, 'physicalDefense', 1, 3398);
   expect(point.kind).toBe('effective-defense-point');
   expect(point.value).toBe(174);
-  expect(point.coefficient).toBeNull();
+  expect(point.coefficient).toBe(2.76);
+  expect(point.value).toBe(calculateWildDefense(46, 42, neutral, 'physicalDefense', 1));
   expect(point.fixedOutgoingCorrectionMultiplier).toBe(1.8);
   expect(point.formulaVerified).toBe(false);
   for (const result of [
@@ -89,7 +99,7 @@ test('bird42 defense is conditional on its shield-breaking ground hit, not the p
 });
 
 
-test('whale direct observation keeps priority over its rounded fit and never claims a raw panel', () => {
+test('whale direct observation annotates its matching rounded fit and never claims a raw panel', () => {
   const point = resolveWildDefense(125, 41, defenseUp, 'physicalDefense', 3, 3381);
   expect(point.kind).toBe('effective-defense-point');
   expect(point.value).toBe(203);

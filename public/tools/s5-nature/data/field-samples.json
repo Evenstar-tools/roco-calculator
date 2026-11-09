@@ -60,6 +60,114 @@
       "sourceName": "泥吼牙",
       "initialId": "spirit_05f3242dd3ab1ac6",
       "initialName": "吸泥鸥"
+    },
+    {
+      "sourceId": "spirit_28e59ee92341bf43",
+      "sourceName": "棋棋（黑子）",
+      "initialId": "spirit_28e59ee92341bf43",
+      "initialName": "棋棋（黑子）"
+    },
+    {
+      "sourceId": "spirit_dcd2e90fe8de4c65",
+      "sourceName": "棋骑士（黑子）",
+      "initialId": "spirit_28e59ee92341bf43",
+      "initialName": "棋棋（黑子）"
+    },
+    {
+      "sourceId": "spirit_839cd7d34d2dd422",
+      "sourceName": "棋契陛下（黑棋棋骑士分支）",
+      "initialId": "spirit_28e59ee92341bf43",
+      "initialName": "棋棋（黑子）"
+    },
+    {
+      "sourceId": "spirit_218281240634725e",
+      "sourceName": "棋齐垒（黑子）",
+      "initialId": "spirit_28e59ee92341bf43",
+      "initialName": "棋棋（黑子）"
+    },
+    {
+      "sourceId": "spirit_3b52748976f979f2",
+      "sourceName": "棋契陛下（黑棋棋绮后分支）",
+      "initialId": "spirit_28e59ee92341bf43",
+      "initialName": "棋棋（黑子）"
+    },
+    {
+      "sourceId": "spirit_213dd929c2abecd3",
+      "sourceName": "棋祈督（黑子）",
+      "initialId": "spirit_28e59ee92341bf43",
+      "initialName": "棋棋（黑子）"
+    },
+    {
+      "sourceId": "spirit_2e04c8791a9f2542",
+      "sourceName": "棋契陛下（黑棋棋齐垒分支）",
+      "initialId": "spirit_28e59ee92341bf43",
+      "initialName": "棋棋（黑子）"
+    },
+    {
+      "sourceId": "spirit_03d719be9841704e",
+      "sourceName": "棋绮后（黑子）",
+      "initialId": "spirit_28e59ee92341bf43",
+      "initialName": "棋棋（黑子）"
+    },
+    {
+      "sourceId": "spirit_dca5b460922a95f9",
+      "sourceName": "棋契陛下（黑棋棋祈督分支）",
+      "initialId": "spirit_28e59ee92341bf43",
+      "initialName": "棋棋（黑子）"
+    },
+    {
+      "sourceId": "spirit_4e1344e0cfd82bf9",
+      "sourceName": "棋棋（白子）",
+      "initialId": "spirit_4e1344e0cfd82bf9",
+      "initialName": "棋棋（白子）"
+    },
+    {
+      "sourceId": "spirit_de999044bdf8e8c1",
+      "sourceName": "棋骑士（白子）",
+      "initialId": "spirit_4e1344e0cfd82bf9",
+      "initialName": "棋棋（白子）"
+    },
+    {
+      "sourceId": "spirit_065c69728f30ce93",
+      "sourceName": "棋契陛下（白棋棋骑士分支）",
+      "initialId": "spirit_4e1344e0cfd82bf9",
+      "initialName": "棋棋（白子）"
+    },
+    {
+      "sourceId": "spirit_8748c0a6f05afc2d",
+      "sourceName": "棋齐垒（白子）",
+      "initialId": "spirit_4e1344e0cfd82bf9",
+      "initialName": "棋棋（白子）"
+    },
+    {
+      "sourceId": "spirit_d4a7177497e7250e",
+      "sourceName": "棋契陛下（白棋棋绮后分支）",
+      "initialId": "spirit_4e1344e0cfd82bf9",
+      "initialName": "棋棋（白子）"
+    },
+    {
+      "sourceId": "spirit_e900600e3605dec4",
+      "sourceName": "棋祈督（白子）",
+      "initialId": "spirit_4e1344e0cfd82bf9",
+      "initialName": "棋棋（白子）"
+    },
+    {
+      "sourceId": "spirit_b9046792466d9675",
+      "sourceName": "棋契陛下（白棋棋齐垒分支）",
+      "initialId": "spirit_4e1344e0cfd82bf9",
+      "initialName": "棋棋（白子）"
+    },
+    {
+      "sourceId": "spirit_b8395532616fe541",
+      "sourceName": "棋绮后（白子）",
+      "initialId": "spirit_4e1344e0cfd82bf9",
+      "initialName": "棋棋（白子）"
+    },
+    {
+      "sourceId": "spirit_7f340121dd6e8ed4",
+      "sourceName": "棋契陛下（白棋棋祈督分支）",
+      "initialId": "spirit_4e1344e0cfd82bf9",
+      "initialName": "棋棋（白子）"
     }
   ],
   "entries": [

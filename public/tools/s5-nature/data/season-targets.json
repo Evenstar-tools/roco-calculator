@@ -1895,6 +1895,34 @@
         }
       ],
       "sourceNote": "S1–S5 每季两只通行证精灵，共 10 只初始形态。按通行证奖励与进化链对应，保留各精灵原有强度阶位。"
+    },
+    {
+      "id": "chess",
+      "label": "棋棋家族初始形态",
+      "shortLabel": "棋棋家族",
+      "spiritIds": [
+        "spirit_28e59ee92341bf43",
+        "spirit_4e1344e0cfd82bf9"
+      ],
+      "families": [
+        {
+          "name": "棋棋（黑子）",
+          "nativeFamilyRootId": 3555,
+          "nativeMonsterId": 300523,
+          "spiritIds": [
+            "spirit_28e59ee92341bf43"
+          ]
+        },
+        {
+          "name": "棋棋（白子）",
+          "nativeFamilyRootId": 3550,
+          "nativeMonsterId": 300518,
+          "spiritIds": [
+            "spirit_4e1344e0cfd82bf9"
+          ]
+        }
+      ],
+      "sourceNote": "按用户追加目标，分别列出黑棋、白棋初始形态，沿用各自基础属性和强度阶位。双防按各自初始形态的种族值计算。"
     }
   ],
   "sources": [

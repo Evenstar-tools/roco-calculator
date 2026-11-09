@@ -228,7 +228,7 @@ function renderTargetPicker() {
     ? seasonGroups
     : seasonGroups.filter((row) => row.id === targetFilter);
   $("target-catalog-note").textContent =
-    `${count} 项${outside ? " · 当前目标在筛选外" : ""}${targetFilter === "priority" ? " · S2 / S5 与通行证目标优先排列" : targetFilter === "all" ? " · 全目录" : targetFilter === "initial" ? " · S2 / S5 与通行证初始形态" : ` · ${group?.label ?? targetFilter}`}`;
+    `${count} 项${outside ? " · 当前目标在筛选外" : ""}${targetFilter === "priority" ? " · 奇遇与通行证目标优先排列" : targetFilter === "all" ? " · 全目录" : targetFilter === "initial" ? " · 奇遇与通行证初始形态" : ` · ${group?.label ?? targetFilter}`}`;
   $("season-source-details").hidden = !selectedGroups.length;
   $("season-source-notes").innerHTML = selectedGroups
     .map((row) => `<p>${escapeHtml(row.sourceNote ?? row.label)}</p>`)
@@ -239,12 +239,6 @@ function renderTargetPicker() {
   $("target-data-note").textContent = complete
     ? ""
     : "该形态缺少完整种族值，无法计算。";
-  const wildForms = spirit?.wildStatForms ?? [];
-  $("target-wild-form-row").hidden = wildForms.length < 2;
-  $("target-wild-form").innerHTML = '<option value="">请选择防御分支</option>' + wildForms
-    .map((form) => `<option value="${escapeHtml(form.id)}">${escapeHtml(form.name)}</option>`)
-    .join("");
-  $("target-wild-form").value = session.wildStatFormId ?? "";
   $("target-trait").textContent = spirit?.traitName
     ? `特性：${spirit.traitName}`
     : "";
@@ -870,11 +864,6 @@ function validateImport(value) {
     incoming.observations.length > 1000
   )
     throw new Error("需要本工具的 41–43 级记录，且精灵必须在当前目录中。");
-  const wildStatFormId = incoming.wildStatFormId ?? "";
-  if (typeof wildStatFormId !== "string" || (wildStatFormId &&
-      !spiritMap.get(incoming.targetId).wildStatForms?.some((form) => form.id === wildStatFormId)))
-    throw new Error("野怪防御分支与所选目标不符，请重新选择。");
-  incoming.wildStatFormId = wildStatFormId;
   for (const profile of incoming.profiles) {
     if (
       typeof profile.id !== "string" ||
@@ -928,7 +917,7 @@ function validateImport(value) {
       throw new Error("游戏显示需使用整数百分比，请将精度设为整数并核对前后读数。");
     observationIds.add(observation.id);
   }
-  validatePreviewSettings(incoming);
+  validatePreviewSettings(incoming, spiritMap.get(incoming.targetId));
   return clone(incoming);
 }
 
@@ -1063,7 +1052,13 @@ function attachEvents() {
   $("target-species").addEventListener("change", () => {
     const chosenId = $("target-species").value;
     const id = workspaceMode === "preview" ? initialTargetId(chosenId) : chosenId;
-    if (!spiritMap.has(id) || id === session.targetId) return;
+    if (!spiritMap.has(id)) return;
+    if (id === session.targetId) {
+      // A different evolution can resolve to the already selected initial form.
+      // Restore the picker identity without discarding this encounter's records.
+      if (chosenId !== id) renderTargetPicker();
+      return;
+    }
     remember();
     session.targetId = id;
     session.wildStatFormId = "";
@@ -1072,18 +1067,6 @@ function attachEvents() {
     clearEditor();
     render();
     notice(id !== chosenId ? `已按初始形态选择 ${spiritMap.get(id).name}，本场实测已清空，可撤销。` : "");
-  });
-  $("target-wild-form").addEventListener("change", () => {
-    const id = $("target-wild-form").value;
-    if (id === (session.wildStatFormId ?? "")) return;
-    if (id && !spiritMap.get(session.targetId)?.wildStatForms?.some((form) => form.id === id)) return;
-    remember();
-    session.wildStatFormId = id;
-    clearWildObservations();
-    clearEditor();
-    render();
-    persist();
-    notice("已换防御分支，本场实测已清空，可撤销。");
   });
   $("profile-tabs").addEventListener("click", (event) => {
     const button = event.target.closest("[data-profile]");

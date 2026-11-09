@@ -36,8 +36,8 @@ function statEntries(source, form, name) {
   return {
     attackRaceStats: { sourcePetbaseId: source.id, attackPetbaseId: source.id, attackFormName: source.name,
       physicalAttack: source.phy_attack_race, magicalAttack: source.spe_attack_race, resolution: 'selected-form' },
-    defenseRaceStats: { sourcePetbaseId: source.id, defensePetbaseId: form.id, defenseFormName: name,
-      physicalDefense: form.phy_defence_race, magicalDefense: form.spe_defence_race },
+    defenseRaceStats: { sourcePetbaseId: source.id, defensePetbaseId: source.id, defenseFormName: source.name,
+      physicalDefense: source.phy_defence_race, magicalDefense: source.spe_defence_race, resolution: 'selected-form' },
   };
 }
 
@@ -49,7 +49,7 @@ function updateMapMeta(data, spiritCount) {
   data.meta.counts = { ...data.meta.counts, spirits: spiritCount, mapped, branchSelectable,
     missing: Object.keys(data.missing).length, available: mapped + branchSelectable, missingByReason };
   data.meta.completion = { source: 'PETBASE_CONF', evidence: 'data/reviewed/s5-wild-race-completion-20261107.json',
-    branchPolicy: 'selected-form-attack-and-explicit-defense-selection', bossPolicy: 'unique-ordinary-stage3-parent' };
+    branchPolicy: 'selected-form-stats;legacy-evolution-ids-only', bossPolicy: 'unique-ordinary-stage3-parent' };
   // Provenance identifies the table, never a workstation-specific source path.
   if (Object.hasOwn(data.meta, 'packageDataPath')) data.meta.packageDataPath = 'PETBASE_CONF.json';
 }
@@ -116,19 +116,18 @@ export function completeS5WildRaces(inputCatalog, inputAttack, inputDefense, pet
     names = names.map((name, index) => names.filter(other => other === name).length > 1 ? `${name}（包体 ${forms[index].id}）` : name);
     const choices = forms.map((form, index) => ({ id: `petbase-${form.id}`, name: names[index],
       ...statEntries(source, form, names[index]) }));
-    // All branches share the source form's attack. Only ambiguous defenses
-    // require a choice; equal-defense branches do not block either direction.
+    // Evolution IDs remain provenance/migration data. Both combat directions
+    // use the source form, so choosing a future branch cannot change defense.
     attack.bySpiritId[id] ??= structuredClone(choices[0].attackRaceStats);
     attack.candidatesBySpiritId[id] = structuredClone(choices);
     delete attack.missing[id];
     spirit.wildAttackRaceStats = structuredClone(attack.bySpiritId[id]);
-    if (!defense.bySpiritId[id]) {
-      spirit.wildStatForms = choices;
-      defense.candidatesBySpiritId[id] = structuredClone(choices);
-      delete defense.missing[id];
-    } else {
-      delete spirit.wildStatForms;
-    }
+    defense.bySpiritId[id] = structuredClone(choices[0].defenseRaceStats);
+    spirit.wildDefenseRaceStats = structuredClone(defense.bySpiritId[id]);
+    spirit.legacyWildStatFormIds = choices.map(form => form.id);
+    delete spirit.wildStatForms;
+    delete defense.candidatesBySpiritId[id];
+    delete defense.missing[id];
     if (spirit.wildStrengthStage !== source.stength_stage || defense.strengthStageBySpiritId[id] !== source.stength_stage) {
       throw new Error(`Do not change the branch source strength stage: ${id}`);
     }
@@ -156,8 +155,8 @@ export function completeS5WildRaces(inputCatalog, inputAttack, inputDefense, pet
     usedRows.set(parent.id, parent);
     const entries = statEntries(source, parent, name);
     for (const [data, kind] of [[attack, 'attack'], [defense, 'defense']]) {
-      const entry = { ...entries[`${kind}RaceStats`], resolution: 'boss-parent-stage3', ordinaryParentPetbaseId: parent.id };
-      if (data.bySpiritId[id] && JSON.stringify(data.bySpiritId[id]) !== JSON.stringify(entry)) throw new Error(`Existing boss mapping changed: ${id}`);
+      const entry = { ...entries[`${kind}RaceStats`], resolution: kind === 'attack' ? 'boss-parent-stage3' : 'selected-form', ordinaryParentPetbaseId: parent.id };
+      if (kind === 'attack' && data.bySpiritId[id] && JSON.stringify(data.bySpiritId[id]) !== JSON.stringify(entry)) throw new Error(`Existing boss mapping changed: ${id}`);
       data.bySpiritId[id] = entry;
       delete data.missing[id];
       spirit[`wild${kind[0].toUpperCase()}${kind.slice(1)}RaceStats`] = structuredClone(entry);
@@ -191,8 +190,8 @@ export function completeS5WildRaces(inputCatalog, inputAttack, inputDefense, pet
     evidence: 'data/reviewed/s5-wild-race-completion-20261107.json', available, branchSelectable: defense.meta.counts.branchSelectable, unavailable: pending.length };
   const evidence = { schemaVersion: 1, reviewedAt: '2026-11-07', source: { table: 'PETBASE_CONF',
     kind: 'decoded-game-configuration', catalogSourceRevision: catalog.meta.sourceRevision },
-    policy: { attackRace: 'selected-form', defenseRaceStrengthStage: 3, coefficientStrengthStage: 'source-form',
-      branches: 'explicit-defense-only-selection', unreleased: 'unavailable' },
+    policy: { attackRace: 'selected-form', defenseRaceStrengthStage: 'source-form', coefficientStrengthStage: 'source-form',
+      branches: 'selected-form-stats;legacy-evolution-ids-only', unreleased: 'unavailable' },
     counts, branches, bossParents, pending,
     packageRecords: [...usedRows.values()].sort((a, b) => a.id - b.id).map(sourceEvidence) };
   return { catalog, attack, defense, evidence };

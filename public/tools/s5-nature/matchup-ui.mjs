@@ -5,6 +5,7 @@ import { formatGamePercent } from './hp-inverse.mjs';
 import { compareObservedHp } from './measurement-comparison.mjs';
 import { getOwnSkillIds } from './own-presets.mjs';
 import { WILD_DEFENSE_MODEL } from './wild-defense.mjs';
+import { resolveWildTarget } from './wild-forms.mjs';
 
 const $ = id => document.getElementById(id);
 const html = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -82,7 +83,13 @@ export function skillPreviewNotices(row, skill) {
   return notices;
 }
 
-export function validatePreviewSettings(session) {
+export function validatePreviewSettings(session, target) {
+  if (target) {
+    const legacyFormId = session.wildStatFormId ?? '';
+    // Older records keep their branch identity, while defense uses the current form.
+    if (legacyFormId !== '') resolveWildTarget(target, legacyFormId);
+    session.wildStatFormId = legacyFormId;
+  }
   const fail = () => { throw new Error('配招判断的配置或实测格式无效，请核对导入文件。'); };
   const overrides = value => {
     if (!object(value)) fail();

@@ -3,6 +3,82 @@ import { resetUiuxStorage, waitForAppReady } from "./helpers/uiux-helpers.js";
 
 const toolPath = "/tools/s5-nature/index.html";
 
+test('S5 nature chess roots are searchable separately and keep color when returning from evolved forms', async ({ page }) => {
+  test.setTimeout(60000);
+  await page.goto(toolPath);
+  const picker = page.getByRole('combobox', { name: '选择野生目标', exact: true });
+  const options = page.locator('#target-picker-listbox [role="option"]');
+  await picker.fill('棋棋');
+  await expect(options.locator('strong')).toHaveText(['棋棋（白子）', '棋棋（黑子）']);
+  const forms = [
+    { name: '棋棋（黑子）', alias: '黑棋', id: 'spirit_28e59ee92341bf43', root: 3555, legacy: 'petbase-3556', evolved: '棋齐垒（黑子）' },
+    { name: '棋棋（白子）', alias: '白棋', id: 'spirit_4e1344e0cfd82bf9', root: 3550, legacy: 'petbase-3551', evolved: '棋契陛下（白棋棋骑士分支）' },
+  ];
+  for (const form of forms) {
+    await picker.click();
+    await picker.fill(form.alias);
+    await expect(options).toHaveCount(1);
+    await options.getByText(form.name, { exact: true }).click();
+    await expect(picker).toHaveValue(form.name);
+    await expect(page.getByRole('combobox', { name: '野怪防御分支', exact: true })).toHaveCount(0);
+    const target = await page.evaluate(async id => {
+      const catalog = await (await fetch('./data/catalog.json')).json();
+      return catalog.spirits.find(row => row.id === id);
+    }, form.id);
+    expect(target.wildStatForms).toBeUndefined();
+    expect(target.wildDefenseRaceStats).toMatchObject({ sourcePetbaseId: form.root, defensePetbaseId: form.root,
+      physicalDefense: target.raceStats.physicalDefense, magicalDefense: target.raceStats.magicalDefense });
+    const incoming = page.getByRole('combobox', { name: '敌方技能 1', exact: true });
+    await incoming.fill('猛烈撞击');
+    await page.getByRole('option').getByText('猛烈撞击', { exact: true }).click();
+    await expect(page.locator('#preview-cells-0 .dmg').first()).toHaveText(/^\d+$/);
+    const baseline = await page.evaluate(() => window.pveNatureUi.getPreview());
+    expect(baseline.incomingList[0].status).toBe('estimated');
+    expect(baseline.targetHpRange.min).toBeGreaterThan(0);
+    await page.locator('#preview-incoming-damage-0').fill('75');
+    await page.locator('#preview-incoming-damage-0').press('Tab');
+    await page.evaluate(legacyId => {
+      const session = window.pveNatureUi.getSession();
+      session.wildStatFormId = legacyId;
+      window.pveNatureUi.setSession(session);
+    }, form.legacy);
+    expect(await page.evaluate(() => window.pveNatureUi.getPreview())).toEqual(baseline);
+    await page.reload();
+    await expect(picker).toHaveValue(form.name);
+    await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('75');
+    expect(await page.evaluate(() => window.pveNatureUi.getPreview())).toEqual(baseline);
+    await page.locator('#target-filter').selectOption('all');
+    await picker.fill(form.evolved);
+    await options.getByText(form.evolved, { exact: true }).click();
+    await expect(picker).toHaveValue(form.name);
+    await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('75');
+    const session = await page.evaluate(() => window.pveNatureUi.getSession());
+    expect(session.targetId).toBe(form.id);
+    expect(session.wildStatFormId).toBe(form.legacy);
+    await page.locator('#target-filter').selectOption('initial');
+  }
+  await page.locator('#target-filter').selectOption('all');
+  for (const form of forms) {
+    await picker.click();
+    await picker.fill(form.evolved);
+    await options.getByText(form.evolved, { exact: true }).click();
+    await expect(picker).toHaveValue(form.name);
+    expect(await page.evaluate(() => window.pveNatureUi.getSession().wildStatFormId)).toBe('');
+  }
+  await page.reload();
+  await expect(picker).toHaveValue('棋棋（白子）');
+  await page.locator('#target-filter').selectOption('chess');
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await picker.click();
+    await picker.fill('');
+    await expect(options).toHaveCount(2);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: `output/playwright/s5-chess-targets-${width}.png`, fullPage: true });
+    await picker.press('Escape');
+  }
+});
+
 
 test('S5 nature searches all ten battlepass initial forms in the default and dedicated filters', async ({ page }) => {
   test.setTimeout(60000);
@@ -348,44 +424,56 @@ test("S5 nature incoming attack shows measured whale damage and matches nature",
   expect(flood.manualPower).toBe(false);
 });
 
-test("S5 nature defense branch selection preserves HP and incoming, clears measurements and supports undo", async ({ page }) => {
+test("S5 nature archived defense branches restore native calculations and measurements through reload and undo", async ({ page }) => {
   await page.goto(toolPath);
   await page.locator('#target-filter').selectOption('all');
   await chooseTarget(page, '毛毛');
-  const branch = page.getByRole('combobox', { name: '野怪防御分支', exact: true });
-  await expect(branch).toBeVisible();
-  await expect(page.locator('#preview-cells-0')).toContainText('防御分支');
+  await expect(page.getByRole('combobox', { name: '野怪防御分支', exact: true })).toHaveCount(0);
+  await expect(page.locator('#preview-cells-0 .dmg').first()).toHaveText(/^\d+$/);
   const incoming = page.getByRole('combobox', { name: '敌方技能 1', exact: true });
   await incoming.fill('抓挠');
   await page.getByRole('option').getByText('抓挠', { exact: true }).click();
   await expect(page.locator('#preview-incoming-cells-0 .axis-label')).toHaveText(['减物攻', '物攻不变', '加物攻']);
   const baseline = await page.evaluate(() => window.pveNatureUi.getPreview());
   expect(baseline.incomingList[0].status).toBe('estimated');
-  const forms = await branch.locator('option').evaluateAll(nodes => nodes.map(node => node.value).filter(Boolean));
-  expect(forms.length).toBeGreaterThan(1);
-  await branch.selectOption(forms[0]);
-  await expect(page.locator('#preview-cells-0 .dmg').first()).toHaveText(/^\d+$/);
-  const selected = await page.evaluate(() => window.pveNatureUi.getPreview());
-  const incomingValues = result => result.incomingList[0].predictions.map(row =>
-    [row.natureId, row.damage, row.attackerStat, row.targetHpMax]);
-  expect(incomingValues(selected)).toEqual(incomingValues(baseline));
+  const legacyIds = await page.evaluate(async () => {
+    const catalog = await (await fetch('./data/catalog.json')).json();
+    return catalog.spirits.find(row => row.name === '毛毛').legacyWildStatFormIds;
+  });
+  expect(legacyIds.length).toBeGreaterThan(1);
   await page.locator('#preview-incoming-damage-0').fill('10');
   await page.locator('#preview-incoming-damage-0').press('Tab');
-  await branch.selectOption(forms[1]);
+  await page.evaluate(id => {
+    const session = window.pveNatureUi.getSession();
+    session.wildStatFormId = id;
+    window.pveNatureUi.setSession(session);
+  }, legacyIds[0]);
+  expect(await page.evaluate(() => window.pveNatureUi.getPreview())).toEqual(baseline);
+  // Restore a record saved by an older page, including another future evolution ID.
+  await page.evaluate(id => {
+    const session = window.pveNatureUi.getSession();
+    session.wildStatFormId = id;
+    localStorage.setItem('roco-pve-nature-manual-v1', JSON.stringify(session));
+  }, legacyIds[1]);
+  await page.reload();
+  await expect(page.getByRole('combobox', { name: '选择野生目标', exact: true })).toHaveValue('毛毛');
+  await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('10');
+  expect(await page.evaluate(() => window.pveNatureUi.getPreview())).toEqual(baseline);
+  expect(await page.evaluate(() => window.pveNatureUi.getSession().wildStatFormId)).toBe(legacyIds[1]);
+  await chooseTarget(page, '深蓝鲸');
+  expect(await page.evaluate(() => window.pveNatureUi.getSession().wildStatFormId)).toBe('');
   await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('');
   await page.locator('#undo').click();
-  await expect(branch).toHaveValue(forms[0]);
+  await expect(page.getByRole('combobox', { name: '选择野生目标', exact: true })).toHaveValue('毛毛');
   await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('10');
-  await page.reload();
-  await expect(branch).toHaveValue(forms[0]);
+  expect(await page.evaluate(() => window.pveNatureUi.getPreview())).toEqual(baseline);
+  expect(await page.evaluate(() => window.pveNatureUi.getSession().wildStatFormId)).toBe(legacyIds[1]);
   await chooseTarget(page, '深蓝鲸');
-  await expect(branch).toBeHidden();
-  expect(await page.evaluate(() => window.pveNatureUi.getSession().wildStatFormId)).toBe('');
   const rejected = await page.evaluate(formId => {
     const session = window.pveNatureUi.getSession();
     session.wildStatFormId = formId;
     try { window.pveNatureUi.setSession(session); return false; } catch { return true; }
-  }, forms[0]);
+  }, legacyIds[0]);
   expect(rejected).toBe(true);
 });
 

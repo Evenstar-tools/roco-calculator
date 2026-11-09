@@ -158,14 +158,13 @@ test('whale rounded fit replays the independent levels and both defenses without
   for (const sample of samples) assert.equal(replay(sample), sample[6], sample.join('/'));
 });
 
-test('retained stage1 and stage2 rules and stage3 physical observations preserve their exact values', () => {
+test('native rounded stage rules preserve confirmed physical observations', () => {
   const samples = [
     ['可爱猿', 41, PD, 'neutral', 312, 100, 103],
     ['可爱猿', 41, PD, 'neutral', 312, 200, 206],
     ['可爱猿', 41, PD, 'neutral', 312, 110, 113],
     ['可爱猿', 41, PD, 'neutral', 312, 396 * 1.8, 735],
     ['可爱猿', 42, PD, 'neutral', 312, 60.5, 61],
-    ['可爱猿', 42, MD, 'neutral', 176, 176, 125],
     ['伊雷龙', 41, PD, 'down', 312, 180, 399],
     ['伊雷龙', 41, PD, 'down', 312, 50 * 1.8, 199],
     ['伊雷龙', 42, PD, 'up', 312, 180, 333],
@@ -174,12 +173,10 @@ test('retained stage1 and stage2 rules and stage3 physical observations preserve
     ['伊雷龙', 41, PD, 'neutral', 312, 50 * 1.8, 182],
     ['伊雷龙', 41, PD, 'neutral', 312, 180, 364],
     ['伊雷龙', 41, PD, 'neutral', 312, 55, 111],
-    ['伊雷龙', 41, MD, 'down', 176, 160, 157],
     // Display power already includes enemy guard dice; do not multiply D again.
     ['锤头鹳', 43, PD, 'neutral', 312, 44, 77],
     ['锤头鹳', 43, PD, 'neutral', 312, 40 * 1.8, 127],
     // Keep the fractional value behind the displayed 123, rather than flooring.
-    ['小翼龙', 42, MD, 'down', 176, 160 / 1.3, 142],
     ['小翼龙', 42, PD, 'up', 312, 180 / 1.3, 207],
   ];
   for (const sample of samples) assert.equal(replay(sample), sample[6], sample.join('/'));
@@ -191,6 +188,10 @@ test('handoff discrepancies stay visible instead of changing coefficients for ea
   const samples = [
     // The old fire cut contradicts the same dragon's ground-spike observation.
     ['伊雷龙', 41, PD, 'up', 312, 40 * 1.8, 157, 134],
+    // Earlier guessed A176 is not rewritten to the later observed A181.
+    ['可爱猿', 42, MD, 'neutral', 176, 176, 125, 122],
+    ['伊雷龙', 41, MD, 'down', 176, 160, 157, 153],
+    ['小翼龙', 42, MD, 'down', 176, 160 / 1.3, 142, 138],
     // Stage3 is now extended to both defenses. Keep the original A176 inputs
     // and observed158/481 rather than silently changing them toA181.
     ['锤头鹳', 43, MD, 'neutral', 176, 128, 158, 154],
@@ -221,7 +222,7 @@ test('stage3 rounded formula replays the confirmed bird magic sample and conditi
   for (const sample of samples) assert.equal(replay(sample), sample[6], sample.join('/'));
 });
 
-test('unmeasured stage3 pigeon uses the new formula in real previews while stage2 sea-anemone stays unchanged', () => {
+test('unmeasured pigeon and sea-anemone use their own native race and package strength stage', () => {
   const target = species('公平鸽');
   assert.equal(target.wildStrengthStage, 3);
   assert.equal(target.wildDefenseRaceStats.sourcePetbaseId, 3499);
@@ -241,14 +242,14 @@ test('unmeasured stage3 pigeon uses the new formula in real previews while stage
     assert.equal(row.wildStatEvidence.kind, 'stage-extrapolation');
     assert.equal(row.wildStatEvidence.sampleScopeMatches, false);
   }
-  // This initial form really isstage2 in the package, even though its mapped
-  // final-form defense races are128/128. Do not promote it merely by appearance.
+  // Its visible first evolution still has package strength stage2.
   const anemone = species('加油海葵');
   assert.equal(anemone.wildStrengthStage, 2);
-  for (const [stat, coefficient] of [[PD, 1.65725], [MD, 1.6005]]) {
+  for (const stat of [PD, MD]) {
     const mapping = anemone.wildDefenseRaceStats;
+    assert.equal(mapping[stat], anemone.raceStats[stat]);
     assert.equal(calculateWildDefense(mapping[stat], 42, natureFor(stat, 'neutral'), stat,
-      anemone.wildStrengthStage, mapping.sourcePetbaseId), coefficient * (10 + 128 * .92 + 11));
+      anemone.wildStrengthStage, mapping.sourcePetbaseId), Math.round((Math.round(10 + mapping[stat] * .92) + 11) * 1.955));
   }
 });
 
@@ -287,14 +288,14 @@ test('wing-dragon calibration does not leak to another source form or magical de
   const nature = natureFor(PD, 'neutral');
   assert.equal(calculateWildDefense(91, 42, nature, PD, 2, 9999), calculateWildDefense(91, 42, nature, PD, 2));
   assert.equal(calculateWildDefense(79, 42, nature, MD, 2, 3209), calculateWildDefense(79, 42, nature, MD, 2));
-  assert.notEqual(calculateWildDefense(91, 42, nature, PD, 2, 3209), calculateWildDefense(91, 42, nature, PD, 2));
+  assert.equal(calculateWildDefense(73, 42, nature, PD, 2, 3209), calculateWildDefense(73, 42, nature, PD, 2));
 });
 
-test('defense retains level and nature fractions and rejects missing mappings', () => {
+test('defense rounds base, nature and final stages separately and rejects missing mappings', () => {
   const nature = natureFor(PD, 'up');
-  assert.equal(calculateWildDefense(69, 41, nature, PD, 2), 1.65725 * ((10 + 69 * .91) * 110 / 100 + 11));
-  assert(calculateWildDefense(69, 42, nature, PD, 2) > calculateWildDefense(69, 41, nature, PD, 2));
-  assert(!Number.isInteger(calculateWildDefense(69, 41, nature, PD, 2)));
+  assert.equal(calculateWildDefense(69, 41, nature, PD, 2), Math.round((Math.round(Math.round(10 + 69 * .91) * 110 / 100) + 11) * 1.955));
+  assert.deepEqual([41, 42, 43].map(level => calculateWildDefense(69, level, nature, PD, 2)), [178, 178, 180]);
+  assert(Number.isInteger(calculateWildDefense(69, 41, nature, PD, 2)));
   assert.throws(() => calculateWildDefense(undefined, 41, nature, PD, 2), /防御种族值/);
   assert.throws(() => calculateWildDefense(69, 41, nature, PD, null), /强度阶段/);
   assert.throws(() => calculateWildDefense(69, 40, nature, PD, 2), /野生等级/);
@@ -303,8 +304,8 @@ test('defense retains level and nature fractions and rejects missing mappings', 
 
 test('catalog preserves package strength stage separately from displayed evolution rank', () => {
   for (const [name, stage, id, physical, magical] of [
-    ['可爱猿', 1, 3085, 143, 111], ['伊雷龙', 2, 3412, 69, 99],
-    ['小翼龙', 2, 3210, 91, 79], ['深蓝鲸', 3, 3381, 125, 141], ['锤头鹳', 3, 3069, 101, 81],
+    ['可爱猿', 1, 3083, 86, 67], ['伊雷龙', 2, 3211, 55, 79],
+    ['小翼龙', 2, 3209, 73, 63], ['深蓝鲸', 3, 3381, 125, 141], ['锤头鹳', 3, 3069, 101, 81],
   ]) {
     const row = species(name);
     assert.equal(row.wildStrengthStage, stage);
@@ -316,21 +317,21 @@ test('catalog preserves package strength stage separately from displayed evoluti
     assert.equal(row.wildStrengthStage, mapping.strengthStageBySpiritId[row.id] ?? null, row.name);
     if (row.wildDefenseRaceStats === null) assert(mapping.missing[row.id] || mapping.candidatesBySpiritId?.[row.id], row.name);
   }
-  // These package branches differ in attack, but have identical defense races.
+  // Attack provenance remains separate; defense now uses the selected form.
   assert.equal(species('乐乐鲨').wildAttackRaceStats.physicalAttack, 94);
-  assert.equal(species('乐乐鲨').wildDefenseRaceStats.physicalDefense, 120);
+  assert.equal(species('乐乐鲨').wildDefenseRaceStats.physicalDefense, species('乐乐鲨').raceStats.physicalDefense);
 });
 
-test('defense exporter independently checks every allowed stage-3 branch', () => {
-  const smallCatalog = { meta: {}, spirits: [{ id: 'a', name: 'A' }] };
+test('defense exporter reads the current form despite different future branches', () => {
+  const smallCatalog = { meta: {}, spirits: [{ id: 'a', name: 'A', raceStats: { physicalDefense: 55, magicalDefense: 79 } }] };
   const attack = { meta: {}, bySpiritId: { a: { sourcePetbaseId: 1, attackPetbaseId: 2, attackPetbaseIds: [2, 3] } }, missing: {} };
-  const rows = [{ id: 1, stength_stage: 2 },
+  const rows = [{ id: 1, name: 'A', stength_stage: 2, phy_defence_race: 55, spe_defence_race: 79 },
     { id: 2, name: 'B', stength_stage: 3, phy_defence_race: 69, spe_defence_race: 99 },
     { id: 3, name: 'C', stength_stage: 3, phy_defence_race: 70, spe_defence_race: 99 }];
-  assert.equal(buildWildDefenseRaceData(smallCatalog, attack, rows).missing.a.code, 'ambiguous-defense-races');
+  assert.equal(buildWildDefenseRaceData(smallCatalog, attack, rows).bySpiritId.a.physicalDefense, 55);
   rows[2].phy_defence_race = 69;
-  assert.equal(buildWildDefenseRaceData(smallCatalog, attack, rows).bySpiritId.a.physicalDefense, 69);
-  delete rows[1].spe_defence_race;
+  assert.equal(buildWildDefenseRaceData(smallCatalog, attack, rows).bySpiritId.a.physicalDefense, 55);
+  delete rows[0].spe_defence_race;
   assert.equal(buildWildDefenseRaceData(smallCatalog, attack, rows).missing.a.code, 'incomplete-defense-races');
 });
 
@@ -346,7 +347,7 @@ test('absent defense mappings block outgoing previews and records without changi
   delete absent.spirits.find(row => row.id === target.id).wildDefenseRaceStats;
   const result = previewMatchup(input, absent);
   assert.equal(result.outgoing[0].status, 'unsupported');
-  assert.match(result.outgoing[0].reason, /三阶段双防资料缺失/);
+  assert.match(result.outgoing[0].reason, /当前形态的双防资料缺失/);
   assert.deepEqual(result.outgoing[0].predictions, []);
   assert.deepEqual(result.incoming, baseline.incoming);
   assert.deepEqual(result.targetHpByNature, baseline.targetHpByNature);
@@ -355,5 +356,5 @@ test('absent defense mappings block outgoing previews and records without changi
   const record = predictObservation({ targetId: target.id, level: 43, profiles: [profile] },
     observation, natureFor(PD, 'neutral'), absent);
   assert.equal(record.status, 'blocked');
-  assert.match(record.reason, /三阶段双防资料缺失/);
+  assert.match(record.reason, /当前形态的双防资料缺失/);
 });

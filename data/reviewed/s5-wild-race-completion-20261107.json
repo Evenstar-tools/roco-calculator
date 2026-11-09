@@ -8,15 +8,15 @@
   },
   "policy": {
     "attackRace": "selected-form",
-    "defenseRaceStrengthStage": 3,
+    "defenseRaceStrengthStage": "source-form",
     "coefficientStrengthStage": "source-form",
-    "branches": "explicit-defense-only-selection",
+    "branches": "selected-form-stats;legacy-evolution-ids-only",
     "unreleased": "unavailable"
   },
   "counts": {
     "spirits": 694,
     "available": 666,
-    "branchSelectable": 24,
+    "branchSelectable": 0,
     "bossParentMapped": 4,
     "unavailable": 28,
     "attack": {
@@ -33,13 +33,13 @@
     },
     "defense": {
       "spirits": 694,
-      "mapped": 642,
+      "mapped": 666,
       "missing": 28,
       "missingByReason": {
         "package-record-not-matched": 1,
         "incomplete-race-stats": 27
       },
-      "branchSelectable": 24,
+      "branchSelectable": 0,
       "available": 666
     }
   },

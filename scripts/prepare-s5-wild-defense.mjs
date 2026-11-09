@@ -1,5 +1,5 @@
-// Reuse the attack export's exact six-stat/name match and ordinary evolution
-// graph; defense branches are checked independently of their attack values.
+// Reuse only the attack export's exact source-form identity. The defense model
+// consumes that selected form's own races, never a later evolution's races.
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -19,7 +19,7 @@ export function buildWildDefenseRaceData(catalog, attackData, petbase) {
     const stage = sourceRows.length && sourceRows.every(Boolean) && stages.length === 1 && [1, 2, 3].includes(stages[0]) ? stages[0] : null;
     strengthStageBySpiritId[spirit.id] = stage;
     const fail = (code, reason, details = {}) => { missing[spirit.id] = { name: spirit.name, code, reason, ...details }; };
-    if (!attack && unresolved?.code !== 'ambiguous-attack-races') {
+    if (!sourceIds.length) {
       fail(unresolved?.code ?? 'attack-source-record-missing', unresolved?.reason ?? '缺少包体精确匹配记录。');
       continue;
     }
@@ -27,27 +27,30 @@ export function buildWildDefenseRaceData(catalog, attackData, petbase) {
       fail('source-strength-stage-not-unique', '包体源形态没有唯一的强度阶段。', { sourcePetbaseIds: sourceIds });
       continue;
     }
-    const formIds = attack ? attack.attackPetbaseIds ?? [attack.attackPetbaseId] : unresolved.candidates.map(row => row.petbaseId);
-    const forms = formIds.map(id => byId.get(id));
-    if (!forms.length || forms.some(row => row?.stength_stage !== 3 || !Number.isInteger(row?.phy_defence_race) || row.phy_defence_race <= 0 || !Number.isInteger(row?.spe_defence_race) || row.spe_defence_race <= 0)) {
-      fail('incomplete-defense-races', '强度三阶段记录缺少完整双防。', { defensePetbaseIds: formIds });
+    if (sourceRows.some(row => !Number.isInteger(row.phy_defence_race) || row.phy_defence_race <= 0 || !Number.isInteger(row.spe_defence_race) || row.spe_defence_race <= 0)) {
+      fail('incomplete-defense-races', '当前形态包体记录缺少完整双防。', { sourcePetbaseIds: sourceIds });
       continue;
     }
-    if (new Set(forms.map(row => `${row.phy_defence_race}/${row.spe_defence_race}`)).size !== 1) {
-      fail('ambiguous-defense-races', '普通进化链存在双防不同的强度三阶段分支，不能唯一确定。', {
+    if (new Set(sourceRows.map(row => `${row.phy_defence_race}/${row.spe_defence_race}`)).size !== 1) {
+      fail('ambiguous-source-defense-races', '当前形态的包体源记录双防不一致。', {
         sourcePetbaseIds: sourceIds,
-        candidates: forms.map(row => ({ petbaseId: row.id, name: row.name, physicalDefense: row.phy_defence_race, magicalDefense: row.spe_defence_race })),
+        candidates: sourceRows.map(row => ({ petbaseId: row.id, name: row.name, physicalDefense: row.phy_defence_race, magicalDefense: row.spe_defence_race })),
       });
       continue;
     }
-    const selected = attack ? byId.get(attack.attackPetbaseId) : [...forms].sort((a, b) => a.id - b.id)[0];
+    const selected = sourceRows[0];
+    if (selected.phy_defence_race !== spirit.raceStats?.physicalDefense || selected.spe_defence_race !== spirit.raceStats?.magicalDefense) {
+      fail('source-defense-races-mismatch', '当前形态目录双防与包体源记录不一致。', { sourcePetbaseIds: sourceIds });
+      continue;
+    }
     const entry = {
       sourcePetbaseId: sourceIds[0], defensePetbaseId: selected.id, defenseFormName: selected.name,
       physicalDefense: selected.phy_defence_race, magicalDefense: selected.spe_defence_race,
+      resolution: 'selected-form',
     };
-    if (sourceIds.length > 1 || formIds.length > 1) Object.assign(entry, {
-      sourcePetbaseIds: sourceIds, defensePetbaseIds: formIds,
-      defenseFormNames: [...new Set(forms.map(row => row.name))], resolution: 'identical-defense-races',
+    if (sourceIds.length > 1) Object.assign(entry, {
+      sourcePetbaseIds: sourceIds, defensePetbaseIds: sourceIds,
+      defenseFormNames: [...new Set(sourceRows.map(row => row.name))],
     });
     bySpiritId[spirit.id] = entry;
   }
@@ -55,7 +58,7 @@ export function buildWildDefenseRaceData(catalog, attackData, petbase) {
   for (const row of Object.values(missing)) missingByReason[row.code] = (missingByReason[row.code] ?? 0) + 1;
   return {
     meta: {
-      schemaVersion: 1, source: 'PETBASE_CONF', strengthField: 'stength_stage', raceStrengthStage: 3,
+      schemaVersion: 1, source: 'PETBASE_CONF', strengthField: 'stength_stage', raceStrengthStage: 'source-form',
       coefficientStrengthStage: 'source-form', matching: attackData.meta.matching,
       catalogSourceRevision: catalog.meta.sourceRevision,
       counts: { spirits: catalog.spirits.length, mapped: Object.keys(bySpiritId).length, missing: Object.keys(missing).length, missingByReason },
@@ -66,10 +69,17 @@ export function buildWildDefenseRaceData(catalog, attackData, petbase) {
 
 export function attachWildDefenseRaceStats(catalog, data) {
   return { ...catalog, meta: { ...catalog.meta, wildDefenseModel: WILD_DEFENSE_MODEL },
-    spirits: catalog.spirits.map(spirit => ({ ...spirit,
-      wildDefenseRaceStats: data.bySpiritId[spirit.id] ?? null,
-      wildStrengthStage: data.strengthStageBySpiritId[spirit.id] ?? null,
-    })),
+    spirits: catalog.spirits.map(spirit => {
+      const next = { ...spirit,
+        wildDefenseRaceStats: data.bySpiritId[spirit.id] ?? null,
+        wildStrengthStage: data.strengthStageBySpiritId[spirit.id] ?? null,
+      };
+      if (next.wildDefenseRaceStats?.resolution === 'selected-form') {
+        if (spirit.wildStatForms?.length) next.legacyWildStatFormIds = spirit.wildStatForms.map(form => form.id);
+        delete next.wildStatForms;
+      }
+      return next;
+    }),
   };
 }
 
