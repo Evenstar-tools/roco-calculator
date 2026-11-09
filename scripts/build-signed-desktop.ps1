@@ -75,6 +75,7 @@ try {
 $certificateOutput = Join-Path $PSScriptRoot (
   "..\installers\$productName-self-signed-code-signing.cer"
 )
+New-Item -ItemType Directory -Force -Path (Split-Path -Parent $certificateOutput) | Out-Null
 Export-Certificate -Cert $certificate -FilePath $certificateOutput -Force | Out-Null
 
 Write-Output "SIGN_CERT_THUMBPRINT=$($certificate.Thumbprint)"

@@ -23,9 +23,15 @@ test("桌面暂存内置图标并保留网页产物，两端均无额外页脚",
   mkdirSync(path.join(web, "assets/skills"), { recursive: true });
   mkdirSync(path.join(root, "data/desktop-skill-icons"), { recursive: true });
   mkdirSync(path.join(web, "plugins/wild-spirit-detector"), { recursive: true });
-  writeFileSync(path.join(web, "plugins/wild-spirit-detector/index.html"), "CN Web plugin page", "utf8");
+  writeFileSync(path.join(web, "plugins/wild-spirit-detector/index.html"), "CN gated plugin page", "utf8");
+  writeFileSync(path.join(web, "plugins/wild-spirit-detector/entry-gate.js"), "one-use entry guard", "utf8");
   mkdirSync(path.join(web, "assets/plugins"), { recursive: true });
   writeFileSync(path.join(web, "assets/plugins/keep.txt"), "shared plugin-named resource", "utf8");
+  const tool = path.join(web, "tools/s5-nature");
+  mkdirSync(tool, { recursive: true });
+  const startup = "const { startTool } = await import('./web-startup.mjs?sw-policy=3'); await startTool();";
+  const toolHtml = `<main id="tool-startup-status"></main><script type="module">${startup}</script>`;
+  writeFileSync(path.join(tool, "index.html"), toolHtml, "utf8");
   const pages = ["index.html", "dianlu/index.html"];
   for (const page of pages) {
     mkdirSync(path.dirname(path.join(web, page)), { recursive: true });
@@ -45,9 +51,14 @@ test("桌面暂存内置图标并保留网页产物，两端均无额外页脚",
   writeFileSync(path.join(root, `data/desktop-skill-icons/${remoteId}.png`), png);
   const staged = prepareDesktopClient(root);
   expect(verifyDesktopSkillIcons(staged)).toBe(2);
-  expect(existsSync(path.join(staged, "plugins"))).toBe(false);
-  expect(readFileSync(path.join(web, "plugins/wild-spirit-detector/index.html"), "utf8")).toBe("CN Web plugin page");
+  expect(existsSync(path.join(staged, "plugins"))).toBe(true);
+  expect(readFileSync(path.join(staged, "plugins/wild-spirit-detector/entry-gate.js"), "utf8")).toBe("one-use entry guard");
+  expect(readFileSync(path.join(web, "plugins/wild-spirit-detector/index.html"), "utf8")).toBe("CN gated plugin page");
   expect(readFileSync(path.join(staged, "assets/plugins/keep.txt"), "utf8")).toBe("shared plugin-named resource");
+  expect(readFileSync(path.join(staged, "tools/s5-nature/index.html"), "utf8"))
+    .toContain('<script type="module" src="./desktop-startup.mjs"></script>');
+  expect(readFileSync(path.join(staged, "tools/s5-nature/desktop-startup.mjs"), "utf8")).toBe(startup);
+  expect(readFileSync(path.join(tool, "index.html"), "utf8")).toBe(toolHtml);
   for (const page of pages) {
     const webHtml = readFileSync(path.join(web, page), "utf8");
     const desktopHtml = readFileSync(path.join(staged, page), "utf8");

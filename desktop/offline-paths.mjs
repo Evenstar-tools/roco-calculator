@@ -17,6 +17,30 @@ export const HTML_CONTENT_SECURITY_POLICY = [
   "form-action 'self'",
 ].join("; ");
 
+export function getBundledAssetMimeType(filePath) {
+  const extension = path.extname(filePath).toLowerCase();
+  return (
+    {
+      ".css": "text/css",
+      ".html": "text/html",
+      ".ico": "image/x-icon",
+      ".jpeg": "image/jpeg",
+      ".jpg": "image/jpeg",
+      ".js": "text/javascript",
+      ".mjs": "text/javascript",
+      ".json": "application/json",
+      ".png": "image/png",
+      ".svg": "image/svg+xml",
+      ".webmanifest": "application/manifest+json",
+      ".webp": "image/webp",
+      ".wasm": "application/wasm",
+      ".woff": "font/woff",
+      ".woff2": "font/woff2",
+    }[extension] ?? "application/octet-stream"
+  );
+}
+
+
 export function buildBundledAssetHeaders(mimeType) {
   const headers = { "cache-control": "no-store" };
   if (mimeType === "text/html") {

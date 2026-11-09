@@ -3,11 +3,23 @@ import path from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   buildBundledAssetHeaders,
+  getBundledAssetMimeType,
   resolveOfflineAssetPath,
 } from "../../desktop/offline-paths.mjs";
 
 describe("offline desktop asset routing", () => {
   const clientRoot = path.resolve("dist/client");
+
+  test.each([
+    ["tools/s5-nature/ui.mjs", "text/javascript"],
+    ["tools/s5-nature/engine.mjs", "text/javascript"],
+    ["tools/s5-nature/vendor/damage.mjs", "text/javascript"],
+    ["assets/calculator.js", "text/javascript"],
+    ["tools/s5-nature/data/catalog.json", "application/json"],
+    ["unknown.bin", "application/octet-stream"],
+  ])("serves bundled %s with executable module MIME where needed", (file, expected) => {
+    expect(getBundledAssetMimeType(file)).toBe(expected);
+  });
 
   test("maps the desktop origin root to the bundled app shell", () => {
     expect(
