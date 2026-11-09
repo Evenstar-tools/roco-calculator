@@ -116,8 +116,8 @@ test('nature is rounded before the growth tail while later dice and effective po
   input.incomingOverrides = { effectivePower: 162.5 };
   input.targetDiceEffects = { physicalAttackMultiplier: 1.1 };
   const entry = previewMatchup(input, catalog, dice).incoming;
-  assert.equal(entry.effectivePower, 162.5);
-  assert.ok(Math.abs(entry.predictions.find(row => row.natureId === up.id).attackerStat - 301.4) < 1e-9);
+  assert.ok(Math.abs(entry.effectivePower - 178.75) < 1e-9);
+  assert.equal(entry.predictions.find(row => row.natureId === up.id).attackerStat, 274);
 });
 
 test('43 ilei roar at MD137 and +30% attack reproduces660 without doubling a displayed-power bonus', () => {

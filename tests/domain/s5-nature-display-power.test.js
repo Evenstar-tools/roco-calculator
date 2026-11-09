@@ -84,7 +84,8 @@ test('incoming display overrides keep base attacks and skip already encoded dice
   delete x.incomingOverrides;
   const automatic = preview(x).incoming;
   assert(automatic.displayedPower > manual.displayedPower);
-  assert(automatic.predictions[0].defenderDefense > 163);
+  assert.equal(automatic.predictions[0].defenderDefense, 163);
+  assert.ok(automatic.battleBuffs.defenseMultiplier > 1);
 });
 
 test('legacy final overrides retain meaning and conflicting override kinds fail explicitly', () => {

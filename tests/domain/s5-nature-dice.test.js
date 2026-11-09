@@ -125,14 +125,15 @@ test('already-included integer combat panel skips stat dice but keeps flat and r
   assert.deepEqual(row(result).predictions.map(p => p.damage), row(preview(plain)).predictions.map(p => p.damage));
 });
 
-test('not-included panel still applies the known multiplier once and reports its mode', () => {
+test('base panel stays unchanged while the attack dice enters the combat stage once', () => {
   const x = input();
   x.ownDiceIds = ['attack'];
   const result = preview(x);
-  assert.equal(result.ownPanel.physicalAttack, 312 * 1.1);
+  assert.equal(result.ownPanel.physicalAttack, 312);
+  assert.equal(hpNature(result).attackerStat, 312);
   assert.equal(row(result).displayedPower, 60.5);
   assert.equal(result.panelIncludesDice, false);
-  assert.equal(result.diceApplication.ownPanel, 'apply-selected-effects');
+  assert.equal(result.diceApplication.ownPanel, 'base-with-battle-hp');
 });
 
 test('base and already-included integer panel report the same dice power without applying attack twice', () => {
@@ -191,19 +192,26 @@ test('included own defense stays unchanged for incoming damage without suppressi
   x.targetDiceEffects = { physicalAttackMultiplier: 1.1, physicalDefenseMultiplier: 1.25 };
   const enemyBoosted = preview(x);
   assert(enemyBoosted.incoming.predictions[0].damage > included.incoming.predictions[0].damage);
-  assert(row(enemyBoosted).predictions[0].defenderDefense > row(included).predictions[0].defenderDefense);
+  assert.equal(row(enemyBoosted).predictions[0].defenderDefense, row(included).predictions[0].defenderDefense);
+  assert(row(enemyBoosted).displayedPower < row(included).displayedPower);
 });
 
-test('original all-stat effect applies five stats, not HP, and remains visibly trial-only', () => {
+test('all-stat dice preserve the base combat stats and apply attack and defense stages', () => {
   const originalDice = JSON.parse(readFileSync('public/tools/s5-nature/data/dice.json', 'utf8'));
   const x = input();
   x.ownDiceIds = ['game-dice-effect-19'];
+  x.incomingSkillId = move.id;
   const result = preview(x, catalog, originalDice);
   assert.equal(result.status, 'estimated');
   assert.equal(result.ownPanel.hp, 403);
-  for (const stat of ['physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense', 'speed']) {
-    assert.equal(result.ownPanel[stat], x.profile.panel[stat] * 1.3);
+  for (const stat of ['physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense']) {
+    assert.equal(result.ownPanel[stat], x.profile.panel[stat]);
   }
+  assert.equal(result.ownPanel.speed, x.profile.panel.speed);
+  assert.equal(hpNature(result).attackerStat, 312);
+  assert.equal(row(result).displayedPower, 71.5);
+  assert.equal(result.incoming.predictions[0].defenderDefense, 183);
+  assert.ok(Math.abs(result.incoming.displayedPower - 27.5 / 1.3) < 1e-9);
   assert(result.warnings.some(value => /原包.*试算/.test(value)));
   assert.equal(result.calibrationStatus, 'unverified');
 });
@@ -218,7 +226,9 @@ test.each([null, 1, 'true', {}, []].map(value => ({ value })))('invalid panelInc
 test('single-side duplicate IDs deduplicate but different dice cannot multiply silently', () => {
   const x = input();
   x.ownDiceIds = ['attack', 'attack', 'none'];
-  assert.equal(preview(x).ownPanel.physicalAttack, 312 * 1.1);
+  assert.equal(preview(x).ownPanel.physicalAttack, 312);
+  assert.equal(hpNature(preview(x)).attackerStat, 312);
+  assert.equal(row(preview(x)).displayedPower, 60.5);
   x.ownDiceIds = ['attack', 'attack-2'];
   assert.equal(preview(x).status, 'unsupported');
   assert.match(preview(x).reason, /一个.*合计/);
@@ -237,7 +247,9 @@ test('preset plus non-neutral manual effects requires a single explicit total', 
   assert.equal(preview(x).status, 'estimated');
   x.ownDiceIds = ['none'];
   x.ownDiceEffects = { physicalAttackMultiplier: 1.32 };
-  assert.equal(preview(x).ownPanel.physicalAttack, 411.84000000000003);
+  assert.equal(preview(x).ownPanel.physicalAttack, 312);
+  assert.equal(hpNature(preview(x)).attackerStat, 312);
+  assert.equal(row(preview(x)).displayedPower, 72.6);
 });
 
 function typedInput(targetTypes = ['plain']) {

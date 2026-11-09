@@ -352,7 +352,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   }
   // 常用条件保持三项；已知最终威力保留为展开项。
   function conditionControl(prefix) {
-    return `<div id="${prefix}-pop" class="pskill-pop" role="dialog" aria-label="本招条件" hidden><div class="pskill-pop-grid"><label>显示威力<input id="${prefix}-displayedPower" type="number" min="0" max="100000" step="any" placeholder="自动"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label></div><label id="${prefix}-firstAction-row" class="pskill-first-action" hidden><input id="${prefix}-firstAction" type="checkbox"/><span id="${prefix}-firstAction-label">入场首次行动 · 迸发 +30</span></label><div class="pskill-pop-foot"><span id="${prefix}-auto" class="pskill-auto"></span><span id="${prefix}-legacyPower" class="preview-legacy-power" hidden><span id="${prefix}-legacyPower-label"></span></span><button id="${prefix}-resetPower" type="button" class="text-button">恢复自动</button></div><details class="preview-final-power"><summary>已知最终威力</summary><label>最终威力<input id="${prefix}-effectivePower" type="number" min="0" max="100000" step="any" placeholder="未填写"/></label><p>已含系别与极化/钝化，不含面板攻防；与显示威力互斥。</p></details></div>`;
+    return `<div id="${prefix}-pop" class="pskill-pop" role="dialog" aria-label="本招条件" hidden><div class="pskill-pop-grid"><label>显示威力<input id="${prefix}-displayedPower" type="number" min="0" max="100000" step="any" placeholder="自动"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label></div><label id="${prefix}-firstAction-row" class="pskill-first-action" hidden><input id="${prefix}-firstAction" type="checkbox"/><span id="${prefix}-firstAction-label">入场首次行动 · 迸发 +30</span></label><div class="pskill-pop-foot"><span id="${prefix}-auto" class="pskill-auto"></span><span id="${prefix}-legacyPower" class="preview-legacy-power" hidden><span id="${prefix}-legacyPower-label"></span></span><button id="${prefix}-resetPower" type="button" class="text-button">恢复自动</button></div><details class="preview-final-power"><summary>已知最终威力</summary><label>最终威力<input id="${prefix}-effectivePower" type="number" min="0" max="100000" step="any" placeholder="未填写"/></label><p>已含系别与极化/钝化，不含临场攻防加成；与显示威力互斥。</p></details></div>`;
   }
   const heading = (columns, last) => `<div class="pth pth-skill">技能</div>${columns.map(([key,label])=>`<div class="pth">${catalog.assets?.stats?.[key]?`<img src="${html(catalog.assets.stats[key])}" alt=""/>`:''}${label}${key==='other'?'':'<span class="up-arrow">↑</span>'}</div>`).join('')}<div class="pth">${last}</div>`;
   $('preview-outgoing').innerHTML = heading(OUT_COLUMNS,'实测<button id="preview-reset-observed" type="button" class="text-button pth-action">清空</button>') + Array.from({length:4},(_,i) =>
@@ -370,7 +370,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       + group('属性与威力', records.filter(row=>!row.typeCoefficient))
       + group('克制与抵抗', records.filter(row=>row.typeCoefficient))
       + '<option value="custom">自填合计加成</option>';
-    $(`${side}-dice-custom`).innerHTML = '<p>倍率 1.30 即 +30%；留空不额外加成。面板已含属性时勾选下方标记。</p><div class="dice-values">' + diceFields.map(([key,label,value,max,step])=>`<label>${label}<input id="${side}-dice-${key}" type="number" placeholder="${value}" min="${key === 'skillPowerAdd' ? -10000 : 0.001}" max="${max}" step="${step}" /></label>`).join('') + '</div>';
+    $(`${side}-dice-custom`).innerHTML = '<p>攻防倍率 1.25 表示临场 +25%；基础面板不变，加成计入技能威力。</p><div class="dice-values">' + diceFields.map(([key,label,value,max,step])=>`<label>${label}<input id="${side}-dice-${key}" type="number" placeholder="${value}" min="${key === 'skillPowerAdd' ? -10000 : 0.001}" max="${max}" step="${step}" /></label>`).join('') + '</div>';
     $(`${side}-dice`).addEventListener('change',()=>commit(()=> {
       const holder=diceHolder(side);
       holder.diceId=$(`${side}-dice`).value;
@@ -748,7 +748,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const skillTypes = own.skillIds.map(id => skills.get(id)?.type).filter(Boolean);
     const pct = traitPanelPercents(info, own.trait, skillTypes);
     const stacks = traitControls(info).stack ? own.trait.stacks ?? 0 : 0;
-    const head = `${html(profile.name)}${own.panelIncludesDice?'战斗':'计算'}面板 · ${(profile.awakening ?? 0) + 5}★ ${html(nature?.name ?? '普通')}${stacks?` · 特性 ${stacks} 层`:''}`;
+    const head = `${html(profile.name)}${own.panelIncludesDice?'战斗':'基础'}面板 · ${(profile.awakening ?? 0) + 5}★ ${html(nature?.name ?? '普通')}${stacks?` · 特性 ${stacks} 层`:''}`;
     const panel = currentPreview?.ownPanel ?? profile.panel;
     $('preview-panel').innerHTML = `<div class="rail-cap"><span>${head}</span></div><div class="panel-stats">${Object.entries(statNames).map(([key,label])=>`<div class="${nature?.upStat===key?'up':nature?.downStat===key?'down':''}"><span>${label}</span><b>${powerNumber(panel?.[key])}${pct[key]?`<em>+${pct[key]}%</em>`:''}</b></div>`).join('')}</div>`;
   }
@@ -799,8 +799,8 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       const row=diceCatalog?.dice?.find(item=>item.id===id);
       const note=$(`${side}-dice-note`);
       note.hidden=id==='none';
-      note.textContent=id==='custom'?'按手填合计试算；组合与取整仍需实测。'
-        : row ? `${diceDescription(row)} ${row.typeCoefficient?'单一系别按配置文案试算；觉醒沿用当前模型。双系组合需填写最终威力。':row.supported?'按原配置试算，取整与叠加待实测。':row.unsupportedReason ?? '当前仅展示资料，未接入结算。'}`
+      note.textContent=id==='custom'?'临场攻防倍率计入威力；同项增益按已确认规则叠加。'
+        : row ? `${diceDescription(row)} ${row.typeCoefficient?'单一系别按配置文案试算；觉醒沿用当前模型。双系组合需填写最终威力。':row.supported?'攻防加成计入临场威力。':row.unsupportedReason ?? '当前仅展示资料，未接入结算。'}`
           : '骰子资料缺失，请重新选择。';
       renderDiceUi(side, holder);
     }
@@ -809,7 +809,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     $('own-dice-panel-included').closest('.dice-panel-source').hidden=(own.diceId??'none')==='none' && !own.panelIncludesDice;
     $('own-dice-panel-included').checked=own.panelIncludesDice===true;
     $('own-dice-panel-included').disabled=!includedAllowed;
-    $('own-dice-panel-note').textContent=includedAllowed?'已包含时不再叠加骰子属性；技能威力加值仍单独处理。':'配置面板不含骰子；手填面板后可标记已包含。';
+    $('own-dice-panel-note').textContent=includedAllowed?'已包含时不再叠加骰子属性；技能威力加值仍单独处理。':'基础面板不含临场增益；技能计算时计入。';
     $('preview-percent-format').value=format;
     $('target-shiny').checked=encounter.shiny;
     koCache = new Map();

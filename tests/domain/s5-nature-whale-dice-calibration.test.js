@@ -32,7 +32,7 @@ test('43 whale replays six user readings with the confirmed post-thorn Dimo stac
   // User confirmed: hot sand was cast AFTER thorn triggered Best Partner.
   const afterInput = inputFor('迪莫', ['热砂'], 1);
   const after = preview(afterInput).outgoing[0];
-  expect(neutral(after).attackerStat).toBe(235); // floor(181 * (1 + .1 + .2))
+  expect(neutral(after).attackerStat).toBe(181); // +10% dice and +20% trait enter power once
   expect(after.displayedPower).toBe(104);
   expect(neutral(after).damage).toBe(80);
   expect(neutral(preview(inputFor('迪莫', ['热砂'])).outgoing[0]).damage).toBe(68);
@@ -51,7 +51,7 @@ test('new level42 whale light-ball 138 keeps the confirmed A181 input separate f
   input.level = 42;
   input.targetDiceIds = [];
   const reading = neutral(preview(input).outgoing[0]);
-  expect(reading.attackerStat).toBeCloseTo(199.1, 10);
+  expect(reading.attackerStat).toBe(181);
   expect(reading.defenderDefense).toBe(208);
   expect(reading.damage).toBe(138);
 
@@ -67,25 +67,27 @@ test('Best Partner stacks add to the same attack/defense dice attributes once', 
   input.ownDiceEffects = { magicalAttackMultiplier: 1.1, magicalDefenseMultiplier: 1.1 };
   input.incomingSkillId = skill('气泡').id;
   const result = preview(input);
-  expect(neutral(result.outgoing[0]).attackerStat).toBe(235);
-  expect(result.incoming.predictions[0].defenderDefense).toBe(227);
+  expect(neutral(result.outgoing[0]).attackerStat).toBe(181);
+  expect(result.incoming.predictions[0].defenderDefense).toBe(175);
   expect(result.incoming.displayedPower).toBeCloseTo(125 / 1.3, 10);
   input.profile.panel.magicalAttack = 199;
   input.profile.panel.magicalDefense = 192;
   input.profile.panelIncludesDice = true;
   const included = preview(input);
-  expect(neutral(included.outgoing[0]).attackerStat).toBe(235);
-  expect(included.incoming.predictions[0].defenderDefense).toBe(226);
+  expect(neutral(included.outgoing[0]).attackerStat).toBe(199);
+  expect(included.incoming.predictions[0].defenderDefense).toBe(192);
   // Already-rounded combat values are used as supplied, never rounded back
   // into a fabricated original panel or boosted by the dice a second time.
   expect(included.ownPanel.magicalAttack).toBe(199);
 });
 
-test.each([[120, 1, 156], [80, 2, 120]])('additive stats preserve the exact integer boundary for base %i', (base, stacks, expected) => {
+test.each([[120, 1, 104], [80, 2, 120]])('additive battle power preserves the base %i panel', (base, stacks, expectedPower) => {
   const input = inputFor('迪莫', ['热砂'], stacks);
   input.profile.panel.magicalAttack = base;
-  expect(neutral(preview(input).outgoing[0]).attackerStat).toBe(expected);
+  expect(neutral(preview(input).outgoing[0]).attackerStat).toBe(base);
+  expect(preview(input).outgoing[0].displayedPower).toBe(expectedPower);
   input.profile.panel.magicalAttack = base * 1.1;
   input.profile.panelIncludesDice = true;
-  expect(neutral(preview(input).outgoing[0]).attackerStat).toBe(expected);
+  expect(neutral(preview(input).outgoing[0]).attackerStat).toBe(base * 1.1);
+  expect(preview(input).outgoing[0].displayedPower).toBe(expectedPower);
 });

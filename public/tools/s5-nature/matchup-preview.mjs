@@ -6,7 +6,7 @@ import { WILD_HP_MODEL, wildTargetShiny } from './wild-hp.mjs';
 import { resolveWildAttack } from './wild-attack.mjs';
 import { resolveWildDefense } from './wild-defense.mjs';
 export { SHINY_HP_MULTIPLIER } from './wild-hp.mjs';
-import { traitInfo, resolveOwnTrait, applyAttackStage, applyDefenseStage, diceTraitMultiplier } from './own-trait.mjs';
+import { traitInfo, resolveOwnTrait, diceTraitMultiplier } from './own-trait.mjs';
 
 const STATS = ['hp', 'physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense', 'speed'];
 const STAT_LABELS = { hp: '生命', physicalAttack: '物攻', magicalAttack: '魔攻', physicalDefense: '物防', magicalDefense: '魔防', speed: '速度' };
@@ -106,8 +106,10 @@ function withDicePanel(panel, dice, { wildStats = false, panelIncludesDice = fal
     if (!has(panel, stat) || panel[stat] === null || panel[stat] === undefined) continue;
     const preserve = wildStats && ['physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense'].includes(stat);
     if (preserve ? !finite(panel[stat]) || panel[stat] < 1 || panel[stat] > 100000 : !integer(panel[stat], 1, 100000)) throw new RangeError(`${STAT_LABELS[stat]}面板须为正整数。`);
-    const value = panel[stat] * (panelIncludesDice ? 1 : dice.effects[`${stat}Multiplier`]);
-    // Combat boosts retain fractions; HP remains an integer pool.
+    // Four combat attributes stay at their base values. Dice are ability
+    // modifiers resolved in power per hit, without rounding combat panels.
+    // Explicit custom HP remains a separate battle pool, not an ability level.
+    const value = panel[stat] * (!panelIncludesDice && stat === 'hp' ? dice.effects.hpMultiplier : 1);
     result[stat] = Math.max(1, stat === 'hp' ? Math.round(value) : value);
   }
   return result;
@@ -255,20 +257,24 @@ function damageEntry(skillId, overrideValue, direction, context) {
     const power = resolvePower(skill, override, attacker, defender, incoming ? 0 : input.profile.awakening, incoming ? input.profile.awakening : 0, attackerDice, catalog, incoming ? {} : trait, defenderDice);
     const needed = incoming ? [defenseStat, 'hp'] : [attackStat];
     if (!needed.every(stat => finite(ownPanel[stat]) && ownPanel[stat] >= 1 && ownPanel[stat] <= 10000000)) throw new RangeError(`请补齐我方${needed.map(stat => STAT_LABELS[stat]).join('、')}实际面板。`);
+    const attackMultiplier = diceTraitMultiplier(attackerDice.effects[`${attackStat}Multiplier`], incoming ? 0 : trait.attackStage, trait);
+    const defenseMultiplier = diceTraitMultiplier(defenderDice.effects[`${defenseStat}Multiplier`], incoming ? trait.defenseStage : 0, trait);
+    const manualDisplay = power.powerMode === 'displayed';
+    // Preserve the saved contract of an explicitly supplied combat panel.
+    // Never divide its integer value to invent the original base panel.
+    const includedAttack = !incoming && input.profile.panelIncludesDice === true ? ownDice.effects[`${attackStat}Multiplier`] : 1;
+    const includedDefense = incoming && input.profile.panelIncludesDice === true ? ownDice.effects[`${defenseStat}Multiplier`] : 1;
+    const battlePowerMultiplier = manualDisplay ? 1 : (attackMultiplier / includedAttack) / (defenseMultiplier / includedDefense);
+    const calculationPower = power.power * battlePowerMultiplier;
     const predictions = candidates.map(candidate => {
       const attackerPanel = incoming ? candidate.panel : ownPanel;
       const defenderPanel = incoming ? ownPanel : candidate.panel;
       const hpMax = defenderPanel.hp;
-      const manualDisplay = power.powerMode === 'displayed';
-      const attackerStat = manualDisplay
-        ? (incoming ? candidate.basePanel[attackStat] : input.profile.panel[attackStat])
-        : incoming ? attackerPanel[attackStat] : applyAttackStage(attackerPanel[attackStat], trait, ownDice.effects[`${attackStat}Multiplier`]);
-      const defenderDefense = manualDisplay
-        ? (incoming ? input.profile.panel[defenseStat] : candidate.basePanel[defenseStat])
-        : incoming ? applyDefenseStage(defenderPanel[defenseStat], trait, ownDice.effects[`${defenseStat}Multiplier`]) : defenderPanel[defenseStat];
+      const attackerStat = attackerPanel[attackStat];
+      const defenderDefense = defenderPanel[defenseStat];
       const damage = calculateDamage({
         attackerStat, defenderDefense,
-        displayedPower: power.power, level: incoming ? input.level : input.profile.level,
+        displayedPower: calculationPower, level: incoming ? input.level : input.profile.level,
         hitCount: power.hitCount,
         finalDamageMultiplier: attackerDice.effects.damageMultiplier * trait.finalDamageMultiplier,
         damageReductionMultiplier: defenderDice.effects.damageReductionMultiplier * (incoming ? trait.damageReductionMultiplier : 1),
@@ -286,6 +292,7 @@ function damageEntry(skillId, overrideValue, direction, context) {
         hpModelName: incoming ? '我方实际面板及已选骰子' : candidate.hpModelName,
         targetHpModelName: candidate.hpModelName,
         attackerStat, defenderDefense,
+        baseAttackerStat: attackerPanel[attackStat], baseDefenderDefense: defenderPanel[defenseStat],
         // Evidence describes the pre-dice wild stat resolved by the same model.
         wildStatEvidence: incoming
           ? resolveWildAttack(target.raceStats[attackStat], input.level, candidate.nature, attackStat, target.wildStrengthStage)
@@ -296,14 +303,15 @@ function damageEntry(skillId, overrideValue, direction, context) {
     const displayRatio = power.powerMode === 'auto'
       // Report the selected modifiers in skill-bar power even when the input
       // combat panel already contains them. This ratio never enters damage.
-      ? diceTraitMultiplier(attackerDice.effects[`${attackStat}Multiplier`], incoming ? 0 : trait.attackStage, trait)
-        / diceTraitMultiplier(defenderDice.effects[`${defenseStat}Multiplier`], incoming ? trait.defenseStage : 0, trait) : 1;
+      ? attackMultiplier / defenseMultiplier : 1;
     return { skillId, skillName: skill.name, direction, status: 'estimated',
       reason: power.notes.join(' '),
       displayedPower: power.displayedPower === null ? null : Number((power.displayedPower * displayRatio).toFixed(10)),
       powerMode: power.powerMode,
       firstActionPowerAdd: power.firstActionPowerAdd,
-      effectivePower: power.power, hitCount: power.hitCount, typeMultiplier: power.typeMultiplier,
+      effectivePower: calculationPower, hitCount: power.hitCount, typeMultiplier: power.typeMultiplier,
+      battleBuffs: { attackMultiplier, defenseMultiplier, powerMultiplier: battlePowerMultiplier,
+        applied: !manualDisplay, model: 's5-battle-power-ratio-v1' },
       stab: power.stab, typeInteraction: power.typeInteraction, manualPower: power.manual, predictions };
   } catch (error) {
     return unsupported(skillId, error.message || '该技能当前无法估计。');
@@ -380,8 +388,8 @@ export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
     return { ...initial, status: [...outgoing, ...incomingList].some(row => row?.status === 'estimated') ? 'estimated' : 'unsupported',
       outgoing, incoming, incomingList, warnings, ownPanel, ownTrait, ownDiceIds: ownDice.ids, targetDiceIds: targetDice.ids,
       panelIncludesDice,
-      diceApplication: { ownPanel: panelIncludesDice ? 'already-included' : 'apply-selected-effects',
-        targetPanel: 'apply-selected-effects', typeCoefficientEffects: [...ownDice.typeCoefficientEffects, ...targetDice.typeCoefficientEffects] },
+      diceApplication: { ownPanel: panelIncludesDice ? 'already-included' : 'base-with-battle-hp',
+        targetPanel: 'base-with-battle-hp', combatStats: 's5-battle-power-ratio-v1', typeCoefficientEffects: [...ownDice.typeCoefficientEffects, ...targetDice.typeCoefficientEffects] },
       wildStrengthStage: target.wildStrengthStage, wildStrengthStageEvidence: target.wildStrengthStageEvidence,
       targetId: target.id, ownSpiritId: ownSpirit.id, targetLevel: input.level, targetLevels: [input.level], hpModel: WILD_HP_MODEL,
       ...(target.wildStatFormId ? { wildStatFormId: target.wildStatFormId, wildStatFormName: target.wildStatFormName } : {}),
