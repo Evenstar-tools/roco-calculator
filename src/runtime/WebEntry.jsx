@@ -166,7 +166,7 @@ export function WebEntry({ initialEntry = null, initialSnapshot = null }) {
     error={incoming?.error} targetServer={conflictServer}
     onOpen={openMatchingServer} onCancel={dismissShare} />;
 
-  return <PluginAccess enabled={!global && !isDesktop && !IS_PREVIEW_BUILD}>
+  return <PluginAccess enabled={!global && !IS_PREVIEW_BUILD}>
     {(entry.conflict || manualShare) && <div className="entry-share-notice__cn">{entryNotice}</div>}
     {(cnVisited || isDesktop) && <SeasonThemeProvider serverId="cn" active={!global}
       seasonThemeId={cnSeasonThemeId} preference={seasonPreferences.cn} onSeasonThemeChange={(value) => changeSeasonTheme("cn", value)}>

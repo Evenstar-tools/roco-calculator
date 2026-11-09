@@ -8,13 +8,18 @@ import { createInitialState } from "../../src/state/defaults.js";
 import { useRuntime } from "../../src/runtime/RuntimeContext.jsx";
 import { App as MockGlobalWorkspace } from "../../src/App.jsx";
 import { UNVERIFIED_GLOBAL_SNAPSHOT } from "../../src/runtime/unverified-snapshot.js";
+import { usePluginAccess } from "../../src/runtime/PluginAccess.jsx";
+
+const testUrl = window.location.href;
 
 vi.mock("../../src/CalculatorRouter.jsx", () => ({
   CalculatorRouter: function CnWorkspace({ active, onOpenGlobal }) {
     const [draft, setDraft] = useState("");
     const runtime = useRuntime();
+    const pluginAccess = usePluginAccess();
     if (runtime.serverId === "global") return <MockGlobalWorkspace active={active} />;
-    return active && <><input aria-label="CN draft" value={draft} onChange={(event) => setDraft(event.target.value)} />
+    return active && <><input type="search" aria-label="CN draft" value={draft} onChange={(event) => setDraft(event.target.value)} />
+      <span data-testid="CN plugin access">{pluginAccess ? "已解锁" : "未解锁"}</span>
       <select aria-label="CN theme" value={runtime.seasonThemePreference} onChange={(event) => runtime.onSeasonThemeChange(event.target.value)}>
         {["default", "neutral", "random", "s1", "s2", "s3", "s4", "s5"].map((id) => <option key={id}>{id}</option>)}
       </select>
@@ -25,8 +30,11 @@ vi.mock("../../src/CalculatorRouter.jsx", () => ({
 vi.mock("../../src/App.jsx", () => ({
   App: function OriginalApp({ active }) {
     const runtime = useRuntime();
+    const pluginAccess = usePluginAccess();
     return active && <>
       <h1>{runtime.locale === "ja" ? "グローバル版計算機" : "Global calculator"}</h1>
+      <input type="search" aria-label="Global plugin search" defaultValue="龙骑士" />
+      <span data-testid="Global plugin access">{pluginAccess ? "已解锁" : "未解锁"}</span>
       <select aria-label="Language" value={runtime.locale} onChange={(event) => runtime.onLocaleChange(event.target.value)}>
         {["en", "zh-CN", "ja"].map((locale) => <option key={locale}>{locale}</option>)}
       </select>
@@ -49,6 +57,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   cleanup();
+  globalThis.jsdom.reconfigure({ url: testUrl });
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   history.replaceState(null, "", "/");
@@ -63,6 +72,9 @@ test("Global direct entry mounts the reference-capable App without CN workspace;
   render(<WebEntry />);
   await screen.findByRole("heading", { name: "Global calculator" }, { timeout: 10000 });
   expect(screen.queryByLabelText("CN draft")).toBeNull();
+  expect(fireEvent.keyDown(screen.getByLabelText("Global plugin search"), { key: "Enter" })).toBe(true);
+  expect(screen.getByTestId("Global plugin access")).toHaveTextContent("未解锁");
+  expect(screen.queryByText("某处的大门已开启")).toBeNull();
   expect(fetch).not.toHaveBeenCalled();
   expect(document.documentElement.dataset.season).toBe("s3");
   expect(document.documentElement.style.getPropertyValue("--season-scene-image")).toContain("s3-storybook.webp");
@@ -72,6 +84,23 @@ test("Global direct entry mounts the reference-capable App without CN workspace;
   expect(document.documentElement.lang).toBe("ja");
   expect(JSON.parse(localStorage.getItem(MANUAL_PREFERENCE_KEY))).toEqual({ serverId: "global", locale: "ja" });
   expect(localStorage.getItem("rock-calculator.teams.v1")).toBe("cn-team-sentinel");
+});
+
+test("桌面国服入口启用原插件彩蛋，刷新后从未解锁状态开始", async () => {
+  const storage = localStorage;
+  globalThis.jsdom.reconfigure({ url: "app://calculator/" });
+  vi.stubGlobal("localStorage", storage);
+  const view = render(<WebEntry />);
+  const search = await screen.findByLabelText("CN draft");
+  expect(screen.getByTestId("CN plugin access")).toHaveTextContent("未解锁");
+  fireEvent.change(search, { target: { value: "龙骑士" } });
+  expect(fireEvent.keyDown(search, { key: "Enter" })).toBe(false);
+  expect(screen.getByTestId("CN plugin access")).toHaveTextContent("已解锁");
+  expect(screen.getByText("某处的大门已开启")).toBeVisible();
+  view.unmount();
+  render(<WebEntry />);
+  expect(await screen.findByTestId("CN plugin access")).toHaveTextContent("未解锁");
+  expect(screen.queryByText("某处的大门已开启")).toBeNull();
 });
 
 test("switching servers restores the current CN draft and never copies it into Global", async () => {

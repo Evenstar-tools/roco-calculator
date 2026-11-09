@@ -5,6 +5,10 @@ const SEARCH_INPUTS = 'input[type="search"], input[role="combobox"], input[data-
 
 // Each deliberate entry click grants one navigation; the introduction consumes it.
 export function grantPluginEntry() {
+  if (location.protocol === "app:") {
+    sessionStorage.setItem("roco-cn-plugin-entry", String(Date.now() + 30_000));
+    return;
+  }
   document.cookie = `roco-cn-plugin-entry=1; Max-Age=30; Path=/; SameSite=Strict${location.protocol === "https:" ? "; Secure" : ""}`;
 }
 
