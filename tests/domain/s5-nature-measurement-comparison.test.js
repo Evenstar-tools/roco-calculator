@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest';
-import { compareObservedHp } from '../../public/tools/s5-nature/measurement-comparison.mjs';
+import { compareObservedHp, intersectNatureCases } from '../../public/tools/s5-nature/measurement-comparison.mjs';
 import { formatGamePercent } from '../../public/tools/s5-nature/hp-inverse.mjs';
+import { observationDifference, observationMatch, readIncomingObservation, readOutgoingObservations } from '../../public/tools/s5-nature/matchup-ui.mjs';
 
 const prediction = (hpMax, natureId = `hp-${hpMax}`, targetLevel = 43) => ({
   hpMax, natureId, targetLevel, upStat: 'hp', downStat: 'speed', damage: 9999,
@@ -135,4 +136,116 @@ test('an explicit empty HP model suppresses the legacy outgoing-prediction fallb
 test('invalid HP values do not establish model availability', () => {
   const result = compareObservedHp({ hpPredictions: [null, {}, prediction(0), prediction(-1), prediction(NaN), prediction(446.5)] });
   expect(result).toEqual({ rows: [], status: 'empty', ranges: [], matchedPredictions: [], hasHpModel: false });
+});
+
+test.each([
+  [50, [50], [48, 49, 51, 52]],
+  [51, [50, 51, 52], [49, 53]],
+  [52, [51, 52, 53], [50, 54]],
+])('predicted damage %i uses its own threshold for outgoing and incoming observations', (damage, accepted, rejected) => {
+  const item = { damage, remainingPercent: 76.1 };
+  for (const input of [...accepted, ...rejected]) {
+    const expected = accepted.includes(input);
+    const outgoing = readOutgoingObservations({ observed: { 0: { damage: input } } }).observed[0];
+    const incoming = readIncomingObservation({ incomingDamages: [input] }, 0, {});
+    for (const observation of [outgoing, incoming]) {
+      expect(observationMatch(item, observation)).toBe(expected);
+      expect(observationDifference({ predictions: [item] }, observation) === '').toBe(expected);
+    }
+  }
+});
+
+test('one-point damage tolerance still requires an exact percentage on the same prediction', () => {
+  const predictions = [{ damage: 51, remainingPercent: 76.1 }, { damage: 70, remainingPercent: 77.1 }];
+  const row = { predictions };
+  expect(predictions.filter(item => observationMatch(item, { damage: 50, remainingPercent: 77 }))).toEqual([predictions[0]]);
+  expect(predictions.filter(item => observationMatch(item, { damage: 50, remainingPercent: 78 }))).toEqual([]);
+  expect(observationDifference(row, { damage: 50, remainingPercent: 77 })).toBe('');
+  expect(observationDifference(row, { damage: 50, remainingPercent: 78 })).toBe('伤害吻合，计算余血 77%');
+});
+
+test.each([
+  ['game0', 76.41, 77, 1], ['round0', 76.41, 76, 1],
+  ['floor0', 76.91, 76, 1], ['round1', 76.46, 76.5, 0.1],
+])('damage tolerance leaves %s percentage precision unchanged', (format, remainingPercent, displayed, step) => {
+  const item = { damage: 51, remainingPercent };
+  expect(observationMatch(item, { damage: 52, remainingPercent: displayed }, format)).toBe(true);
+  for (const percent of [displayed - step, displayed + step]) {
+    expect(observationMatch(item, { damage: 52, remainingPercent: percent }, format)).toBe(false);
+  }
+});
+
+test('per-hit observations are converted before applying one point of total-damage tolerance', () => {
+  const item = { damage: 51 }, row = { hitCount: 4, predictions: [item] };
+  const near = readIncomingObservation({ incomingDamages: [13], incomingDamageUnits: ['perHit'] }, 0, row);
+  const far = readIncomingObservation({ incomingDamages: [12], incomingDamageUnits: ['perHit'] }, 0, row);
+  expect(near).toMatchObject({ damage: 52, inputDamage: 13, unit: 'perHit' });
+  expect(far).toMatchObject({ damage: 48, inputDamage: 12, unit: 'perHit' });
+  expect(observationMatch(item, near)).toBe(true);
+  expect(observationDifference(row, near)).toBe('');
+  expect(observationMatch(item, far)).toBe(false);
+  expect(observationDifference(row, far)).toBe('计算 51，实测比最近值少 3');
+});
+
+test('damage tolerance never coerces malformed or fractional input into a match', () => {
+  const item = { damage: 51 };
+  for (const damage of ['51', 50.5, 51.5, NaN, Infinity, -1]) {
+    expect(observationMatch(item, { damage })).toBe(false);
+    const outgoing = readOutgoingObservations({ observed: { 0: { damage } } });
+    const incoming = readIncomingObservation({ incomingDamages: [damage] }, 0, {});
+    expect(outgoing.invalid).toBe(true);
+    expect(observationMatch(item, outgoing.observed[0])).toBe(false);
+    expect(observationMatch(item, incoming)).toBe(false);
+    expect(observationDifference({ predictions: [item] }, incoming)).toBe('');
+  }
+  expect(observationMatch(item, { damage: 51, invalid: true })).toBe(false);
+});
+
+
+const testedNatures = [
+  { id: 'hp-up', upStat: 'hp', downStat: 'speed' },
+  { id: 'defense-up', upStat: 'physicalDefense', downStat: 'speed' },
+];
+
+test('unmeasured nature groups retain the full level/nature set without reporting a conflict', () => {
+  expect(intersectNatureCases(testedNatures, [41, 42], [])).toEqual({
+    candidates: ['41:hp-up', '41:defense-up', '42:hp-up', '42:defense-up'],
+    matching: testedNatures, used: 0, conflict: false,
+  });
+});
+
+test('every recorded hit must share a valid level/nature candidate', () => {
+  const result = intersectNatureCases(testedNatures, [41, 42], [
+    ['41:hp-up', '41:defense-up', '42:hp-up'],
+    ['41:hp-up', '42:hp-up', '42:defense-up'],
+    ['42:hp-up', '42:hp-up', '43:hp-up', '42:unknown'],
+  ]);
+  expect(result).toEqual({ candidates: ['42:hp-up'], matching: [testedNatures[0]], used: 3, conflict: false });
+});
+
+test('the same nature at different levels cannot combine into a false match', () => {
+  expect(intersectNatureCases(testedNatures, [41, 42], [['41:hp-up'], ['42:hp-up']]))
+    .toEqual({ candidates: [], matching: [], used: 2, conflict: true });
+});
+
+test.each([
+  [[]],
+  [['42:hp-up'], []],
+  [[], ['42:hp-up']],
+  [['42:hp-up'], ['42:defense-up']],
+])('an unmatched or contradictory recorded group remains a conflict: %j', (...groups) => {
+  expect(intersectNatureCases(testedNatures, [42], groups))
+    .toEqual({ candidates: [], matching: [], used: groups.length, conflict: true });
+});
+
+test('direct maximum HP and inferred HP evidence must intersect without borrowing adjacent HP values', () => {
+  const hpModel = [prediction(446, 'hp-up', 42), prediction(447, 'defense-up', 42)];
+  const inferred = compare(103, 77, hpModel);
+  const key = item => `${item.targetLevel}:${item.natureId}`;
+  const directHp = hpModel.filter(item => item.hpMax === 446).map(key);
+  const hpGroups = [inferred.matchedPredictions.map(key), directHp];
+  expect(intersectNatureCases(testedNatures, [42], hpGroups))
+    .toEqual({ candidates: ['42:hp-up'], matching: [testedNatures[0]], used: 2, conflict: false });
+  expect(intersectNatureCases(testedNatures, [42], [...hpGroups, ['42:defense-up']]))
+    .toEqual({ candidates: [], matching: [], used: 3, conflict: true });
 });

@@ -121,7 +121,7 @@ const matchingIds = (row, observation, format = 'game0') => row.predictions
 test('outgoing damage and remaining percentage must match the same prediction', () => {
   const row = rowWith([
     prediction('damage-only', 'hp', 75, { damage: 103 }),
-    prediction('percent-only', 'physicalDefense', 76.1, { damage: 104 }),
+    prediction('percent-only', 'physicalDefense', 76.1, { damage: 105 }),
     prediction('both', 'magicalDefense', 76.9, { damage: 103 }),
   ]);
   const { observed, invalid } = readOutgoingObservations({ observed: { 0: { damage: 103, remainingPercent: 77 } } });
@@ -131,14 +131,14 @@ test('outgoing damage and remaining percentage must match the same prediction', 
   expect(matchingIds(rowWith(row.predictions.slice(0, 2)), observed[0])).toEqual([]);
 });
 
-test('damage and displayed percentage never accept one-point or four-point tolerance', () => {
+test('damage above 50 accepts one point while displayed percentage remains exact', () => {
   const item = prediction('exact', 'hp', 76.9, { damage: 108 });
   expect(observationMatch(item, { damage: 108 })).toBe(true);
   expect(observationMatch(item, { damage: 108, remainingPercent: 77 })).toBe(true);
   for (const delta of [-4, -1, 1, 4]) {
     // Incoming damage-only and outgoing paired observations share this matcher.
-    expect(observationMatch(item, { damage: 108 + delta })).toBe(false);
-    expect(observationMatch(item, { damage: 108 + delta, remainingPercent: 77 })).toBe(false);
+    expect(observationMatch(item, { damage: 108 + delta })).toBe(Math.abs(delta) === 1);
+    expect(observationMatch(item, { damage: 108 + delta, remainingPercent: 77 })).toBe(Math.abs(delta) === 1);
     expect(observationMatch(item, { remainingPercent: 77 + delta })).toBe(false);
     expect(observationMatch(item, { damage: 108, remainingPercent: 77 + delta })).toBe(false);
   }
@@ -148,7 +148,7 @@ test('either observation field works independently and uses the displayed percen
   const row = rowWith([
     prediction('same-damage', 'hp', 75, { damage: 103 }),
     prediction('both', 'physicalDefense', 76.1, { damage: 103 }),
-    prediction('same-percent', 'magicalDefense', 76.9, { damage: 104 }),
+    prediction('same-percent', 'magicalDefense', 76.9, { damage: 105 }),
   ]);
   const { observed } = readOutgoingObservations({ observed: { 0: { damage: 103 }, 1: { remainingPercent: 77 } } });
   expect(matchingIds(row, observed[0])).toEqual(['same-damage', 'both']);
@@ -242,7 +242,7 @@ test('incoming raw damage retains different nature increases when they deal the 
   const row = rowWith([
     prediction('attack-up', 'physicalAttack', 90),
     prediction('magic-attack-up', 'magicalAttack', 90),
-    prediction('defense-up', 'physicalDefense', 89.9),
+    prediction('defense-up', 'physicalDefense', 89.8),
   ]);
   expect(matchingIds(row, { damage: 100 })).toEqual(['attack-up', 'magic-attack-up']);
 });

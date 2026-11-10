@@ -752,7 +752,10 @@ test("S5 nature compact comparison keeps paired measurements separate from highl
   await expect(damage).toHaveValue('103'); await expect(remaining).toHaveValue('77');
   // Each field individually exists, but no single nature matches this pair.
   await damage.fill('94'); await damage.press('Tab');
-  await expect(verdict).toHaveText('有读数未吻合');
+  await expect(verdict).toHaveText('已判断 1 项');
+  await expect(resultAxis(page, '物防')).toHaveText('加');
+  await expect(hpAxis).toHaveText('记录冲突');
+  expect(await page.evaluate(() => window.pveNatureUi.getPreview().uiVerdict.candidates)).toEqual([]);
   await damage.fill('103'); await damage.press('Tab');
   await remaining.fill(''); await remaining.press('Tab');
   await expect(damage).toHaveValue('103'); await expect(page.locator('#flow-result .flow-axis-unresolved')).toContainText('生命');
@@ -856,7 +859,8 @@ test("S5 nature separates HP evidence and exact per-hit observations without dro
   await expect(verdict).toContainText('实测比最近值多 4');
   await page.locator('#preview-incoming-damage-0').fill('-1');
   await page.locator('#preview-incoming-damage-0').press('Tab');
-  await expect(verdict.locator('.flow-verdict')).toHaveText('输入有误');
+  await expect(verdict.locator('.flow-verdict')).toHaveText('已判断 1 项');
+  await expect(verdict.locator('.flow-evidence')).toContainText('输入格式有误');
   await expect(page.locator('#preview-incoming-cells-0 .hit')).toHaveCount(0);
   await page.locator('#preview-incoming-damage-0').fill('6');
   await page.locator('#preview-incoming-damage-0').press('Tab');
@@ -865,7 +869,8 @@ test("S5 nature separates HP evidence and exact per-hit observations without dro
   await page.locator('#preview-remaining-0').fill('43');
   await page.locator('#preview-remaining-0').press('Tab');
   await expect(resultAxis(page, '生命')).toHaveText('加');
-  await expect(verdict.locator('.flow-verdict')).toHaveText('有读数未吻合');
+  await expect(verdict.locator('.flow-verdict')).toHaveText(/已判断 \d+ 项/);
+  expect(await page.evaluate(() => window.pveNatureUi.getPreview().uiVerdict.candidates)).toEqual([]);
 });
 
 
@@ -1007,6 +1012,49 @@ test('S5 nature player flow compares defense independently from HP and preserves
   await expect(resultAxis(page, '物防')).toHaveText('不变');
   await expect(page.locator('#flow-result .flow-axis-evidence')).toContainText('推算总血量 728–738');
   expect(await page.evaluate(() => window.pveNatureUi.getPreview().uiVerdict.matching.some(n => n.id === 'rash'))).toBe(true);
+  // One-point tolerance applies above 50; a larger miss affects only its tested axis.
+  await damage.fill('503'); await damage.press('Tab');
+  await expect(verdict).toHaveText('12 个候选');
+  await expect(resultAxis(page, '生命')).toHaveText('不变');
+  await expect(resultAxis(page, '物防')).toHaveText('不变');
+  await damage.fill('504'); await damage.press('Tab');
+  await expect(resultAxis(page, '物防')).toHaveText('记录冲突');
+  await expect(resultAxis(page, '生命')).toHaveText('不变');
+  await switchMethod(page, 'incoming');
+  await incoming.fill('14'); await incoming.press('Tab');
+  await expect(resultAxis(page, '物攻')).toHaveText('不变');
+  await expect(resultAxis(page, '物防')).toHaveText('记录冲突');
+  await expect(resultAxis(page, '生命')).toHaveText('不变');
+  await page.keyboard.press('Escape');
+  await page.screenshot({ path: 'artifacts/s5-player-flow/screenshots/s5-axis-evidence-independent.png' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator('#flow-result').scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: 'artifacts/s5-player-flow/screenshots/s5-axis-evidence-independent-390.png' });
+  await page.setViewportSize({ width: 1366, height: 768 });
+  await incoming.fill(''); await incoming.press('Tab');
+  await switchMethod(page, 'outgoing');
+  await damage.fill('502'); await damage.press('Tab');
+  await expect(verdict).toHaveText('12 个候选');
+
+  // Conflicting readings for the same axis must not be silently discarded.
+  const secondDamage = page.locator('#preview-observed-1');
+  await secondDamage.fill('493'); await secondDamage.press('Tab');
+  await expect(resultAxis(page, '物防')).toHaveText('记录冲突');
+  await expect(resultAxis(page, '生命')).toHaveText('不变');
+  await secondDamage.fill(''); await secondDamage.press('Tab');
+  await expect(verdict).toHaveText('12 个候选');
+
+  // Direct maximum HP intersects with inferred HP while defense remains independent.
+  await page.locator('#flow-hp-open').click();
+  await page.locator('#flow-hp-value').fill('804');
+  await page.locator('#flow-hp-dialog').getByRole('button', { name: '保存', exact: true }).click();
+  await expect(resultAxis(page, '生命')).toHaveText('记录冲突');
+  await expect(resultAxis(page, '物防')).toHaveText('不变');
+  await page.screenshot({ path: 'artifacts/s5-player-flow/screenshots/s5-axis-evidence-hp-conflict.png' });
+  await page.locator('#flow-hp-open').click();
+  await page.locator('#flow-hp-clear').click();
+  await expect(verdict).toHaveText('12 个候选');
   await cells.locator('[data-defense-band="up"]').click();
   await expect(damage).toHaveValue('502'); await expect(remaining).toHaveValue('32');
   await expect(verdict).toHaveText('12 个候选');
@@ -1033,7 +1081,7 @@ test('S5 nature player flow compares defense independently from HP and preserves
   await page.reload();
   await expect(verdict).toHaveText('12 个候选');
   await expect(damage).toHaveValue('502'); await expect(remaining).toHaveValue('32');
-  await page.screenshot({ path: 'artifacts/s5-player-flow/screenshots/s5-player-flow-desktop.png' });
+  await page.screenshot({ path: 'artifacts/s5-player-flow/screenshots/s5-axis-evidence-desktop.png' });
   for (const [width,height] of [[390,844],[320,740]]) {
     await page.setViewportSize({ width, height });
     await page.evaluate(() => window.scrollTo(0,0));
@@ -1050,7 +1098,7 @@ test('S5 nature player flow compares defense independently from HP and preserves
     });
     expect(layout.width).toBeLessThanOrEqual(layout.viewport);
     expect(layout.bottom).toBeLessThanOrEqual(layout.visibleBottom);
-    await page.screenshot({ path: `artifacts/s5-player-flow/screenshots/s5-player-flow-${width}.png` });
+    await page.screenshot({ path: `artifacts/s5-player-flow/screenshots/s5-axis-evidence-${width}.png` });
   }
   await page.locator('[data-flow-skill="1"]').click();
   await expect(page.locator('[data-preview-row="1"]')).toBeVisible();

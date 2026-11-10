@@ -1,5 +1,21 @@
 import { formatGamePercent } from './hp-inverse.mjs';
 
+// Each group represents one observation; empty groups remain conflicts.
+// Keep level in every key so observations from different levels cannot combine.
+export function intersectNatureCases(natures, levels, groups = []) {
+  let candidates = new Set(levels.flatMap(level => natures.map(n => `${level}:${n.id}`)));
+  for (const group of groups) {
+    const ids = new Set(group);
+    candidates = new Set([...candidates].filter(id => ids.has(id)));
+  }
+  return {
+    candidates: [...candidates],
+    matching: natures.filter(n => levels.some(level => candidates.has(`${level}:${n.id}`))),
+    used: groups.length,
+    conflict: groups.length > 0 && candidates.size === 0,
+  };
+}
+
 const FORMATS = new Set(['game0', 'round0', 'floor0', 'round1']);
 const MAX_HP = Number.MAX_SAFE_INTEGER;
 const ceilDiv = (numerator, denominator) => (numerator + denominator - 1n) / denominator;

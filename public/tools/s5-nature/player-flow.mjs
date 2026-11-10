@@ -1,3 +1,5 @@
+import { intersectNatureCases } from './measurement-comparison.mjs';
+
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const names = {hp:'生命',physicalAttack:'物攻',magicalAttack:'魔攻',physicalDefense:'物防',magicalDefense:'魔防',speed:'速度'};
@@ -108,9 +110,12 @@ function render() {
   let matched=v.matching;
   if(direct) matched=matched.filter(n=>hpHits.some(h=>h.id===n.id && v.candidates.includes(`${h.targetLevel}:${n.id}`)));
   const used=v.used+(direct?1:0), ready=used>0 && matched.length>0 && !v.invalid && !v.incomplete;
-  const hpIndependent=direct?hpHits:catalog.natures.filter(n=>v.hpComparison?.matchedPredictions?.some(h=>h.natureId===n.id));
-  const hasConflict=v.invalid||v.incomplete||(used>0&&!matched.length)||(direct&&!hpHits.length);
-  const title=v.invalid?'输入有误':v.incomplete?'有技能缺少条件':hasConflict?'有读数未吻合':!used?'待实测':matched.length===1?matched[0].name:`${matched.length} 个候选`;
+  const axesEvidence={...v.axesEvidence};
+  const hpGroups=axesEvidence.hp?.used ? [axesEvidence.hp.candidates] : [];
+  if(direct) hpGroups.push(hpHits.map(h=>`${h.targetLevel}:${h.id}`));
+  axesEvidence.hp=intersectNatureCases(catalog.natures,result.targetLevels || [s.level],hpGroups);
+  const hpIndependent=axesEvidence.hp.used?axesEvidence.hp.matching:[];
+  const hasConflict=v.invalid||v.incomplete||(used>0&&!matched.length)||axesEvidence.hp.conflict;
   let goal='';
   if(layout.goal) {
     const label=n?.name || `加${names[goalStat]}`;
@@ -137,19 +142,25 @@ function render() {
   if(direct) hpEvidenceParts.push(`<small class="flow-axis-evidence">实测最大生命 <b>${esc(layout.hp)}</b></small>`);
   if(hpRangeText) hpEvidenceParts.push(`<small class="flow-axis-evidence">推算总血量 <b>${esc(hpRangeText)}</b></small>`);
   if(direct && !hpHits.length) hpEvidenceParts.push('<small class="flow-axis-evidence bad">与当前三档生命不符</small>');
-  if(v.hpComparison?.status==='conflict') hpEvidenceParts.push(`<small class="flow-axis-evidence bad">${hpRanges.length?'推算血量未吻合':'血量记录互相冲突'}</small>`);
+  if(v.hpComparison?.status==='conflict') hpEvidenceParts.push(`<small class="flow-axis-evidence bad">${hpRanges.length?'推算血量与当前三档不符':'血量记录互相冲突'}</small>`);
+  else if(direct && hpHits.length && axesEvidence.hp.conflict) hpEvidenceParts.push('<small class="flow-axis-evidence bad">血量记录互相冲突</small>');
   if(s.level==='all' && hpIndependent.length) {
-    const hpLevels = [...new Set((direct?hpHits:v.hpComparison.matchedPredictions).map(entry=>entry.targetLevel))];
+    const hpLevels = [...new Set(axesEvidence.hp.candidates.map(id=>Number(id.split(':')[0])))];
     if(hpLevels.length) hpEvidenceParts.push(`<small class="flow-axis-evidence">对应等级 ${hpLevels.map(esc).join('／')}</small>`);
   }
   const hpEvidence = hpEvidenceParts.join('');
   const axisStates = ['hp','physicalDefense','magicalDefense','physicalAttack','magicalAttack'].map(key=>{
-    const value = key==='hp' && hpIndependent.length ? axis(hpIndependent,'hp') : ready ? axis(matched,key) : '—';
-    return {key,value,confirmed:['加','减','不变'].includes(value)};
+    const ownEvidence=axesEvidence[key];
+    const value=ownEvidence?.conflict?'记录冲突':ready?axis(matched,key)
+      :ownEvidence?.used?axis(ownEvidence.matching,key):'—';
+    return {key,value,conflict:ownEvidence?.conflict,confirmed:['加','减','不变'].includes(value)};
   });
-  const displayedAxes = axisStates.filter(entry=>entry.confirmed || (entry.key==='hp' && hpEvidence));
+  const confirmedCount=axisStates.filter(entry=>entry.confirmed).length;
+  const title=ready?(matched.length===1?matched[0].name:`${matched.length} 个候选`)
+    :confirmedCount?`已判断 ${confirmedCount} 项`:!used&&!v.invalid&&!v.incomplete?'待实测':'待判断';
+  const displayedAxes = axisStates.filter(entry=>entry.confirmed || entry.conflict || (entry.key==='hp' && hpEvidence));
   displayedAxes.sort((a,b)=>Number(b.confirmed)-Number(a.confirmed));
-  const axes = displayedAxes.map(({key,value})=>`<div class="flow-axis flow-axis-v6${key==='hp'?' flow-axis--hp':''}"><div class="flow-axis-line"><span>${names[key]}</span><b class="${value==='加'?'up':value==='减'?'down':''}">${value==='—'?'待判断':value}</b></div>${key==='hp'?hpEvidence:''}</div>`).join('');
+  const axes = displayedAxes.map(({key,value,conflict})=>`<div class="flow-axis flow-axis-v6${key==='hp'?' flow-axis--hp':''}"><div class="flow-axis-line"><span>${names[key]}</span><b class="${conflict?'conflict':value==='加'?'up':value==='减'?'down':''}">${value==='—'?'待判断':value}</b></div>${key==='hp'?hpEvidence:''}</div>`).join('');
   const unresolvedKeys = new Set(axisStates.filter(entry=>!entry.confirmed && !displayedAxes.includes(entry)).map(entry=>entry.key));
   const unresolvedNames = [];
   if(unresolvedKeys.has('hp')) unresolvedNames.push('生命');
@@ -158,11 +169,13 @@ function render() {
     else for(const key of [first,second]) if(unresolvedKeys.has(key)) unresolvedNames.push(names[key]);
   }
   const unresolved = unresolvedNames.length ? `<div class="flow-axis-unresolved"><span>${ready?'待区分':recordCount?'待判断':'待实测'}</span><b>${unresolvedNames.join('、')}</b></div>` : '';
+  const combinedConflict=used>0 && !matched.length && !axisStates.some(entry=>entry.conflict) && !v.invalid && !v.incomplete;
+  const conflictNote=combinedConflict?'<small class="flow-axis-evidence bad">各项记录无共同性格</small>':'';
   const chips = ready && matched.length>1 ? `<details class="flow-candidates" ${matched.length<=5?'open':''}><summary>候选性格 <span>${matched.length}</span></summary><div>${matched.map(nature=>`<span class="${goalMatches(nature)?'desired':''}"><b>${esc(nature.name)}</b><small>${names[nature.upStat]}↑ ${names[nature.downStat]}↓</small></span>`).join('')}</div></details>` : '';
   const evidence = v.evidence?.length ? `<div class="flow-evidence">${v.evidence.map(entry=>`<div class="${entry.tone==='bad'?'bad':''}"><span>${esc(entry.label)}</span><b>${esc(entry.text)}</b></div>`).join('')}</div>` : '';
   const unchecked = ['own','target'].filter(side=>!layout.checked[side]).map(side=>side==='own'?'我方':'野怪');
   const diceNote = recordCount && unchecked.length ? `<div class="flow-dice-warning flow-dice-compact">骰子未核对：${unchecked.join('、')}</div>` : '';
-  $('flow-result').innerHTML=`<div class="flow-result-cap"><b>实测结果</b><span>累计 ${recordCount} 条</span></div><div class="flow-verdict flow-verdict-v6${hasConflict?' bad':!used?' empty':''}">${esc(title)}</div>${sources}${goal}${diceNote}<div class="flow-axes flow-axes-v6">${axes}${unresolved}</div>${chips}${evidence}`;
+  $('flow-result').innerHTML=`<div class="flow-result-cap"><b>实测结果</b><span>累计 ${recordCount} 条</span></div><div class="flow-verdict flow-verdict-v6${!recordCount?' empty':''}">${esc(title)}</div>${sources}${goal}${diceNote}<div class="flow-axes flow-axes-v6">${axes}${unresolved}</div>${conflictNote}${chips}${evidence}`;
   $('flow-result-brief').textContent=recordCount?`累计 ${recordCount} 条 · ${title}`:title;
   $('flow-result-brief').classList.remove('pending');
   $('flow-mobile-dice').textContent=unchecked.length?'骰子待核对':'';

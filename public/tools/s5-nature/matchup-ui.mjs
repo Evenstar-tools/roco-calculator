@@ -2,7 +2,7 @@ import { createPicker } from './picker.mjs';
 import { previewMatchup, canPreviewBasePower, defaultSkillHitCount, firstActionPowerBonus } from './matchup-preview.mjs';
 import { traitControls, traitPanelPercents } from './own-trait.mjs';
 import { formatGamePercent } from './hp-inverse.mjs';
-import { compareObservedHp } from './measurement-comparison.mjs';
+import { compareObservedHp, intersectNatureCases } from './measurement-comparison.mjs';
 import { getOwnSkillIds } from './own-presets.mjs';
 import { WILD_DEFENSE_MODEL } from './wild-defense.mjs';
 import { resolveWildTarget } from './wild-forms.mjs';
@@ -181,7 +181,8 @@ const inColumn = (p, key, columns, same) => key === 'other'
 export function observationMatch(prediction, obs, format = 'game0') {
   if (!obs) return true;
   if (obs.invalid) return false;
-  return (obs.damage == null || prediction.damage === obs.damage)
+  return (obs.damage == null || (Number.isInteger(obs.damage) && obs.damage >= 0
+    && Math.abs(prediction.damage - obs.damage) <= (prediction.damage > 50 ? 1 : 0)))
     && (obs.remainingPercent == null || percentDisplay(format)(prediction.remainingPercent) === obs.remainingPercent);
 }
 export function readOutgoingObservations(own, format = 'game0') {
@@ -219,7 +220,7 @@ export function observationDifference(row, obs, format = 'game0') {
   if (!predictions.length || !obs || obs.invalid) return '';
   if (predictions.some(p => observationMatch(p, obs, format))) return '';
   if (obs.damage != null) {
-    const damageMatches = predictions.filter(p => p.damage === obs.damage);
+    const damageMatches = predictions.filter(p => observationMatch(p, { damage: obs.damage }, format));
     if (damageMatches.length) return `伤害吻合，计算余血 ${range(damageMatches.map(p => percentDisplay(format)(p.remainingPercent)), format === 'round1' ? 1 : 0)}%`;
     const damages = [...new Set(predictions.map(p => p.damage))];
     const nearest = damages.reduce((a,b) => Math.abs(a-obs.damage) <= Math.abs(b-obs.damage) ? a : b);
@@ -697,10 +698,15 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const levels = result.targetLevels ?? [getSession().level];
     let candidates = new Set(levels.flatMap(level => catalog.natures.map(n => `${level}:${n.id}`))), used = 0;
     const evidence = [];
+    const axisGroups = Object.fromEntries(['hp','physicalDefense','magicalDefense','physicalAttack','magicalAttack'].map(key => [key, []]));
     const addEvidence = (row, obs, incoming) => {
       if (!obs) return;
-      if (obs.invalid) { evidence.push({ label: row?.skillName || (incoming ? '敌方出招' : '我方出招'), incoming, text:'输入格式有误', tone:'bad' }); return; }
-      if (row?.status !== 'estimated') { evidence.push({ label: row?.skillName || '未选技能', incoming, unavailable:true, text:shortReason(row?.reason), tone:'bad' }); return; }
+      const category = skills.get(row?.skillId)?.category;
+      const stat = category === 'physical' ? (incoming ? 'physicalAttack' : 'physicalDefense')
+        : category === 'magical' ? (incoming ? 'magicalAttack' : 'magicalDefense') : null;
+      const blockAxis = () => { if (stat) axisGroups[stat].push([]); };
+      if (obs.invalid) { blockAxis(); evidence.push({ label: row?.skillName || (incoming ? '敌方出招' : '我方出招'), incoming, text:'输入格式有误', tone:'bad' }); return; }
+      if (row?.status !== 'estimated') { blockAxis(); evidence.push({ label: row?.skillName || '未选技能', incoming, unavailable:true, text:shortReason(row?.reason), tone:'bad' }); return; }
       const hits = row.predictions.filter(p => observationMatch(p, obs, format));
       // Outgoing knockout observations do not distinguish the target's HP.
       // Incoming displayed damage remains an attack-stat observation even when
@@ -708,20 +714,32 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       if (!incoming && hits.length && hits.every(p => p.damage >= p.hpMax)) return;
       const ids = new Set(hits.map(caseId));
       candidates = new Set([...candidates].filter(id => ids.has(id))); used++;
+      // Damage measures defense independently of HP; paired raw readings measure
+      // HP through compareObservedHp. Percentage-only readings constrain both.
+      const statHits = obs.damage == null ? hits : row.predictions.filter(p => observationMatch(p, { damage: obs.damage }, format));
+      if (stat) axisGroups[stat].push(statHits.map(caseId));
+      if (!incoming && obs.damage == null && obs.remainingPercent != null) axisGroups.hp.push([...ids]);
       const values = [obs.damage == null ? '' : incoming && obs.unit === 'perHit' ? `单段 ${obs.inputDamage} × ${row.hitCount} = ${obs.damage}` : `${incoming ? '总伤' : '伤害'} ${obs.damage}`,
         obs.remainingPercent == null ? '' : `余 ${obs.remainingPercent}%`].filter(Boolean).join(' · ');
       evidence.push({ label: `${row.skillName} ${values}`, matched: hits.length > 0, incoming, ...(incoming ? axisEvidence(row, obs) : evidenceTag(row, OUT_COLUMNS, false, obs, format)) });
     };
     for (let i=0;i<4;i++) addEvidence(result.outgoing?.[i], observed[i], false);
     for (let k=0;k<INCOMING_SLOTS;k++) addEvidence(result.incomingList?.[k], incomingObserved[k], true);
+    if (hpComparison.status !== 'empty') {
+      const hpCases = hpComparison.matchedPredictions.map(caseId);
+      axisGroups.hp.push(hpCases);
+      candidates = new Set([...candidates].filter(id => hpCases.includes(id)));
+    }
+    const axesEvidence = Object.fromEntries(Object.entries(axisGroups).map(([key, groups]) => [key, intersectNatureCases(catalog.natures, levels, groups)]));
     const matching = catalog.natures.filter(n => levels.some(level => candidates.has(`${level}:${n.id}`)));
     const incomplete = evidence.some(e=>e.unavailable);
     const ready = !invalid && !incomplete && used > 0 && matching.length > 0;
     const summary = invalid ? '输入有误' : incomplete ? '有技能未计算' : !used ? '待实测' : !matching.length ? '模型未吻合' : `${matching.length} 个模型候选`;
-    const hpNatures = catalog.natures.filter(n=>hpComparison.matchedPredictions.some(p=>p.natureId===n.id));
     const axes = ['hp','physicalDefense','magicalDefense','physicalAttack','magicalAttack'].map(key => {
-      const hpIndependent = key === 'hp' && hpComparison.status === 'matched';
-      const value = hpIndependent ? natureAxisState(hpNatures,key) : ready ? natureAxisState(matching,key) : '—';
+      const ownEvidence = axesEvidence[key];
+      const hpIndependent = key === 'hp' && ownEvidence.used > 0;
+      const value = ownEvidence.conflict ? '记录冲突' : ready ? natureAxisState(matching,key)
+        : ownEvidence.used ? natureAxisState(ownEvidence.matching,key) : '—';
       return `<div class="nature-axis" data-stat="${key}"><span class="axis-name">${catalog.assets?.stats?.[key]?`<img src="${html(catalog.assets.stats[key])}" alt=""/>`:''}${statNames[key]}${hpIndependent?'<small>血量实测</small>':''}</span><b class="${value==='加'?'up':value==='减'?'down':value==='—'?'empty':''}">${value}</b></div>`;
     }).join('');
     const hpRanges = hpComparison.ranges.map(r=>r.max===null?`≥${r.min}`:r.min===r.max?`${r.min}`:`${r.min}–${r.max}`).join('／');
@@ -749,7 +767,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const levelRow=`<div class="verdict-level"><span>等级</span><b${levelMatched?' class="up-ok"':''}>${html(levelValue)}</b><em>${html(levelNote)}</em></div>`;
     $('preview-verdict').innerHTML = `<div class="rail-cap"><span>性格计算</span><span>${html(target?.name ?? '')}</span></div>${levelRow}<div class="verdict-big${invalid || (used && !matching.length) ? ' bad' : !used ? ' empty' : ''}">${summary}</div><p id="preview-comparison" class="verdict-note">${counts || '各招从满血出发，填写实际伤害与余血'}</p>${hpText}<div class="nature-axes">${axes}</div>${chips}${evidence.length?`<div class="evidence">${evidence.map(e=>`<div class="evidence-item"><i class="dot ${e.tone}"></i><div><span>${html(e.label)}</span><b class="${e.tone}">${html(e.text)}</b></div></div>`).join('')}</div>`:''}${coefficientEvidence(result, target)}`;
     $('preview-result-brief').textContent = ready && matching.length === 1 ? `${matching[0].name}（参考）` : summary;
-    currentPreview.uiVerdict = { matching, used, invalid, incomplete, hpComparison, evidence, candidates: [...candidates] };
+    currentPreview.uiVerdict = { matching, used, invalid, incomplete, hpComparison, evidence, axesEvidence, candidates: [...candidates] };
     return { matching, used, invalid };
   }
   function traitSummary(info, stateValue, skillTypes) {

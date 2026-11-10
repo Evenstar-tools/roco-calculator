@@ -299,6 +299,7 @@ body[data-workspace-mode="preview"] .calculator-layout { display:grid;grid-templ
 .flow-axis-line > span { color:#53695a; }.flow-axis-line b { font-weight:600; }
 .flow-axis-evidence { display:block;margin-top:5px;font-size:12px;line-height:1.5;color:#68786d; }
 .flow-axis-evidence b { font-size:12px;font-weight:500;color:#394f40; }
+.flow-axis-line b.conflict { color:#9c4b3a; }
 .flow-axis-evidence.bad { color:#9c4b3a; }
 .flow-axis-unresolved { display:flex;gap:10px;flex-wrap:wrap;padding:10px 0 2px;font-size:12px;line-height:1.6;color:#6a796e; }
 .flow-axis-unresolved b { font-weight:400; }
