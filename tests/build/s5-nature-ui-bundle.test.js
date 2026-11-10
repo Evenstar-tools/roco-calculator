@@ -24,7 +24,7 @@ async function output(startup) {
   return directory;
 }
 
-test("production tool loads one bundle and minifies compatibility modules without changing exports or sources", async () => {
+test("production tool publishes one UI and stylesheet while retaining calculation exports and sources", async () => {
   const sourceStartup = path.join(root, "public/tools/s5-nature/web-startup.mjs");
   const startup = await readFile(sourceStartup, "utf8");
   const sourceUi = path.join(root, "public/tools/s5-nature/ui.mjs");
@@ -62,9 +62,7 @@ test("production tool loads one bundle and minifies compatibility modules withou
     .toBe(startup.replace(/import\((['"])\.\/ui\.mjs\1\)/u, `import(${JSON.stringify(`./${bundleName}`)})`));
   expect(await readFile(sourceStartup, "utf8")).toBe(startup);
   expect(await readFile(sourceUi, "utf8")).toBe(ui);
-  const compressedLegacy = await readFile(path.join(toolDir, "ui.mjs"), "utf8");
-  expect(compressedLegacy.length).toBeLessThan(legacy.length);
-  expect((await import(`data:text/javascript,${encodeURIComponent(compressedLegacy)}`)).compatibilityValue).toBe(42);
+  await expect(readFile(path.join(toolDir, "ui.mjs"), "utf8")).rejects.toMatchObject({ code: "ENOENT" });
   for (const name of ["relations.js", "damage.mjs"]) {
     const compressed = await readFile(path.join(toolDir, "vendor", name), "utf8");
     expect(compressed.length).toBeLessThan(vendor.length);
@@ -84,7 +82,7 @@ test("production tool loads one bundle and minifies compatibility modules withou
     expect(await readFile(path.join(root, "public/tools/s5-nature", name), "utf8")).toBe(css);
     expect(await readdir(toolDir)).not.toContain(name);
   }
-  expect((await readdir(toolDir)).sort()).toEqual([bundleName, "assets", "data", "index.html", "ui.mjs", "vendor", "web-startup.mjs"].sort());
+  expect((await readdir(toolDir)).sort()).toEqual([bundleName, "assets", "data", "index.html", "vendor", "web-startup.mjs"].sort());
 });
 
 test("outputs without the CN tool are untouched", async () => {

@@ -18,7 +18,7 @@ async function minifyCompatibilityModules(toolDir) {
   }
 }
 
-/** Bundle the deployed CN tool while preserving its module paths, exports and startup gate. */
+/** Publish one active UI bundle while keeping calculation modules and the startup gate. */
 export async function buildS5NatureUi({ root, outDir }) {
   const toolDir = path.join(outDir, "tools/s5-nature");
   const startupFile = path.join(toolDir, "web-startup.mjs");
@@ -81,6 +81,12 @@ export async function buildS5NatureUi({ root, outDir }) {
     }
     await writeFile(htmlFile, bundledHtml, "utf8");
     for (const [, name] of styleTags) await unlink(path.join(toolDir, name));
+  }
+  // These entry/view modules are already in the bundle. Keep calculation modules
+  // available, but do not ship a second copy of the retired unbundled interface.
+  for (const name of ["ui.mjs", "player-flow.mjs", "matchup-ui.mjs", "picker.mjs"]) {
+    const file = path.join(toolDir, name);
+    if (existsSync(file)) await unlink(file);
   }
   await minifyCompatibilityModules(toolDir);
   await writeFile(startupFile, startup.replace(uiImport, () => `import(${JSON.stringify(`./${bundleName}`)})`), "utf8");
