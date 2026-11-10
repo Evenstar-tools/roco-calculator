@@ -770,6 +770,23 @@ export function applyConfiguration(
     }
   }
   if (snapshot) {
+    // The unchanged owner's current level belongs to both damage directions.
+    // Its saved single-skill entry restores only the outgoing copy after a
+    // matchup reset, so restore the incoming mirror from the live owner input.
+    const unchangedSide = side === "attacker" ? "defender" : "attacker";
+    if (supportsS5PreviewBattleLevel(snapshot, state.sides[unchangedSide])) {
+      const direction = unchangedSide === "attacker" ? "forward" : "reverse";
+      const owner = getSpirit(snapshot, state.sides[unchangedSide]);
+      const control = getTraitView(snapshot, owner, "attacker")?.inputs
+        .find(input => input.contextKey.endsWith("S5BattleLevel"));
+      if (control) {
+        const values = sanitizeTriggerContext(state.directions[direction].context,
+          [{ ...control, defaultValue: undefined }]);
+        if (Object.hasOwn(values, control.id)) nextState = updateMirroredTraitContext(nextState, {
+          direction, key: control.id, value: values[control.id],
+        }).state;
+      }
+    }
     nextState = applyMatchupTraitDefaults(nextState, snapshot);
   }
 
