@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 import { getTraitView } from "../../src/domain/calculator-view-model.js";
 import { createInitialState } from "../../src/state/defaults.js";
 import { calculatorReducer } from "../../src/state/reducer.js";
-import { updateMirroredTraitContext, migrateSharedConfiguration, selectSpirit } from "../../src/state/calculator-session.js";
+import { updateMirroredTraitContext, migrateSharedConfiguration, selectSpirit, selectFourSkill, selectSingleSkill, rememberSingleSkill } from "../../src/state/calculator-session.js";
 import { selectShareableInputs } from "../../src/state/share.js";
 import { buildBalanceComparison } from "../../src/features/balance-comparison/model.js";
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
@@ -77,6 +77,47 @@ test.each(["single", "four"])("%s冥古龙79级额外四成承伤只乘受击方
   expect(at79.calculation.forward.selectedResult.traitContributions?.some(entry => entry.values?.finalDamageMultiplier === 1.4)).not.toBe(true);
   expect(at79.calculation.reverse.selectedResult.totalDamage).toBeGreaterThan(at80.calculation.reverse.selectedResult.totalDamage);
 });
+
+test.each(["single", "four"].flatMap(mode => ["attacker", "defender"].flatMap(side =>
+  [["minggulong", 79], ["minggulong", 80], ["abu", 80], ["boss-abu", 80], ["super-abu", 80]]
+    .map(([key, level]) => [mode, side, key, level]))))(
+  "%s %s %s先设置%d级再换对方精灵和技能，承伤与反向操作一致",
+  (mode, side, key, level) => {
+    const ownerDirection = side === "attacker" ? "forward" : "reverse";
+    const incomingDirection = side === "attacker" ? "reverse" : "forward";
+    const opponent = side === "attacker" ? "defender" : "attacker";
+    let initial = fixture(key, mode);
+    if (side === "defender") initial = calculatorReducer(initial, { type: "sides/swap" });
+    const setLevel = state => rememberSingleSkill(set(state, side, "BattleLevel", level), {
+      direction: ownerDirection, side, snapshot,
+    }).state;
+    const selectOpponent = state => {
+      let selected = selectSpirit(state, { initialState: createInitialState(snapshot),
+        side: opponent, snapshot, spiritId: find("罗隐").id }).state;
+      selected = mode === "four"
+        ? selectFourSkill(selected, { side: opponent, index: 0, skillId: skill("冰爪").id, snapshot }).state
+        : selectSingleSkill(selected, { side: opponent, direction: incomingDirection,
+          skillId: skill("冰爪").id, snapshot }).state;
+      return selected;
+    };
+    const levelFirstState = selectOpponent(setLevel(initial));
+    const levelFirst = view(levelFirstState);
+    const opponentFirst = view(setLevel(selectOpponent(initial)));
+    expect(levelFirst.sides[side].combatLevel).toBe(level);
+    const incomingGains = levelFirst.calculation[incomingDirection].selectedResult.traitContributions
+      .filter(entry => entry.source.id === `trait_preview_s5_${key}`)
+      .map(entry => entry.values.finalDamageMultiplier);
+    expect(incomingGains).toEqual([level < 80 ? 1.4 : 1]);
+    expect(levelFirst.calculation[incomingDirection].selectedResult.totalDamage)
+      .toBe(opponentFirst.calculation[incomingDirection].selectedResult.totalDamage);
+    const replaced = selectSpirit(levelFirstState, { initialState: createInitialState(snapshot),
+      side, snapshot, spiritId: find("迪莫").id }).state;
+    expect(view(replaced).sides[side].combatLevel).toBe(60);
+    for (const direction of Object.values(replaced.directions)) {
+      expect(Object.keys(direction.context).some(contextKey => contextKey.includes("S5BattleLevel"))).toBe(false);
+    }
+  },
+);
 
 test("填写当前等级后清掉无效旧回合记录，镜像承伤恢复且不触碰其它方特性", () => {
   let state = fixture("minggulong");
