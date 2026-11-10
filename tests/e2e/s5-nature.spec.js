@@ -1452,7 +1452,7 @@ async function selectExchangeWhale(page) {
   await page.locator('#level-seg button').filter({hasText:/^43$/}).click();
 }
 
-test('Evil Exchange fifth row keeps an independent exact HP observation across profiles and refresh',async({page})=>{
+test('S5 nature Evil Exchange fifth row keeps an independent exact HP observation across profiles and refresh',async({page})=>{
   test.setTimeout(60000);
   await openTool(page);
   const toggle=page.getByRole('switch',{name:'恶念交换第五行'});
@@ -1528,7 +1528,7 @@ test('Evil Exchange fifth row keeps an independent exact HP observation across p
   await expect(resultAxis(page,'生命')).toHaveText('待测');
 });
 
-test('Evil Exchange fifth row remains usable on desktop and narrow mobile',async({page})=>{
+test('S5 nature Evil Exchange fifth row remains usable on desktop and narrow mobile',async({page})=>{
   test.setTimeout(60000);
   await selectExchangeWhale(page);
   await page.locator('#flow-exchange-healing').fill('257');
