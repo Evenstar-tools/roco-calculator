@@ -237,6 +237,22 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.21",
+    date: "2026.11.11",
+    seasonId: "S5",
+    title: "S5 恶念交换与奇遇设置区更新",
+    whatsNew: S5_FEATURE_INTRO,
+    features: [
+      "恶念交换新增独立第五行，可用绿色回血推断野怪生命性格。",
+      "野怪剩余血量比例支持齿轮编辑，默认破盾10%，可一键恢复。",
+    ],
+    fixes: [
+      "奇遇设置区重新整理，电脑并排查看双方出招，手机可切换测法与异色目标。",
+      "同步网页已修复的冥古龙等级承伤、骰子临场威力和当前形态双防计算。",
+      "保留桌面离线计算、旧档案与工具箱彩蛋入口；国际服S3季中沿用原版。",
+    ],
+  }),
+  createRelease({
     version: "v2.3.20",
     date: "2026.11.09",
     seasonId: "S5",
