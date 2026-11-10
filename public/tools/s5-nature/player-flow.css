@@ -103,6 +103,7 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
   .app-header h1 { font-size:15px; }
   .web-brand { gap:8px; }
   .web-back { font-size:12px; }
+  .web-back span { display:none; }
   #flow-sticky-hp { position:sticky; top:0; z-index:40; margin:0 -10px 10px; padding:6px 12px 10px; background:#fff; border-bottom:1px solid #d5dfdb; box-shadow:0 2px 6px #1a3b2e08; }
   #flow-mobile-dice { display:block; margin-left:6px; }
 
@@ -164,7 +165,6 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
 }
 @media(max-width:350px) {
   .app-header h1 { font-size:14px; }
-  .web-back span { display:none; }
   .flow-hp-caption { width:100%; }
 }
 /* v6: comparison grids, compact mobile editing and evidence hierarchy. */

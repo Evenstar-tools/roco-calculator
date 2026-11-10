@@ -564,7 +564,7 @@ export function mountPlayerFlow(options) {
   // 手机把“清空读数”放在顶栏，野怪区留给精灵、等级和生命。
   const topNext=Object.assign(document.createElement('button'),{type:'button',id:'flow-next-top',className:'flow-next flow-next-top',textContent:'清空读数',title:'清掉这只野怪的全部读数，野怪和我方配置保留'});
   topNext.onclick=nextTarget;
-  document.querySelector('.app-header')?.append(topNext);
+  document.querySelector('.app-header')?.insertBefore(topNext,$('open-manual'));
   for(const b of document.querySelectorAll('[data-flow-tab]')) b.onclick=()=>setTab(b.dataset.flowTab);
   for(const b of document.querySelectorAll('[data-flow-skill]')) b.onclick=()=>{layout.skill=Number(b.dataset.flowSkill);saveLayout();render();};
   $('flow-goal').value=layout.goal;
