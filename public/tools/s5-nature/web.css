@@ -1,5 +1,5 @@
 .web-brand { display:flex; align-items:center; gap:18px; min-width:0; }
-.web-back { display:inline-flex; align-items:center; gap:4px; color:#ebd39e; font-size:13px; text-decoration:none; white-space:nowrap; }
+.web-back { display:inline-flex; align-items:center; min-height:34px; gap:4px; color:#ebd39e; font-size:13px; text-decoration:none; white-space:nowrap; }
 .web-back:hover { color:#fff; }
 .web-back:focus-visible { outline:2px solid #ebd39e; outline-offset:4px; border-radius:3px; }
 .app-header h1 { white-space:nowrap; }

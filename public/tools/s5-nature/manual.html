@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>使用说明书 · S5奇遇性格计算</title>
+  <style>
+    * { box-sizing:border-box; }
+    html { scroll-padding-top:20px; }
+    body { margin:0; color:#243b33; background:#f0f3f1; font-family:system-ui,"Microsoft YaHei",sans-serif; }
+    header { border-top:2px solid #d6ad65; background:#153b35; color:#fff; }
+    header > div { max-width:832px; margin:auto; padding:13px 28px; display:flex; align-items:center; justify-content:space-between; gap:16px; font-size:14px; }
+    header a { color:#f0d99f; text-decoration:none; padding:5px 0; }
+    main { max-width:832px; margin:24px auto; padding:36px 40px; background:#fff; border:1px solid #dbe3df; border-radius:10px; }
+    article { font-size:16px; line-height:1.85; overflow-wrap:anywhere; }
+    h1 { margin:0 0 12px; font-size:30px; line-height:1.4; color:#153b35; }
+    h2 { margin:0 0 14px; font-size:21px; line-height:1.5; color:#153b35; }
+    p { margin:12px 0; }
+    a { color:#236447; text-underline-offset:3px; }
+    a:focus-visible { outline:2px solid #ad771c; outline-offset:4px; border-radius:2px; }
+    nav { display:flex; flex-wrap:wrap; gap:8px 20px; margin:24px 0 0; padding:18px 0; border-top:1px solid #dbe3df; border-bottom:1px solid #dbe3df; }
+    section { margin-top:32px; }
+    ol,ul { margin:12px 0; padding-left:1.6em; }
+    li { padding-left:3px; margin:10px 0; }
+    strong,dt { font-weight:650; color:#203d30; }
+    .note { padding-left:15px; border-left:3px solid #d6ad65; }
+    dt { margin-top:16px; }
+    dd { margin:4px 0 0; }
+    footer { margin-top:32px; padding-top:18px; border-top:1px solid #dbe3df; font-size:14px; color:#52685e; }
+    @media(max-width:600px) {
+      header > div { padding:10px 16px; font-size:13px; }
+      main { margin:0; padding:26px 20px; border:0; border-radius:0; }
+      h1 { font-size:26px; }
+      h2 { font-size:20px; }
+      nav { gap:8px 18px; }
+    }
+    @media print {
+      body { background:#fff; }
+      header,nav { display:none; }
+      main { max-width:none; margin:0; padding:0; border:0; }
+      section { break-inside:avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header><div><a id="manual-return" href="./index.html">← 返回性格计算</a><span>S5奇遇性格计算</span></div></header>
+  <main>
+    <article>
+      <h1>使用说明书</h1>
+      <p>用奇遇战斗中的伤害、剩余血量或回血数字，判断野怪的生命、双防和双攻性格。各条读数必须来自同一只野怪；遇到下一只，先点「清空读数」。</p>
+      <nav aria-label="说明书目录">
+        <a href="#start">首次测算</a><a href="#outgoing">我打它</a><a href="#incoming">它打我</a><a href="#hp">血量</a><a href="#exchange">恶念交换</a><a href="#conditions">骰子与条件</a><a href="#saving">保存与清空</a><a href="#troubleshooting">结果与排错</a>
+      </nav>
+
+      <section id="start">
+        <h2>第一次测算，按这五步</h2>
+        <ol>
+          <li><strong>选野怪。</strong>按游戏显示选择种类、41／42／43 级，核对「异色」。不知道等级时可选「41–43级全部」，表中显示三个等级合并后的范围。</li>
+          <li><strong>配我方。</strong>选择出战精灵，填实际等级、星级、性格和个体。个体图标可逐项切换 0／60；其他数值在「⋯ → 详细面板 / 个体数值」里填写。手机点我方摘要右侧的「改」展开。</li>
+          <li><strong>核对条件。</strong>设置双方骰子和我方特性层数；没有骰子就保持「无」。核对完，可把「未核对」点成「已核对」。手机的野怪骰子在「条件」里。</li>
+          <li><strong>填一次实测。</strong>在「我打它」选一招，从野怪满血、满盾开始打一发，把「伤害」和「剩余 %」填在同一行。输入后稍等片刻，或按回车。</li>
+          <li><strong>看结论。</strong>对应属性会出现「加」「减」或「不变」。若显示「剩 N 种」，补测尚待区分的属性；只剩一种时显示性格名。手机可点底部「看结果」。</li>
+        </ol>
+        <p class="note">只填一招，通常只能确定部分属性。点击表内的数字只是做标记；真正参与判断的是你填入的实测读数。</p>
+      </section>
+
+      <section id="outgoing">
+        <h2>我打它：测生命、物防和魔防</h2>
+        <p><strong>四个技能各测一次独立的满血单发。</strong>每次都让同一只野怪恢复满血、满盾，再测下一招。连续攻击后的余血不能分别填进四行。</p>
+        <ul>
+          <li>物理招区分物防，魔法招区分魔防。同一招的伤害与剩余百分比一起填，还能判断生命档位；只有一种读数时，可以先填已有的。</li>
+          <li>表内三列是对应防御的减少、不变、增加。每格下面的生命 ↓／＝／↑，是三种生命性格下的余血百分比。<strong>伤害相同，生命性格可能不同。</strong></li>
+          <li>多段招填整招总伤害，并在「⚙ 条件」核对「命中次数」。优先记录非暴击，避开额外扣血、回血及中途变化的增益。</li>
+          <li>手机点技能名切换四个技能槽，点「换招」搜索技能。</li>
+        </ul>
+        <p>出现「一击倒，不能判断」或「余血 0%，不能判断」，换威力更低的招再测。</p>
+      </section>
+
+      <section id="incoming">
+        <h2>它打我：测物攻和魔攻</h2>
+        <ol>
+          <li>核对我方精灵、面板、骰子和特性，与受击时保持一致。</li>
+          <li>选野怪实际使用的技能，填写非暴击的<strong>完整伤害跳字</strong>；两行可记录两种技能。一击倒时也填完整跳字，不填倒下前剩余 HP；读不到完整伤害时，换一条记录。</li>
+          <li>多段招默认「录入总伤」。记录的是每段相同的跳字时，才改为「录入单段」，并核对命中次数。</li>
+        </ol>
+        <p>吻合的攻击档位会变绿，结论给出物攻或魔攻判断。毒伤、反伤和特性扣血要与这次技能伤害分开。</p>
+      </section>
+
+      <section id="hp">
+        <h2>血量和剩余百分比怎么读</h2>
+        <p>野怪上方「血量」的生命 ↓／＝／↑，依次是减生命、生命不变、加生命时的<strong>完整奇遇血量</strong>。打开「异色」，三档血量与下方剩余百分比一起变化；没有异色形态的精灵不显示该开关。</p>
+        <p>「读到 HP」填已确认的完整奇遇总血量。抓到后的属性面板、当前剩余血量、恶念交换的绿色回血，各有自己的含义，不能直接填进这个框。没有完整总量，就留空，用伤害与剩余百分比测算。</p>
+      </section>
+
+      <section id="exchange">
+        <h2>恶念交换：单独测生命</h2>
+        <p>选「龙息帕尔」会自动打开第五行「恶念交换」，原来的四个技能槽保留。也可手动打开开关，切换我方配置后继续使用。</p>
+        <ol>
+          <li>让龙息帕尔处于<strong>满血</strong>。</li>
+          <li>野怪刚破盾、处于 10% 血量时使用恶念交换；期间没有额外扣血、回血或生命上限变化。</li>
+          <li>把<strong>野怪身上的绿色回血数字</strong>填入「野怪回血」。</li>
+        </ol>
+        <p>默认条件标为「破盾10%」。这一行显示减生命、生命不变或加生命，结论的生命项同步变化；双攻、双防仍由其他招式区分。</p>
+        <p class="note">例：43 级深蓝鲸，默认破盾10%时，三档回血为 214／235／257。实测 257，判断为加生命。这里按破盾后的本体生命计算，普通和异色的回血相同。</p>
+        <p>已知精确余血比例，可点第五行「⚙」，编辑「野怪剩余血量 %」，最多两位小数；「恢复默认」回到 10%。游戏血条的整数百分比经过取整，不能直接当作精确比例。</p>
+        <p>关闭开关会暂停这条证据；再打开，恢复原读数和条件。野怪满血或生命上限变化时，按行内提示重新取数。</p>
+      </section>
+
+      <section id="conditions">
+        <h2>骰子、特性和技能条件</h2>
+        <ul>
+          <li><strong>骰子分双方设置。</strong>打开开关，可选「双攻 ×1.1」「威力 +40」、下拉中的效果，或「自填」合计加成。倍率 1.25 表示临场加成 25%。「已核对」只是标记，加成取决于实际所选效果。</li>
+          <li><strong>特性按出招时填写。</strong>例如迪莫触发「最好的伙伴」后，后续招式按触发后的层数计算。野怪特性栏展示名称与说明。</li>
+          <li><strong>条件与游戏显示核对。</strong>普通技能的「⚙ 条件」可填显示威力、命中次数、威力倍率。手填游戏显示威力后，已包含的骰子或增益不要再乘一次。该招会标「手填」，点「恢复自动」可清掉手填条件。</li>
+          <li><strong>手动面板需要保存。</strong>在「⋯ → 详细面板 / 个体数值」填写后，点「保存手动面板」。同时核对骰子，避免重复计入同一加成。</li>
+        </ul>
+      </section>
+
+      <section id="saving">
+        <h2>配置保存、切换和清空</h2>
+        <p>配置与读数自动保存在当前浏览器或桌面程序，刷新、看说明书后返回都可继续。换设备、换浏览器或清除本地数据，记录不会自动同步。</p>
+        <p>我方「⋯」里可另存为新配置、改名或删除配置。另存会复制出战设置，新配置从空白读数开始；配置下拉可切换各自对当前野怪的攻击、受击记录。准备另一套打法时，先另存，再修改。载入推荐预设后，仍要核对自己的面板和配招。</p>
+        <dl>
+          <dt>「我打它 → 清空」</dt>
+          <dd>清当前配置的出招读数、标记和恶念交换回血。保留「读到 HP」、恶念比例、配置与骰子。</dd>
+          <dt>「它打我 → 清空」</dt>
+          <dd>只清当前配置的受击读数和标记，保留其他记录。</dd>
+          <dt>「清空读数」</dt>
+          <dd>清这只野怪在所有配置下的读数、标记、完整 HP 和恶念回血；<strong>野怪骰子重置为无</strong>，恶念比例回到 10%。保留所选精灵、等级、异色、我方配置与我方骰子。</dd>
+        </dl>
+        <p>换野怪种类会清旧野怪读数。遇到同种类的下一只，也要点「清空读数」，重新核对野怪骰子。只改等级或异色会重算现有读数，不能代替清空。</p>
+      </section>
+
+      <section id="troubleshooting">
+        <h2>看懂结果，处理对不上的读数</h2>
+        <dl>
+          <dt>待实测</dt><dd>还没有可用于判断的读数，先完成一次测算。</dd>
+          <dt>剩 N 种</dt><dd>还有多种完整性格符合。看哪些属性待区分，再补对应的物理招、魔法招或受击记录。</dd>
+          <dt>已判断 N 项</dt><dd>部分属性已有结论，继续检查其余读数。</dd>
+          <dt>输入有误、记录冲突、读数对不上</dt><dd>看技能旁提示及「读数明细」。依次核对野怪等级与异色、双方骰子、我方面板和特性、技能条件，再检查是否满血单发、是否混入暴击或额外扣血。修正条件会保留读数并重新计算。</dd>
+          <dt>有读数未计算</dt><dd>按对应行提示补齐条件或更正输入，再查看结论。</dd>
+        </dl>
+        <p>「目标」及性格表的点选只用来关注想抓的性格，不改变计算。「还在候选」表示仍有可能；「已排除」表示当前读数不支持。</p>
+      </section>
+      <footer>适用：国服 S5 网页 v2.3.17 · 更新于 2026-11-11<br /><a href="./index.html">返回性格计算，继续已有记录 →</a></footer>
+    </article>
+  </main>
+</body>
+</html>

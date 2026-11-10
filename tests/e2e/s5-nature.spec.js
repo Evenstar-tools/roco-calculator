@@ -1452,7 +1452,7 @@ async function selectExchangeWhale(page) {
   await page.locator('#level-seg button').filter({hasText:/^43$/}).click();
 }
 
-test('Evil Exchange fifth row keeps an independent exact HP observation across profiles and refresh',async({page})=>{
+test('S5 nature Evil Exchange fifth row keeps an independent exact HP observation across profiles and refresh',async({page})=>{
   test.setTimeout(60000);
   await openTool(page);
   const toggle=page.getByRole('switch',{name:'恶念交换第五行'});
@@ -1528,7 +1528,7 @@ test('Evil Exchange fifth row keeps an independent exact HP observation across p
   await expect(resultAxis(page,'生命')).toHaveText('待测');
 });
 
-test('Evil Exchange fifth row remains usable on desktop and narrow mobile',async({page})=>{
+test('S5 nature Evil Exchange fifth row remains usable on desktop and narrow mobile',async({page})=>{
   test.setTimeout(60000);
   await selectExchangeWhale(page);
   await page.locator('#flow-exchange-healing').fill('257');
@@ -1551,5 +1551,39 @@ test('Evil Exchange fifth row remains usable on desktop and narrow mobile',async
     expect(box.x>=0 && box.x+box.width<=width && box.y>=0 && box.y+box.height<=height).toBe(true);
     await page.screenshot({path:`artifacts/s5-player-flow/screenshots/s5-evil-exchange-conditions-${width}.png`});
     await page.keyboard.press('Escape');
+  }
+});
+
+test('S5 nature text manual stays reachable and returns to saved readings on desktop and mobile',async({page})=>{
+  test.setTimeout(60000);
+  await selectExchangeWhale(page);
+  await page.locator('#flow-exchange-healing').fill('257');
+  await expect(resultAxis(page,'生命')).toHaveText('加');
+  for(const [width,height] of [[1440,1000],[390,844],[320,740]]) {
+    await page.setViewportSize({width,height});
+    await page.evaluate(()=>scrollTo(0,0));
+    const entry=page.getByRole('link',{name:'说明书',exact:true});
+    await expect(entry).toBeVisible();
+    const entryBox=await entry.boundingBox();
+    expect(entryBox.x>=0&&entryBox.x+entryBox.width<=width).toBe(true);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    await page.screenshot({path:`artifacts/s5-player-flow/screenshots/s5-manual-entry-${width}.png`});
+    await entry.click();
+    await expect(page).toHaveURL(/\/tools\/s5-nature\/manual\.html$/);
+    await expect(page.getByRole('heading',{level:1,name:'使用说明书'})).toBeVisible();
+    await expect(page.locator('article img')).toHaveCount(0);
+    await expect(page.locator('#exchange')).toContainText('破盾10%');
+    await expect(page.locator('#saving')).toContainText('野怪骰子');
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    expect(await page.locator('article').evaluate(el=>parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(15);
+    await page.screenshot({path:`artifacts/s5-player-flow/screenshots/s5-manual-${width}.png`});
+    if(width===320) {
+      await page.locator('#troubleshooting').scrollIntoViewIfNeeded();
+      await page.screenshot({path:'artifacts/s5-player-flow/screenshots/s5-manual-troubleshooting-320.png'});
+    }
+    await page.locator('#manual-return').click();
+    await expect(page.locator('#flow-result')).toBeVisible();
+    await expect(page.locator('#flow-exchange-healing')).toHaveValue('257');
+    await expect(resultAxis(page,'生命')).toHaveText('加');
   }
 });
