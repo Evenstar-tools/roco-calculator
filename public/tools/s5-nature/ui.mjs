@@ -1,3 +1,4 @@
+import { mountPlayerFlow } from "./player-flow.mjs";
 import { restoreS5RuntimeRelations } from "./vendor/s5-runtime-relations.js";
 import { loadToolData } from "./load-data.mjs";
 import { createMatchupUi, normalizeDiceSettings, validatePreviewSettings } from "./matchup-ui.mjs";
@@ -67,6 +68,7 @@ let targetFilter = "all";
 let targetSearchText = new Map();
 let workspaceMode = "preview";
 let matchupUi;
+let playerFlow;
 let diceCatalog = { dice: [] };
 let traitCatalog = { traits: {} };
 let presetLibrary = { entries: [] };
@@ -838,6 +840,7 @@ function render(message) {
   renderRecords();
   renderResults();
   matchupUi?.render();
+  playerFlow?.render();
   if (diceCleanup.changed) persist();
   if (diceCleanup.removed.length) notice(`已取消未参与计算的骰子：${diceCleanup.removed.join('、')}。请核对当前骰子配置。`, true);
   else if (message !== undefined) notice(message);
@@ -964,7 +967,7 @@ function attachEvents() {
     $("target-species").dispatchEvent(new Event("change"));
   });
   $("swap-direction").addEventListener("click", () => {
-    if (workspaceMode === "preview") $("preview-incoming").scrollIntoView({ behavior: "smooth", block: "center" });
+    if (workspaceMode === "preview") playerFlow?.toggleDirection();
     else setDirection(direction === "incoming" ? "outgoing" : "incoming");
   });
   for (const [id, value] of [
@@ -1011,7 +1014,7 @@ function attachEvents() {
     renderProfiles();
     clearEditor();
     render();
-    notice("已载入预设，可撤销。");
+    notice("已载入预设。");
   });
   for (const key of Object.keys(STATS))
     $(`panel-${key}`).addEventListener("input", () => {
@@ -1034,7 +1037,7 @@ function attachEvents() {
     render();
     notice(
       hadRecords
-        ? "已换我方精灵，本场旧记录已清空，可撤销；另一个档案保留。"
+        ? "已换我方精灵，本场旧记录已清空；另一个档案保留。"
         : "",
     );
   });
@@ -1060,7 +1063,7 @@ function attachEvents() {
     persist();
     clearEditor();
     render();
-    notice(id !== chosenId ? `已按初始形态选择 ${spiritMap.get(id).name}，本场实测已清空，可撤销。` : "");
+    notice(id !== chosenId ? `已按初始形态选择 ${spiritMap.get(id).name}，本场实测已清空。` : "");
   });
   $("profile-tabs").addEventListener("click", (event) => {
     const button = event.target.closest("[data-profile]");
@@ -1262,17 +1265,16 @@ function attachEvents() {
     if (level === session.level) return;
     remember();
     session.level = level;
-    session.observations = [];
     persist();
     clearEditor();
     render();
-    notice("已换野怪等级，本场实测已清空，可撤销。");
   });
   $("new-target").addEventListener("click", () => {
     remember();
     session.wildStatFormId = "";
     session.observations = [];
     session.preview = {};
+    if(session.playerFlow) { session.playerFlow.hp="";session.playerFlow.checked.target=false; }
     for (const profile of session.profiles) if (profile.preview) profile.preview.observed = {};
     persist();
     clearEditor();
@@ -1445,6 +1447,10 @@ try {
     },
     render,
   };
+  playerFlow=mountPlayerFlow({ui:window.pveNatureUi,catalog,
+    commit:mutation=>{remember();mutation(session);render();persist();},
+    saveState:(value,shouldPersist=true)=>{if(JSON.stringify(session.playerFlow)!==JSON.stringify(value)){session.playerFlow=value;if(shouldPersist)persist();}},
+  });
 } catch (error) {
   $("app").innerHTML =
     `<section class="load-failure"><h2>页面未能加载</h2><p>${escapeHtml(error.message)}</p><p><a href="./index.html">重新加载</a> · <a href="/">返回国服计算器</a></p></section>`;

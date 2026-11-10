@@ -307,12 +307,12 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     if (!object(own.trait)) own.trait = { stacks: 0, active: false };
     const traitInfo = ownTraitInfo(spirits.get(profile.spiritId));
     if (traitControls(traitInfo).stack) own.trait.stacks = limitTraitStacks(own.trait.stacks, traitInfo);
-    if (own.observedTargetId !== session.targetId || own.observedLevel !== session.level) {
+    if (own.observedTargetId !== session.targetId) {
       own.observed = {};
       own.picked = {};
       own.observedTargetId = session.targetId;
-      own.observedLevel = session.level;
     }
+    own.observedLevel = session.level;
     if (!object(session.preview)) session.preview = {};
     const encounter = session.preview;
     if (encounter.targetId !== session.targetId) {
@@ -321,11 +321,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
         incomingOverridesList:Array.from({length:INCOMING_SLOTS},()=>({})),incomingDamages:Array(INCOMING_SLOTS).fill(null),incomingDamageUnits:Array(INCOMING_SLOTS).fill('total'),incomingPicks:Array(INCOMING_SLOTS).fill(null),shiny:false,diceId:'none',diceEffects:{}});
       for (const item of session.profiles) if(object(item.preview)) { item.preview.observed={}; item.preview.picked={}; }
     }
-    if (encounter.level !== session.level) {
-      encounter.level = session.level;
-      encounter.incomingDamages = Array(INCOMING_SLOTS).fill(null);
-      encounter.incomingPicks = Array(INCOMING_SLOTS).fill(null);
-    }
+    if (encounter.level !== session.level) encounter.level = session.level;
     if (!Array.isArray(encounter.incomingSkillIds)) {
       // 旧记录只有一个敌方技能。
       encounter.incomingSkillIds = [encounter.incomingSkillId ?? '', ''];
@@ -556,7 +552,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     return axisGroups(row).map(({key,label,group,condition,items}) => {
       const mark = obs && !obs.invalid ? (items.some(p => observationMatch(p, obs)) ? ' hit' : ' miss') : '';
       const on = picked === `${group}:${condition}`;
-      return `<div class="pcell paxis paxis--${key}${mark}${on?' picked':''}" data-nature-group="${group}" data-nature-condition="${condition}" role="button" tabindex="0" aria-pressed="${on}"><strong class="dmg">${range(items.map(p=>p.damage))}</strong>${hitFormula(row,items)}<span class="axis-label">${label}</span></div>`;
+      return `<div class="pcell paxis paxis--${key}${mark}${on?' picked':''}" data-nature-group="${group}" data-nature-condition="${condition}" role="button" tabindex="0" aria-pressed="${on}"><strong class="dmg">${range(items.map(p=>p.damage)).replace('–','–<wbr>')}</strong>${hitFormula(row,items)}<span class="axis-label">${label}</span></div>`;
     }).join('');
   }
   function axisEvidence(row, obs) {
@@ -568,9 +564,56 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   function hitFormula(row, predictions) {
     return row.hitCount > 1 ? `<span class="hit-formula">${range(predictions.map(p=>p.damage/row.hitCount))} × ${row.hitCount} 段</span>` : '';
   }
+  function hpStateIcon(hp) {
+    const symbol = { down:'↓', neutral:'＝', up:'↑' }[hp.key];
+    return `<span class="hp-state-label" data-hp-state="${hp.key}" title="${hp.label}" aria-label="${hp.label}"><img src="./assets/hp-outline.svg" alt=""/><span aria-hidden="true">${symbol}</span></span>`;
+  }
+
+  function defenseCellsMarkup(row, obs, format, pickedKey) {
+    const skill = skills.get(row.skillId);
+    const stat = skill?.category === 'physical' ? 'physicalDefense' : 'magicalDefense';
+    const name = statNames[stat];
+    const allHits = obs ? row.predictions.filter(p => observationMatch(p, obs, format)) : [];
+    if (allHits.length && allHits.every(p => p.damage >= p.hpMax)) obs = null;
+    const groups = [
+      { key: 'down', group: stat, condition: 'down', label: `减${name}`, matches: p => p.downStat === stat },
+      { key: 'neutral', group: 'other', condition: 'base', label: `${name}不变`, matches: p => p.upStat !== stat && p.downStat !== stat },
+      { key: 'up', group: stat, condition: 'base', label: `加${name}`, matches: p => p.upStat === stat },
+    ];
+    const hpGroups = [
+      { key: 'down', label: '生命↓', matches: p => p.downStat === 'hp' },
+      { key: 'neutral', label: '生命不变', matches: p => p.upStat !== 'hp' && p.downStat !== 'hp' },
+      { key: 'up', label: '生命↑', matches: p => p.upStat === 'hp' },
+    ];
+    const display = percentDisplay(format), digits = format === 'round1' ? 1 : 0;
+    const mobileLabels = `<div class="mobile-measure-labels" aria-hidden="true"><span>伤害</span><div>${hpGroups.map(hp => `<span>${hpStateIcon(hp)}</span>`).join('')}</div></div>`;
+    return mobileLabels + groups.map(group => {
+      const entries = row.predictions.filter(group.matches);
+      const matching = obs && entries.some(p => observationMatch(p, obs, format));
+      const mark = obs ? matching ? ' hit' : ' miss' : '';
+      const picked = pickedKey === `${group.group}:${group.condition}`;
+      const readings = hpGroups.map(hp => {
+        const values = entries.filter(hp.matches);
+        const hit = obs?.remainingPercent != null && values.some(p => observationMatch(p, obs, format));
+        return `<span class="hp-reading${!values.length ? ' impossible' : ''}${hit ? ' matches' : ''}" data-hp-nature="${hp.key}" title="${hp.label}${values.length ? '时的剩余血量' : '：没有这种性格组合'}">${hpStateIcon(hp)}<b>${values.length ? `${range(values.map(p => display(p.remainingPercent)), digits)}%` : '—'}</b></span>`;
+      }).join('');
+      return `<div class="pcell-stack"><div class="pcell defense-pcell${mark}${picked ? ' picked' : ''}" data-nature-group="${group.group}" data-nature-condition="${group.condition}" data-defense-stat="${stat}" data-defense-band="${group.key}" role="button" tabindex="0" aria-pressed="${picked}"><span class="pcell-label">${group.label}</span><strong class="dmg">${range(entries.map(p => p.damage)).replace('–', '–<wbr>')}</strong>${hitFormula(row, entries)}<div class="hp-readings">${readings}</div></div></div>`;
+    }).join('');
+  }
+
+  function defenseEvidenceTag(row, obs, format) {
+    const matched = row.predictions.filter(p => observationMatch(p, obs, format));
+    if (!matched.length) return { text: observationDifference(row, obs, format), tone: 'bad' };
+    const skill = skills.get(row.skillId);
+    const stat = skill?.category === 'physical' ? 'physicalDefense' : 'magicalDefense';
+    const effects = new Set(matched.map(p => p.upStat === stat ? '提高' : p.downStat === stat ? '降低' : '不变'));
+    return { text: effects.size === 1 ? `吻合：${statNames[stat]}${[...effects][0]}` : `${statNames[stat]}仍有 ${effects.size} 档吻合`, tone: 'good' };
+  }
+
   function cellsMarkup(row, columns, incoming, obs, format, pickedKey) {
     if(!row) return `<div class="pcell-note">选择技能</div>`;
     if(row.status!=='estimated' || !row.predictions?.length) return `<div class="pcell-note">${html(shortReason(row.reason))}</div>`;
+    if (!incoming) return defenseCellsMarkup(row, obs, format, pickedKey);
     const skill = skills.get(row.skillId), same = sameAsOtherColumn(skill, incoming);
     if (!incoming && pickedKey?.split(':')[0] === 'other') pickedKey = pickedKey.replace('other', same);
     const hits = obs ? row.predictions.filter(p => observationMatch(p, obs, format)) : [];
@@ -600,6 +643,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     }).join('');
   }
   function evidenceTag(row, columns, incoming, obs, format) {
+    if (!incoming) return defenseEvidenceTag(row, obs, format);
     const skill = skills.get(row.skillId), same = sameAsOtherColumn(skill, incoming);
     const hits = [];
     for (const [key,label] of columns) {
@@ -705,6 +749,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const levelRow=`<div class="verdict-level"><span>等级</span><b${levelMatched?' class="up-ok"':''}>${html(levelValue)}</b><em>${html(levelNote)}</em></div>`;
     $('preview-verdict').innerHTML = `<div class="rail-cap"><span>性格计算</span><span>${html(target?.name ?? '')}</span></div>${levelRow}<div class="verdict-big${invalid || (used && !matching.length) ? ' bad' : !used ? ' empty' : ''}">${summary}</div><p id="preview-comparison" class="verdict-note">${counts || '各招从满血出发，填写实际伤害与余血'}</p>${hpText}<div class="nature-axes">${axes}</div>${chips}${evidence.length?`<div class="evidence">${evidence.map(e=>`<div class="evidence-item"><i class="dot ${e.tone}"></i><div><span>${html(e.label)}</span><b class="${e.tone}">${html(e.text)}</b></div></div>`).join('')}</div>`:''}${coefficientEvidence(result, target)}`;
     $('preview-result-brief').textContent = ready && matching.length === 1 ? `${matching[0].name}（参考）` : summary;
+    currentPreview.uiVerdict = { matching, used, invalid, incomplete, hpComparison, evidence, candidates: [...candidates] };
     return { matching, used, invalid };
   }
   function traitSummary(info, stateValue, skillTypes) {

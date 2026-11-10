@@ -55,7 +55,7 @@ test('S5 HTML defers all tool CSS and the UI module until the worker gate finish
   expect(html).not.toMatch(/<script[^>]+src=["']\.\/ui\.mjs/);
   expect(html).toContain("await import('./web-startup.mjs?sw-policy=3')");
   expect(html).toContain('await startTool()');
-  expect(html.match(/data-tool-style=/g)).toHaveLength(4);
+  expect(html.match(/data-tool-style=/g)).toHaveLength(5);
   expect(html).not.toMatch(/<link\b[^>]*rel="stylesheet"[^>]*\shref=/);
   expect(html).toContain('style="visibility: hidden"');
   expect(html).toContain('加载失败，请刷新重试。');
