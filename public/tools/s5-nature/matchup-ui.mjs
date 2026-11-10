@@ -917,7 +917,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     $('own-dice-panel-included').closest('.dice-panel-source').hidden=!anyDice;
     $('own-dice-panel-included').checked=own.panelIncludesDice===true;
     $('own-dice-panel-included').disabled=!includedAllowed;
-    $('own-dice-panel-note').textContent='显示面板已包含双方骰子属性，如需手填面板需清除骰子';
+    $('own-dice-panel-note').textContent='技能面板已包含双方骰子属性，如需手填面板需清除骰子';
     $('preview-percent-format').value=format;
     $('target-shiny-control').hidden=target?.hasShinyForm !== true;
     $('target-shiny').disabled=target?.hasShinyForm !== true;

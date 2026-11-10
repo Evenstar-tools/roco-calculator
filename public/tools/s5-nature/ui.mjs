@@ -1342,7 +1342,7 @@ function attachEvents() {
     session.wildStatFormId = "";
     session.observations = [];
     session.preview = {};
-    if(session.playerFlow) { session.playerFlow.hp="";session.playerFlow.checked.target=false; }
+    if(session.playerFlow) { session.playerFlow.hp="";if(session.playerFlow.exchange){session.playerFlow.exchange.healing="";session.playerFlow.exchange.percent=10;}session.playerFlow.checked.target=false; }
     for (const profile of session.profiles) if (profile.preview) profile.preview.observed = {};
     persist();
     clearEditor();

@@ -1,4 +1,5 @@
 import { intersectNatureCases, compareObservedHp } from './measurement-comparison.mjs';
+import { compareEvilExchange, evilExchangeHealing } from './evil-exchange.mjs';
 import { observationMatch, observationDifference, readOutgoingObservations, readIncomingObservation } from './matchup-ui.mjs';
 
 // 方案 A · 对照表速查：野怪一行、出战一行；桌面两种测法同页，每招读数旁直接给结论；
@@ -7,17 +8,22 @@ const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const names = {hp:'生命',physicalAttack:'物攻',magicalAttack:'魔攻',physicalDefense:'物防',magicalDefense:'魔防',speed:'速度'};
 const STAT_ORDER = ['hp','physicalAttack','magicalAttack','physicalDefense','magicalDefense','speed'];
+const PAR_ID = 'spirit_684f5cd1fec1df27';
 const AXES = ['hp','physicalDefense','magicalDefense','physicalAttack','magicalAttack'];
 const WORD = {up:'加',down:'减',neutral:'不变'};
 let ui, catalog, layout, commit, saveState;
 function saveLayout(persist = true) { saveState(structuredClone(layout), persist); }
-export function normalizePlayerFlow(value, targetId, catalog) {
+export function normalizePlayerFlow(value, targetId, catalog, ownSpiritId) {
   const saved = value && typeof value === 'object' ? value : {};
   const goal = typeof saved.goal === 'string' && (catalog.natures.some(n=>n.id===saved.goal) || Object.keys(names).filter(key=>key!=='speed').some(key=>saved.goal===`stat:${key}`)) ? saved.goal : '';
   return {tab:saved.tab==='incoming'?'incoming':'outgoing',goal,roster:saved.roster!==false,
     rosterScrollTop:Number.isFinite(saved.rosterScrollTop)&&saved.rosterScrollTop>=0?saved.rosterScrollTop:0,
     skill:Number.isInteger(saved.skill)&&saved.skill>=0&&saved.skill<4?saved.skill:0,
     hp:['string','number'].includes(typeof saved.hp)&&Number.isSafeInteger(Number(saved.hp))&&Number(saved.hp)>0?String(Number(saved.hp)):'',
+    exchange:{enabled:saved.exchange?.enabled===true || (ownSpiritId===PAR_ID && saved.exchange?.ownSpiritId!==ownSpiritId),
+      healing:['string','number'].includes(typeof saved.exchange?.healing)?String(saved.exchange.healing).slice(0,20):'',
+      percent:typeof saved.exchange?.percent==='number' && Number.isFinite(saved.exchange.percent)?saved.exchange.percent:10,
+      ownSpiritId},
     checked:{own:saved.checked?.own===true,target:saved.checked?.target===true},
     targetId:typeof saved.targetId==='string'?saved.targetId:targetId,
     ownDiceSignature:typeof saved.ownDiceSignature==='string'?saved.ownDiceSignature:'',targetDiceSignature:typeof saved.targetDiceSignature==='string'?saved.targetDiceSignature:''};
@@ -86,12 +92,12 @@ function setTab(tab) {
 function clearCard(direction) {
   commit(s=>{
     const p=own(s);
-    if(direction==='outgoing') { p.preview.observed={};p.preview.picked={}; }
+    if(direction==='outgoing') { p.preview.observed={};p.preview.picked={};layout.exchange.healing='';s.playerFlow=structuredClone(layout); }
     else { s.preview.incomingDamages=[null,null];s.preview.incomingPicks=[null,null]; }
   });
 }
 function nextTarget() {
-  layout.hp='';layout.checked.target=false;
+  layout.hp='';layout.exchange.healing='';layout.exchange.percent=10;layout.checked.target=false;
   commit(s=>{
     s.observations=[];
     for(const p of s.profiles) if(p.preview) {p.preview.observed={};p.preview.picked={};}
@@ -122,12 +128,49 @@ function natureMatrix(candidateIds, state) {
   return html + '</div>';
 }
 
+function exchangeMessage(exchange, unavailableReason) {
+  if(exchange.reason==='invalid-target-percent') return '剩余比例需为 0–100%，最多两位小数';
+  if(exchange.reason==='no-healing') return '野怪已满血，无法通过回血判断';
+  if(exchange.status==='invalid') return '填写正整数回血量';
+  if(exchange.status==='unavailable') return unavailableReason || '当前目标缺少本体生命数据';
+  if(exchange.status==='conflict') return '回血量与三档不符，请核对等级和使用条件';
+  if(exchange.status==='matched') {
+    const state=sameState(exchange.matching,'hp');
+    return state ? phrase('hp',state) : '生命档待区分';
+  }
+  return '';
+}
+function renderExchange(exchange, result) {
+  const enabled=layout.exchange.enabled;
+  $('flow-exchange-enabled').checked=enabled;
+  $('flow-exchange-row').hidden=!enabled;
+  if(document.activeElement!==$('flow-exchange-healing')) $('flow-exchange-healing').value=layout.exchange.healing;
+  $('flow-exchange-healing').setAttribute('aria-invalid',String(exchange.invalid));
+  const percent=layout.exchange.percent;
+  const percentValid=percent>=0 && percent<=100 && Math.abs(percent*100-Math.round(percent*100))<1e-8;
+  const custom=percent!==10;
+  $('flow-exchange-condition-gear').classList.toggle('is-set',custom);
+  if(document.activeElement!==$('flow-exchange-percent')) $('flow-exchange-percent').value=percent;
+  $('flow-exchange-condition-label').textContent=custom?`余血${percent}% · 手填`:'破盾10%';
+  const hpRows=result.evilExchangeUnavailableReason || !percentValid?[]:result.targetBodyHpByLevel || [];
+  const hitStates=new Set(exchange.matching.map(n=>natureState(n,'hp')));
+  $('flow-exchange-values').innerHTML=['down','neutral','up'].map(state=>{
+    const amounts=hpRows.map(row=>evilExchangeHealing(row[state],percent));
+    const min=Math.min(...amounts),max=Math.max(...amounts);
+    const text=amounts.length ? min===max?`${min}`:`${min}–${max}` : '—';
+    return `<div class="flow-exchange-prediction${hitStates.has(state)?' hit':''}" data-exchange-hp="${state}"><span>${phrase('hp',state)}</span><b>${text}</b></div>`;
+  }).join('');
+  const note=$('flow-exchange-verdict');
+  note.className=`flow-row-verdict${exchange.used?exchange.status==='matched'?' good':' bad':''}`;
+  note.textContent=exchangeMessage(exchange,result.evilExchangeUnavailableReason);
+}
+
 function render() {
   if(!ui || !layout || !$('flow-result')) return;
   const s=ui.getSession(), p=own(s), result=ui.getPreview(), v=result.uiVerdict;
   if(!v) return;
-  layout=normalizePlayerFlow(s.playerFlow,s.targetId,catalog);
-  if(layout.targetId!==s.targetId) {layout.hp='';layout.checked.target=false;}
+  layout=normalizePlayerFlow(s.playerFlow,s.targetId,catalog,p.spiritId);
+  if(layout.targetId!==s.targetId) {layout.hp='';layout.exchange.healing='';layout.exchange.percent=10;layout.checked.target=false;}
   layout.targetId=s.targetId;
   const format=s.preview?.percentFormat ?? 'game0';
   const category=row=>categoryOf(row,catalog.skills);
@@ -222,17 +265,26 @@ function render() {
   const hpRows=result.targetHpByLevel || [];
   const direct=layout.hp!=='' && Number.isInteger(Number(layout.hp)) && Number(layout.hp)>0;
   const hpHits=direct?hpRows.flatMap(row=>catalog.natures.filter(n=>row[n.upStat==='hp'?'up':n.downStat==='hp'?'down':'neutral']===Number(layout.hp)).map(n=>({...n,targetLevel:row.level}))):[];
-  let matched=v.matching;
-  if(direct) matched=matched.filter(n=>hpHits.some(h=>h.id===n.id && v.candidates.includes(`${h.targetLevel}:${n.id}`)));
-  const used=v.used+(direct?1:0), ready=used>0 && matched.length>0 && !v.invalid && !v.incomplete;
+  const exchange=compareEvilExchange({healing:layout.exchange.enabled?layout.exchange.healing:'',
+    hpByLevel:result.evilExchangeUnavailableReason?[]:result.targetBodyHpByLevel,natures:catalog.natures,targetPercent:layout.exchange.percent});
+  renderExchange(exchange,result);
+  const exchangeComparable=['matched','conflict'].includes(exchange.status);
+  const combinedGroups=[v.candidates];
+  if(direct) combinedGroups.push(hpHits.map(h=>`${h.targetLevel}:${h.id}`));
+  if(exchangeComparable) combinedGroups.push(exchange.candidates);
+  const matched=intersectNatureCases(catalog.natures,result.targetLevels || [s.level],combinedGroups).matching;
+  const invalid=v.invalid || exchange.invalid;
+  const incomplete=v.incomplete || (exchange.used && exchange.status==='unavailable');
+  const used=v.used+(direct?1:0)+(exchange.used?1:0), ready=used>0 && matched.length>0 && !invalid && !incomplete;
   const axesEvidence={...v.axesEvidence};
   const hpGroups=axesEvidence.hp?.used ? [axesEvidence.hp.candidates] : [];
   if(direct) { hpGroups.push(hpHits.map(h=>`${h.targetLevel}:${h.id}`)); sources.hp.unshift(`读到 HP ${layout.hp}`); }
+  if(exchangeComparable) { hpGroups.push(exchange.candidates);sources.hp.unshift(`恶念交换 回血 ${layout.exchange.healing}${layout.exchange.percent===10?'':`（余血${layout.exchange.percent}%）`}`); }
   axesEvidence.hp=intersectNatureCases(catalog.natures,result.targetLevels || [s.level],hpGroups);
   let goal='';
   if(layout.goal) {
     const label=n?.name || `加${names[goalStat]}`;
-    const hasConflict=v.invalid||v.incomplete||(used>0&&!matched.length)||axesEvidence.hp.conflict;
+    const hasConflict=invalid||incomplete||(used>0&&!matched.length)||axesEvidence.hp.conflict;
     const state=!used?'待实测':hasConflict?'待复核':matched.some(goalMatches)?matched.length===1?'就是它':'还在候选':'已排除';
     const tone=!used||hasConflict?'':matched.some(goalMatches)?' good':' bad';
     goal=`<div class="flow-goal-result${tone}"><span>目标 ${esc(label)}</span><b>${state}</b></div>`;
@@ -241,7 +293,7 @@ function render() {
   const outgoingCount = Array.from({length:4},(_,i)=>p.preview?.observed?.[i])
     .filter(observation=>observation && (hasReading(observation.damage) || hasReading(observation.remainingPercent))).length;
   const incomingCount = Array.from({length:2},(_,i)=>s.preview?.incomingDamages?.[i]).filter(hasReading).length;
-  const recordCount = outgoingCount + incomingCount + (direct ? 1 : 0);
+  const recordCount = outgoingCount + incomingCount + (direct ? 1 : 0) + (exchange.used ? 1 : 0);
 
   const hpRanges = v.hpComparison?.ranges ?? [];
   const hpRangeText = hpRanges.map(range=>range.max===null?`≥${range.min}`:range.min===range.max?`${range.min}`:`${range.min}–${range.max}`).join('／');
@@ -249,7 +301,8 @@ function render() {
   if(hpRangeText) hpNotes.push(`推算总血量 ${hpRangeText}`);
   if(direct && !hpHits.length) hpNotes.push('<span class="bad">读到的 HP 与三档都不符</span>');
   if(v.hpComparison?.status==='conflict') hpNotes.push(`<span class="bad">${hpRanges.length?'推算血量与三档不符':'血量记录互相冲突'}</span>`);
-  else if(direct && hpHits.length && axesEvidence.hp.conflict) hpNotes.push('<span class="bad">血量记录互相冲突</span>');
+  else if(axesEvidence.hp.conflict && ((direct && hpHits.length) || exchange.status==='matched')) hpNotes.push('<span class="bad">血量记录互相冲突</span>');
+  if(exchange.used && exchange.status!=='matched') hpNotes.push(`<span class="bad">${esc(exchangeMessage(exchange,result.evilExchangeUnavailableReason))}</span>`);
   if(s.level==='all' && axesEvidence.hp.used && axesEvidence.hp.matching.length) {
     const hpLevels = [...new Set(axesEvidence.hp.candidates.map(id=>Number(id.split(':')[0])))];
     if(hpLevels.length) hpNotes.push(`对应等级 ${hpLevels.join('／')}`);
@@ -261,13 +314,13 @@ function render() {
     return {key,value,conflict:ownEvidence?.conflict,confirmed:['加','减','不变'].includes(value)};
   });
   const confirmedCount=axisStates.filter(entry=>entry.confirmed).length;
-  const combinedConflict=used>0 && !matched.length && !axisStates.some(entry=>entry.conflict) && !v.invalid && !v.incomplete;
+  const combinedConflict=used>0 && !matched.length && !axisStates.some(entry=>entry.conflict) && !invalid && !incomplete;
   // 一条读数有误不影响其他属性：已有独立结论时仍报“已判断 N 项”。
   const title=ready?(matched.length===1?matched[0].name:`剩 ${matched.length} 种`)
-    :confirmedCount?`已判断 ${confirmedCount} 项`:!used&&!v.invalid&&!v.incomplete?'待实测'
-    :v.invalid?'输入有误':v.incomplete?'有技能未计算':combinedConflict?'读数对不上':'待复核';
-  const titleTone=ready?'':!used&&!v.invalid&&!v.incomplete?' empty'
-    :(v.invalid||v.incomplete||combinedConflict||axisStates.some(entry=>entry.conflict))?' bad':' pending';
+    :confirmedCount?`已判断 ${confirmedCount} 项`:!used&&!invalid&&!incomplete?'待实测'
+    :invalid?'输入有误':incomplete?'有读数未计算':combinedConflict?'读数对不上':'待复核';
+  const titleTone=ready?'':!used&&!invalid&&!incomplete?' empty'
+    :(invalid||incomplete||combinedConflict||axisStates.some(entry=>entry.conflict))?' bad':' pending';
   const axes = axisStates.map(({key,value,conflict,confirmed})=>{
     const cls=conflict?'conflict':value==='加'?'up':value==='减'?'down':confirmed?'neutral':'none';
     const src=(confirmed||conflict)&&sources[key].length?`<em>${esc(sources[key].join('；'))}</em>`:'<em></em>';
@@ -275,7 +328,7 @@ function render() {
     return `<div class="flow-axis-row" data-axis="${key}"><span class="flow-axis-name">${statIcon(key)}${names[key]}</span><b class="${cls}">${value}</b>${src}${note}</div>`;
   }).join('');
   const conflictNote=[combinedConflict?'各项读数没有共同的性格，请核对等级、异色、骰子或读数。':'',
-    v.invalid?'有读数格式有误，见对应技能旁的提示。':'', v.incomplete?'有技能无法计算，它的读数没有参与判断。':'']
+    invalid?'有读数格式有误，见对应技能旁的提示。':'', v.incomplete?'有技能无法计算，它的读数没有参与判断。':'']
     .filter(Boolean).map(text=>`<p class="flow-result-note bad">${text}</p>`).join('');
   const candidateIds=new Set(ready?matched.map(x=>x.id):[]);
   const matrixState=!used?'open':'filtered';
@@ -292,7 +345,7 @@ function render() {
 export function mountPlayerFlow(options) {
   ({ui,catalog,commit,saveState}=options);
   const session=ui.getSession();
-  layout=normalizePlayerFlow(session.playerFlow,session.targetId,catalog);
+  layout=normalizePlayerFlow(session.playerFlow,session.targetId,catalog,own(session).spiritId);
   const versus=$('versus-grid'), workspace=$('preview-workspace'), rail=document.querySelector('.preview-rail');
 
   // ---- 我方、野怪左右两列，每列一项一行 ----
@@ -449,6 +502,18 @@ export function mountPlayerFlow(options) {
     gear.innerHTML='<span class="flow-gear-icon" aria-hidden="true">⚙</span><span class="flow-gear-text">条件</span>';gear.setAttribute('aria-label',`第${i+1}槽技能条件`);
     editor.onclick=()=>{const open=row.classList.toggle('flow-editing-skill');editor.setAttribute('aria-expanded',String(open));editor.textContent=open?'收起':'换招';if(open)picker.querySelector('input').focus();};
   }
+  // 第五招独立测生命；开关记住选择，切到龙息帕尔自动开启。
+  const exchangeToggle=document.createElement('label');exchangeToggle.className='flow-exchange-toggle';
+  exchangeToggle.title='打开后常驻第五行；选择龙息帕尔会自动打开';
+  exchangeToggle.innerHTML='<input id="flow-exchange-enabled" type="checkbox" role="switch" aria-label="恶念交换第五行" aria-controls="flow-exchange-row"/><span>恶念交换</span>';
+  cards[0].querySelector('.flow-clear').before(exchangeToggle);
+  const exchangeRow=document.createElement('section');exchangeRow.id='flow-exchange-row';exchangeRow.setAttribute('aria-label','第五招恶念交换测生命');exchangeRow.hidden=true;
+  exchangeRow.innerHTML=`<div class="flow-exchange-skill"><div class="flow-exchange-title"><span class="pskill-slot">5</span><b>恶念交换</b><span>测生命</span><button type="button" id="flow-exchange-condition-gear" class="pskill-gear" aria-label="恶念交换条件" aria-expanded="false" aria-controls="flow-exchange-condition-pop">⚙</button></div>
+    <div id="flow-exchange-condition-label" class="flow-exchange-help">破盾10%</div>
+    <div id="flow-exchange-condition-pop" class="pskill-pop flow-exchange-conditions" role="dialog" aria-label="恶念交换条件" hidden><div class="pskill-pop-grid"><label>野怪剩余血量 %<input id="flow-exchange-percent" type="number" min="0" max="100" step="0.01" inputmode="decimal" aria-label="恶念交换野怪剩余血量百分比"/></label></div><p>我方满血，读野怪绿色回血；期间无额外扣血、回血或生命上限变化。</p><div class="pskill-pop-foot"><span>默认 10% · 按精确比例算</span><button type="button" id="flow-exchange-reset" class="text-button">恢复默认</button></div></div></div>
+    <div id="flow-exchange-values" class="flow-exchange-values" aria-label="恶念交换三档回血"></div>
+    <div class="flow-exchange-observation"><label class="pobs"><span>野怪回血</span><input id="flow-exchange-healing" type="text" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="绿色数字" aria-label="恶念交换野怪绿色回血" aria-describedby="flow-exchange-verdict"/></label><div id="flow-exchange-verdict" class="flow-row-verdict" aria-live="polite"></div></div>`;
+  $('preview-outgoing').after(exchangeRow);
   for(const [k,row] of [...document.querySelectorAll('#preview-incoming [data-incoming-row]')].entries())
     row.querySelector('.pobservations').insertAdjacentHTML('beforeend',`<div class="flow-row-verdict" id="flow-row-verdict-in-${k}" aria-live="polite"></div>`);
   rail.insertAdjacentHTML('beforeend','<section id="flow-result" class="rail-card" aria-live="polite" tabindex="-1"></section>');
@@ -456,6 +521,22 @@ export function mountPlayerFlow(options) {
 
   // ---- 事件 ----
   for(const side of ['own','target']) $(`flow-check-${side}`).onclick=()=>{layout.checked[side]=!layout.checked[side];saveLayout();render();};
+  $('flow-exchange-enabled').onchange=()=>{layout.exchange.enabled=$('flow-exchange-enabled').checked;saveLayout();render();};
+  const exchangePop=$('flow-exchange-condition-pop'), exchangeGear=$('flow-exchange-condition-gear');
+  exchangeGear.onclick=event=>{
+    event.stopPropagation();const open=exchangePop.hidden;
+    for(const pop of document.querySelectorAll('.pskill-pop:not([hidden])')) {
+      pop.hidden=true;$(pop.id.replace(/-pop$/,'-gear'))?.setAttribute('aria-expanded','false');
+    }
+    exchangePop.hidden=!open;exchangeGear.setAttribute('aria-expanded',String(open));
+    if(open) { $('flow-exchange-percent').focus();exchangePop.scrollIntoView({block:'nearest'}); }
+  };
+  $('flow-exchange-percent').onchange=()=>{const value=$('flow-exchange-percent').value;layout.exchange.percent=value===''?10:Number(value);saveLayout();render();};
+  $('flow-exchange-percent').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();$('flow-exchange-percent').dispatchEvent(new Event('change'));exchangePop.hidden=true;exchangeGear.setAttribute('aria-expanded','false');exchangeGear.focus();}};
+  $('flow-exchange-reset').onclick=()=>{layout.exchange.percent=10;saveLayout();render();};
+  const saveExchange=()=>{layout.exchange.healing=$('flow-exchange-healing').value.trim();saveLayout();render();};
+  $('flow-exchange-healing').addEventListener('input',saveExchange);
+  $('flow-exchange-healing').addEventListener('keydown',event=>{if(event.key==='Enter'){saveExchange();event.target.blur();}});
   let hpTimer;
   const saveHp=()=>{const value=$('flow-hp-value').value.trim();layout.hp=Number.isSafeInteger(Number(value))&&Number(value)>0?String(Number(value)):'';saveLayout();render();};
   $('flow-hp-value').addEventListener('input',()=>{clearTimeout(hpTimer);hpTimer=setTimeout(saveHp,240);});

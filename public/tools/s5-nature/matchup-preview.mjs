@@ -2,7 +2,7 @@ import { calculateDamage } from './vendor/damage.mjs';
 import { getAwakeningBonuses, resolveAwakeningType } from './awakening.mjs';
 import { wildPanel, targetLevels } from './engine.mjs';
 import { resolveWildTarget, missingWildRaceReason } from './wild-forms.mjs';
-import { WILD_HP_MODEL, wildTargetShiny } from './wild-hp.mjs';
+import { WILD_HP_MODEL, wildTargetShiny, calculateWildHp } from './wild-hp.mjs';
 import { resolveWildAttack } from './wild-attack.mjs';
 import { resolveWildDefense } from './wild-defense.mjs';
 export { SHINY_HP_MULTIPLIER } from './wild-hp.mjs';
@@ -341,12 +341,12 @@ export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
         min: Math.min(...targetHpByLevel.map(row => row[key])), max: Math.max(...targetHpByLevel.map(row => row[key])),
       }])) : null;
     return { ...results[0], targetLevel: 'all', targetLevels: levels, outgoing, incomingList, incoming: incomingList[0] ?? null,
-      targetHpByLevel, targetHpByNature,
+      targetHpByLevel, targetHpByNature, targetBodyHpByLevel: results.flatMap(result => result.targetBodyHpByLevel),
       targetHpRange: targetHpByNature ? { min: Math.min(...Object.values(targetHpByNature).map(row => row.min)), max: Math.max(...Object.values(targetHpByNature).map(row => row.max)) } : null };
   }
   const skillIds = Array.isArray(input?.skillIds) ? input.skillIds.slice(0, 4) : [];
   const incomingIds = Array.isArray(input?.incomingSkillIds) ? input.incomingSkillIds.slice(0, 4) : input?.incomingSkillId ? [input.incomingSkillId] : [];
-  const initial = { calibrationStatus: 'unverified', outgoing: [], incoming: null, incomingList: [], warnings: [], targetHpByNature: null, targetHpRange: null, targetHpByLevel: [], targetLevels: [] };
+  const initial = { calibrationStatus: 'unverified', outgoing: [], incoming: null, incomingList: [], warnings: [], targetHpByNature: null, targetHpRange: null, targetHpByLevel: [], targetBodyHpByLevel: [], targetLevels: [] };
   try {
     if (!isObject(input)) throw new RangeError('请先选择双方精灵与技能。');
     if (input.skillIds !== undefined && !Array.isArray(input.skillIds)) throw new RangeError('技能选择须为数组。');
@@ -368,9 +368,12 @@ export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
         hpModelName: WILD_HP_MODEL.confirmedSpecies.includes(target.name) ? '深蓝鲸实测生命曲线' : '生命曲线（统一公式外推）' };
     });
     const targetHpByNature = { neutral: null, up: null, down: null };
+    const targetBodyHpByNature = { neutral: null, up: null, down: null };
     for (const { nature, panel } of candidates) {
       const group = nature.upStat === 'hp' ? 'up' : nature.downStat === 'hp' ? 'down' : 'neutral';
       targetHpByNature[group] = panel.hp;
+      // Evil Exchange heals the post-shield body, not the ordinary/shiny shield pool.
+      targetBodyHpByNature[group] = calculateWildHp(target.raceStats.hp, input.level, nature) / WILD_HP_MODEL.ordinaryMultiplier;
     }
     const targetHpRange = { min: Math.min(...candidates.map(row => row.panel.hp)), max: Math.max(...candidates.map(row => row.panel.hp)) };
     if (input.skillOverrides !== undefined && input.skillOverrides !== null && !isObject(input.skillOverrides)) throw new RangeError('技能覆盖值须按技能编号分别填写。');
@@ -393,7 +396,9 @@ export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
       wildStrengthStage: target.wildStrengthStage, wildStrengthStageEvidence: target.wildStrengthStageEvidence,
       targetId: target.id, ownSpiritId: ownSpirit.id, targetLevel: input.level, targetLevels: [input.level], hpModel: WILD_HP_MODEL,
       ...(target.wildStatFormId ? { wildStatFormId: target.wildStatFormId, wildStatFormName: target.wildStatFormName } : {}),
-      targetHpByNature, targetHpRange, targetHpByLevel: [{ level: input.level, ...targetHpByNature }] };
+      targetHpByNature, targetHpRange, targetHpByLevel: [{ level: input.level, ...targetHpByNature }],
+      targetBodyHpByLevel: [{ level: input.level, ...targetBodyHpByNature }],
+      evilExchangeUnavailableReason: targetDice.effects.hpMultiplier !== 1 ? '野怪生命倍率有改动，请在无生命上限增益时测量。' : '' };
   } catch (error) {
     const reason = error.message || '当前输入无法预估。';
     return { ...initial, status: 'unsupported', reason,

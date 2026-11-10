@@ -158,3 +158,16 @@ test('historical poison readings with unknown layers remain references even afte
   assert.equal(result.notes, sample.notes);
   assert.equal(result.configurationMatches, false, 'current layer count cannot fill unknown historical layers');
 });
+
+test('Evil Exchange uses post-shield body HP for all levels, independently of shiny shield scaling',()=>{
+  const normal=previewMatchup(inputFor('深蓝鲸','all'),catalog,dice);
+  const shiny=previewMatchup(inputFor('深蓝鲸','all',true),catalog,dice);
+  const expected=[{level:41,neutral:254,up:277,down:231},{level:42,neutral:258,up:282,down:234},{level:43,neutral:261,up:285,down:237}];
+  assert.deepEqual(normal.targetBodyHpByLevel,expected);
+  assert.deepEqual(shiny.targetBodyHpByLevel,expected);
+  assert.equal(shiny.targetHpByLevel[2].up,855);
+  // A shield-pool override is not proof of an equal post-shield body change.
+  const custom=previewMatchup({...inputFor('深蓝鲸',43,true),targetDiceEffects:{hpMultiplier:1.3}},catalog,dice);
+  assert.deepEqual(custom.targetBodyHpByLevel,[expected[2]]);
+  assert.match(custom.evilExchangeUnavailableReason,/生命倍率/);
+});
