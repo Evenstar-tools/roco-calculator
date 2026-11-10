@@ -564,12 +564,16 @@ test("S5 nature archived defense branches restore native calculations and measur
     window.pveNatureUi.setSession(session);
   }, legacyIds[0]);
   expect(await calculationPreview(page)).toEqual(baseline);
-  // Restore a record saved by an older page, including another future evolution ID.
-  await page.evaluate(id => {
+  // Install the archived fixture before the next document reads storage. The
+  // current document may still have a pending input autosave after Tab.
+  const legacySession = await page.evaluate(id => {
     const session = window.pveNatureUi.getSession();
     session.wildStatFormId = id;
-    localStorage.setItem('roco-pve-nature-manual-v1', JSON.stringify(session));
+    return session;
   }, legacyIds[1]);
+  await page.addInitScript(session => {
+    localStorage.setItem('roco-pve-nature-manual-v1', JSON.stringify(session));
+  }, legacySession);
   await page.reload();
   await expect(page.locator('#flow-result')).toBeVisible();
   await expect(page.getByRole('combobox', { name: '选择野生目标', exact: true })).toHaveValue('毛毛');

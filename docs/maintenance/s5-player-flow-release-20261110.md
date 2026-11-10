@@ -19,4 +19,14 @@
 - 生产监控开启时CSS gzip为95.81KiB、JS gzip为609.58KiB，分别低于96／640KiB硬上限；未调整预算。
 - 源码树的旧Web／小程序共享镜像检查仍有既有漂移，与前一线上国服pin相同；本轮没有新增。聚合发布树自身的完整共享核心检查已通过。
 
-发布入口为Git → origin/main → EdgeOne自动部署 → 生产页验收；线上结果随后追加。
+发布入口为 Git → origin/main → EdgeOne 自动部署 → 生产页验收。
+
+## 线上结果
+
+2026-11-10 21:41–21:43（北京时间）确认新 UI 已生效，地址：https://rococalc.top/tools/s5-nature/index.html 。首个主线发布提交为 `bb7453b2c733e7103cf39f007dcaa21c9ae08e35`。
+
+- 生产部署资源检查通过；命名配置、等级、HP 冲突、刷新恢复及轻量选择器真实操作通过。
+- 1366 桌面与 390 手机的线上截图已读回，手机切换测法可用，无横向溢出。截图为本工作树 `output/playwright/s5-live-desktop.png`、`s5-live-mobile.png`。
+- 旧 Service Worker 上下文正常升级至 `rock-calculator-webapp-v2.3.17-20261110-player-flow-r1`；只加载一个合并 CSS，初始 option 总量为 215。
+- 首次云端检查 https://github.com/Evenstar-tools/roco-calculator/actions/runs/42826181326 的旧存档用例存在 fixture 竞态：直接写 localStorage 后，旧文档尚未完成的输入自动保存会覆盖它。现改为在新文档初始化前装载 fixture，所有原断言保留；生产页连续三次回归通过。此次跟进仅改测试与交接，国服 pin 和运行时代码保持不变。
+- 后续主线检查结果以 GitHub Actions 当前提交状态为准；资源检查及浏览器日志位于 `output/s5-player-flow-release/production-resources.log`、`production-e2e.log`、`archive-fixture-recheck.log`。
