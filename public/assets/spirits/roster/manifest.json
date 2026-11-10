@@ -1,0 +1,798 @@
+{
+  "generatedAt": "2026-11-10T16:22:50.344Z",
+  "note": "S5 奇遇性格计算头像栏立绘：S2 与有异色立绘的通行证（犀角鸟等 6 只）、火红尾为异色立绘；S5 与热团团、新月鹭、地银链、沉金兽、云梦豚两处来源均未收录异色立绘，暂用普通立绘。原图 1024，裁透明边后长边 192px。",
+  "assets": [
+    {
+      "id": "spirit_96afa437f590cc96",
+      "name": "锤头鹳",
+      "group": "S5",
+      "shiny": false,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/06/fiyu1t7b4rztkgh8f00ewgyz34rxam4.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "6546f7662608ee36685096c135204d5ec9f641d8a732a3e7495ce0a3770f9170",
+      "localFile": "/assets/spirits/roster/spirit_96afa437f590cc96.png",
+      "width": 155,
+      "height": 192,
+      "bytes": 32280,
+      "sha256": "58bc0549c6731d79fff13e7fc287a383f21848632b298cd9f08c40955b0c9c39"
+    },
+    {
+      "id": "spirit_d6bf08644fc68f43",
+      "name": "可爱猿",
+      "group": "S5",
+      "shiny": false,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/5/51/oy81pmjg4jrvciy8vikb8offpv3nzhq.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "876ed4fe7b451011d2ad1f2d4399cde0b2b71fdf1d9f37b5b2e3861f7106de30",
+      "localFile": "/assets/spirits/roster/spirit_d6bf08644fc68f43.png",
+      "width": 192,
+      "height": 190,
+      "bytes": 44117,
+      "sha256": "b449f43a10cd285f65c15e57634b4046e36fd4b90ace4e4dd19b92419d50d680"
+    },
+    {
+      "id": "spirit_4901e4794bd32f40",
+      "name": "小翼龙",
+      "group": "S5",
+      "shiny": false,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/3/37/dtemeladdw6vk3il834phm52cp03y09.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "a5f9bb396090464607c600cc99d3ac13dd40ef5548c08b01a0b0391c18730dab",
+      "localFile": "/assets/spirits/roster/spirit_4901e4794bd32f40.png",
+      "width": 162,
+      "height": 192,
+      "bytes": 37507,
+      "sha256": "9f0be4f05f011f198f4e2429be3f465586f91729afbc9fadb7476a67721ff75e"
+    },
+    {
+      "id": "spirit_50b77eaae7361af5",
+      "name": "伊雷龙",
+      "group": "S5",
+      "shiny": false,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/96/2vi6l4zkeygv3ow0lqzjixoxfg4gnxx.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "4f421559475a85709b0502d9fcf2a008c20c8bf9ddb0ed9296f6f3b80c8fbbbd",
+      "localFile": "/assets/spirits/roster/spirit_50b77eaae7361af5.png",
+      "width": 163,
+      "height": 192,
+      "bytes": 40875,
+      "sha256": "cf0e731fb4674aaf16db064202713b29029d8d92f3f6ccefd8e8239a7ba4cfee"
+    },
+    {
+      "id": "spirit_37ea034163f3e376",
+      "name": "深蓝鲸",
+      "group": "S5",
+      "shiny": false,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/8/8e/hp82bybxz5f699gkdqb2bcr8apnd31v.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "7ddb07ec440ec1883c34631ad36b339c810592ad5ab07344e1eabcf1321f0e23",
+      "localFile": "/assets/spirits/roster/spirit_37ea034163f3e376.png",
+      "width": 168,
+      "height": 192,
+      "bytes": 34026,
+      "sha256": "e3b99593674ea08bd6689d37dd1aadad7c50a077f1132ebb022bf78f6cc3be35"
+    },
+    {
+      "id": "spirit_2663ae54113f96f0",
+      "name": "缇塔",
+      "group": "S5",
+      "shiny": false,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/8/87/o6qdcc0z5q3xnsvyz0a7xm3somd9efp.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "d451ccf4d7aac15613431d1a4039799bac83747f3eda39db21951f89ee87ae48",
+      "localFile": "/assets/spirits/roster/spirit_2663ae54113f96f0.png",
+      "width": 192,
+      "height": 177,
+      "bytes": 50742,
+      "sha256": "6603bb5f345590a39ae925ac000cd0e7d8c188b336143260adb70fcc08228c4f"
+    },
+    {
+      "id": "spirit_05f3242dd3ab1ac6",
+      "name": "吸泥鸥",
+      "group": "S5",
+      "shiny": false,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/c/cb/ihc9ecz6ggpm1ozp2fnj41r0ooyyzq5.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "eb5a98b92a1389a7262075b9a31fca4f5f1ec8f4d8e78791b6c9aafc8514a953",
+      "localFile": "/assets/spirits/roster/spirit_05f3242dd3ab1ac6.png",
+      "width": 192,
+      "height": 175,
+      "bytes": 34984,
+      "sha256": "b74d7979b3f35e2d8571da10da7482769730da1fdaa36f5f0c39e6ec8cd17fc4"
+    },
+    {
+      "id": "spirit_a6c418b0b991f459",
+      "name": "花怨鳗",
+      "group": "S5",
+      "shiny": false,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/94/gz0tu42452boryb2tccaxajec8kugx2.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "270e8d86dd0c4c7558f9bef0452ab936e8907947159f4902185e4dafb55a4924",
+      "localFile": "/assets/spirits/roster/spirit_a6c418b0b991f459.png",
+      "width": 192,
+      "height": 184,
+      "bytes": 48114,
+      "sha256": "9b109b6edf614da9fba125ab32151035e181125eae426cfbf050c5dd2a99abe4"
+    },
+    {
+      "id": "spirit_preview_s5_lele-shark",
+      "name": "乐乐鲨",
+      "group": "S5",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Wat_AWaSha1_002_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "2d8e5a431cfd603fdb8000c8605c83636e80332e2bcbe182a1b4bf0d0b2990b1",
+      "localFile": "/assets/spirits/roster/spirit_preview_s5_lele-shark.png",
+      "width": 170,
+      "height": 192,
+      "bytes": 51038,
+      "sha256": "b2bfa33c883277c747b5d6df25b40dd3404a20f3ed669ebb02643741d5354fd3"
+    },
+    {
+      "id": "spirit_preview_s5_egg-wrap",
+      "name": "蛋包蛋",
+      "group": "S5",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Com_DanBaoDan1_001_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "16ec0658f1787599a8d4bd0ac253dc007ea7a295ff7856d9653a7a1b9d3ce9c7",
+      "localFile": "/assets/spirits/roster/spirit_preview_s5_egg-wrap.png",
+      "width": 126,
+      "height": 192,
+      "bytes": 30143,
+      "sha256": "68b9302368c8eda4d5bc773293c7e5f12bdb835298b11331af542d1e8b989861"
+    },
+    {
+      "id": "spirit_preview_s5_crab-coconut",
+      "name": "蟹蟹椰",
+      "group": "S5",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Wat_YeMiaoXie1_001_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "3d990900883699265c69587629d5f7dcbea6c045f9aa4187062cb73e79adb962",
+      "localFile": "/assets/spirits/roster/spirit_preview_s5_crab-coconut.png",
+      "width": 192,
+      "height": 178,
+      "bytes": 47002,
+      "sha256": "fab85d6207bc87336ce48f52698c26bdf50c73c1e3e195a34aa4c92e4db05d52"
+    },
+    {
+      "id": "spirit_preview_s5_jingyu",
+      "name": "鲸羽",
+      "group": "S5",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Ice_YuJing1_001_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "4fbec72f335afad7d1dc9c7090943ea12c8d8b87154fab888dc158f142c5f2a4",
+      "localFile": "/assets/spirits/roster/spirit_preview_s5_jingyu.png",
+      "width": 158,
+      "height": 192,
+      "bytes": 41487,
+      "sha256": "709c6362a0ad296960f42b2e24d96224ce359a337b2a46c8171edd2337db19c6"
+    },
+    {
+      "id": "spirit_preview_s5_doulie",
+      "name": "豆粒鹅",
+      "group": "S5",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Ice_DouLiE1_001_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "ef16e790f74f1f98aab74eb8e04b25a9cb29f07cefc5806a702ee4d5f648f1c7",
+      "localFile": "/assets/spirits/roster/spirit_preview_s5_doulie.png",
+      "width": 192,
+      "height": 130,
+      "bytes": 26231,
+      "sha256": "bbc443182daa2b0956ffb168b172af90b958f9482128d8a67c3d1c7cd8242552"
+    },
+    {
+      "id": "spirit_preview_s5_watermelon-bug",
+      "name": "西瓜虫",
+      "group": "S5",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Wor_XiGuaChong1_001_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "7892e54a099e4541cf69c11363d7b5708f0a130dcc32a133c11d201b0980e690",
+      "localFile": "/assets/spirits/roster/spirit_preview_s5_watermelon-bug.png",
+      "width": 192,
+      "height": 189,
+      "bytes": 40044,
+      "sha256": "10b15ef621b496355c908b5b92538fd00bdf144f68d7bd4ddd18b74d1f2544cf"
+    },
+    {
+      "id": "spirit_preview_s5_little-scissor",
+      "name": "小剪影",
+      "group": "S5",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Gho_JianYY1_001_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "ea3284085f7edf58bb55e620a29d8bdec703eba79308294239d6d35d0313554c",
+      "localFile": "/assets/spirits/roster/spirit_preview_s5_little-scissor.png",
+      "width": 124,
+      "height": 192,
+      "bytes": 30158,
+      "sha256": "8ed1e9a07d4d99e95b1d1648bb55c4801ca696c4a713590ace238efa47d38e25"
+    },
+    {
+      "id": "spirit_preview_s5_diliutun",
+      "name": "滴溜豚",
+      "group": "S5",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Poi_DiLiuTun1_001_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "82af215947f836f6165acfcca6cdcb440b76b4cf6a9645636ef70a0b120d48aa",
+      "localFile": "/assets/spirits/roster/spirit_preview_s5_diliutun.png",
+      "width": 192,
+      "height": 180,
+      "bytes": 35080,
+      "sha256": "c1b61d051ca0b6babed0db9e34b621b2d826126b35752d19cab73aae0f297561"
+    },
+    {
+      "id": "spirit_2a9b7b8d99dba59e",
+      "name": "恶魔叮",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/b/bf/g2rmuuqotmfp42oj1g02p3ev57z5ntx.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "b86e38660a3f5bb218ecd6e4f28a749eddd05e09a1acc741639fb0df58f2cf63",
+      "localFile": "/assets/spirits/roster/spirit_2a9b7b8d99dba59e.png",
+      "width": 192,
+      "height": 147,
+      "bytes": 38879,
+      "sha256": "5b337eb59ecb4c45333d71709a64d244279febb4ed47b1d2337b5175c1c277b9"
+    },
+    {
+      "id": "spirit_efecf4d2f811fc11",
+      "name": "小独角兽",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/8/84/64lshhb3dkuwm5866i0tg9sh0me80qp.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "c0d1b6e21ea185599093877b07d3262900ff58d55a9c48a2cf1b64cb7401e442",
+      "localFile": "/assets/spirits/roster/spirit_efecf4d2f811fc11.png",
+      "width": 159,
+      "height": 192,
+      "bytes": 41648,
+      "sha256": "68419f8e20094f38b5b4891322c886a6fb98161e2b95894e7d7dca04bf1bbe7d"
+    },
+    {
+      "id": "spirit_7c92f75ee0e707ea",
+      "name": "幽影树",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/4/48/s893zmqol0qu00uubnyy0twzb2rs7xx.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "8075155c469ee95b62762aea64e16b9bfcdcc53d429a389c48fc122d2e76fee5",
+      "localFile": "/assets/spirits/roster/spirit_7c92f75ee0e707ea.png",
+      "width": 192,
+      "height": 164,
+      "bytes": 48041,
+      "sha256": "06f92c992d177da3c149edf39adeebbea1f09b37ac7f6cc2bea8ba36bfea5f2c"
+    },
+    {
+      "id": "spirit_500f4922dfc1cb1e",
+      "name": "灵狐",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/8/8a/49vq0e4jl6vqxcayyx6tphy98gxnqvw.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "cf0e85ca887ef4ed50dc283e8e717ad1383a1693c79246ebac02832553f5ba17",
+      "localFile": "/assets/spirits/roster/spirit_500f4922dfc1cb1e.png",
+      "width": 163,
+      "height": 192,
+      "bytes": 37599,
+      "sha256": "21204e8dc3f61a3c6208f3733a19249d466e6f5e09e9b375249e655463ba08f2"
+    },
+    {
+      "id": "spirit_bfe02d4281b32ae4",
+      "name": "小夜",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/0/08/hux5gowigwd87ke7n9iaj0bszfc0a5a.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "dd0f978eaa8f78eba1115cb94d1fdccad4485161e5c6a5074b47847cca81bf15",
+      "localFile": "/assets/spirits/roster/spirit_bfe02d4281b32ae4.png",
+      "width": 173,
+      "height": 192,
+      "bytes": 42294,
+      "sha256": "e3d78a48139e75f5a3af83619776bfeaa94dae7d0b8011a925ca8aa6f812ace3"
+    },
+    {
+      "id": "spirit_70a40653ea0eee33",
+      "name": "菊花梨",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/b/be/f4b0lkwj6l3snrkpo5wv82wb0zgm46f.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "31b06aaac0ac6df12d73cad8d8ce80d8369d080c5944cd4c4b429a4e9610da38",
+      "localFile": "/assets/spirits/roster/spirit_70a40653ea0eee33.png",
+      "width": 156,
+      "height": 192,
+      "bytes": 38731,
+      "sha256": "8ead3c85c9b77e64196fa2b3ffd53906e7cf759744e285363297fd862ac05073"
+    },
+    {
+      "id": "spirit_6aa9095643b483ba",
+      "name": "牵线木偶",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/67/tkd5cc1qk5o5sjdbud97ymt0r491p5c.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "20ddae46a9f13aac01cac340d07649f9e3244ea9e0687d58ee5ef0612822874f",
+      "localFile": "/assets/spirits/roster/spirit_6aa9095643b483ba.png",
+      "width": 152,
+      "height": 192,
+      "bytes": 42863,
+      "sha256": "4c720c81f1352ebd0bbfcfca8b25e4278ae10728af705c3e7a1261534281745e"
+    },
+    {
+      "id": "spirit_a23862842c04d6d4",
+      "name": "嘟嘟煲",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/8/89/arl229hzzk3t8pichpeouyhmxc514lt.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "fee46fae1c96e57e70e75652d6cb1ad95a96db8b0f071809d691bfc3108202a3",
+      "localFile": "/assets/spirits/roster/spirit_a23862842c04d6d4.png",
+      "width": 178,
+      "height": 192,
+      "bytes": 51190,
+      "sha256": "229c92e337dde95835b6f29d4aa29d41bb4e5054a2f55050618ef7ebc64b450a"
+    },
+    {
+      "id": "spirit_531f78b52160b070",
+      "name": "小丑豆豆",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/1/18/872arznj4uuv614dbgr55f4nozm7j8d.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "51a5be63aec2899103e45fe294d24112240c892a5f17bb0c990ca9c5ca46d6dc",
+      "localFile": "/assets/spirits/roster/spirit_531f78b52160b070.png",
+      "width": 192,
+      "height": 189,
+      "bytes": 42841,
+      "sha256": "e85477ac6492aec97f8a13dd901e88049228237a3fbeec49736cd58bfbbb4b76"
+    },
+    {
+      "id": "spirit_4009f06481c98efb",
+      "name": "公平鸽",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/d/da/63jrcxlo4bx5zlko2cmglyw8dfy8b35.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "a626e21aeec8d0fcb3eed4f0305ec1c3cb30875fc8d55e0ca274202aa659b240",
+      "localFile": "/assets/spirits/roster/spirit_4009f06481c98efb.png",
+      "width": 163,
+      "height": 192,
+      "bytes": 36950,
+      "sha256": "6b761b24c1f34019bb874963cb670529c0dae79afbb9b6f89cd716e2017c7804"
+    },
+    {
+      "id": "spirit_ea44560ba353ca44",
+      "name": "加油海葵",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/a/ad/9iuzjmtidan3kbb0qdx69babud354dq.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "44d10ee86705b8b65f7f0cbf1a8afe7986d0b03b9ff911eef626e572e3b7c190",
+      "localFile": "/assets/spirits/roster/spirit_ea44560ba353ca44.png",
+      "width": 192,
+      "height": 165,
+      "bytes": 38967,
+      "sha256": "f9f9f322924ee97220a9aeb90f6db18ef3b4bb5829c032f18009155d4f0466d5"
+    },
+    {
+      "id": "spirit_9ea91035b620d764",
+      "name": "烟花团",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/f6/of4dfoqx6h1r8pzfnxs55jcfsvvhcyo.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "270d595dd6de6294ff27f9912251c9ab7423ac29c41137e22d329946c8a3aeba",
+      "localFile": "/assets/spirits/roster/spirit_9ea91035b620d764.png",
+      "width": 147,
+      "height": 192,
+      "bytes": 45763,
+      "sha256": "244244e3570dbedaa83974a701935fd74b517f45dfff87a8eba8df9d70b4c007"
+    },
+    {
+      "id": "spirit_72d2072cd2a176d0",
+      "name": "咕咕帽",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/6/6e/2q0e79re9hzi1ve7e3hqgp0ys6c00ql.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "8a43f5fd1a2adeea01f1d02ff74a85a50c1e1186c2f29c1bbb0a30e2f9f1615d",
+      "localFile": "/assets/spirits/roster/spirit_72d2072cd2a176d0.png",
+      "width": 176,
+      "height": 192,
+      "bytes": 36336,
+      "sha256": "4a14923bf5b82f64eafc758ca89a8b43984f7e953f0c6f8bba34848809f1eb3f"
+    },
+    {
+      "id": "spirit_063422817e8deefc",
+      "name": "小鼓象",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/2/21/2nfhej4wevy7maacu502jfbp3fwm01g.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "55bd42ac4a045ead51cfb5412777b1b7c9f187780857be56e4388a44c65cc3b0",
+      "localFile": "/assets/spirits/roster/spirit_063422817e8deefc.png",
+      "width": 176,
+      "height": 192,
+      "bytes": 50037,
+      "sha256": "58dfc52716a6b8f6f2692667e24e86c16873ed2bfccf983d82ee0b1f0002daaa"
+    },
+    {
+      "id": "spirit_38ee49982b9585c9",
+      "name": "猴麦仔",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/3/30/0v2by2u2bg0yzyuejtl6clbu9i7i4tm.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "db15a0d5a7971a53d6be13a5368745c05405c1e45c3572e7eaaa8f2ddf616f8d",
+      "localFile": "/assets/spirits/roster/spirit_38ee49982b9585c9.png",
+      "width": 138,
+      "height": 192,
+      "bytes": 34649,
+      "sha256": "a3ae3b14824d3d6fb26820bb1ad2c3ac01465bbdf2ed2678308cb8fc284d8212"
+    },
+    {
+      "id": "spirit_86bbcbdab1a84627",
+      "name": "炫光迪迪",
+      "group": "S2",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/5/54/7my8jupn2ha2099pb433c9zh8braktc.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "8c0693b7bec4604a38d8bbb32a722447e5769356b2b603a2007dae27bd40b5a3",
+      "localFile": "/assets/spirits/roster/spirit_86bbcbdab1a84627.png",
+      "width": 192,
+      "height": 170,
+      "bytes": 42532,
+      "sha256": "037d8fadfc3d569edea72d7711c1a327cc89355ec74636ecf27fbec4690e3c5f"
+    },
+    {
+      "id": "spirit_c48b78143a3d44b3",
+      "name": "绒绒",
+      "group": "battlepass",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/8/8c/qwc9v1rlgicoqwh9mxkh143aznx1r6m.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "c96361122c2270cd854236aea38ca85edf13f139d136f48057cf45527d680b31",
+      "localFile": "/assets/spirits/roster/spirit_c48b78143a3d44b3.png",
+      "width": 157,
+      "height": 192,
+      "bytes": 31458,
+      "sha256": "b50a86d7ddc4e5c88b99a543252da4b68dffc1c7a02d55312be065008d383b0a"
+    },
+    {
+      "id": "spirit_dffa44a6fdca4257",
+      "name": "犀角鸟",
+      "group": "battlepass",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/96/dmvk8om1la7r3sygbnihyux7plb12m2.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "1b67e2d3f581b5ecfa151575c23f34141f31bb5d442c954076f6ef191bfd48d8",
+      "localFile": "/assets/spirits/roster/spirit_dffa44a6fdca4257.png",
+      "width": 192,
+      "height": 150,
+      "bytes": 37168,
+      "sha256": "8611cb512f4f6bb4f24728ca9735efdc64e35a5ef28a577419f27801c154af06"
+    },
+    {
+      "id": "spirit_cd1a308eb48c6ee7",
+      "name": "小雪人",
+      "group": "battlepass",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/4/49/3muog5zu65iw8c32wnn0x7susbbq6fl.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "4c9baec88009eedce0420ec9a60877b436b41949397c9134c0c8933f71ebad16",
+      "localFile": "/assets/spirits/roster/spirit_cd1a308eb48c6ee7.png",
+      "width": 178,
+      "height": 192,
+      "bytes": 44241,
+      "sha256": "9a5319c5166a13ccf578d56a5fedeb2c3fd6c0ff6c4d9941bb8dd7e3f76ec85b"
+    },
+    {
+      "id": "spirit_91b6b1d0ba27d34f",
+      "name": "爆焰仔",
+      "group": "battlepass",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/9f/dn90qt67c2kjq3xlijiw5jpg7d3a5e2.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "295e8818db1d4d76cd4067bec98716c41a681704b764ff6a57b2f539bfd78b63",
+      "localFile": "/assets/spirits/roster/spirit_91b6b1d0ba27d34f.png",
+      "width": 192,
+      "height": 169,
+      "bytes": 43559,
+      "sha256": "fb0180221495e5fc07de9aa41b685604476634b08422b78fb5de4adbff634dd6"
+    },
+    {
+      "id": "spirit_7852c4374166c897",
+      "name": "咬咬小子",
+      "group": "battlepass",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/f/f7/okoeniciqwep3xslqqn264owdgi85jm.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "c54d04cae2e08804d92590842ee640f7d64d910da8ecdd58088aa0aba44c1f27",
+      "localFile": "/assets/spirits/roster/spirit_7852c4374166c897.png",
+      "width": 184,
+      "height": 192,
+      "bytes": 43239,
+      "sha256": "41486084fa928e815bdeb98bfc57af680fd3fdbc644eae3fe7f27e38c5730d93"
+    },
+    {
+      "id": "spirit_87ae52b86587400d",
+      "name": "足尖元件",
+      "group": "battlepass",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/4/4c/hfk86vldfpx9y03829fc4yaukh5na94.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "7a3f4afd23fae41600437442a35f0b3fae0cc163a3b350e330068408e4ace7d6",
+      "localFile": "/assets/spirits/roster/spirit_87ae52b86587400d.png",
+      "width": 184,
+      "height": 192,
+      "bytes": 52083,
+      "sha256": "53fe8f660a6164f119b6a16863eb025bcbe72fd2ad7a81a176ade35d82f98d47"
+    },
+    {
+      "id": "spirit_62628958b4cc94fd",
+      "name": "热团团",
+      "group": "battlepass",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Fir_ReTuanTuan1_001_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "ea8c880ae8544da6b2f36f7ae5c9531d8a80640055fc7ddfeef5b70cf714e820",
+      "localFile": "/assets/spirits/roster/spirit_62628958b4cc94fd.png",
+      "width": 192,
+      "height": 147,
+      "bytes": 38226,
+      "sha256": "0e694abf27206662dd9e40ede050813d2ae179a2ce06b930d2790605148de098"
+    },
+    {
+      "id": "spirit_44fd7ec28737bb00",
+      "name": "新月鹭",
+      "group": "battlepass",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Win_XinYueLu1_001_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "6c36956a4d79450d6e5f2dfb8ebfd27bfef598bf8fc352bd7cef5eb5090c0904",
+      "localFile": "/assets/spirits/roster/spirit_44fd7ec28737bb00.png",
+      "width": 171,
+      "height": 192,
+      "bytes": 36902,
+      "sha256": "e6304955cc6921bae8401cb65e0a5fc3f18b0f9bf262b1271ca2290b9a340034"
+    },
+    {
+      "id": "spirit_preview_s5_silver-chain",
+      "name": "地银链",
+      "group": "battlepass",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Roc_DiYinLian1_001_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "d270d8efe660896ce0468a0c978d8fd3f96e045272a71f2c18411a502b03a92b",
+      "localFile": "/assets/spirits/roster/spirit_preview_s5_silver-chain.png",
+      "width": 192,
+      "height": 163,
+      "bytes": 35075,
+      "sha256": "264cd20e00a8002fae2eeed3c892856971ece3f930f3c9af2805ad40b33030e7"
+    },
+    {
+      "id": "spirit_preview_s5_sinking-gold-beast",
+      "name": "沉金兽",
+      "group": "battlepass",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Ele_ChenJinShou1_001_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "f64fb6cefc17c7c99e31756bab2adb3295d016b580fc6db85f8acab63aff1158",
+      "localFile": "/assets/spirits/roster/spirit_preview_s5_sinking-gold-beast.png",
+      "width": 163,
+      "height": 192,
+      "bytes": 27890,
+      "sha256": "368dc16855c47a0ce5b237e4be90e24638895ba86390527e216bdd01e07d6376"
+    },
+    {
+      "id": "spirit_e68a6ec53f0dafff",
+      "name": "火红尾",
+      "group": "extra",
+      "shiny": true,
+      "source": "BWIKI",
+      "sourceUrl": "https://patchwiki.biligame.com/images/rocom/9/93/dcgbrrxxskx0cuevjf6rcggtl3g1099.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "4d77576bb2e89a858a48d39218bd8a02fd8239c7972b7bcdc26f1a830ad6e8a5",
+      "localFile": "/assets/spirits/roster/spirit_e68a6ec53f0dafff.png",
+      "width": 192,
+      "height": 182,
+      "bytes": 37669,
+      "sha256": "6d4136f70d8135063a513231e1b34ee69f2efa0fc7a12e43a5c3dced2ff72a05"
+    },
+    {
+      "id": "spirit_42e0cf61b04cb1ab",
+      "name": "云梦豚",
+      "group": "extra",
+      "shiny": false,
+      "source": "Candymo",
+      "sourceUrl": "https://api.candymo.com/assets/generated/ue/NewRoco/Modules/System/Common/Icon/Pet1024/img_Wat_ZhuZhuTun1_001_Res.png",
+      "sourceSize": [
+        1024,
+        1024
+      ],
+      "sourceSha256": "8882e55078ee5dd31721fa4834ebb3998f92595aa993f56d3fdd5fa5e6713dd1",
+      "localFile": "/assets/spirits/roster/spirit_42e0cf61b04cb1ab.png",
+      "width": 189,
+      "height": 192,
+      "bytes": 42320,
+      "sha256": "c504f836f9cb5591937d36cfd40eee6a13fc22063c44d4715e031695d229161d"
+    }
+  ]
+}

@@ -428,8 +428,8 @@ function initializePickers() {
   });
 }
 
-export const MAX_PROFILES = 12;
-export function profileLabel(profile) {
+const MAX_PROFILES = 12;
+function profileLabel(profile) {
   return profile.label || `${profile.name} ${(profile.awakening ?? 5) + 5}★`;
 }
 

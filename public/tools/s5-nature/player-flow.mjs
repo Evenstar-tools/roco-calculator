@@ -14,7 +14,8 @@ function saveLayout(persist = true) { saveState(structuredClone(layout), persist
 export function normalizePlayerFlow(value, targetId, catalog) {
   const saved = value && typeof value === 'object' ? value : {};
   const goal = typeof saved.goal === 'string' && (catalog.natures.some(n=>n.id===saved.goal) || Object.keys(names).filter(key=>key!=='speed').some(key=>saved.goal===`stat:${key}`)) ? saved.goal : '';
-  return {tab:saved.tab==='incoming'?'incoming':'outgoing',goal,
+  return {tab:saved.tab==='incoming'?'incoming':'outgoing',goal,roster:saved.roster!==false,
+    rosterScrollTop:Number.isFinite(saved.rosterScrollTop)&&saved.rosterScrollTop>=0?saved.rosterScrollTop:0,
     skill:Number.isInteger(saved.skill)&&saved.skill>=0&&saved.skill<4?saved.skill:0,
     hp:['string','number'].includes(typeof saved.hp)&&Number.isSafeInteger(Number(saved.hp))&&Number(saved.hp)>0?String(Number(saved.hp)):'',
     checked:{own:saved.checked?.own===true,target:saved.checked?.target===true},
@@ -154,6 +155,7 @@ function render() {
   const level=s.level==='all'?'41–43':s.level;
   const wildLabel=`${target?.name||'野怪'} · ${level}级${s.preview.shiny?' · 异色':''}`;
   $('flow-hp-name').textContent=wildLabel;
+  for(const item of document.querySelectorAll('[data-roster-id]')) item.setAttribute('aria-pressed',String(item.dataset.rosterId===s.targetId&&s.preview.shiny===true));
   for(const entry of $('target-hp-range').querySelectorAll(':scope > [data-hp-nature]')) {
     if(entry.querySelector('.hp-state-label')) continue;
     const key=entry.dataset.hpNature, label={down:'生命↓',neutral:'生命不变',up:'生命↑'}[key], symbol={down:'↓',neutral:'＝',up:'↑'}[key];
@@ -293,41 +295,31 @@ export function mountPlayerFlow(options) {
   layout=normalizePlayerFlow(session.playerFlow,session.targetId,catalog);
   const versus=$('versus-grid'), workspace=$('preview-workspace'), rail=document.querySelector('.preview-rail');
 
-  // ---- 野怪一行、出战一行 ----
+  // ---- 我方、野怪左右两列，每列一项一行 ----
   const setup=document.createElement('section');
-  setup.id='flow-setup';setup.setAttribute('aria-label','野怪与出战配置');
-  setup.innerHTML=`<div class="flow-card flow-wild-card" id="flow-wild-card">
-    <div class="flow-line flow-line-main">
-      <span class="flow-role flow-role-wild">野怪</span><i data-slot="target"></i>
-      <i data-slot="level"></i><i data-slot="shiny"></i>
-      <div class="flow-field flow-hp-field"><span class="flow-key">最大生命</span><i data-slot="hp"></i></div>
-      <label class="flow-field flow-direct-hp"><input id="flow-hp-value" type="number" min="1" step="1" inputmode="numeric" autocomplete="off" placeholder="读到 HP" aria-label="读到的最大生命"/></label>
-      <button type="button" id="flow-wild-more" class="flow-more" aria-expanded="false" aria-controls="flow-wild-sub">条件</button>
-      <i data-slot="next"></i>
-    </div>
-    <div class="flow-line flow-line-sub" id="flow-wild-sub">
-      <div class="flow-field"><span class="flow-key">目标</span><select id="flow-goal" aria-label="想要的性格"><option value="">不限定</option><optgroup label="属性">${Object.entries(names).filter(([k])=>k!=='speed').map(([k,n])=>`<option value="stat:${k}">加${n}</option>`).join('')}</optgroup><optgroup label="性格">${catalog.natures.map(n=>`<option value="${n.id}">${n.name} · ${names[n.upStat]}↑ ${names[n.downStat]}↓</option>`).join('')}</optgroup></select></div>
-      <div class="flow-field"><span class="flow-key">骰子</span><i data-slot="wild-dice"></i></div>
-      <div class="flow-field flow-trait-field"><span class="flow-key">特性</span><i data-slot="wild-trait"></i></div>
-      <div class="flow-field"><span class="flow-key">范围</span><i data-slot="filter"></i></div>
+  setup.id='flow-setup';setup.setAttribute('aria-label','我方与野怪配置');
+  const row=(key,body,cls='')=>`<div class="flow-row${cls?` ${cls}`:''}"><span class="flow-key">${key}</span><div class="flow-val">${body}</div></div>`;
+  setup.innerHTML=`<button type="button" id="flow-own-summary" class="flow-own-summary" aria-expanded="false" aria-controls="flow-own-card"><img id="flow-own-summary-image" alt=""/><span id="flow-own-summary-text"></span><span class="flow-own-summary-edit">改</span></button>
+  <div class="flow-card flow-own-card" id="flow-own-card">
+    <div class="flow-head"><span class="flow-role flow-role-own">我方</span><i data-slot="own"></i><i data-slot="configs"></i><i data-slot="own-actions"></i></div>
+    ${row('等级','<i data-slot="own-level"></i><i data-slot="stars"></i>')}
+    ${row('性格','<i data-slot="nature"></i>')}
+    ${row('个体','<i data-slot="ivs"></i>')}
+    ${row('骰子','<i data-slot="own-dice"></i>')}
+    ${row('特性','<i data-slot="own-trait"></i>','flow-trait-field')}
+    <i data-slot="own-extra"></i>
+  </div>
+  <div class="flow-card flow-wild-card" id="flow-wild-card">
+    <div class="flow-head"><span class="flow-role flow-role-wild">野怪</span><i data-slot="target"></i><span class="flow-filter-slot" id="flow-filter-head"><i data-slot="filter"></i></span><button type="button" id="flow-wild-more" class="flow-more" aria-expanded="false" aria-controls="flow-wild-sub">条件</button><i data-slot="next"></i></div>
+    ${row('等级','<i data-slot="level"></i>')}
+    ${row('血量','<i data-slot="hp"></i><i data-slot="shiny"></i><label class="flow-field flow-direct-hp"><input id="flow-hp-value" type="number" min="1" step="1" inputmode="numeric" autocomplete="off" placeholder="读到 HP" aria-label="读到的最大生命"/></label>','flow-hp-field')}
+    <div class="flow-wild-sub" id="flow-wild-sub">
+      ${row('目标',`<select id="flow-goal" aria-label="目标性格" title="选你想抓的性格：表里会标出相关格子，结论栏显示它是否还在候选；不影响计算"><option value="">不限定</option><optgroup label="属性">${Object.entries(names).filter(([k])=>k!=='speed').map(([k,n])=>`<option value="stat:${k}">加${n}</option>`).join('')}</optgroup><optgroup label="性格">${catalog.natures.map(n=>`<option value="${n.id}">${n.name} · ${names[n.upStat]}↑ ${names[n.downStat]}↓</option>`).join('')}</optgroup></select>`)}
+      ${row('骰子','<i data-slot="wild-dice"></i>')}
+      ${row('特性','<i data-slot="wild-trait"></i>','flow-trait-field')}
+      <div class="flow-row flow-filter-row"><span class="flow-key">范围</span><div class="flow-val" id="flow-filter-sub"></div></div>
     </div>
     <i data-slot="wild-extra"></i>
-  </div>
-  <button type="button" id="flow-own-summary" class="flow-own-summary" aria-expanded="false" aria-controls="flow-own-card"><img id="flow-own-summary-image" alt=""/><span id="flow-own-summary-text"></span><span class="flow-own-summary-edit">改</span></button>
-  <div class="flow-card flow-own-card" id="flow-own-card">
-    <div class="flow-line flow-line-main">
-      <span class="flow-role flow-role-own">出战</span><i data-slot="configs"></i><i data-slot="own"></i>
-      <div class="flow-field"><span class="flow-key">等级</span><i data-slot="own-level"></i></div>
-      <i data-slot="stars"></i>
-      <div class="flow-field"><span class="flow-key">性格</span><i data-slot="nature"></i></div>
-    </div>
-    <div class="flow-line flow-line-sub">
-      <div class="flow-field"><span class="flow-key">个体</span><i data-slot="ivs"></i></div>
-      <div class="flow-field"><span class="flow-key">骰子</span><i data-slot="own-dice"></i></div>
-      <div class="flow-field flow-trait-field"><span class="flow-key">特性</span><i data-slot="own-trait"></i></div>
-      <i data-slot="own-actions"></i>
-    </div>
-    <i data-slot="own-extra"></i>
   </div>`;
   const fill=(slot,...nodes)=>setup.querySelector(`[data-slot="${slot}"]`).replaceWith(...nodes.filter(Boolean));
   const hpRow=$('target-hp-range').parentElement;
@@ -335,12 +327,27 @@ export function mountPlayerFlow(options) {
   levelInput.closest('label').remove();
   levelInput.classList.add('flow-level-input');
   const details=$('profiles-section');
-  const detailButton=document.createElement('button');detailButton.type='button';detailButton.className='text-button flow-details-button';detailButton.textContent='详细面板';detailButton.setAttribute('aria-expanded',String(details.open));
-  detailButton.onclick=()=>{details.open=!details.open;};details.addEventListener('toggle',()=>detailButton.setAttribute('aria-expanded',String(details.open)));
-  const ownActions=document.createElement('span');ownActions.className='flow-own-actions';ownActions.append($('load-own-preset'),detailButton);
+  // 低频操作（另存、改名、删除、载入预设、详细面板）收进“⋯”菜单，标题行只留精灵和配置下拉。
+  const detailButton=document.createElement('button');detailButton.type='button';detailButton.className='flow-details-button';detailButton.setAttribute('role','menuitem');detailButton.textContent='详细面板 / 个体数值';detailButton.setAttribute('aria-expanded',String(details.open));
+  detailButton.onclick=()=>{details.open=!details.open;if(details.open)details.scrollIntoView({block:'nearest'});};details.addEventListener('toggle',()=>detailButton.setAttribute('aria-expanded',String(details.open)));
+  const preset=$('load-own-preset');preset.textContent='载入推荐预设';preset.title='按这只精灵的推荐配置重置性格、个体和配招，保留等级';preset.className='';preset.setAttribute('role','menuitem');
+  const ownActions=document.createElement('div');ownActions.className='flow-menu';
+  ownActions.innerHTML=`<button type="button" class="flow-menu-button" id="flow-own-menu-button" aria-haspopup="menu" aria-expanded="false" aria-controls="flow-own-menu" title="配置操作" aria-label="配置操作">⋯</button><div class="flow-menu-list" id="flow-own-menu" role="menu" hidden><button type="button" role="menuitem" data-own-menu="save">另存为新配置</button><button type="button" role="menuitem" data-own-menu="rename">改名</button><button type="button" role="menuitem" data-own-menu="delete">删除这套配置</button><hr/></div>`;
+  ownActions.querySelector('.flow-menu-list').append(preset,detailButton);
+  const menuButton=ownActions.querySelector('.flow-menu-button'), menuList=ownActions.querySelector('.flow-menu-list');
+  const closeMenu=()=>{menuList.hidden=true;menuButton.setAttribute('aria-expanded','false');};
+  menuButton.onclick=event=>{event.stopPropagation();const open=menuList.hidden;
+    // 另存、删除的可用状态跟随原配置按钮（例如只剩一套时不能删）。
+    for(const item of menuList.querySelectorAll('[data-own-menu]')) item.disabled=Boolean(document.querySelector(`#profile-tabs [data-config-action="${item.dataset.ownMenu}"]`)?.disabled);
+    menuList.hidden=!open;menuButton.setAttribute('aria-expanded',String(open));if(open)menuList.querySelector('button:not(:disabled)')?.focus();};
+  menuList.addEventListener('click',event=>{const item=event.target.closest('button');if(!item)return;
+    if(item.dataset.ownMenu) document.querySelector(`#profile-tabs [data-config-action="${item.dataset.ownMenu}"]`)?.click();
+    closeMenu();});
+  document.addEventListener('click',event=>{if(!ownActions.contains(event.target))closeMenu();});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!menuList.hidden){closeMenu();menuButton.focus();}});
   const dice=(side,ui,select)=>{const holder=document.createElement('span');holder.className='flow-dice';holder.append($(ui),$(select));holder.insertAdjacentHTML('beforeend',`<button type="button" class="flow-check" id="flow-check-${side}" aria-pressed="false">未核对</button>`);return holder;};
   const wrap=(cls,...ids)=>{const holder=document.createElement('span');holder.className=cls;holder.append(...ids.map(id=>typeof id==='string'?$(id):id));return holder;};
-  const next=document.createElement('button');next.type='button';next.id='flow-next';next.className='flow-next';next.textContent='下一只';
+  const next=document.createElement('button');next.type='button';next.id='flow-next';next.className='flow-next';next.textContent='清空读数';next.title='清掉这只野怪的全部读数，野怪和我方配置保留';
   fill('target',wrap('flow-spirit','target-image','target-picker'));fill('level',$('level-seg'),$('target-level'));fill('shiny',$('target-shiny-control'));fill('hp',$('target-hp-range'));fill('next',next);
   fill('wild-dice',dice('target','target-dice-ui','target-dice'));fill('wild-trait',$('wild-trait-row'));fill('filter',$('target-filter'));
   fill('wild-extra',wrap('flow-extra','target-dice-custom','target-dice-note','use-initial-form'));
@@ -351,8 +358,75 @@ export function mountPlayerFlow(options) {
   fill('own-extra',wrap('flow-extra','own-dice-custom','own-dice-note',document.querySelector('.dice-panel-source'),details));
   hpRow.remove();
   document.querySelector('.calculator-layout').prepend(setup);
+
+  // ---- 异色目标栏：桌面是左侧一列（无外框、透明底），可收起成左侧边缘中间的把手；手机为滑出浮层 ----
+  // 名单：S5 → S2 → 通行证 → 火红尾、云梦豚，均取初始形态；只收有异色形态的精灵。
+  const spiritById=new Map(catalog.spirits.map(x=>[x.id,x]));
+  const groupRoots=id=>((catalog.targetGroups ?? []).find(g=>g.id===id)?.families ?? []).map(f=>f.spiritIds?.[0]).filter(id=>spiritById.get(id)?.hasShinyForm===true);
+  const extras=['火红尾','云梦豚'].map(name=>catalog.spirits.find(x=>x.name===name)).filter(x=>x?.hasShinyForm===true).map(x=>x.id);
+  const rosterGroups=[['S5 异色',groupRoots('S5')],['S2 异色',groupRoots('S2')],['通行证',groupRoots('battlepass')],['其他',extras]].filter(([,ids])=>ids.length);
+  const drawer=document.createElement('aside');drawer.id='flow-roster';drawer.setAttribute('aria-label','异色目标');
+  drawer.innerHTML=`<div class="fr-title"><button type="button" class="fr-close" aria-label="收起异色目标栏" title="收起异色目标栏">‹ 收起</button></div><div class="fr-scroll">${rosterGroups.map(([label,ids])=>`<section class="fr-group"><h3>${label}</h3><div class="fr-list">${ids.map(id=>{const sp=spiritById.get(id);return `<button type="button" class="fr-item" data-roster-id="${esc(id)}" aria-pressed="false" title="${esc(sp.name)} · 异色" aria-label="${esc(sp.name)} · 异色"><img src="/assets/spirits/roster/${esc(id)}.png" data-fallback="${esc(sp.imageUrl)}" alt="" loading="lazy" decoding="async"/></button>`;}).join('')}</div></section>`).join('')}</div>`;
+  const handle=document.createElement('button');handle.type='button';handle.id='flow-roster-tab';handle.className='fr-handle';
+  handle.setAttribute('aria-controls','flow-roster');handle.setAttribute('aria-expanded','false');handle.title='展开异色目标栏';
+  handle.innerHTML='<span class="fr-handle-text">异色</span><span class="fr-handle-arrow" aria-hidden="true">›</span>';
+  document.querySelector('.calculator-layout').prepend(drawer);document.body.append(handle);
+  const scroller=drawer.querySelector('.fr-scroll'), overlay=matchMedia('(max-width:820px)');
+  const isOpen=()=>document.body.classList.contains('flow-roster-open');
+  let rosterScrollTop=layout.rosterScrollTop, scrollTimer;
+  const saveRosterScroll=()=>{
+    clearTimeout(scrollTimer);
+    // display:none 时不能用 0 覆盖用户最后划到的位置。
+    if(scroller.clientHeight)rosterScrollTop=scroller.scrollTop;
+    layout.rosterScrollTop=rosterScrollTop;
+    saveLayout();
+  };
+  scroller.addEventListener('scroll',()=>{
+    if(!scroller.clientHeight)return;
+    rosterScrollTop=scroller.scrollTop;
+    clearTimeout(scrollTimer);
+    scrollTimer=setTimeout(saveRosterScroll,150);
+  },{passive:true});
+  window.addEventListener('pagehide',saveRosterScroll);
+  const setDrawer=(open,{remember=true}={})=>{
+    if(isOpen())saveRosterScroll();
+    document.body.classList.toggle('flow-roster-open',open);handle.setAttribute('aria-expanded',String(open));drawer.setAttribute('aria-hidden',String(!open));
+    // 桌面的展开状态记住；手机浮层每次默认收起。
+    if(remember&&!overlay.matches){layout.roster=open;saveLayout();}
+    if(open)scroller.scrollTo({top:rosterScrollTop,behavior:'instant'});
+  };
+  const applyMode=()=>setDrawer(overlay.matches?false:layout.roster,{remember:false});
+  overlay.addEventListener('change',applyMode);applyMode();
+  handle.onclick=()=>setDrawer(!isOpen());
+  drawer.querySelector('.fr-close').onclick=()=>{setDrawer(false);handle.focus();};
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&overlay.matches&&isOpen()){setDrawer(false);handle.focus();}});
+  document.addEventListener('pointerdown',event=>{if(overlay.matches&&isOpen()&&!drawer.contains(event.target)&&!handle.contains(event.target))setDrawer(false);});
+  // 立绘缺失时退回计算器小头像。
+  drawer.addEventListener('error',event=>{const img=event.target;if(img.tagName==='IMG'&&img.dataset.fallback&&!img.src.endsWith(img.dataset.fallback))img.src=img.dataset.fallback;},true);
+  drawer.addEventListener('click',event=>{
+    const item=event.target.closest('[data-roster-id]');if(!item)return;
+    const id=item.dataset.rosterId;
+    if(overlay.matches)setDrawer(false);
+    if(ui.getSession().targetId!==id){
+      const select=$('target-species');
+      select.replaceChildren(new Option(spiritById.get(id).name,id));select.value=id;
+      select.dispatchEvent(new Event('change',{bubbles:true}));
+    }
+    // 栏里都是有异色形态的目标：选中即按异色计算（最大生命 ×1.5）。
+    const shiny=$('target-shiny');
+    if(spiritById.get(id)?.hasShinyForm===true && !shiny.checked){shiny.checked=true;shiny.dispatchEvent(new Event('change',{bubbles:true}));}
+  });
+
   versus.hidden=true;
   details.append($('preview-panel'));
+  // 桌面：异色与生命同排；手机宽度不够，异色移到等级那排，血量保持一行。
+  const shinyControl=$('target-shiny-control'), hpVal=setup.querySelector('.flow-hp-field .flow-val'), levelVal=$('level-seg').closest('.flow-val');
+  const narrow=matchMedia('(max-width:820px)');
+  const placeShiny=()=>{ if(narrow.matches) levelVal.append(shinyControl); else hpVal.insertBefore(shinyControl,hpVal.querySelector('.flow-direct-hp')); };
+  // 搜索范围：桌面在野怪标题行，手机收进“条件”。
+  const filter=$('target-filter');filter.title='搜索范围';
+  const placeFilter=()=>{ (narrow.matches?$('flow-filter-sub'):$('flow-filter-head')).append(filter); };
+  narrow.addEventListener('change',()=>{placeShiny();placeFilter();}); placeShiny(); placeFilter();
 
   // 滚过野怪行后，顶部常驻最大生命。
   $('app').prepend(Object.assign(document.createElement('div'),{id:'flow-sticky-hp',innerHTML:'<strong id="flow-hp-name"></strong><span class="flow-hp-caption">最大生命</span><div id="flow-hp-values"></div><span id="flow-mobile-dice"></span>'}));
@@ -406,8 +480,8 @@ export function mountPlayerFlow(options) {
   });
   workspace.addEventListener('focusout',()=>requestAnimationFrame(()=>document.body.classList.toggle('flow-input-focus',workspace.contains(document.activeElement)&&document.activeElement.matches('input,select'))));
   next.onclick=nextTarget;
-  // 手机把“下一只”放在顶栏，野怪区留给精灵、等级和生命。
-  const topNext=Object.assign(document.createElement('button'),{type:'button',id:'flow-next-top',className:'flow-next flow-next-top',textContent:'下一只'});
+  // 手机把“清空读数”放在顶栏，野怪区留给精灵、等级和生命。
+  const topNext=Object.assign(document.createElement('button'),{type:'button',id:'flow-next-top',className:'flow-next flow-next-top',textContent:'清空读数',title:'清掉这只野怪的全部读数，野怪和我方配置保留'});
   topNext.onclick=nextTarget;
   document.querySelector('.app-header')?.append(topNext);
   for(const b of document.querySelectorAll('[data-flow-tab]')) b.onclick=()=>setTab(b.dataset.flowTab);

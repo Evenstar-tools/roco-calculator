@@ -901,18 +901,23 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       for(const [key] of diceFields) $(`${side}-dice-${key}`).value=holder.diceEffects?.[key] ?? '';
       const row=diceCatalog?.dice?.find(item=>item.id===id);
       const note=$(`${side}-dice-note`);
-      note.hidden=id==='none';
-      note.textContent=id==='custom'?'临场攻防倍率计入威力；同项增益按已确认规则叠加。'
-        : row ? `${diceDescription(row)} ${row.typeCoefficient?'单一系别按配置文案试算；觉醒沿用当前模型。双系组合需填写最终威力。':row.supported?'攻防加成计入临场威力。':row.unsupportedReason ?? '当前仅展示资料，未接入结算。'}`
-          : '骰子资料缺失，请重新选择。';
+      // 选择框已写明骰子效果；这里只留需要注意的情况，不重复描述。
+      const warning = id==='none' || id==='custom' ? ''
+        : !row ? '骰子资料缺失，请重新选择。'
+        : row.typeCoefficient ? '单一系别按文案试算；双系组合需填写最终威力。'
+        : row.supported ? '' : row.unsupportedReason ?? '当前仅展示资料，未接入结算。';
+      note.hidden=!warning;
+      note.textContent=warning;
       renderDiceUi(side, holder);
     }
     const includedAllowed=profile.panelSource==='manual';
     if(!includedAllowed) own.panelIncludesDice=false;
-    $('own-dice-panel-included').closest('.dice-panel-source').hidden=(own.diceId??'none')==='none' && !own.panelIncludesDice;
+    // 只在开了任一方骰子时提示一行；不再提供易误解的“战斗面板已含骰子属性”勾选。
+    const anyDice=(own.diceId??'none')!=='none' || (encounter.diceId??'none')!=='none';
+    $('own-dice-panel-included').closest('.dice-panel-source').hidden=!anyDice;
     $('own-dice-panel-included').checked=own.panelIncludesDice===true;
     $('own-dice-panel-included').disabled=!includedAllowed;
-    $('own-dice-panel-note').textContent=includedAllowed?'已包含时不再叠加骰子属性；技能威力加值仍单独处理。':'基础面板不含临场增益；技能计算时计入。';
+    $('own-dice-panel-note').textContent='显示面板已包含双方骰子属性，如需手填面板需清除骰子';
     $('preview-percent-format').value=format;
     $('target-shiny-control').hidden=target?.hasShinyForm !== true;
     $('target-shiny').disabled=target?.hasShinyForm !== true;
