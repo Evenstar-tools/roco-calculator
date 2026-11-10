@@ -47,9 +47,7 @@
   top: auto;
   bottom: calc(100% + 5px);
 }
-.picker-popup[hidden] {
-  display: none;
-}
+
 .picker-list {
   max-height: 300px;
   overflow: auto;
@@ -130,12 +128,4 @@
 .skill-picker-anchor .picker-option img {
   width: 32px;
   height: 32px;
-}
-@media (max-width: 700px) {
-  .picker-popup {
-    max-width: calc(100vw - 42px);
-  }
-  .nature-picker .picker-popup {
-    max-width: calc(100vw - 42px);
-  }
 }

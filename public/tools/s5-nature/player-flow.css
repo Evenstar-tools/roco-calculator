@@ -87,8 +87,6 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
   #preview-outgoing .prow:not(:last-child) .pcell-stack,#preview-outgoing .prow:not(:last-child) > .pskill,#preview-outgoing .prow:not(:last-child) > .pobservations { border-bottom:1px solid #e8eee9; }
   #preview-outgoing .pskill,#preview-outgoing .pobservations { align-self:stretch; }
 
-
-
   .pcell .dmg { letter-spacing:-.25px; }
 }
 @media(min-width:821px) and (max-width:1180px) {
@@ -97,7 +95,6 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
   .flow-test-bar { padding:0 10px; }
 }
 @media(min-width:821px) and (max-width:1100px) {
-
 
   #profiles-section > summary { position:static; margin-top:9px; }
 }
@@ -112,11 +109,7 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
   #flow-hp-values { justify-content:space-between; flex:1; }
   #flow-hp-values > span { color:var(--muted); white-space:nowrap; }
 
-
-
-
   .flow-check { min-height:36px; }
-
 
   .trait-desc { white-space:normal; }
   .dice-ui .switch-label { min-height:40px; }
@@ -142,7 +135,7 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
   .pskill-slot { margin-top:13px; }
 
   .pcell-stack { align-self:stretch; }
-  .preview-grid--out .pcell-stack:last-child { grid-column:auto; }
+
   .pcell-label { display:block; flex-basis:100%; margin:1px 0 5px; font-size:12px; }
 
   .defense-pcell { flex:1; display:flex; flex-direction:column; flex-wrap:nowrap; align-items:stretch; padding:8px 2px!important; border-color:#e3eae5; background:#fafcfb; }
@@ -158,7 +151,6 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
   .pobservations { grid-column:1/-1!important; grid-template-columns:1fr 1fr; gap:8px; padding:7px 0 0; }
   .pobs { min-height:46px; }
   .pobs input { font-size:17px; }
-
 
   .preview-grid--in .prow { padding:8px 0 16px; }
   .preview-grid--in .prow+.prow { padding-top:16px; border-top:1px solid #e3e8e9; }
@@ -201,7 +193,6 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
 
 @media(min-width:821px) {
 
-
   .flow-test-bar { min-height:46px; }
 
   .preview-grid--out,.preview-grid--in { gap:0 10px; }
@@ -215,7 +206,7 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
   .pcell.paxis .dmg { font-size:22px; line-height:1.25; white-space:normal; }
   .pcell.paxis .hit-formula { line-height:1.4; }
   #preview-incoming .prow > .pskill,#preview-incoming .prow > .pobservations { align-self:stretch; }
-  #preview-incoming .prow > * { border-top:0; }
+
   #preview-incoming .prow:not(:last-child) > .pskill,#preview-incoming .prow:not(:last-child) > .pobservations,#preview-incoming .prow:not(:last-child) .paxis { border-bottom:1px solid #e8eee9; }
   .pcell.paxis.hit { background:#edf7ef; border-color:#489564; }
   .pcell.paxis.miss { background:#f6f7f6; }
@@ -230,7 +221,6 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
   .preview-heading { gap:0 4px; }
   .preview-heading .flow-clear { min-height:44px; }
   .preview-heading p { font-size:12px; line-height:1.4; }
-
 
   .preview-grid--out .pskill-slot { display:none; }
   .preview-grid--out .pskill-body { display:flex; align-items:center; gap:6px; min-height:44px; }
@@ -304,7 +294,7 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
 .flow-details-button::before { content:"▸"; margin-right:4px; font-size:10px; }
 .flow-details-button[aria-expanded="true"]::before { content:"▾"; }
 .flow-own-summary { display:none; }
-#profiles-section { margin:0; padding:0; border:0; }
+
 #profiles-section[open] { margin-top:8px; padding-top:8px; border-top:1px solid #e1e7e2; }
 #profiles-section > summary { display:none; }
 .flow-dialog { width:min(380px,calc(100% - 32px)); border:1px solid #cddbd2; border-radius:12px; padding:20px; box-shadow:0 12px 50px #12282233; }
@@ -399,11 +389,8 @@ body.flow-past-config .preview-rail { top:58px; }
   body[data-workspace-mode="preview"] #app { padding:8px 10px 92px; }
   body[data-workspace-mode="preview"] .calculator-layout { display:flex; flex-direction:column; }
 
-
-
   .flow-card .seg button { min-width:40px; padding:4px 8px; }
   .flow-hp-field { flex-basis:100%; justify-content:space-between; }
-
 
   .flow-direct-hp input { flex:1; }
   .flow-more { display:inline-block; border:1px solid #d5dfda; border-radius:8px; background:#fff; color:#3f6d5b; font-size:13px; }
@@ -422,7 +409,6 @@ body.flow-past-config .preview-rail { top:58px; }
   .flow-own-summary-edit { color:#3f6d5b; font-size:13px; }
   .flow-own-summary-edit::after { content:" ▾"; font-size:10px; }
   .flow-own-summary[aria-expanded="true"] .flow-own-summary-edit::after { content:" ▴"; }
-
 
   .flow-own-card .flow-role { display:none; }
   #profile-tabs { flex-basis:100%; flex-wrap:wrap; }
@@ -468,7 +454,6 @@ body.flow-past-config .preview-rail { top:58px; }
 }
 @media(max-width:350px) {
 
-
   .flow-matrix { grid-template-columns:40px repeat(6,minmax(0,1fr)); gap:2px; }
   .fm-cell { font-size:11px; }
 }
@@ -485,7 +470,6 @@ label.flow-field { flex-direction:row; margin:0; }
 .flow-direct-hp input::placeholder { font-weight:400; font-size:12.5px; color:#93a199; }
 @media(max-width:820px) {
   /* 手机野怪区三行：精灵+下一只；等级+异色+条件；最大生命+读到的 HP。 */
-
 
   .flow-wild-card .flow-hp-field #target-hp-range { gap:6px; }
 
@@ -529,7 +513,6 @@ label.flow-field { flex-direction:row; margin:0; }
   #flow-result > .flow-matrix { margin-top:10px; }
   .preview-grid--out,.preview-grid--in { gap:0 6px; }
   .hp-reading b { font-size:12.5px; }
-
 
   .flow-hp-field #target-hp-range { gap:8px; }
   .flow-hp-field #target-hp-range b { font-size:16px; }
@@ -587,7 +570,6 @@ body[data-workspace-mode="preview"] #app { max-width:1560px; }
   #flow-setup > .flow-own-card { order:3; }
   .flow-wild-card .flow-head .flow-role { display:none; }
 
-
   .flow-wild-card > .flow-row { grid-template-columns:minmax(0,1fr); }
   .flow-wild-card > .flow-row > .flow-key { display:none; }
   .flow-row { gap:6px; }
@@ -619,7 +601,6 @@ body[data-workspace-mode="preview"] #app { max-width:1560px; }
 
 .flow-next { white-space:nowrap; }
 @media(max-width:820px) {
-
 
   .flow-hp-field #target-shiny-control { margin-left:0; }
 }
@@ -708,13 +689,9 @@ body[data-workspace-mode="preview"] .calculator-layout { gap:10px 14px; }
 }
 @media(min-width:1101px) and (max-width:1360px) {
 
-
   .flow-head .flow-spirit .picker-anchor { width:118px; }
 }
 @media(max-width:1100px) {
-
-
-
 
   .fr-item::after { bottom:1px; }
 }
