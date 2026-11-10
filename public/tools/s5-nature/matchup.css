@@ -1,7 +1,7 @@
 /* 配招判断界面：选双方 → 四技能伤害／剩余血量 → 敌方技能 → 判定。 */
 :root { --page:#eef1f6; --ink:#151a2c; --head:#14302e; --gold:#e3b04b; --gold-soft:#fbf3e1; --gold-ink:#8b641d;
   --hit:#13865a; --hit-soft:#e6f6ee; --miss:#b8bfcc; --amber:#d99a1e; --card-line:#e2e6ee; }
-body { background:var(--page); }
+
 .compat-hidden { position:absolute !important; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
 /* 顶栏 */
@@ -11,7 +11,7 @@ body { background:var(--page); }
 /* 模式切换 */
 body[data-workspace-mode="preview"] .validation-only,
 body[data-workspace-mode="validation"] .preview-only { display:none !important; }
-body[data-workspace-mode="preview"] .calculator-layout { grid-template-columns:minmax(0,1fr) 292px; }
+
 .validation-bar { display:flex; align-items:center; gap:12px; background:#fff; border:1px solid var(--card-line); border-radius:10px; padding:8px 14px; margin-bottom:12px; font-size:13px; }
 .validation-bar span { color:var(--muted); flex:1; }
 
@@ -20,13 +20,13 @@ body[data-workspace-mode="preview"] .calculator-layout { grid-template-columns:m
 .side-picker, .side-picker[data-role="defense"] { border-top:0; padding-top:0; }
 .side-role { font-size:11px; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:0 7px; }
 body[data-workspace-mode="preview"] .side-role { display:none; }
-.profile-tabs { margin-left:auto; background:#f1f3f7; border-radius:7px; padding:2px; gap:2px; }
+
 .profile-tabs button { border:0; background:transparent; color:var(--muted); font-size:12px; padding:2px 10px; border-radius:5px; max-width:120px; }
 .profile-tabs button[aria-selected="true"] { background:#fff; color:var(--ink); font-weight:700; box-shadow:0 1px 2px rgba(0,0,0,.08); border:0; }
 .spirit-card { margin-top:8px; min-height:80px; }
 .config-rows { display:flex; flex-direction:column; }
 .config-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.config-row.dice-line { padding-top:0; }
+
 .config-key { width:32px; flex:none; color:var(--muted); display:block; }
 .seg { display:inline-flex; border:1px solid var(--line); border-radius:7px; overflow:hidden; background:#fff; }
 .seg button { border:0; border-left:1px solid var(--line); border-radius:0; font-size:12.5px; background:#fff; color:#3a4258; line-height:1.5; }
@@ -65,16 +65,15 @@ body[data-workspace-mode="validation"] .swap-action .swap-arrows { display:inlin
 
 /* 出招表 */
 .preview-workspace { padding:0; flex-direction:column; }
-.preview-card { background:#fff; border:1px solid var(--card-line); }
+
 .preview-heading { display:flex; align-items:baseline; justify-content:flex-start; }
 .preview-heading h2 { flex:none; white-space:nowrap; margin:0; }
 .preview-heading p { margin:0; color:var(--muted); }
 .preview-grid { display:grid; align-items:center; column-gap:8px; row-gap:8px; }
-.preview-grid--out { grid-template-columns:minmax(180px,1.5fr) repeat(3,minmax(0,1fr)) 126px; }
-.preview-grid--in { grid-template-columns:minmax(180px,1.5fr) repeat(3,minmax(0,1fr)) 126px; }
+
 .prow, .pcells { display:contents; }
 .pth { color:var(--muted); display:flex; align-items:center; justify-content:center; gap:4px; border-bottom:1px solid var(--line); }
-.pth img { width:16px; height:16px; }
+
 .pth-skill { justify-content:flex-start; }
 .up-arrow { color:var(--red); font-weight:700; }
 .pskill { display:flex; align-items:flex-start; min-width:0; }
@@ -84,7 +83,7 @@ body[data-workspace-mode="validation"] .swap-action .swap-arrows { display:inlin
 .pskill-meta { color:var(--muted); margin:3px 0 0 2px; }
 .preview-model-note { display:block; margin-top:4px; font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
 .preview-legacy-power { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:4px 0; color:var(--muted); font-size:11.5px; }
-.preview-legacy-power[hidden] { display:none; }
+
 .preview-legacy-power button { padding:2px 6px; font-size:inherit; }
 .pcell { position:relative; display:flex; flex-wrap:wrap; align-items:center; align-content:flex-start; justify-content:center; column-gap:6px; text-align:center; border:1px solid transparent; border-radius:7px; margin:0; font-variant-numeric:tabular-nums; min-width:0; }
 .pcell .dmg { flex-basis:100%; color:var(--ink); white-space:nowrap; }
@@ -94,9 +93,7 @@ body[data-workspace-mode="validation"] .swap-action .swap-arrows { display:inlin
 .pcell-label { display:none; }
 .pcell[role="button"] { cursor:pointer; }
 .pcell[role="button"]:focus-visible { outline:2px solid var(--accent); outline-offset:1px; }
-.pcell.hit { background:var(--hit-soft); border-color:var(--hit); }
-.pcell.picked { background:var(--hit-soft); border-color:var(--hit); box-shadow:0 0 0 2px rgba(19,134,90,.12); }
-.pcell.miss .dmg, .pcell.miss .rem, .pcell.miss .rem b { color:#7a8598; }
+
 .pcell.miss .ko { color:#7a8598; }
 .pcell-note { color:var(--muted); font-size:12.5px; text-align:center; padding:12px 6px; background:#f7f8fb; border-radius:8px; margin:4px 2px; }
 .preview-grid--out .pcell-note { grid-column:span 3; }
@@ -126,7 +123,7 @@ body[data-workspace-mode="validation"] .swap-action .swap-arrows { display:inlin
 .nature-axis:last-child { border-bottom:0; }
 .axis-name { display:flex; align-items:center; gap:7px; color:var(--muted); }
 .axis-name img { width:17px; height:17px; object-fit:contain; }
-.nature-axis b { font-weight:700; color:var(--ink); }
+
 .nature-axis b.up { color:var(--red); }
 .nature-axis b.down { color:var(--blue); }
 .nature-axis b.empty { color:var(--muted); font-weight:400; }
@@ -157,16 +154,16 @@ body[data-workspace-mode="validation"] .swap-action .swap-arrows { display:inlin
 .panel-stats em { font-style:normal; font-size:10.5px; color:var(--gold-ink); margin-left:3px; }
 
 /* 骰子 */
-.dice-custom { padding:0 0 0 42px; }
+
 .dice-custom p { font-size:12px; color:var(--muted); margin:0 0 6px; }
 .dice-values { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:7px; }
-.dice-values label { font-size:12px; }
+
 .dice-line select { min-width:0; width:0; flex:1; text-overflow:ellipsis; }
 .dice-note { margin:4px 0 8px 42px; color:var(--muted); font-size:12px; line-height:1.6; }
-.dice-panel-source { margin:6px 0 2px 42px; }
+
 .dice-panel-source label { display:flex; flex-direction:row; align-items:center; justify-content:flex-start; gap:7px; font-size:12px; line-height:1.6; }
 .dice-panel-source input { flex:none; margin:0; }
-.dice-panel-source p { margin:3px 0 0; color:var(--muted); font-size:12px; line-height:1.5; }
+
 .preview-final-power { margin-top:8px; }
 .preview-final-power label { display:block; margin-top:6px; }
 
@@ -182,11 +179,10 @@ body[data-workspace-mode="validation"] .swap-action .swap-arrows { display:inlin
 .condition-label { color:var(--blue); }
 .pcell-penalty .rem, .pcell-penalty .ko { flex-basis:100%; margin-top:0; }
 
-@media (min-width:1400px) { body[data-workspace-mode="preview"] #app { max-width:1340px; margin:auto; } }
 @media (max-width:1100px) {
-  body[data-workspace-mode="preview"] .calculator-layout { grid-template-columns:minmax(0,1fr); }
+
   .preview-rail { position:static; display:grid; grid-template-columns:1fr 1fr; }
-  #app { padding-bottom:88px; }
+
   #preview-verdict, #health-result, #result-status { scroll-margin-top:14px; }
 }
 @media (max-width:820px) {
@@ -196,11 +192,9 @@ body[data-workspace-mode="validation"] .swap-action .swap-arrows { display:inlin
   .prow { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); margin-top:10px; }
   .prow .pskill { grid-column:1/-1; padding:0 0 3px; }
   .prow > .pobs, .prow > .pobservations { grid-column:1/-1; margin-top:4px; }
-  .pobservations { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .pcell-stack { padding:0; }
+
   .pcell-label { order:-1; color:var(--muted); margin-bottom:4px; }
-  .preview-grid--out .pcell-stack:last-child, .preview-grid--in .pcell-stack:last-child { grid-column:1/-1; }
-  .preview-grid--out .pcell-stack:last-child .pcell, .preview-grid--in .pcell-stack:last-child .pcell { min-height:0; }
+
   .pcell-note { grid-column:1/-1 !important; }
   .picker-anchor > .picker-popup, .nature-picker > .picker-popup { width:100%; min-width:0; max-width:100%; box-sizing:border-box; }
   .picker-option { gap:8px; }
@@ -208,14 +202,13 @@ body[data-workspace-mode="validation"] .swap-action .swap-arrows { display:inlin
 }
 @media (max-width:440px) {
   .dice-values { grid-template-columns:1fr 1fr; }
-  .pcell .dmg { font-size:18px; }
+
   .pcell-penalty .dmg { font-size:14px; }
-  .config-row { gap:8px; }
+
   .config-row .quick-ivs { gap:3px; }
   .config-row .quick-ivs button { width:30px; }
   .pobs > span:not(.unit-label) { padding-left:6px; }
   .pobs input { padding:0 6px; }
-  #notice { top:108px; }
 }
 
 /* v3：紧凑设置区（头像 + 精灵 + 档案/等级一行；星级、性格个体、骰子、特性各一行） */
@@ -228,9 +221,7 @@ body[data-workspace-mode="validation"] .swap-action .swap-arrows { display:inlin
 .side-head .profile-tabs { display:flex; }
 .config-key--inline { width:auto; margin-left:4px; }
 .hp-line { display:flex; flex:1; min-width:0; font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; }
-.hp-line b { color:var(--ink); }
-.hp-line [data-hp-nature="up"] b { color:var(--red); }
-.hp-line [data-hp-nature="down"] b { color:var(--blue); }
+
 .switch-label { display:inline-flex; flex-direction:row; align-items:center; gap:6px; margin:0; font-size:13px; color:var(--ink); cursor:pointer; }
 #wild-side .config-row > .switch-label { margin-left:auto; }
 input.switch { appearance:none; -webkit-appearance:none; flex:none; width:36px; height:20px; min-height:0; margin:0; padding:0; border:0; border-radius:999px; background:#d5dae3; position:relative; cursor:pointer; transition:background .15s; }
@@ -243,13 +234,12 @@ input.switch:focus-visible { outline:2px solid var(--accent); outline-offset:2px
 .dice-chip { font-size:12.5px; padding:2px 10px; border:1px solid var(--line); border-radius:7px; background:#fff; color:#3a4258; }
 .dice-chip[aria-pressed="true"] { border-color:var(--hit); background:var(--hit-soft); color:var(--hit); font-weight:700; }
 .trait-row { flex:1; min-width:0; display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:3px 10px; border:1px solid; font-size:12.5px; }
-.trait-row--own { border-color:#ffc4b4; background:#fff8f6; }
+
 .trait-row--wild { border-color:#b9d5f2; background:#f5f9fe; flex-wrap:nowrap; }
 .trait-row strong { font-size:13px; white-space:nowrap; }
 .trait-desc { min-width:0; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .trait-row .trait-none { background:transparent; padding:0; font-size:12px; }
 .trait-row .trait-step input { height:24px; }
-.initial-form-button { margin-top:8px; }
 
 /* 技能格：⚙ 打开本招条件 */
 .pskill-body { position:relative; }
@@ -262,26 +252,26 @@ input.switch:focus-visible { outline:2px solid var(--accent); outline-offset:2px
 .pskill-meta .pw { font-weight:500; color:var(--ink); }
 .pskill-meta .pw.manual { color:var(--gold-ink); font-weight:700; }
 .pskill-pop { position:absolute; z-index:30; top:36px; left:0; width:max(100%, 270px); box-sizing:border-box; padding:10px 12px; background:#fff; border:1px solid var(--card-line); border-radius:10px; box-shadow:0 8px 24px rgba(20,48,46,.14); }
-.pskill-pop[hidden] { display:none; }
+
 .pskill-pop-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
 .pskill-pop-grid label { display:flex; flex-direction:column; gap:3px; font-size:12px; color:var(--muted); }
-.pskill-pop-grid input { width:100%; min-width:0; box-sizing:border-box; }
+
 .pskill-first-action { display:flex; flex-direction:row; align-items:center; gap:6px; margin-top:10px; font-size:12px; color:var(--ink); }
-.pskill-first-action[hidden] { display:none; }
+
 .pskill-first-action input { width:auto; margin:0; }
 .pskill-pop-foot { display:flex; align-items:center; gap:8px; margin-top:8px; font-size:12px; color:var(--muted); }
 .pskill-pop-foot .text-button { margin-left:auto; color:var(--blue); }
 .pth-action { margin-left:6px; padding:0 2px; font-size:12px; color:var(--blue); }
 
 /* 敌方出招：减 / 不变 / 加 */
-.preview-grid--in .prow > * { border-top:1px solid #f0f2f6; }
+
 .preview-grid--in .prow:first-child > * { border-top:0; }
 .pcell.paxis { flex-direction:column; flex-wrap:nowrap; align-items:flex-start; justify-content:center; text-align:left; border:1px solid var(--line); }
 .paxis .dmg { flex-basis:auto; }
 .paxis .axis-label { font-weight:700; color:var(--muted); }
 .paxis--down .axis-label { color:var(--blue); }
 .paxis--up .axis-label { color:var(--red); }
-.paxis.miss { background:#f4f5f8; border-color:var(--line); }
+
 .preview-grid--in .prow > .pobs { align-self:center; }
 
 /* 判定：等级行 */
@@ -293,11 +283,9 @@ input.switch:focus-visible { outline:2px solid var(--accent); outline-offset:2px
 
 @media (max-width:820px) {
   .swap-action { margin:0 auto; }
-  .preview-grid--in .prow { grid-template-columns:repeat(3,minmax(0,1fr)); }
-  .preview-grid--in .prow > * { border-top:0; }
 }
 @media (max-width:440px) {
-  .side-pick { flex:1 1 120px; }
+
   .side-head .profile-tabs { margin-left:0; }
   .pskill-pop-grid { grid-template-columns:1fr 1fr; }
 }
@@ -307,25 +295,24 @@ input.switch:focus-visible { outline:2px solid var(--accent); outline-offset:2px
 .config-rows .config-row { gap:8px; }
 /* Keep the complete scope label and level buttons inside the target column. */
 .target-controls { display:flex; align-items:center; min-width:0; }
-#target-filter { max-width:100%; }
+
 .target-controls .seg { flex:0 0 auto; max-width:100%; }
 .target-controls .seg button { white-space:nowrap; }
-#target-shiny-control[hidden] { display:none; }
+
 .hp-line > span { white-space:nowrap; }
 .dice-note { overflow-wrap:anywhere; }
 .side-head, .config-rows, .dice-ui { max-width:100%; }
 .dice-chip { max-width:100%; overflow-wrap:anywhere; text-align:left; }
 @media (max-width:440px) {
   .target-controls { gap:8px; }
-  #target-filter { flex-basis:100%; }
 }
 .config-row .row-end { margin-left:auto; color:var(--blue); }
 .dice-line .dice-selector { flex:1 1 180px; width:180px; min-width:0; max-width:100%; font-size:12px; }
-.config-row .config-key { flex-shrink:0; }
+
 .pskill-pop { max-width:min(360px, calc(100vw - 48px)); }
 .pskill-pop .preview-final-power p { margin:6px 0 0; line-height:1.5; font-size:12px; color:var(--muted); }
 .verdict-level { flex-wrap:wrap; }
-.verdict-level em { min-width:0; }
+
 @media (max-width:440px) {
   .config-row .quick-ivs { flex-wrap:wrap; }
 }

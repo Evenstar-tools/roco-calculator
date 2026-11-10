@@ -4,7 +4,6 @@
 .web-back:focus-visible { outline:2px solid #ebd39e; outline-offset:4px; border-radius:3px; }
 .app-header h1 { white-space:nowrap; }
 @media (max-width:620px) {
-  .app-header { height:auto; min-height:52px; padding:10px 12px; gap:8px; flex-wrap:wrap; }
+
   .web-brand { width:100%; justify-content:space-between; gap:10px; }
-  .web-brand h1 { font-size:16px; }
 }
