@@ -6,9 +6,10 @@ import { PluginAccess } from "../../src/runtime/PluginAccess.jsx";
 
 const testUrl = window.location.href;
 afterEach(() => {
-  vi.restoreAllMocks(); vi.unstubAllEnvs(); vi.resetModules();
+  vi.restoreAllMocks(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.resetModules();
   globalThis.jsdom.reconfigure({ url: testUrl });
   document.cookie = "roco-cn-plugin-entry=; Max-Age=0; Path=/";
+  sessionStorage.clear();
 });
 function renderUnlockable(children) {
   return render(<PluginAccess enabled><input aria-label="彩蛋搜索" type="search" defaultValue="龙骑士" />{children}</PluginAccess>);
@@ -113,14 +114,41 @@ test("已解锁入口仅为左键或中键导航发放凭据，普通打开菜�
   expect(document.cookie).toContain("roco-cn-plugin-entry=1");
 });
 
-test("桌面 app 协议不显示国服网页专属工具", () => {
+test("桌面 app 协议保留独立野怪计算，原彩蛋解锁后同窗进入插件", () => {
+  const storage = sessionStorage;
   globalThis.jsdom.reconfigure({ url: "app://calculator/cn/" });
+  vi.stubGlobal("sessionStorage", storage);
   renderUnlockable(<Toolbox actions={{ types: vi.fn() }} />);
-  unlock();
-  fireEvent.click(screen.getByRole("button", { name: "工具箱" }));
+  const trigger = screen.getByRole("button", { name: "工具箱" });
+  fireEvent.click(trigger);
   expect(screen.queryByRole("region", { name: "插件工具" })).not.toBeInTheDocument();
   expect(screen.queryByRole("link", { name: "野生精灵检测器" })).not.toBeInTheDocument();
-  expect(screen.queryByRole("link", { name: "S5奇遇性格计算" })).not.toBeInTheDocument();
+  const nature = screen.getByRole("link", { name: "S5奇遇性格计算" });
+  expect(nature).toBeVisible();
+  expect(nature).toHaveAttribute("href", "/tools/s5-nature/index.html");
+  expect(nature.href).toBe("app://calculator/tools/s5-nature/index.html");
+  expect(nature).not.toHaveAttribute("target");
+  nature.addEventListener("click", event => event.preventDefault(), { once: true });
+  fireEvent.click(nature);
+  expect(screen.queryByRole("navigation", { name: "工具箱" })).not.toBeInTheDocument();
+  expect(trigger).toHaveFocus();
+  unlock();
+  fireEvent.click(trigger);
+  const plugin = screen.getByRole("link", { name: "野生精灵检测器" });
+  expect(plugin).toBeVisible();
+  expect(plugin.href).toBe("app://calculator/plugins/wild-spirit-detector/");
+  expect(plugin).not.toHaveAttribute("target");
+  expect(plugin).not.toHaveAttribute("rel");
+  expect(storage.getItem("roco-cn-plugin-entry")).toBeNull();
+  fireEvent(plugin, new MouseEvent("auxclick", { bubbles: true, button: 1 }));
+  expect(storage.getItem("roco-cn-plugin-entry")).toBeNull();
+  plugin.addEventListener("click", event => event.preventDefault(), { once: true });
+  const now = Date.now();
+  fireEvent.click(plugin);
+  expect(Number(storage.getItem("roco-cn-plugin-entry"))).toBeGreaterThanOrEqual(now + 30_000);
+  expect(Number(storage.getItem("roco-cn-plugin-entry"))).toBeLessThanOrEqual(Date.now() + 30_000);
+  expect(screen.queryByRole("navigation", { name: "工具箱" })).not.toBeInTheDocument();
+  expect(trigger).toHaveFocus();
 });
 
 test("正式版隐藏抢先入口，重复点击、外部点击、Esc 关闭，键盘焦点在工具与插件链接间循环", () => {
