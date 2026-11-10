@@ -723,7 +723,7 @@ body[data-workspace-mode="preview"] .calculator-layout { gap:10px 14px; }
 /* 821–1100 也用左侧竖排立绘栏，不再顶部横排 */
 
 @media(min-width:821px) and (max-width:1100px) {
-  .flow-own-card .flow-head { flex-wrap:wrap; height:auto; row-gap:4px; padding-bottom:6px; }
+  .flow-own-card .flow-head { flex-wrap:wrap; height:auto; }
   .flow-own-card .flow-head #profile-tabs { margin-left:0; }
   .flow-own-card .flow-head .flow-spirit .picker-anchor { width:150px; }
   #profile-select { max-width:130px; }
@@ -838,52 +838,17 @@ body #flow-roster { top:0!important; bottom:auto; height:100vh; height:100dvh; m
 .flow-row:has(.flow-dice) { align-items:start; }
 .flow-row:has(.flow-dice) > .flow-key { padding-top:7px; }
 
-/* 独立第五招：绿色回血只约束生命，开关记住显示状态。 */
-.flow-exchange-toggle { display:inline-flex; flex-direction:row; margin:0; align-items:center; gap:5px; white-space:nowrap; font-size:12px; color:#436152; cursor:pointer; }
-.flow-exchange-toggle input { appearance:none; width:28px; height:17px; min-height:0; margin:0; padding:2px; border:0; border-radius:12px; background:#cdd7d1; cursor:pointer; }
-.flow-exchange-toggle input::before { content:""; display:block; width:13px; height:13px; border-radius:50%; background:#fff; box-shadow:0 1px 2px #0002; }
-.flow-exchange-toggle input:checked { background:#267755; }
-.flow-exchange-toggle input:checked::before { transform:translateX(11px); }
-.flow-exchange-toggle input:focus-visible { outline:2px solid #3d7a64; outline-offset:3px; }
-#flow-exchange-row { display:grid; grid-template-columns:minmax(160px,1.15fr) minmax(0,3fr) 126px; align-items:center; gap:12px; margin-top:6px; padding:12px 0 4px; border-top:1px solid #dbe5de; }
+/* 第五招沿用开关、三列读数和输入控件，仅保留布局差异。 */
+#flow-outgoing-card .preview-heading { display:flex; flex-wrap:wrap; }
+#flow-exchange-row { grid-template-columns:160px minmax(0,1fr) 126px; padding:12px 0 4px; }
 #flow-exchange-row[hidden] { display:none; }
-.flow-exchange-title { display:flex; align-items:center; flex-wrap:wrap; gap:6px; font-size:14px; }
-.flow-exchange-title .pskill-slot { display:inline-flex; align-items:center; justify-content:center; }
-.flow-exchange-title > span:last-child { font-size:12px; color:#64766d; }
-.flow-exchange-help { font-size:12px; color:#576e60; line-height:1.6; margin-top:5px; }
-
-.flow-exchange-values { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-.flow-exchange-prediction { display:flex; flex-direction:column; align-items:center; gap:5px; padding:5px 2px; border:1px solid transparent; border-radius:6px; }
-.flow-exchange-prediction span { font-size:12px; color:#607467; white-space:nowrap; }
-.flow-exchange-prediction b { font-size:19px; line-height:1.2; color:#273e31; }
-.flow-exchange-prediction.hit { background:#edf6ef; border-color:#93bda0; }
-.flow-exchange-prediction.hit b { color:#226d45; }
-.flow-exchange-observation { min-width:0; }
-.flow-exchange-observation .pobs { display:flex; flex-direction:column; align-items:stretch; height:auto; min-height:52px; gap:3px; padding:5px 8px; }
-.flow-exchange-observation .pobs > span { font-size:12px; color:#52715e; }
-.flow-exchange-observation input { flex:none; width:100%; min-width:0; padding:2px 0; border:0; min-height:24px; color:#226d45; }
-.flow-exchange-observation .flow-row-verdict { margin-top:4px; }
-@media(min-width:821px) { #flow-outgoing-card .preview-heading { display:flex; flex-wrap:wrap; } }
-@media(max-width:1100px) and (min-width:821px) { #flow-exchange-row { grid-template-columns:minmax(140px,1fr) minmax(0,2fr) 104px; gap:8px; } }
-@media(max-width:820px) {
-  #flow-outgoing-card .preview-heading { display:flex; flex-wrap:wrap; }
-  .flow-exchange-toggle { margin-left:auto; min-height:32px; }
-  #flow-exchange-row { grid-template-columns:minmax(0,1fr) 104px; gap:10px; padding-top:14px; }
-  .flow-exchange-skill { grid-column:1 / -1; }
-  .flow-exchange-values { gap:2px; }
-  .flow-exchange-prediction span { font-size:12px; }
-  .flow-exchange-prediction b { font-size:18px; }
-}
-
-/* 中等窗口下标题控件换行，生命三档保持各自完整。 */
 @media(min-width:821px) and (max-width:1100px) {
-  .flow-wild-card .flow-head { flex-wrap:wrap; height:auto; row-gap:4px; padding-bottom:6px; }
+  #flow-exchange-row { grid-template-columns:140px minmax(0,1fr) 104px; }
+  .flow-wild-card .flow-head { flex-wrap:wrap; height:auto; }
   .flow-wild-card .flow-filter-slot { margin-left:0; }
   .flow-hp-field #target-hp-range { flex-shrink:0; }
 }
-
-.flow-exchange-skill { position:relative; min-width:0; }
-.flow-exchange-title .pskill-gear { margin-left:auto; }
-.flow-exchange-conditions { width:min(280px,calc(100vw - 56px)); }
-.flow-exchange-conditions .pskill-pop-grid { grid-template-columns:1fr; }
-.flow-exchange-conditions p { margin:8px 0; font-size:12px; line-height:1.6; color:#607467; }
+@media(max-width:820px) {
+  #flow-exchange-row { grid-template-columns:minmax(0,1fr) 104px; gap:10px; }
+  .flow-exchange-skill { grid-column:1 / -1; }
+}
