@@ -100,16 +100,18 @@ export async function startTool({ serviceWorker = globalThis.navigator?.serviceW
   try {
     const initialController = serviceWorker?.controller;
     await prepareToolWorker(serviceWorker, location, timeoutMs);
+    let cacheReady;
     if (serviceWorker?.controller && serviceWorker.controller !== initialController) {
       // HTML and this bootstrap were fetched before takeover. Populate the new
-      // worker's cache as well so the very next reload can work offline.
+      // worker's cache alongside the UI so its first paint does not wait for
+      // another network round trip. Completion still includes offline priming.
       const urls = [location?.href, import.meta.url].filter(url => typeof url === 'string'
         && new URL(url).origin === location.origin);
       const abort = new AbortController();
       const timer = setTimeout(() => abort.abort(), 3000);
-      try {
-        await Promise.allSettled(urls.map(url => fetchResource(url, { cache: 'no-cache', signal: abort.signal })));
-      } finally { clearTimeout(timer); }
+      cacheReady = Promise.allSettled(urls.map(async url =>
+        fetchResource(url, { cache: 'no-cache', signal: abort.signal })))
+        .finally(() => clearTimeout(timer));
     }
     const cleanup = [];
     let timer;
@@ -139,6 +141,7 @@ export async function startTool({ serviceWorker = globalThis.navigator?.serviceW
     }
     document.getElementById('tool-startup-status')?.remove();
     document.body.style.removeProperty('visibility');
+    await cacheReady;
     return result;
   } catch (error) {
     const status = document.getElementById('tool-startup-status');

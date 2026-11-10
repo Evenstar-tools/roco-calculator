@@ -8,7 +8,7 @@
 
 | 位置 | 用途与状态 |
 | --- | --- |
-| `D:/codex/worktrees/roco-s5-player-flow-20261110` | **当前实施工作树，继续开发用这里。** 分支 `feature/s5-player-flow-20261110`。写交接前工作树干净。 |
+| `D:/codex/worktrees/roco-s5-player-flow-20261110` | **当前实施工作树，继续开发用这里。** 分支 `feature/s5-player-flow-20261110`。方案 A、复核修复和启动优化目前均有未提交改动。 |
 | `http://127.0.0.1:8843/tools/s5-nature/index.html` | 当前真实源码预览，Vite 服务；交接时仍在运行。 |
 | `D:/codex/rock-calculator-public` | 主仓库、发布编排及其他工作。已有未提交文档改动，勿 reset、清理或整体覆盖。 |
 | `D:/codex/rock-calculator-public/artifacts/web-ux-s5-player-flow-20261109` | 旧 UI 示意稿与迭代截图，`proposal.html / proposal.js / proposal.css`；用于理解设计过程。 |
@@ -58,9 +58,9 @@
 下一只：清本场记录，保留可复用的配置
 ```
 
-当前野怪等级入口为 41／42／43／41–43 全部；我方等级支持 1–60，星级显示 5–10 星（等级入口尚有第 6 节所述问题）。
+当前野怪等级入口为 41／42／43／41–43 全部；我方等级支持 1–60，已放在出战行精灵旁，星级显示 5–10 星。手机展开一次出战配置即可修改等级。
 
-两种测法是同级页签，不做强制分步向导：
+两种测法在桌面上下同页，手机用同级页签切换，不做强制分步向导：
 
 | 测法 | 玩家操作 | 直接证据 |
 | --- | --- | --- |
@@ -164,7 +164,7 @@ index → web-startup.startTool → ui
 | 文件 | 优先查看 |
 | --- | --- |
 | `ui.mjs` | `persist`、`presetProfile`、`autoGenerateProfile`、`renderProfiles`、`profile-tabs` 事件、末尾 `mountPlayerFlow` 装配 |
-| `player-flow.mjs` | `normalizePlayerFlow`、`clearTab`、`nextTarget`、`render`、`mountPlayerFlow` |
+| `player-flow.mjs` | `normalizePlayerFlow`、`outgoingReadingVerdict`、`incomingReadingVerdict`、`clearCard`、`nextTarget`、`render`、`mountPlayerFlow` |
 | `matchup-ui.mjs` | `observationMatch`、`readOutgoingObservations`、`readIncomingObservation`、`observationDifference`、内部 `state`、`renderVerdict` |
 | `measurement-comparison.mjs` | `intersectNatureCases`、`compareObservedHp` |
 | `own-presets.mjs` | `resolveOwnPreset`、`getOwnSkillIds` |
@@ -194,11 +194,35 @@ index → web-startup.startTool → ui
 
 `window.pveNatureUi.getSession/getPreview` 返回副本，修改返回对象不会自动保存。`setSession()` 校验整份存档并保存，主要供现有导入和复现使用；正常局部操作沿用传入的 `commit()`。纯渲染用 `saveLayout(false)`，不在首次加载时把恢复失败的旧存档覆盖成默认值。
 
-预设读取是另一条通道：`own-presets.mjs` 只读主计算器的 `rock-calculator.servers.cn.spirit-configs.v2`，不写回。罗隐／迪莫优先专用预设；其他精灵先个人配置，再内置配置库。不要把“已有自动存档”误认为“已有完整的多套常用配置管理”。
+预设读取是另一条通道：`own-presets.mjs` 只读主计算器的 `rock-calculator.servers.cn.spirit-configs.v2`，不写回。罗隐／迪莫优先专用预设；其他精灵先个人配置，再内置配置库。本工具已支持另存、改名和删除 1–12 套配置，存入自身会话的 `profiles[]`。
 
-## 6. 尚未处理的动线问题
+## 5.1 方案 A 落地（Claude · 2026-11-10，未提交）
 
-本节是已核实问题和建议方向；尚未实现。用户先要求梳理动线，后明确实施的是独立判读与伤害容错。Claude 应按用户下一步要求选择范围，不把本表写成已完成。
+用户在两套重做方案中选定“以 A 为主”：桌面四招对照表 + 读数旁直接给结论，手机单招查询。改动范围：
+
+| 文件 | 改动 |
+| --- | --- |
+| `player-flow.mjs` | 重写挂载：新建 `#flow-setup`（野怪一行 `#flow-wild-card`、出战一行 `#flow-own-card`），把既有控件按 ID 移入；`#versus-grid` 保留但隐藏。读到的 HP 改为行内输入 `#flow-hp-value`（弹窗删除）。每招读数下新增 `#flow-row-verdict-out-N / -in-N`，由导出的 `outgoingReadingVerdict / incomingReadingVerdict` 生成。结论栏增加五项属性来源和 30 格矩阵，点格设目标。手机：出战摘要 `#flow-own-summary`、野怪“条件”展开 `#flow-wild-more`、顶栏 `#flow-next-top`。 |
+| `ui.mjs` | `#profile-tabs` 改为“我的配置”下拉 `#profile-select` + 另存／改名／删除（`#config-dialog`）；配置 1–12 套，可选 `label`（≤24 字）；切配置后保存；`presetProfile` 保留原等级。 |
+| `matchup-ui.mjs` | 受击读数按配置保存：`session.preview.incomingByDefender[配置ID:精灵ID]` 暂存 `skillIds / overridesList / units / damages / picks` 整套，切回恢复，读数始终跟着产生它的来招、条件和口径；没有暂存的配置沿用当前来招但不带读数；换目标、下一只清空。 |
+| `index.html` | 新增 `#config-dialog`。 |
+| `player-flow.css` | 末尾追加 v7 样式层（桌面、821–1100、手机、≤350）。旧层仍在，新层覆盖。 |
+
+每招读数旁的结论：防御只看伤害（±1 按预测伤害判断）；伤害和余血都有时，生命档与右栏一样用 `compareObservedHp` 实伤＋余血反推，不从容错后的预测命中取生命档。一段吻合、一段冲突时分段标色（如绿色“物防不变”＋红色“生命对不上（推算 441–452）”）。对照表同一口径（`matchup-ui.mjs` 的 `defenseCellsMarkup`）：防御格的绿色只看伤害，生命百分比下划线只在实伤＋余血反推与该档最大生命一致时出现；只有余血时仍按预测余血对照。
+
+删除配置时，引用它的旧顺序记录（`observations` 中我打敌／敌打我）一并删除，血量和毒伤记录保留；导入校验未放宽。
+
+公式、±1 容错、独立属性证据、直接 HP 求交都没有改。下表第 6 节的五项已按上述方式处理；第 5 项（改条件保留旧读数）仍按纠错路径保留，手填条件靠技能旁“手填”标记和“恢复自动”识别。
+
+Codex 复核（[s5-ui-claude-review-20261110.md](s5-ui-claude-review-20261110.md)）提出的三项已修复，并补 E2E「plan A review」：A 填数→B 换招→A 及多段单段口径、刷新；163／64% 行内与右栏一致判生命冲突；带旧记录的配置删除后刷新正常恢复。非阻塞项同步处理：矩阵点格与下拉设目标一致切测法；≤350 宽矩阵表头去图标不折行。
+
+最新复核补充：上述原始复现已通过，另发现两个已复现的存档边界待修：① 前一版仅含 `damages/picks` 的旧暂存缺技能上下文，仍会把旧读数恢复到当前来招；② 删除配置后旧 `incomingDefender` 未重置，渲染会把被删配置重新放回暂存，反复另存／删除后可超过暂存上限并导致刷新恢复失败。详情见复核文档最新状态；不能把普通切换和单次删除通过扩大为旧暂存迁移、反复删除也通过。
+
+自检脚本：`artifacts/s5-player-flow/check-plan-a.mjs`（26 项），截图脚本 `shoot.mjs`；截图 `artifacts/s5-player-flow/screenshots/a-*.png`。
+
+## 6. 动线复核问题（原记录；处理结果见末列与 5.1）
+
+下表是方案 A 之前核实的问题及当时的建议。前四项已在 5.1 实施并有回归；第五项按纠错路径保留，见表后说明。
 
 | 优先级 | 问题与复现 | 建议落点 / 验收 |
 | --- | --- | --- |
@@ -207,6 +231,8 @@ index → web-startup.startTool → ui
 | 高 | **切档案受击读数丢失，刷新可能恢复旧档案和旧读数。** 输入受击 11 → 切另档为空 → 切回仍为空 → 再切另档并刷新，回到旧档和 11。 | `ui.mjs` 的 `profile-tabs` 未调用持久化；`matchup-ui.state()` 根据 `incomingDefender` 清共用来伤。建议按我方配置隔离来伤并保存当前档案。测试必须包括切回与刷新。 |
 | 中 | 手机改我方等级要先展开配置，再展开详细面板；野怪等级、异色、直接 HP 入口也在折叠区。 | `player-flow`。常用条件易见易改，避免两次展开加长距离滚动；390/320 宽度实测。 |
 | 中 | 改条件保留读数是纠错功能；实际换了一套出战条件时可能误用旧记录。换回技能还会恢复该技能旧手填条件。 | 保留纠错路径及“下一只”的清场语义；手填条件需可识别、可恢复自动。不要一改等级就清掉用户用于纠错的实测。 |
+
+处理结果：① 等级在出战行精灵旁，详细面板不再承担等级入口；② 换精灵、载入预设保留等级，“我的配置”可存 1–12 套命名配置；③ 受击读数连同来招、条件、口径按配置保存，切回与刷新恢复；④ 手机出战摘要点一次展开，野怪等级、异色、最大生命、读到的 HP 常驻；⑤ 改条件仍保留读数以便纠错，手填条件有“手填”标记和“恢复自动”，不同出战配置的读数已隔离。
 
 这些问题的复现脚本在 `artifacts/s5-player-flow/audit-entrypoints.js`、`audit-profile-switch.js`；截图为 `flow-audit-own-details.png`、`flow-audit-mobile-config.png`、`flow-audit-mobile-details.png`。
 
@@ -272,4 +298,25 @@ npx playwright test tests/e2e/s5-nature.spec.js --config artifacts/s5-player-flo
 3. 调整后验证真实操作和受影响的持久化、清空边界，按改动范围做最小充分测试并读回截图。
 4. 更新本交接和 UX25：分别写清已实现、已验证、剩余问题。保持可交给用户确认的本地预览。
 5. **等用户明确确认上线后，才进入发布合并。** 重新核对正式国服来源，保留后续修复，走 Git → `origin/main` → EdgeOne 自动部署 → 生产站验收。当前不推送、不部署、不打包桌面或小程序。
+
+## 9. 进入页面卡顿优化（Codex · 2026-11-10，本地未提交）
+
+用户授权优化进入时的读取／卡顿。本轮保持当前界面、公式和完整搜索范围，调整启动执行方式：
+
+- `ui.mjs`：省去默认配置生成前的重复渲染；精灵筛选和搜索行按查询／范围复用。隐藏 select 仅存当前选项，完整目录留在搜索器数据中。
+- `matchup-ui.mjs` / `picker.mjs`：六个技能控件同样不再预先创建整份隐藏 option；鼠标、键盘选中时同步真实值。回到初始形态的程序选择入口也已适配。
+- `web-startup.mjs`：旧 Service Worker 验证通过后，HTML／启动文件缓存回填与 CSS/UI 并行；界面就绪即显示，启动 Promise 仍等待回填完成后返回。缓存安全门保持原有规则。
+
+本机 8843、1366×900、4 倍 CPU 降速、禁用 HTTP 缓存，预热后交替测优化前后各三次，中位数如下。这是本地模拟，未测线上网络或手机真机：
+
+| 指标 | 优化前 | 优化后 |
+| --- | ---: | ---: |
+| 首屏显示并经过两帧 | 1393 ms | 1034 ms |
+| 数据响应结束至初始化完成 | 520 ms | 377 ms |
+| 长任务阻塞合计（各任务超出 50 ms 的部分） | 666 ms | 345 ms |
+| 初始隐藏及可见 option 总量 | 2249 | 215 |
+
+原始交替测量保存在 `D:/codex/worktrees/roco-s5-player-flow-20261110/output/playwright/s5-startup-paired-results.txt`；`s5-startup-paired.cjs` 使用本轮改动前保留的三个源文件作为浏览器响应，不覆盖工作树来回切版本。
+
+已验证：现有 S5 页面回归、补充的键盘选择／保存的进化形态转回初始形态／刷新恢复、启动和数据加载测试、正式单包构建测试；桌面与 390 手机实际截图已读回，手机无页面横向溢出。以上优化仍在本工作树，未发布。工作期间并入的 Claude 判读／存档修复保留，本轮不将这些修复归为性能改动。
 

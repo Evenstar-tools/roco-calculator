@@ -416,6 +416,14 @@
         ><select id="profile-nature" tabindex="-1"></select>
       </div>
     </main>
+    <dialog id="config-dialog" class="flow-dialog">
+      <form method="dialog">
+        <div class="flow-dialog-head"><h2 id="config-dialog-title">另存为新配置</h2><button type="submit" value="cancel" aria-label="关闭">×</button></div>
+        <p id="config-dialog-message" class="flow-dialog-message"></p>
+        <label id="config-name-row" class="flow-dialog-field">配置名称<input id="config-name" maxlength="24" autocomplete="off" /></label>
+        <div class="flow-dialog-actions"><button type="submit" value="cancel">取消</button><button type="submit" value="ok" id="config-ok" class="primary">保存</button></div>
+      </form>
+    </dialog>
     <script type="module">
       try {
         const { startTool } = await import('./web-startup.mjs?sw-policy=3');

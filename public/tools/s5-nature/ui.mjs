@@ -66,6 +66,7 @@ let spiritMap;
 let seasonGroups = [];
 let targetFilter = "all";
 let targetSearchText = new Map();
+const spiritOptionCache = new WeakMap();
 let workspaceMode = "preview";
 let matchupUi;
 let playerFlow;
@@ -99,6 +100,7 @@ function clearWildObservations() {
   if (session.preview) {
     session.preview.incomingDamages = [];
     session.preview.incomingPicks = [];
+    delete session.preview.incomingByDefender;
     delete session.preview.incomingDamage;
   }
 }
@@ -181,31 +183,45 @@ function spiritLabel(spirit) {
 
 function renderSpiritOptions(select, query, currentId, filter = "all") {
   const isTarget = select.id === "target-species";
-  const groupIds = new Set(seasonGroups
-    .filter(group => filter === "shiny" ? ["S2", "S5"].includes(group.id) : group.id === filter)
-    .flatMap(group => group.spiritIds ?? []).map(initialTargetId));
-  if (filter === "battlepass") {
-    for (const name of ["火红尾", "云梦豚"]) {
-      const extra = catalog.spirits.find(row => row.name === name);
-      if (extra) groupIds.add(initialTargetId(extra.id));
+  let cached = spiritOptionCache.get(select);
+  if (!cached || cached.query !== query || cached.filter !== filter) {
+    const groupIds = new Set(seasonGroups
+      .filter(group => filter === "shiny" ? ["S2", "S5"].includes(group.id) : group.id === filter)
+      .flatMap(group => group.spiritIds ?? []).map(initialTargetId));
+    if (filter === "battlepass") {
+      for (const name of ["火红尾", "云梦豚"]) {
+        const extra = catalog.spirits.find(row => row.name === name);
+        if (extra) groupIds.add(initialTargetId(extra.id));
+      }
     }
-  }
-  const rows = catalog.spirits.filter(spirit => {
-    if (!isTarget) return matchesSpirit(spirit, query);
-    if (initialTargetId(spirit.id) !== spirit.id) return false;
-    if (filter !== "all" && !groupIds.has(spirit.id)) return false;
     const needle = query.trim().toLocaleLowerCase().replace(/\s+/g, "").replace(/^#/, "");
-    return !needle || targetSearchText.get(spirit.id)?.toLocaleLowerCase().replace(/\s+/g, "").includes(needle);
-  });
-  rows.sort((a, b) => (Number(a.dexNo) || 9999) - (Number(b.dexNo) || 9999)
-    || a.name.localeCompare(b.name, "zh-CN") || a.id.localeCompare(b.id));
+    const rows = catalog.spirits.filter(spirit => {
+      if (!isTarget) return matchesSpirit(spirit, query);
+      if (initialTargetId(spirit.id) !== spirit.id) return false;
+      if (filter !== "all" && !groupIds.has(spirit.id)) return false;
+      return !needle || targetSearchText.get(spirit.id)?.toLocaleLowerCase().replace(/\s+/g, "").includes(needle);
+    });
+    rows.sort((a, b) => (Number(a.dexNo) || 9999) - (Number(b.dexNo) || 9999)
+      || a.name.localeCompare(b.name, "zh-CN") || a.id.localeCompare(b.id));
+    cached = { query, filter, rows, ids: new Set(rows.map(row => row.id)) };
+    spiritOptionCache.set(select, cached);
+  }
   const current = spiritMap.get(currentId);
-  const outside = current && !rows.some((row) => row.id === currentId);
-  select.innerHTML = `${outside ? `<option data-filter-outside="true" value="${escapeHtml(currentId)}">当前选择（筛选外）：${escapeHtml(spiritLabel(current))}</option>` : ""}${rows.map((spirit) => `<option value="${escapeHtml(spirit.id)}">${escapeHtml(spiritLabel(spirit))}</option>`).join("")}`;
-  if (!rows.length && !current)
-    select.innerHTML = '<option value="">没有匹配的精灵</option>';
-  select.value = currentId;
-  return { count: rows.length, outside };
+  const outside = Boolean(current && !cached.ids.has(currentId));
+  const outsideId = outside ? currentId : null;
+  if (!cached.pickerRows || cached.outsideId !== outsideId) {
+    const rows = outside ? [current, ...cached.rows] : cached.rows;
+    cached.pickerRows = rows.map(spirit => ({ ...spirit,
+      hiddenFromSearch: spirit.id === outsideId,
+      searchText: isTarget ? targetSearchText.get(spirit.id) : [spirit.name, spirit.pinyin,
+        spirit.initials, spirit.dexNo, ...(spirit.aliases ?? []), ...(spirit.formerNames ?? [])].join(" "),
+    }));
+    cached.outsideId = outsideId;
+  }
+  // Search uses the cached rows. The hidden select only carries its current ID.
+  if (select.options.length !== 1 || select.value !== (current?.id ?? ""))
+    select.replaceChildren(new Option(current ? spiritLabel(current) : "没有匹配的精灵", current?.id ?? ""));
+  return { count: cached.rows.length, outside };
 }
 
 function renderTargetPicker() {
@@ -320,7 +336,7 @@ function generatedProfile(profile, overrides = {}) {
 function presetProfile(profile, spirit = spiritMap.get(profile.spiritId)) {
   const preset = resolveOwnPreset(spirit.id, catalog, presetLibrary, traitCatalog);
   const next = {
-    ...profile, spiritId: spirit.id, name: spirit.name, level: 60,
+    ...profile, spiritId: spirit.id, name: spirit.name, level: profile.level ?? 60,
     awakening: preset?.awakening ?? profile.awakening ?? 5,
     natureId: preset?.natureId ?? "neutral",
     displayIvs: preset?.displayIvs ?? Object.fromEntries(Object.keys(STATS).map(key => [key, 60])),
@@ -358,21 +374,7 @@ function autoGenerateProfile() {
 }
 
 function initializePickers() {
-  const spiritRows = (selectId) =>
-    Array.from($(selectId).options)
-      .filter(option => spiritMap.has(option.value))
-      .map(option => ({ ...spiritMap.get(option.value), hiddenFromSearch: option.dataset.filterOutside === "true" }))
-      .map((spirit) => ({
-        ...spirit,
-        searchText: selectId === "target-species" ? targetSearchText.get(spirit.id) : [
-          spirit.name,
-          spirit.pinyin,
-          spirit.initials,
-          spirit.dexNo,
-          ...(spirit.aliases ?? []),
-          ...(spirit.formerNames ?? []),
-        ].join(" "),
-      }));
+  const spiritRows = selectId => spiritOptionCache.get($(selectId))?.pickerRows ?? [];
   pickers.own = createPicker({
     anchor: "own-picker",
     trigger: "own-picker-input",
@@ -426,13 +428,16 @@ function initializePickers() {
   });
 }
 
+export const MAX_PROFILES = 12;
+export function profileLabel(profile) {
+  return profile.label || `${profile.name} ${(profile.awakening ?? 5) + 5}★`;
+}
+
 function renderProfiles() {
-  $("profile-tabs").innerHTML = session.profiles
-    .map(
-      (profile) =>
-        `<button type="button" role="tab" aria-selected="${profile.id === activeProfile}" data-profile="${escapeHtml(profile.id)}">${escapeHtml(profile.name)} <span class="tab-star">${(profile.awakening ?? 5) + 5}★</span></button>`,
-    )
-    .join("");
+  const current = session.profiles.some((row) => row.id === activeProfile) ? activeProfile : session.profiles[0].id;
+  $("profile-tabs").innerHTML = `<select id="profile-select" aria-label="我的配置">${session.profiles
+    .map((profile) => `<option value="${escapeHtml(profile.id)}"${profile.id === current ? " selected" : ""}>${escapeHtml(profileLabel(profile))}</option>`)
+    .join("")}</select><button type="button" class="config-action" data-config-action="save" ${session.profiles.length >= MAX_PROFILES ? "disabled" : ""}>另存</button><button type="button" class="config-action" data-config-action="rename">改名</button><button type="button" class="config-action" data-config-action="delete" ${session.profiles.length <= 1 ? "disabled" : ""}>删除</button>`;
   const complete = session.profiles.filter(profileComplete);
   $("profile-summary").textContent = complete.length
     ? complete
@@ -853,7 +858,8 @@ function validateImport(value) {
     !spiritMap.has(incoming.targetId) ||
     ![41, 42, 43, "all"].includes(incoming.level) ||
     !Array.isArray(incoming.profiles) ||
-    incoming.profiles.length !== 2 ||
+    incoming.profiles.length < 1 ||
+    incoming.profiles.length > MAX_PROFILES ||
     !Array.isArray(incoming.observations) ||
     incoming.observations.length > 1000
   )
@@ -879,10 +885,13 @@ function validateImport(value) {
       )
     )
       throw new Error("出战档案的精灵或面板数值无效。");
+    if (profile.label != null && (typeof profile.label !== "string" || profile.label.length > 24))
+      throw new Error("出战配置名称无效。");
+    if (profile.label === "") delete profile.label;
     profile.name = spiritMap.get(profile.spiritId).name;
   }
   const profileIds = new Set(incoming.profiles.map((profile) => profile.id));
-  if (profileIds.size !== 2) throw new Error("出战档案重复。");
+  if (profileIds.size !== incoming.profiles.length) throw new Error("出战档案重复。");
   const observationIds = new Set();
   for (const observation of incoming.observations) {
     if (
@@ -935,6 +944,24 @@ function setWorkspaceMode(mode) {
   matchupUi?.render();
 }
 
+function openConfigDialog(mode) {
+  const profile = session.profiles.find((row) => row.id === activeProfile);
+  const dialog = $("config-dialog");
+  dialog.dataset.mode = mode;
+  $("config-dialog-title").textContent = { save: "另存为新配置", rename: "配置改名", delete: "删除配置" }[mode];
+  $("config-name-row").hidden = mode === "delete";
+  $("config-dialog-message").textContent = mode === "delete"
+    ? `删除“${profileLabel(profile)}”？这套配置的技能、条件和本场读数会一起删除。`
+    : mode === "save" ? "保存当前精灵、等级、星级、性格、个体、骰子、特性和四招。" : "";
+  $("config-name").value = mode === "save" ? `${profile.name} · 配置${session.profiles.length + 1}` : profile.label ?? "";
+  $("config-name").placeholder = profileLabel({ ...profile, label: "" });
+  $("config-ok").textContent = mode === "delete" ? "删除" : "保存";
+  $("config-ok").classList.toggle("danger", mode === "delete");
+  dialog.returnValue = "";
+  dialog.showModal();
+  if (mode !== "delete") $("config-name").select();
+}
+
 function attachEvents() {
   for (const button of document.querySelectorAll("button[data-result-target]"))
     button.addEventListener("click", () => {
@@ -963,6 +990,7 @@ function attachEvents() {
   $("use-initial-form").addEventListener("click", () => {
     const form = fieldData.formMappings.find(row => row.sourceId === session.targetId);
     if (!form || !spiritMap.has(form.initialId)) return;
+    renderSpiritOptions($("target-species"), $("target-search").value, form.initialId, targetFilter);
     $("target-species").value = form.initialId;
     $("target-species").dispatchEvent(new Event("change"));
   });
@@ -1065,14 +1093,54 @@ function attachEvents() {
     render();
     notice(id !== chosenId ? `已按初始形态选择 ${spiritMap.get(id).name}，本场实测已清空。` : "");
   });
-  $("profile-tabs").addEventListener("click", (event) => {
-    const button = event.target.closest("[data-profile]");
-    if (!button) return;
-    activeProfile = button.dataset.profile;
+  $("profile-tabs").addEventListener("change", (event) => {
+    if (event.target.id !== "profile-select") return;
+    activeProfile = event.target.value;
+    session.activeProfileId = activeProfile;
     $("profile-species-search").value = "";
     renderProfiles();
     renderSkills();
     render();
+    persist();
+  });
+  $("profile-tabs").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-config-action]");
+    if (button) openConfigDialog(button.dataset.configAction);
+  });
+  $("config-dialog").addEventListener("close", () => {
+    const dialog = $("config-dialog");
+    if (dialog.returnValue !== "ok") return;
+    const mode = dialog.dataset.mode;
+    const profile = session.profiles.find((row) => row.id === activeProfile);
+    const label = $("config-name").value.trim().slice(0, 24);
+    remember();
+    if (mode === "save") {
+      if (session.profiles.length >= MAX_PROFILES) return;
+      const copy = clone(profile);
+      copy.id = `cfg-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+      copy.label = label || undefined;
+      // 新配置是另一套出战条件，本场读数不沿用。
+      if (copy.preview) { copy.preview.observed = {}; copy.preview.picked = {}; }
+      session.profiles.push(copy);
+      activeProfile = copy.id;
+    } else if (mode === "rename") {
+      if (label) profile.label = label; else delete profile.label;
+    } else if (mode === "delete") {
+      if (session.profiles.length <= 1) return;
+      const index = session.profiles.indexOf(profile);
+      session.profiles.splice(index, 1);
+      // 旧顺序记录引用这套配置时一并删除；血量、毒伤等不关联配置的记录保留。不放宽导入校验。
+      session.observations = session.observations.filter((row) => ["hp", "poison"].includes(row.direction) || row.profileId !== profile.id);
+      if (session.preview?.incomingByDefender)
+        for (const key of Object.keys(session.preview.incomingByDefender))
+          if (key.startsWith(`${profile.id}:`)) delete session.preview.incomingByDefender[key];
+      activeProfile = session.profiles[Math.max(0, index - 1)].id;
+    }
+    session.activeProfileId = activeProfile;
+    persist();
+    renderProfiles();
+    renderSkills();
+    render(mode === "save" ? "已另存为新配置。" : mode === "delete" ? "已删除配置。" : "");
   });
   $("profile-form").addEventListener("submit", (event) => {
     event.preventDefault();
@@ -1408,7 +1476,6 @@ try {
       true,
     );
   }
-  renderProfiles();
   for (const profile of session.profiles) {
     if (
       !profileComplete(profile) &&

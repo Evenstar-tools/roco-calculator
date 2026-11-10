@@ -188,21 +188,29 @@ test('a verified waiting worker is asked to activate, but UI still waits for con
   expectClean(h.serviceWorker, h.registration, h.next);
 });
 
-test.each([false, true])('takeover primes the early-loaded HTML without blocking the UI on a cache failure: %s', async fails => {
+test.each([false, true])('takeover reveals the UI while offline priming is pending, then completes after priming settles: %s', async fails => {
   const h = harness();
-  const fetchResource = vi.fn(async () => {
-    if (fails) throw new Error('offline');
-    return new Response('current page');
-  });
+  const primed = deferred();
+  const fetchResource = vi.fn(() => primed.promise);
   const fullLocation = { ...location, href: `${location.origin}/tools/s5-nature/index.html` };
   const started = startTool({ ...h, location: fullLocation, fetchResource });
+  let completed = false;
+  void started.then(() => { completed = true; });
   await vi.waitFor(() => expect(h.serviceWorker.register).toHaveBeenCalledOnce());
   expect(fetchResource).not.toHaveBeenCalled();
   h.serviceWorker.controller = h.next;
   h.serviceWorker.emit('controllerchange');
-  await expect(started).resolves.toBe('started');
+  await vi.waitFor(() => expect(h.document.body.style.removeProperty).toHaveBeenCalledWith('visibility'));
   expect(fetchResource).toHaveBeenCalledWith(fullLocation.href, expect.objectContaining({ cache: 'no-cache' }));
   expect(fetchResource.mock.invocationCallOrder[0]).toBeLessThan(h.stylesheet.setAttribute.mock.invocationCallOrder[0]);
+  expect(h.loadUI).toHaveBeenCalledOnce();
+  expect(h.stylesheet.setAttribute).toHaveBeenCalledWith('href', './matchup.css');
+  expect(h.status.remove).toHaveBeenCalledOnce();
+  expect(completed).toBe(false);
+  if (fails) primed.reject(new Error('offline'));
+  else primed.resolve(new Response('current page'));
+  await expect(started).resolves.toBe('started');
+  expectClean(h.serviceWorker, h.registration, h.stylesheet);
 });
 
 test('an unknown waiting worker is never asked to activate or allowed to serve the UI', async () => {

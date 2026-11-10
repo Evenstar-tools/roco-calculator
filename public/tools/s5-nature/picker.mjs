@@ -124,7 +124,12 @@ export function createPicker({
     if (button) search.focus();
   }
   function choose(id) {
-    if (!candidates.some((row) => row.id === id)) return;
+    const chosen = candidates.find((row) => row.id === id);
+    if (!chosen) return;
+    // Catalog-backed pickers keep only the current value in their hidden select.
+    // The searchable list still comes from rows(), including keyboard choices.
+    if (!Array.from(select.options).some(option => option.value === id))
+      select.add(new Option(chosen.name, id));
     select.value = id;
     close(false);
     onSelect?.(id);

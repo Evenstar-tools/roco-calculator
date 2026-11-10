@@ -145,6 +145,17 @@ export function validatePreviewSettings(session, target) {
         if(key==='skillPowerAdd' ? v < -10000 || v > 10000 : v < 0.001 || v > 100) fail();
       }
     }
+    if(holder.incomingByDefender!==undefined) {
+      if(!object(holder.incomingByDefender) || Object.keys(holder.incomingByDefender).length>24) fail();
+      for(const entry of Object.values(holder.incomingByDefender)) {
+        if(!object(entry)) fail();
+        if(!Array.isArray(entry.damages)||entry.damages.length>4||entry.damages.some(v=>v!=null&&(!Number.isInteger(v)||v<0||v>1000000))) fail();
+        if(!Array.isArray(entry.picks)||entry.picks.length>4||entry.picks.some(v=>v!=null&&!validPick(v))) fail();
+        if(entry.skillIds!==undefined&&(!Array.isArray(entry.skillIds)||entry.skillIds.length>4||entry.skillIds.some(id=>typeof id!=='string'))) fail();
+        if(entry.overridesList!==undefined) { if(!Array.isArray(entry.overridesList)||entry.overridesList.length>4) fail(); for(const value of entry.overridesList) overrides(value); }
+        if(entry.units!==undefined&&(!Array.isArray(entry.units)||entry.units.length>4||entry.units.some(v=>!['total','perHit'].includes(v)))) fail();
+      }
+    }
     if(holder.percentFormat!==undefined && !['game0','round0','floor0','round1'].includes(holder.percentFormat)) fail();
   }
 }
@@ -318,6 +329,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const encounter = session.preview;
     if (encounter.targetId !== session.targetId) {
       for (const key of ['incomingSkillId','incomingOverrides','incomingDamage']) delete encounter[key];
+      delete encounter.incomingByDefender;
       Object.assign(encounter, {targetId:session.targetId,level:session.level,incomingSkillIds:defaultIncoming(session.targetId, spirits.get(profile.spiritId)),
         incomingOverridesList:Array.from({length:INCOMING_SLOTS},()=>({})),incomingDamages:Array(INCOMING_SLOTS).fill(null),incomingDamageUnits:Array(INCOMING_SLOTS).fill('total'),incomingPicks:Array(INCOMING_SLOTS).fill(null),shiny:false,diceId:'none',diceEffects:{}});
       for (const item of session.profiles) if(object(item.preview)) { item.preview.observed={}; item.preview.picked={}; }
@@ -330,6 +342,28 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       encounter.incomingDamages = [encounter.incomingDamage ?? null, null];
       for (const key of ['incomingSkillId','incomingOverrides','incomingDamage']) delete encounter[key];
     }
+    // 受击读数属于当前出战配置：切走时连同来招、条件和录入口径一起暂存，切回时整套恢复，
+    // 读数不会被另一套配置换掉的技能重新解释。没有暂存的配置沿用当前来招，但不带读数。换精灵后不沿用。
+    const defenderKey = `${profile.id}:${profile.spiritId}`;
+    if (encounter.incomingDefender !== defenderKey) {
+      const stash = object(encounter.incomingByDefender) ? encounter.incomingByDefender : {};
+      const copy = value => Array.isArray(value) ? structuredClone(value) : [];
+      if (encounter.incomingDefender) stash[encounter.incomingDefender] = {
+        skillIds: copy(encounter.incomingSkillIds), overridesList: copy(encounter.incomingOverridesList),
+        units: copy(encounter.incomingDamageUnits), damages: copy(encounter.incomingDamages), picks: copy(encounter.incomingPicks) };
+      const saved = stash[defenderKey];
+      delete stash[defenderKey];
+      for (const key of Object.keys(stash)) if (key.startsWith(`${profile.id}:`)) delete stash[key];
+      if (saved?.skillIds) {
+        encounter.incomingSkillIds = saved.skillIds;
+        encounter.incomingOverridesList = saved.overridesList ?? [];
+        encounter.incomingDamageUnits = saved.units ?? [];
+      }
+      encounter.incomingDamages = Array.from({length:INCOMING_SLOTS},(_,i)=>saved?.damages?.[i] ?? null);
+      encounter.incomingPicks = Array.from({length:INCOMING_SLOTS},(_,i)=>saved?.picks?.[i] ?? null);
+      encounter.incomingByDefender = stash;
+      encounter.incomingDefender = defenderKey;
+    }
     const enemyRows = incomingSkillOptions(catalog, session.targetId);
     encounter.incomingSkillIds = Array.from({length:INCOMING_SLOTS},(_,i)=>enemyRows.some(s=>s.id===encounter.incomingSkillIds[i])?encounter.incomingSkillIds[i]:'');
     encounter.incomingOverridesList = Array.from({length:INCOMING_SLOTS},(_,i)=>object(encounter.incomingOverridesList?.[i])?encounter.incomingOverridesList[i]:{});
@@ -337,13 +371,9 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     encounter.incomingDamageUnits = Array.from({length:INCOMING_SLOTS},(_,i)=>encounter.incomingDamageUnits?.[i] ?? 'total');
     encounter.incomingPicks = Array.from({length:INCOMING_SLOTS},(_,i)=>encounter.incomingPicks?.[i] ?? null);
     encounter.shiny = encounter.shiny === true && spirits.get(session.targetId)?.hasShinyForm === true;
-    // 我方受击掉血属于当前出战精灵，换档案或换精灵后不沿用。
-    const defenderKey = `${profile.id}:${profile.spiritId}`;
-    if (encounter.incomingDefender !== defenderKey) { encounter.incomingDamages = Array(INCOMING_SLOTS).fill(null); encounter.incomingPicks = Array(INCOMING_SLOTS).fill(null); encounter.incomingDefender = defenderKey; }
     return {session,profile,own,encounter};
   }
 
-  const skillOptions = rows => '<option value="">选择技能</option>' + rows.map(s => `<option value="${html(s.id)}">${html(s.name)}</option>`).join('');
   function skillControl(id, pickerId, metaId, prefix, slotLabel) {
     return `<div class="pskill"><span class="pskill-slot">${slotLabel}</span><div class="pskill-body"><div class="pskill-line"><div class="picker-anchor" id="${pickerId}"><input id="${id}-input" autocomplete="off" placeholder="选择技能"/><span class="picker-caret" aria-hidden="true">⌄</span></div><button type="button" id="${prefix}-gear" class="pskill-gear" aria-label="本招条件" aria-expanded="false" aria-controls="${prefix}-pop">⚙</button></div><select id="${id}" class="compat-hidden" tabindex="-1" aria-hidden="true"></select><div id="${metaId}" class="pskill-meta"></div>${conditionControl(prefix)}</div></div>`;
   }
@@ -505,16 +535,21 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   });
 
   const typeIcon = skill => catalog.assets?.elements?.[skill.type] ? `<img class="type-icon" src="${html(catalog.assets.elements[skill.type])}" alt="${html(skill.type)}" title="${html(skill.type)}"/>` : `${html(skill.type)} · `;
-  function renderSkillControl(id, metaId, prefix, rows, skillId, overrides) {
+  function renderSkillControl(id, metaId, prefix, skillId, overrides) {
     if (!object(overrides)) overrides={};
-    $(id).innerHTML=skillOptions(rows); $(id).value=skillId ?? '';
+    const skill=skills.get(skillId), select=$(id);
+    // The visible picker searches the catalog; avoid building that full list
+    // again inside every hidden select on startup and each measurement edit.
+    if (select.options.length !== 1 || select.value !== (skill?.id ?? '')) {
+      select.replaceChildren(new Option(skill?.name ?? '选择技能', skill?.id ?? ''));
+      select.value=skill?.id ?? '';
+    }
     for(const key of ['powerMultiplier','hitCount','displayedPower','effectivePower']) $(`${prefix}-${key}`).value=overrides[key] ?? '';
     const legacy = Object.hasOwn(overrides, 'effectivePower');
     $(`${prefix}-legacyPower`).hidden = !legacy;
     $(`${prefix}-legacyPower-label`).textContent = legacy ? `最终威力 ${powerNumber(overrides.effectivePower)} · 已含系别与觉醒` : '';
     $(`${prefix}-displayedPower`).placeholder = legacy ? '最终威力生效中' : '自动';
     $(`${prefix}-gear`).classList.toggle('is-set', Object.keys(overrides).length > 0);
-    const skill=skills.get(skillId);
     const burst=firstActionPowerBonus(skill), manual=legacy || Object.hasOwn(overrides,'displayedPower');
     $(`${prefix}-firstAction-row`).hidden=!burst;
     $(`${prefix}-firstAction`).checked=overrides.firstAction===true;
@@ -576,6 +611,12 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const name = statNames[stat];
     const allHits = obs ? row.predictions.filter(p => observationMatch(p, obs, format)) : [];
     if (allHits.length && allHits.every(p => p.damage >= p.hpMax)) obs = null;
+    // 防御档只看伤害（±1 按预测伤害判断）；余血吻合与结论栏同用实伤＋余血反推，
+    // 不从容错后的预测命中取生命档。只有余血时仍按预测余血对照。
+    const damageObs = obs?.damage != null ? { damage: obs.damage } : obs;
+    const hpCases = obs?.damage != null && obs.remainingPercent != null
+      ? new Set(compareObservedHp({ outgoing: [row], observed: { 0: obs }, format }).matchedPredictions.map(caseId)) : null;
+    const hpMatches = p => hpCases ? observationMatch(p, damageObs, format) && hpCases.has(caseId(p)) : observationMatch(p, obs, format);
     const groups = [
       { key: 'down', group: stat, condition: 'down', label: `减${name}`, matches: p => p.downStat === stat },
       { key: 'neutral', group: 'other', condition: 'base', label: `${name}不变`, matches: p => p.upStat !== stat && p.downStat !== stat },
@@ -590,12 +631,12 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const mobileLabels = `<div class="mobile-measure-labels" aria-hidden="true"><span>伤害</span><div>${hpGroups.map(hp => `<span>${hpStateIcon(hp)}</span>`).join('')}</div></div>`;
     return mobileLabels + groups.map(group => {
       const entries = row.predictions.filter(group.matches);
-      const matching = obs && entries.some(p => observationMatch(p, obs, format));
+      const matching = obs && entries.some(p => observationMatch(p, damageObs, format));
       const mark = obs ? matching ? ' hit' : ' miss' : '';
       const picked = pickedKey === `${group.group}:${group.condition}`;
       const readings = hpGroups.map(hp => {
         const values = entries.filter(hp.matches);
-        const hit = obs?.remainingPercent != null && values.some(p => observationMatch(p, obs, format));
+        const hit = obs?.remainingPercent != null && values.some(hpMatches);
         return `<span class="hp-reading${!values.length ? ' impossible' : ''}${hit ? ' matches' : ''}" data-hp-nature="${hp.key}" title="${hp.label}${values.length ? '时的剩余血量' : '：没有这种性格组合'}">${hpStateIcon(hp)}<b>${values.length ? `${range(values.map(p => display(p.remainingPercent)), digits)}%` : '—'}</b></span>`;
       }).join('');
       return `<div class="pcell-stack"><div class="pcell defense-pcell${mark}${picked ? ' picked' : ''}" data-nature-group="${group.group}" data-nature-condition="${group.condition}" data-defense-stat="${stat}" data-defense-band="${group.key}" role="button" tabindex="0" aria-pressed="${picked}"><span class="pcell-label">${group.label}</span><strong class="dmg">${range(entries.map(p => p.damage)).replace('–', '–<wbr>')}</strong>${hitFormula(row, entries)}<div class="hp-readings">${readings}</div></div></div>`;
@@ -841,16 +882,15 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   function render() {
     const {session,profile,own,encounter}=state();
     const ownSpirit = spirits.get(profile.spiritId), target = spirits.get(session.targetId);
-    const ownRows=ownLearnset(profile.spiritId),enemyRows=incomingSkillOptions(catalog, session.targetId);
     const format = encounter.percentFormat ?? 'game0';
     for(let i=0;i<4;i++) {
-      renderSkillControl(`preview-skill-${i}`,`preview-skill-meta-${i}`,`preview-condition-${i}`,ownRows,own.skillIds[i],own.skillOverrides[own.skillIds[i]]);
+      renderSkillControl(`preview-skill-${i}`,`preview-skill-meta-${i}`,`preview-condition-${i}`,own.skillIds[i],own.skillOverrides[own.skillIds[i]]);
       const obs=own.observed[i];
       $(`preview-observed-${i}`).value=obs?.damage ?? '';
       $(`preview-remaining-${i}`).value=obs?.remainingPercent ?? '';
     }
     for(let k=0;k<INCOMING_SLOTS;k++) {
-      renderSkillControl(`preview-incoming-skill-${k}`,`preview-incoming-meta-${k}`,`preview-incoming-condition-${k}`,enemyRows,encounter.incomingSkillIds[k],encounter.incomingOverridesList[k]);
+      renderSkillControl(`preview-incoming-skill-${k}`,`preview-incoming-meta-${k}`,`preview-incoming-condition-${k}`,encounter.incomingSkillIds[k],encounter.incomingOverridesList[k]);
       $(`preview-incoming-damage-${k}`).value=encounter.incomingDamages[k] ?? '';
       $(`preview-incoming-damage-${k}`).placeholder='';
     }

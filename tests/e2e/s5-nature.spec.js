@@ -8,16 +8,27 @@ async function openTool(page) {
   await expect(page.locator('#flow-result')).toBeVisible();
 }
 
+// 手机上野怪条件和出战配置各自收起，一次点开即可修改；桌面始终展开。
 async function openConfig(page) {
   if (page.viewportSize().width <= 820) {
-    const toggle = page.locator('#flow-config-toggle');
-    if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click();
-    await expect(page.locator('#wild-side')).toBeVisible();
+    for (const id of ['flow-wild-more', 'flow-own-summary']) {
+      const toggle = page.locator(`#${id}`);
+      if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click();
+    }
+    await expect(page.locator('#flow-own-card')).toBeVisible();
+    await expect(page.locator('#flow-wild-sub')).toBeVisible();
   }
 }
 
+async function selectProfile(page, id) {
+  await openConfig(page);
+  await page.locator('#profile-select').selectOption(id);
+  await expect(page.locator('#profile-select')).toHaveValue(id);
+}
+
+// 桌面两种测法同页；手机切页签。
 async function switchMethod(page, direction) {
-  await page.locator(`[data-flow-tab="${direction}"]`).click();
+  if (page.viewportSize().width <= 820) await page.locator(`[data-flow-tab="${direction}"]`).click();
   await expect(page.locator(`#flow-${direction}-card`)).toBeVisible();
 }
 
@@ -29,9 +40,9 @@ async function editOwnSkill(page, index = 0) {
   }
 }
 
+const AXIS_KEYS = { 生命: 'hp', 物防: 'physicalDefense', 魔防: 'magicalDefense', 物攻: 'physicalAttack', 魔攻: 'magicalAttack' };
 function resultAxis(page, label) {
-  return page.locator('#flow-result .flow-axis-line')
-    .filter({ has: page.getByText(label, { exact: true }) }).locator('b');
+  return page.locator(`#flow-result [data-axis="${AXIS_KEYS[label]}"] > b`);
 }
 
 async function calculationPreview(page) {
@@ -218,7 +229,7 @@ test('S5 nature offers three initial-form scopes, supported shiny targets and co
 });
 
 async function expectWildControlsContained(page) {
-  const outside = await page.locator('#wild-side').evaluate(side => {
+  const outside = await page.locator('#flow-wild-card').evaluate(side => {
     const bounds = side.getBoundingClientRect();
     return [...side.querySelectorAll('#target-picker, #target-filter, #level-seg, #target-hp-range, .dice-ui, .switch-label, input, select')]
       .filter(node => node.getClientRects().length && getComputedStyle(node).visibility !== 'hidden')
@@ -231,7 +242,7 @@ async function expectWildControlsContained(page) {
 
 test('S5 nature type dice calculate single resistance and preserve entered power without double counting', async ({ page }) => {
   await openTool(page);
-  await page.locator('[data-profile="luoyin"]').click();
+  await selectProfile(page, 'luoyin');
   await page.locator('#load-own-preset').click();
   await chooseTarget(page, '伊雷龙');
   await page.getByRole('group', { name: '野怪等级', exact: true }).getByRole('button', { name: '42', exact: true }).click();
@@ -469,7 +480,7 @@ test("S5 nature stays absent from the Global toolbox", async ({ page }) => {
 
 test("S5 nature incoming attack shows measured whale damage and matches nature", async ({ page }) => {
   await openTool(page);
-  await page.locator('[data-profile="dimo"]').click();
+  await selectProfile(page, 'dimo');
   await page.locator('#nature-picker-trigger').click();
   await page.getByRole('textbox', { name: '搜索性格', exact: true }).fill('莽撞');
   await page.locator('[data-nature-id="rash"]').click();
@@ -592,13 +603,13 @@ test("S5 nature level evidence does not confirm a fixed level or a single matchi
   await page.locator('#preview-observed-0').fill(damage);
   await page.locator('#preview-observed-0').press('Tab');
   await expect(page.locator('#flow-result')).not.toContainText(/等级.*✓/);
-  await expect(page.locator('#flow-result .flow-record-sources')).toContainText('生命／防御 1');
+  await expect(page.locator('#flow-result .flow-result-count')).toHaveText('1 条读数');
   await expect(page.locator('#flow-result .flow-evidence')).toContainText('吻合');
 });
 
 test("S5 nature incoming damage above own HP still identifies unchanged magical attack", async ({ page }) => {
   await openTool(page);
-  await page.locator('[data-profile="luoyin"]').click();
+  await selectProfile(page, 'luoyin');
   await page.locator('#load-own-preset').click();
   await page.locator('#star-seg').getByRole('button', { name: '10★', exact: true }).click();
   await chooseTarget(page, '伊雷龙');
@@ -626,7 +637,7 @@ test("S5 nature incoming damage above own HP still identifies unchanged magical 
   await damage.press('Tab');
   await expect(normal).toHaveClass(/\bhit\b/);
   const verdict = page.locator('#flow-result');
-  await expect(verdict.locator('.flow-verdict')).toHaveText(/^\d+ 个候选$/);
+  await expect(verdict.locator('.flow-verdict')).toHaveText(/^剩 \d+ 种/);
   await expect(resultAxis(page, '魔攻')).toHaveText('不变');
   await expect(verdict.locator('.flow-evidence')).toContainText('升龙咆哮 总伤 660');
   await page.reload();
@@ -646,7 +657,7 @@ test("S5 nature presets share calculator configurations and preserve saved manua
     ['luoyin', 'adamant', ['hp','physicalAttack','physicalDefense'], ['火焰切割','地刺','彼岸之手','鸣沙陷阱'], [403,312,136,216,137,143]],
     ['dimo', 'rash', ['physicalAttack','magicalAttack','speed'], ['光球','棘突','热砂','超导'], [374,181,181,175,163,223]],
   ]) {
-    await page.locator(`[data-profile="${id}"]`).click();
+    await selectProfile(page, id);
     const profile = await active();
     expect(profile.awakening).toBe(5);
     expect(profile.natureId).toBe(nature);
@@ -737,10 +748,10 @@ test("S5 nature compact comparison keeps paired measurements separate from highl
   await expect(hp).toHaveAttribute('aria-pressed', 'true');
   await expect(verdict).toHaveText('待实测');
   await damage.fill('103'); await damage.press('Tab');
-  await expect(page.locator('#flow-result .flow-axis-unresolved')).toContainText('生命');
+  await expect(resultAxis(page, '生命')).toHaveText(/^待/);
   await remaining.fill('77'); await remaining.press('Tab');
   await expect(hpAxis).toHaveText('加');
-  await expect(page.locator('#flow-result .flow-axis-unresolved')).toContainText('双攻');
+  await expect(resultAxis(page, '物攻')).toHaveText(/^待/); await expect(resultAxis(page, '魔攻')).toHaveText(/^待/);
   await expect(page.locator('#flow-result .flow-evidence')).toContainText('伤害 103 · 余 77%');
   // Picking a different column neither discards measurements nor changes the result.
   await other.locator('.dmg').click();
@@ -758,7 +769,7 @@ test("S5 nature compact comparison keeps paired measurements separate from highl
   expect(await page.evaluate(() => window.pveNatureUi.getPreview().uiVerdict.candidates)).toEqual([]);
   await damage.fill('103'); await damage.press('Tab');
   await remaining.fill(''); await remaining.press('Tab');
-  await expect(damage).toHaveValue('103'); await expect(page.locator('#flow-result .flow-axis-unresolved')).toContainText('生命');
+  await expect(damage).toHaveValue('103'); await expect(resultAxis(page, '生命')).toHaveText(/^待/);
   // Previously saved percent-only records retain their unit and do not become damage.
   await page.evaluate(() => {
     const session=window.pveNatureUi.getSession();
@@ -839,8 +850,8 @@ test("S5 nature separates HP evidence and exact per-hit observations without dro
   await expect(page.locator('#flow-result')).toBeVisible();
   await page.waitForFunction(() => Boolean(window.pveNatureUi));
   const verdict = page.locator('#flow-result');
-  await expect(verdict.locator('.flow-axis-evidence').filter({ hasText: '421–426' })).toHaveCount(1);
-  await expect(verdict.locator('.flow-record-sources')).toContainText('物攻／魔攻 2');
+  await expect(verdict.locator('[data-axis="hp"] small').filter({ hasText: '421–426' })).toHaveCount(1);
+  await expect(verdict.locator('.flow-result-count')).toHaveText('3 条读数');
   await expect(verdict).toContainText('实测比最近值少 140');
   await expect(page.locator('#preview-incoming-cells-0')).toContainText('6 × 4 段');
   await switchMethod(page, 'incoming');
@@ -1005,16 +1016,17 @@ test('S5 nature player flow compares defense independently from HP and preserves
   await expect(damage).toHaveValue(''); await expect(remaining).toHaveValue('');
   await expect(verdict).toHaveText('待实测');
   await damage.fill('502'); await damage.press('Tab');
-  await expect(verdict).toHaveText('20 个候选');
+  await expect(verdict).toHaveText('剩 20 种');
   await remaining.fill('32'); await remaining.press('Tab');
-  await expect(verdict).toHaveText('12 个候选');
+  await expect(verdict).toHaveText('剩 12 种');
   await expect(resultAxis(page, '生命')).toHaveText('不变');
   await expect(resultAxis(page, '物防')).toHaveText('不变');
-  await expect(page.locator('#flow-result .flow-axis-evidence')).toContainText('推算总血量 728–738');
+  await expect(page.locator('#flow-result [data-axis="hp"] small')).toContainText('推算总血量 728–738');
+  await expect(page.locator('#flow-row-verdict-out-0')).toHaveText('物防不变 · 生命不变');
   expect(await page.evaluate(() => window.pveNatureUi.getPreview().uiVerdict.matching.some(n => n.id === 'rash'))).toBe(true);
   // One-point tolerance applies above 50; a larger miss affects only its tested axis.
   await damage.fill('503'); await damage.press('Tab');
-  await expect(verdict).toHaveText('12 个候选');
+  await expect(verdict).toHaveText('剩 12 种');
   await expect(resultAxis(page, '生命')).toHaveText('不变');
   await expect(resultAxis(page, '物防')).toHaveText('不变');
   await damage.fill('504'); await damage.press('Tab');
@@ -1035,7 +1047,7 @@ test('S5 nature player flow compares defense independently from HP and preserves
   await incoming.fill(''); await incoming.press('Tab');
   await switchMethod(page, 'outgoing');
   await damage.fill('502'); await damage.press('Tab');
-  await expect(verdict).toHaveText('12 个候选');
+  await expect(verdict).toHaveText('剩 12 种');
 
   // Conflicting readings for the same axis must not be silently discarded.
   const secondDamage = page.locator('#preview-observed-1');
@@ -1043,26 +1055,24 @@ test('S5 nature player flow compares defense independently from HP and preserves
   await expect(resultAxis(page, '物防')).toHaveText('记录冲突');
   await expect(resultAxis(page, '生命')).toHaveText('不变');
   await secondDamage.fill(''); await secondDamage.press('Tab');
-  await expect(verdict).toHaveText('12 个候选');
+  await expect(verdict).toHaveText('剩 12 种');
 
   // Direct maximum HP intersects with inferred HP while defense remains independent.
-  await page.locator('#flow-hp-open').click();
   await page.locator('#flow-hp-value').fill('804');
-  await page.locator('#flow-hp-dialog').getByRole('button', { name: '保存', exact: true }).click();
+  await page.locator('#flow-hp-value').press('Enter');
   await expect(resultAxis(page, '生命')).toHaveText('记录冲突');
   await expect(resultAxis(page, '物防')).toHaveText('不变');
   await page.screenshot({ path: 'artifacts/s5-player-flow/screenshots/s5-axis-evidence-hp-conflict.png' });
-  await page.locator('#flow-hp-open').click();
-  await page.locator('#flow-hp-clear').click();
-  await expect(verdict).toHaveText('12 个候选');
+  await page.locator('#flow-hp-value').fill('');
+  await page.locator('#flow-hp-value').press('Enter');
+  await expect(verdict).toHaveText('剩 12 种');
   await cells.locator('[data-defense-band="up"]').click();
   await expect(damage).toHaveValue('502'); await expect(remaining).toHaveValue('32');
-  await expect(verdict).toHaveText('12 个候选');
+  await expect(verdict).toHaveText('剩 12 种');
   await switchMethod(page, 'incoming');
   await expect(incoming).toHaveValue('');
-  await expect(verdict).toHaveText('12 个候选');
-  await expect(page.locator('#flow-result .flow-record-sources')).toContainText('生命／防御 1');
-  await expect(page.locator('#flow-result .flow-page-empty')).toHaveText('本页未录入');
+  await expect(verdict).toHaveText('剩 12 种');
+  await expect(page.locator('#flow-result .flow-result-count')).toHaveText('1 条读数');
   await expect(page.locator('#preview-incoming-cells-0 .dmg')).toHaveText(['12','14','15']);
   await incoming.fill('14'); await incoming.press('Tab');
   await switchMethod(page, 'outgoing');
@@ -1079,7 +1089,7 @@ test('S5 nature player flow compares defense independently from HP and preserves
   await damage.fill('502'); await damage.press('Tab');
   await remaining.fill('32'); await remaining.press('Tab');
   await page.reload();
-  await expect(verdict).toHaveText('12 个候选');
+  await expect(verdict).toHaveText('剩 12 种');
   await expect(damage).toHaveValue('502'); await expect(remaining).toHaveValue('32');
   await page.screenshot({ path: 'artifacts/s5-player-flow/screenshots/s5-axis-evidence-desktop.png' });
   for (const [width,height] of [[390,844],[320,740]]) {
@@ -1107,13 +1117,16 @@ test('S5 nature player flow compares defense independently from HP and preserves
   await expect(page.getByRole('combobox', { name: '我方技能 2', exact: true })).toBeVisible();
   await page.locator('[data-flow-skill="0"]').click();
   await expect(damage).toHaveValue('502'); await expect(remaining).toHaveValue('32');
-  await page.setViewportSize({ width: 1366, height: 768 });
-  await page.locator('#swap-direction').click();
-  await expect(page.locator('[data-flow-tab="incoming"]')).toHaveAttribute('aria-selected', 'true');
+  // 手机切页签；读数不随页签丢失。桌面两种测法同页可见。
+  await page.locator('[data-flow-tab="incoming"]').click();
   await expect(page.locator('#flow-incoming-card')).toBeVisible();
-  await page.locator('#swap-direction').click();
-  await expect(page.locator('[data-flow-tab="outgoing"]')).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#flow-outgoing-card')).toBeHidden();
+  await page.locator('[data-flow-tab="outgoing"]').click();
   await expect(damage).toHaveValue('502'); await expect(remaining).toHaveValue('32');
+  await page.setViewportSize({ width: 1366, height: 768 });
+  await expect(page.locator('#flow-incoming-card')).toBeVisible();
+  await expect(page.locator('#flow-outgoing-card')).toBeVisible();
+  await expect(page.locator('.flow-test-bar')).toBeHidden();
   const ownCheck = page.locator('#flow-check-own');
   await ownCheck.click();
   await expect(ownCheck).toHaveAttribute('aria-pressed', 'true');
@@ -1134,4 +1147,191 @@ test('S5 nature player flow preserves an unreadable saved session during initial
   await expect(page.locator('#flow-result')).toBeVisible();
   await expect(page.locator('#flow-result .flow-verdict')).toHaveText('待实测');
   expect(await page.evaluate(() => localStorage.getItem('roco-pve-nature-manual-v1'))).toBe(raw);
+});
+
+test('S5 nature plan A keeps named configs, per-config incoming readings and one-step level edits', async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await openTool(page);
+  const session = () => page.evaluate(() => window.pveNatureUi.getSession());
+  const incoming = page.locator('#preview-incoming-damage-0');
+  // 等级在精灵旁，桌面一步可改；换精灵不再重置为 60。
+  await page.locator('#profile-level').fill('55'); await page.locator('#profile-level').press('Enter');
+  await expect.poll(async () => (await session()).profiles.find(p => p.id === 'luoyin').level).toBe(55);
+  // 受击读数按配置保存：切走、切回、刷新都不丢。
+  await incoming.fill('11'); await incoming.press('Enter');
+  await selectProfile(page, 'dimo');
+  await expect(incoming).toHaveValue('');
+  await incoming.fill('22'); await incoming.press('Enter');
+  await selectProfile(page, 'luoyin');
+  await expect(incoming).toHaveValue('11');
+  await selectProfile(page, 'dimo');
+  await page.reload();
+  await expect(page.locator('#profile-select')).toHaveValue('dimo');
+  await expect(incoming).toHaveValue('22');
+  await selectProfile(page, 'luoyin');
+  await expect(incoming).toHaveValue('11');
+  // 另存为命名配置：保留等级，不沿用本场读数；改名、删除需确认。
+  await page.locator('[data-config-action="save"]').click();
+  await page.locator('#config-name').fill('罗隐 · 物攻主力');
+  await page.locator('#config-ok').click();
+  await expect(page.locator('#profile-select option:checked')).toHaveText('罗隐 · 物攻主力');
+  await expect(page.locator('#profile-level')).toHaveValue('55');
+  await expect(incoming).toHaveValue('');
+  await page.reload();
+  await expect(page.locator('#profile-select option:checked')).toHaveText('罗隐 · 物攻主力');
+  await page.locator('[data-config-action="delete"]').click();
+  await expect(page.locator('#config-dialog-message')).toContainText('罗隐 · 物攻主力');
+  await page.locator('#config-ok').click();
+  await expect(page.locator('#profile-select option')).toHaveCount(2);
+  // 读数旁直接给结论；矩阵点格设目标。
+  // 删除后回到迪莫，它的受击读数 22 与小翼龙对不上，先清掉。
+  await expect(incoming).toHaveValue('22');
+  await expect(page.locator('#flow-row-verdict-in-0')).toContainText('实测比最近值');
+  await page.locator('#flow-incoming-card .flow-clear').click();
+  await chooseTarget(page, '小翼龙');
+  const damage = await page.locator('#preview-cells-0 [data-defense-band="neutral"] .dmg').textContent();
+  await page.locator('#preview-observed-0').fill(damage); await page.locator('#preview-observed-0').press('Enter');
+  await expect(page.locator('#flow-row-verdict-out-0')).toContainText('不变');
+  await expect(page.locator('#flow-result .fm-cell.on').first()).toBeVisible();
+  const nature = await page.locator('#flow-result .fm-cell.on').first().getAttribute('data-goal-nature');
+  await page.locator(`#flow-result [data-goal-nature="${nature}"]`).click();
+  await expect(page.locator('#flow-goal')).toHaveValue(nature);
+  await expect(page.locator('#flow-result .flow-goal-result')).toContainText('还在候选');
+  // 手机：出战折成一行摘要，点一次即可改等级。
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator('#flow-own-card')).toBeHidden();
+  await page.locator('#flow-own-summary').click();
+  await page.locator('#profile-level').fill('50'); await page.locator('#profile-level').press('Enter');
+  await expect(page.locator('#flow-own-summary-text')).toContainText('50级');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: 'artifacts/s5-player-flow/screenshots/s5-plan-a-390.png' });
+});
+
+test('S5 nature plan A review: readings keep their own move, HP verdict matches the rail, deleting a config keeps the save', async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await openTool(page);
+  const session = () => page.evaluate(() => window.pveNatureUi.getSession());
+  const skillInput = page.getByRole('combobox', { name: '敌方技能 1', exact: true });
+  const damage = page.locator('#preview-incoming-damage-0'), unit = page.locator('#preview-incoming-unit-0');
+  const chooseIncoming = async name => { await skillInput.fill(name); await page.getByRole('option').getByText(name, { exact: true }).click(); await expect(skillInput).toHaveValue(name); };
+  const hitCount = async value => {
+    await page.locator('#preview-incoming-condition-0-gear').click();
+    await page.locator('#preview-incoming-condition-0-hitCount').fill(String(value));
+    await page.locator('#preview-incoming-condition-0-hitCount').press('Tab');
+    await page.keyboard.press('Escape');
+  };
+  // 1. 罗隐：吹炎 · 2 段 · 单段 6；迪莫换成抓挠、总伤；切回罗隐恢复原来那一招、段数和口径。
+  await selectProfile(page, 'luoyin');
+  await chooseIncoming('吹炎');
+  await hitCount(2);
+  await expect(unit).toBeVisible();
+  await unit.selectOption('perHit');
+  await damage.fill('6'); await damage.press('Enter');
+  await selectProfile(page, 'dimo');
+  await expect(damage).toHaveValue('');
+  await chooseIncoming('抓挠');
+  await damage.fill('30'); await damage.press('Enter');
+  await selectProfile(page, 'luoyin');
+  await expect(skillInput).toHaveValue('吹炎');
+  await expect(unit).toHaveValue('perHit');
+  await expect(damage).toHaveValue('6');
+  expect((await session()).preview.incomingOverridesList[0].hitCount).toBe(2);
+  await page.reload();
+  await expect(skillInput).toHaveValue('吹炎');
+  await expect(unit).toHaveValue('perHit');
+  await expect(damage).toHaveValue('6');
+  await selectProfile(page, 'dimo');
+  await expect(skillInput).toHaveValue('抓挠');
+  await expect(damage).toHaveValue('30');
+  // 纠错路径保留：只改当前配置的条件，读数不清。
+  await hitCount(3);
+  await expect(damage).toHaveValue('30');
+
+  // 2. 163 按 ±1 吻合物防不变，但 440 扣 163 显示 63%，不是 64%：行内与右栏都判生命冲突。
+  await page.evaluate(async () => {
+    const catalog = await (await fetch('./data/catalog.json')).json();
+    const { calculateOwnPanel } = await import('./own-panel.mjs');
+    const s = window.pveNatureUi.getSession();
+    const profile = s.profiles.find(row => row.id === 'luoyin');
+    const spirit = catalog.spirits.find(row => row.name === '罗隐');
+    const target = catalog.spirits.find(row => row.name === '锤头鹳');
+    const skill = name => catalog.skills.find(row => row.name === name).id;
+    s.activeProfileId = 'luoyin';
+    Object.assign(s, { targetId: target.id, level: 41, wildStatFormId: '', observations: [] });
+    Object.assign(profile, { level: 60, awakening: 5, natureId: 'adamant', panelSource: 'pvp-five-star', spiritId: spirit.id, name: spirit.name,
+      displayIvs: { hp: 60, physicalAttack: 60, magicalAttack: 0, physicalDefense: 60, magicalDefense: 0, speed: 0 } });
+    profile.panel = calculateOwnPanel({ raceStats: spirit.raceStats, level: 60, natureId: 'adamant', displayIvs: profile.displayIvs }, catalog);
+    profile.preview = { speciesId: spirit.id, skillIds: ['火焰切割', '地刺', '彼岸之手', '鸣沙陷阱'].map(skill), skillOverrides: {},
+      observed: { 0: { damage: 163, remainingPercent: 64 } }, picked: {}, trait: { stacks: 0, active: false }, diceId: 'none', diceEffects: {},
+      observedTargetId: target.id, observedLevel: 41 };
+    s.preview = { targetId: target.id, level: 41, shiny: false, diceId: 'none', diceEffects: {} };
+    window.pveNatureUi.setSession(s);
+  });
+  await expectHp(page, [484, 528, 440]);
+  await expect(page.locator('#flow-row-verdict-out-0 .good')).toHaveText('物防不变');
+  await expect(page.locator('#flow-row-verdict-out-0 .bad')).toContainText('生命对不上');
+  await expect(page.locator('#flow-row-verdict-out-0')).not.toContainText('减生命');
+  await expect(resultAxis(page, '生命')).toHaveText('记录冲突');
+  await expect(page.locator('#flow-result [data-axis="hp"] small')).toContainText('441–452');
+  // 对照表同一口径：163 吻合物防不变那格，但 64% 不再标成任何生命档吻合。
+  await expect(page.locator('#preview-cells-0 [data-defense-band="neutral"]')).toHaveClass(/\bhit\b/);
+  await expect(page.locator('#preview-cells-0 .hp-reading.matches')).toHaveCount(0);
+  // 反推与三档一致时照常标出：162 / 64% → 440 血，减生命。
+  await page.locator('#preview-observed-0').fill('162'); await page.locator('#preview-observed-0').press('Enter');
+  await expect(page.locator('#preview-cells-0 [data-defense-band="neutral"] [data-hp-nature="down"]')).toHaveClass(/\bmatches\b/);
+  await expect(page.locator('#flow-row-verdict-out-0')).toHaveText('物防不变 · 减生命');
+  await expect(resultAxis(page, '生命')).toHaveText('减');
+  await page.locator('#preview-observed-0').fill('163'); await page.locator('#preview-observed-0').press('Enter');
+
+  // 3. 删除带旧顺序记录的配置：引用它的记录一起删，其余配置与血量记录刷新后正常恢复。
+  await page.evaluate(async () => {
+    const catalog = await (await fetch('./data/catalog.json')).json();
+    const s = window.pveNatureUi.getSession();
+    const skillId = catalog.skills.find(row => row.name === '火焰切割').id;
+    s.observations = [
+      { id: 'old-out', direction: 'outgoing', context: 'unknown', profileId: 'luoyin', skillId, damage: 163 },
+      { id: 'old-hp', direction: 'hp', context: 'unknown', damage: 100 },
+    ];
+    window.pveNatureUi.setSession(s);
+  });
+  await selectProfile(page, 'luoyin');
+  await page.locator('[data-config-action="delete"]').click();
+  await page.locator('#config-ok').click();
+  await expect(page.locator('#profile-select option')).toHaveCount(1);
+  await page.reload();
+  await expect(page.locator('#notice')).not.toContainText('未能恢复');
+  await expect(page.locator('#profile-select')).toHaveValue('dimo');
+  const restored = await session();
+  expect(restored.profiles.map(p => p.id)).toEqual(['dimo']);
+  expect(restored.observations.map(o => o.id)).toEqual(['old-hp']);
+});
+
+test('S5 nature lightweight pickers retain keyboard choices and return saved evolved targets to their initial form', async ({ page }) => {
+  await openTool(page);
+  await page.evaluate(async () => {
+    const catalog = await (await fetch('./data/catalog.json')).json();
+    const session = window.pveNatureUi.getSession();
+    session.targetId = catalog.spirits.find(row => row.name === '翼龙').id;
+    window.pveNatureUi.setSession(session);
+  });
+  const target = page.getByRole('combobox', { name: '选择野生目标', exact: true });
+  await expect(target).toHaveValue('翼龙');
+  await page.locator('#use-initial-form').click();
+  await expect(target).toHaveValue('小翼龙');
+
+  const own = page.getByRole('combobox', { name: '选择我方精灵', exact: true });
+  await own.fill('迪莫');
+  await own.press('Enter');
+  await expect(own).toHaveValue('迪莫');
+  const incoming = page.getByRole('combobox', { name: '敌方技能 1', exact: true });
+  await incoming.fill('猛烈撞击');
+  await incoming.press('Enter');
+  await expect(incoming).toHaveValue('猛烈撞击');
+  await page.locator('#preview-incoming-damage-0').fill('50');
+  await page.locator('#preview-incoming-damage-0').press('Enter');
+  await page.reload();
+  await expect(target).toHaveValue('小翼龙');
+  await expect(own).toHaveValue('迪莫');
+  await expect(incoming).toHaveValue('猛烈撞击');
+  await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('50');
 });
