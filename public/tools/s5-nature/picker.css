@@ -24,15 +24,6 @@
   outline: none !important;
   box-shadow: none;
 }
-.search-glyph {
-  font-size: 22px;
-  line-height: 1;
-  margin-left: 10px;
-  color: #8b641d;
-}
-.search-glyph + input {
-  padding-left: 8px;
-}
 .picker-caret {
   position: absolute;
   right: 11px;

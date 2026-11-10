@@ -31,6 +31,15 @@ test("production tool loads one bundle and minifies compatibility modules withou
   const ui = await readFile(sourceUi, "utf8");
   const outDir = await output(startup);
   const toolDir = path.join(outDir, "tools/s5-nature");
+  const sourceHtml = await readFile(path.join(root, "public/tools/s5-nature/index.html"), "utf8");
+  const styleNames = [...sourceHtml.matchAll(/data-tool-style="\.\/([\w-]+\.css)"/gu)].map(([, name]) => name);
+  await writeFile(path.join(toolDir, "index.html"), sourceHtml, "utf8");
+  const sourceStyles = new Map();
+  for (const name of styleNames) {
+    const css = await readFile(path.join(root, "public/tools/s5-nature", name), "utf8");
+    sourceStyles.set(name, css);
+    await writeFile(path.join(toolDir, name), css, "utf8");
+  }
   const legacy = "// legacy UI retained for existing references\nexport const compatibilityValue = 21 + 21;\n";
   await writeFile(path.join(toolDir, "ui.mjs"), legacy, "utf8");
   await mkdir(path.join(toolDir, "vendor"));
@@ -63,7 +72,19 @@ test("production tool loads one bundle and minifies compatibility modules withou
   }
   expect(await readFile(path.join(toolDir, "data", "evidence.json"), "utf8")).toBe('{ "evidence": true }\n');
   expect(await readFile(path.join(outDir, "index.html"), "utf8")).toBe("calculator shell");
-  expect((await readdir(toolDir)).sort()).toEqual([bundleName, "data", "ui.mjs", "vendor", "web-startup.mjs"].sort());
+  const bundledHtml = await readFile(path.join(toolDir, "index.html"), "utf8");
+  const styleReferences = [...bundledHtml.matchAll(/data-tool-style="\.\/([^"]+\.css)"/gu)];
+  expect(styleReferences).toHaveLength(1);
+  expect(bundledHtml).not.toMatch(/<link\b[^>]*rel="stylesheet"[^>]*\shref=/u);
+  const bundledCss = await readFile(path.join(toolDir, styleReferences[0][1]), "utf8");
+  expect(bundledCss).toContain(".flow-card");
+  expect(bundledCss).toContain(".hp-readings");
+  expect(bundledCss).toContain(".picker-anchor");
+  for (const [name, css] of sourceStyles) {
+    expect(await readFile(path.join(root, "public/tools/s5-nature", name), "utf8")).toBe(css);
+    expect(await readdir(toolDir)).not.toContain(name);
+  }
+  expect((await readdir(toolDir)).sort()).toEqual([bundleName, "assets", "data", "index.html", "ui.mjs", "vendor", "web-startup.mjs"].sort());
 });
 
 test("outputs without the CN tool are untouched", async () => {

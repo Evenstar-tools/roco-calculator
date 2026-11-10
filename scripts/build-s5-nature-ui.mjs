@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { readFile, readdir, writeFile } from "node:fs/promises";
+import { readFile, readdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { minify } from "terser";
 import { build } from "vite";
@@ -25,6 +25,10 @@ export async function buildS5NatureUi({ root, outDir }) {
   if (!existsSync(startupFile)) return null;
 
   const startup = await readFile(startupFile, "utf8");
+  const htmlFile = path.join(toolDir, "index.html");
+  const html = existsSync(htmlFile) ? await readFile(htmlFile, "utf8") : null;
+  const styleTags = html ? [...html.matchAll(/<link\b[^>]*data-tool-style="\.\/([\w-]+\.css)"[^>]*>/gu)] : [];
+  const uiFile = path.join(root, "public/tools/s5-nature/ui.mjs");
   const uiImport = /import\((['"])\.\/ui\.mjs\1\)/gu;
   if ([...startup.matchAll(uiImport)].length !== 1) {
     throw new Error("S5 startup must have exactly one deferred UI module import");
@@ -36,6 +40,14 @@ export async function buildS5NatureUi({ root, outDir }) {
     publicDir: false,
     base: "./",
     logLevel: "error",
+    plugins: [{
+      name: "s5-tool-styles",
+      transform(code, id) {
+        if (path.resolve(id) !== path.resolve(uiFile) || !styleTags.length) return null;
+        // Keep the HTML's cascade order; Vite bundles/minifies these styles once.
+        return { code: styleTags.map(([, name]) => `import ${JSON.stringify(`./${name}`)};`).join("\n") + "\n" + code, map: null };
+      },
+    }],
     build: {
       target: "es2022",
       minify: "terser",
@@ -43,7 +55,7 @@ export async function buildS5NatureUi({ root, outDir }) {
       emptyOutDir: false,
       copyPublicDir: false,
       rolldownOptions: {
-        input: path.join(root, "public/tools/s5-nature/ui.mjs"),
+        input: uiFile,
         output: { format: "es", entryFileNames: "ui-[hash].js", codeSplitting: false },
       },
     },
@@ -57,6 +69,19 @@ export async function buildS5NatureUi({ root, outDir }) {
   const bundleName = entries[0].fileName;
   const bundleFile = path.join(toolDir, bundleName);
   if (!existsSync(bundleFile)) throw new Error("S5 UI bundle was not generated");
+  if (styleTags.length) {
+    const styles = (Array.isArray(result) ? result : [result])
+      .flatMap(output => output.output ?? [])
+      .filter(asset => asset.type === "asset" && asset.fileName.endsWith(".css"));
+    if (styles.length !== 1) throw new Error("S5 UI build must generate exactly one stylesheet");
+    let bundledHtml = html;
+    for (const [index, [tag]] of styleTags.entries()) {
+      bundledHtml = bundledHtml.replace(tag, index === 0
+        ? `<link rel="stylesheet" data-tool-style="./${styles[0].fileName}" />` : "");
+    }
+    await writeFile(htmlFile, bundledHtml, "utf8");
+    for (const [, name] of styleTags) await unlink(path.join(toolDir, name));
+  }
   await minifyCompatibilityModules(toolDir);
   await writeFile(startupFile, startup.replace(uiImport, () => `import(${JSON.stringify(`./${bundleName}`)})`), "utf8");
   return bundleFile;
