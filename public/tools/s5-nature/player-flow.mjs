@@ -158,7 +158,7 @@ function renderExchange(exchange, result) {
     const amounts=hpRows.map(row=>evilExchangeHealing(row[state],percent));
     const min=Math.min(...amounts),max=Math.max(...amounts);
     const text=amounts.length ? min===max?`${min}`:`${min}–${max}` : '—';
-    return `<div class="flow-exchange-prediction${hitStates.has(state)?' hit':''}" data-exchange-hp="${state}"><span>${phrase('hp',state)}</span><b>${text}</b></div>`;
+    return `<div class="flow-exchange-prediction pcell paxis hp-reading${hitStates.has(state)?' matches':''}" data-exchange-hp="${state}"><span class="hit-formula">${state==='neutral'?'普通':phrase('hp',state)}</span><b class="dmg">${text}</b></div>`;
   }).join('');
   const note=$('flow-exchange-verdict');
   note.className=`flow-row-verdict${exchange.used?exchange.status==='matched'?' good':' bad':''}`;
@@ -503,16 +503,16 @@ export function mountPlayerFlow(options) {
     editor.onclick=()=>{const open=row.classList.toggle('flow-editing-skill');editor.setAttribute('aria-expanded',String(open));editor.textContent=open?'收起':'换招';if(open)picker.querySelector('input').focus();};
   }
   // 第五招独立测生命；开关记住选择，切到龙息帕尔自动开启。
-  const exchangeToggle=document.createElement('label');exchangeToggle.className='flow-exchange-toggle';
+  const exchangeToggle=document.createElement('label');exchangeToggle.className='switch-label';
   exchangeToggle.title='打开后常驻第五行；选择龙息帕尔会自动打开';
-  exchangeToggle.innerHTML='<input id="flow-exchange-enabled" type="checkbox" role="switch" aria-label="恶念交换第五行" aria-controls="flow-exchange-row"/><span>恶念交换</span>';
+  exchangeToggle.innerHTML='<input id="flow-exchange-enabled" class="switch" type="checkbox" role="switch" aria-label="恶念交换第五行" aria-controls="flow-exchange-row"/><span>恶念交换</span>';
   cards[0].querySelector('.flow-clear').before(exchangeToggle);
-  const exchangeRow=document.createElement('section');exchangeRow.id='flow-exchange-row';exchangeRow.setAttribute('aria-label','第五招恶念交换测生命');exchangeRow.hidden=true;
-  exchangeRow.innerHTML=`<div class="flow-exchange-skill"><div class="flow-exchange-title"><span class="pskill-slot">5</span><b>恶念交换</b><span>测生命</span><button type="button" id="flow-exchange-condition-gear" class="pskill-gear" aria-label="恶念交换条件" aria-expanded="false" aria-controls="flow-exchange-condition-pop">⚙</button></div>
-    <div id="flow-exchange-condition-label" class="flow-exchange-help">破盾10%</div>
-    <div id="flow-exchange-condition-pop" class="pskill-pop flow-exchange-conditions" role="dialog" aria-label="恶念交换条件" hidden><div class="pskill-pop-grid"><label>野怪剩余血量 %<input id="flow-exchange-percent" type="number" min="0" max="100" step="0.01" inputmode="decimal" aria-label="恶念交换野怪剩余血量百分比"/></label></div><p>我方满血，读野怪绿色回血；期间无额外扣血、回血或生命上限变化。</p><div class="pskill-pop-foot"><span>默认 10% · 按精确比例算</span><button type="button" id="flow-exchange-reset" class="text-button">恢复默认</button></div></div></div>
-    <div id="flow-exchange-values" class="flow-exchange-values" aria-label="恶念交换三档回血"></div>
-    <div class="flow-exchange-observation"><label class="pobs"><span>野怪回血</span><input id="flow-exchange-healing" type="text" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="绿色数字" aria-label="恶念交换野怪绿色回血" aria-describedby="flow-exchange-verdict"/></label><div id="flow-exchange-verdict" class="flow-row-verdict" aria-live="polite"></div></div>`;
+  const exchangeRow=document.createElement('section');exchangeRow.id='flow-exchange-row';exchangeRow.className='preview-grid';exchangeRow.setAttribute('aria-label','第五招恶念交换测生命');exchangeRow.hidden=true;
+  exchangeRow.innerHTML=`<div class="flow-exchange-skill pskill-body"><div class="flow-exchange-title pskill-line"><span class="muted">5</span><b class="pskill-body">恶念交换</b><span class="pskill-meta">测生命</span><button type="button" id="flow-exchange-condition-gear" class="pskill-gear" aria-label="恶念交换条件" aria-expanded="false" aria-controls="flow-exchange-condition-pop">⚙</button></div>
+    <div id="flow-exchange-condition-label" class="pskill-meta">破盾10%</div>
+    <div id="flow-exchange-condition-pop" class="pskill-pop" role="dialog" aria-label="恶念交换条件" hidden><label class="flow-dialog-field">野怪剩余血量 %<input id="flow-exchange-percent" type="number" min="0" max="100" step="0.01" inputmode="decimal" aria-label="恶念交换野怪剩余血量百分比"/></label><p class="flow-dialog-message">我方满血，读野怪绿色回血；期间无额外扣血、回血或生命上限变化。</p><div class="pskill-pop-foot"><span>默认 10% · 按精确比例算</span><button type="button" id="flow-exchange-reset" class="text-button">恢复默认</button></div></div></div>
+    <div id="flow-exchange-values" class="hp-column-legend" aria-label="恶念交换三档回血"></div>
+    <div class="pobservations"><label class="pobs"><span>野怪回血</span><input id="flow-exchange-healing" type="text" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="绿色数字" aria-label="恶念交换野怪绿色回血" aria-describedby="flow-exchange-verdict"/></label><div id="flow-exchange-verdict" class="flow-row-verdict" aria-live="polite"></div></div>`;
   $('preview-outgoing').after(exchangeRow);
   for(const [k,row] of [...document.querySelectorAll('#preview-incoming [data-incoming-row]')].entries())
     row.querySelector('.pobservations').insertAdjacentHTML('beforeend',`<div class="flow-row-verdict" id="flow-row-verdict-in-${k}" aria-live="polite"></div>`);
