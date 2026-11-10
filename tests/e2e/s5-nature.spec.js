@@ -26,6 +26,14 @@ async function selectProfile(page, id) {
   await expect(page.locator('#profile-select')).toHaveValue(id);
 }
 
+// 低频配置操作收在“⋯”菜单里。
+async function ownMenu(page, action) {
+  await openConfig(page);
+  await page.locator('#flow-own-menu-button').click();
+  await page.locator(action === 'preset' ? '#load-own-preset' : `[data-own-menu="${action}"]`).click();
+}
+const loadPreset = page => ownMenu(page, 'preset');
+
 // 桌面两种测法同页；手机切页签。
 async function switchMethod(page, direction) {
   if (page.viewportSize().width <= 820) await page.locator(`[data-flow-tab="${direction}"]`).click();
@@ -243,7 +251,7 @@ async function expectWildControlsContained(page) {
 test('S5 nature type dice calculate single resistance and preserve entered power without double counting', async ({ page }) => {
   await openTool(page);
   await selectProfile(page, 'luoyin');
-  await page.locator('#load-own-preset').click();
+  await loadPreset(page);
   await chooseTarget(page, '伊雷龙');
   await page.getByRole('group', { name: '野怪等级', exact: true }).getByRole('button', { name: '42', exact: true }).click();
   await setDice(page, 'own', 'none');
@@ -452,7 +460,8 @@ test("S5 nature CN toolbox opens encounter HP with shiny and responsive assets",
   const portraits = page.locator("#own-image, #target-image");
   await expect(portraits).toHaveCount(2);
   for (const portrait of await portraits.all()) await expect(portrait).toHaveAttribute("src", /^\/assets\//);
-  await expect.poll(() => page.locator('img[src^="/assets/"]').evaluateAll(images =>
+  // 立绘栏图片按需懒加载，不计入首屏已加载检查。
+  await expect.poll(() => page.locator('img[src^="/assets/"]:not([loading="lazy"])').evaluateAll(images =>
     images.length >= 2 && images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
 
   await chooseTarget(page, "可爱猿");
@@ -614,7 +623,7 @@ test("S5 nature level evidence does not confirm a fixed level or a single matchi
 test("S5 nature incoming damage above own HP still identifies unchanged magical attack", async ({ page }) => {
   await openTool(page);
   await selectProfile(page, 'luoyin');
-  await page.locator('#load-own-preset').click();
+  await loadPreset(page);
   await page.locator('#star-seg').getByRole('button', { name: '10★', exact: true }).click();
   await chooseTarget(page, '伊雷龙');
   await page.getByRole('group', { name: '野怪等级', exact: true })
@@ -676,14 +685,16 @@ test("S5 nature presets share calculator configurations and preserve saved manua
   await expect(page.locator('#flow-result')).toBeVisible();
   await expect(page.locator('#star-seg').getByRole('button', { name: '8★', exact: true })).toHaveAttribute('aria-pressed', 'true');
   expect((await active()).displayIvs.magicalAttack).toBe(0);
-  await page.locator('#load-own-preset').click();
+  await loadPreset(page);
   expect((await active()).awakening).toBe(5);
   expect((await active()).displayIvs.magicalAttack).toBe(60);
   for (const [width, height] of [[1280,1000], [390,844]]) {
     await page.setViewportSize({ width, height });
     await openConfig(page);
-    await page.locator('#load-own-preset').scrollIntoViewIfNeeded();
+    await page.locator('#flow-own-menu-button').click();
     await expect(page.locator('#load-own-preset')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#load-own-preset')).toBeHidden();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: `artifacts/s5-player-flow/screenshots/s5-presets-${width}.png` });
   }
@@ -703,7 +714,7 @@ test("S5 nature presets share calculator configurations and preserve saved manua
   await page.evaluate(entry => localStorage.setItem('rock-calculator.servers.cn.spirit-configs.v2', JSON.stringify({
     schemaVersion: 2, configs: { [entry.spiritId]: { ...entry, natureId: 'rash', skills: { four: entry.skills.map(skillId => ({skillId})) } } },
   })), shared);
-  await page.locator('#load-own-preset').click();
+  await loadPreset(page);
   expect((await active()).natureId).toBe('rash');
   expect((await active()).preview.skillIds).toEqual(shared.skills);
   await page.reload();
@@ -1175,7 +1186,7 @@ test('S5 nature plan A keeps named configs, per-config incoming readings and one
   await selectProfile(page, 'luoyin');
   await expect(incoming).toHaveValue('11');
   // 另存为命名配置：保留等级，不沿用本场读数；改名、删除需确认。
-  await page.locator('[data-config-action="save"]').click();
+  await ownMenu(page, 'save');
   await page.locator('#config-name').fill('罗隐 · 物攻主力');
   await page.locator('#config-ok').click();
   await expect(page.locator('#profile-select option:checked')).toHaveText('罗隐 · 物攻主力');
@@ -1183,7 +1194,7 @@ test('S5 nature plan A keeps named configs, per-config incoming readings and one
   await expect(incoming).toHaveValue('');
   await page.reload();
   await expect(page.locator('#profile-select option:checked')).toHaveText('罗隐 · 物攻主力');
-  await page.locator('[data-config-action="delete"]').click();
+  await ownMenu(page, 'delete');
   await expect(page.locator('#config-dialog-message')).toContainText('罗隐 · 物攻主力');
   await page.locator('#config-ok').click();
   await expect(page.locator('#profile-select option')).toHaveCount(2);
@@ -1299,7 +1310,7 @@ test('S5 nature plan A review: readings keep their own move, HP verdict matches 
     window.pveNatureUi.setSession(s);
   });
   await selectProfile(page, 'luoyin');
-  await page.locator('[data-config-action="delete"]').click();
+  await ownMenu(page, 'delete');
   await page.locator('#config-ok').click();
   await expect(page.locator('#profile-select option')).toHaveCount(1);
   await page.reload();
@@ -1338,4 +1349,93 @@ test('S5 nature lightweight pickers retain keyboard choices and return saved evo
   await expect(own).toHaveValue('迪莫');
   await expect(incoming).toHaveValue('猛烈撞击');
   await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('50');
+});
+
+test('S5 nature shiny target column collapses to an edge handle on wide screens and is absent on phones', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openTool(page);
+  const column = page.locator('#flow-roster'), handle = page.locator('#flow-roster-tab');
+  // 宽屏默认展开成左侧一列，不产生横向滚动，一屏放下。
+  await expect(column).toBeVisible();
+  await expect(handle).toBeHidden();
+  await expect(column.locator('.fr-group h3')).toHaveText(['S5 异色', 'S2 异色', '通行证', '其他']);
+  await expect(column.locator('.fr-item span')).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight)).toBe(true);
+  const listed = await page.evaluate(async () => {
+    const catalog = await (await fetch('./data/catalog.json')).json();
+    return [...document.querySelectorAll('[data-roster-id]')].map(item => catalog.spirits.find(row => row.id === item.dataset.rosterId))
+      .map(row => ({ name: row.name, stage: row.stage, shiny: row.hasShinyForm }));
+  });
+  expect(listed.length).toBeGreaterThan(40);
+  expect(listed.every(row => row.stage === '一阶' && row.shiny === true)).toBe(true);
+  expect(listed.at(-1).name).toBe('云梦豚');
+  // 选中：切换野怪并按异色计算，栏保持展开。
+  await column.locator('.fr-item[title^="恶魔叮"]').click();
+  const picker = page.getByRole('combobox', { name: '选择野生目标', exact: true });
+  await expect(picker).toHaveValue('恶魔叮');
+  await expect(page.locator('#target-shiny')).toBeChecked();
+  await expect(column.locator('.fr-item[title^="恶魔叮"]')).toHaveAttribute('aria-pressed', 'true');
+  const scroller = column.locator('.fr-scroll');
+  const expectScroll = async top => {
+    await expect.poll(async () => Math.abs(await scroller.evaluate(el => el.scrollTop) - top)).toBeLessThan(1);
+  };
+  const scrollTo = top => scroller.evaluate((el, value) => {
+    el.scrollTo({ top: value, behavior: 'instant' });
+    return el.scrollTop;
+  }, top);
+  // 当前选中项留在上方；往下浏览后关开，不再自动追到选中项。
+  const browsedTop = await scrollTo(1200);
+  expect(browsedTop).toBeGreaterThan(1000);
+  await column.locator('.fr-close').click();
+  await expect(column).toBeHidden();
+  await expect(handle).toBeVisible();
+  const box = await handle.boundingBox();
+  expect(box.x).toBeLessThanOrEqual(1);
+  expect(Math.abs(box.y + box.height / 2 - 450)).toBeLessThan(4);
+  await handle.click();
+  await expect(column).toBeVisible();
+  await expectScroll(browsedTop);
+  // 选择当前可见的精灵会重算页面，但不移动名单的位置。
+  const visibleId = await scroller.evaluate(el => {
+    const bounds = el.getBoundingClientRect();
+    return [...el.querySelectorAll('.fr-item')].find(item => {
+      const box = item.getBoundingClientRect();
+      return box.top > bounds.top + 24 && box.bottom < bounds.bottom - 24;
+    }).dataset.rosterId;
+  });
+  const visibleItem = column.locator(`[data-roster-id="${visibleId}"]`);
+  await visibleItem.click();
+  await expect(visibleItem).toHaveAttribute('aria-pressed', 'true');
+  await expectScroll(browsedTop);
+  // 展开状态刷新，恢复浏览位置而不是重新定位已选精灵。
+  const refreshedTop = await scrollTo(browsedTop + 170);
+  await page.reload();
+  await expect(column).toBeVisible();
+  await expectScroll(refreshedTop);
+  // 滚动后同一轮事件立即关闭，不能等防抖落盘；隐藏状态刷新也保留位置。
+  const closedTop = await scroller.evaluate(el => {
+    el.scrollTo({ top: el.scrollTop + 220, behavior: 'instant' });
+    const top = el.scrollTop;
+    document.querySelector('#flow-roster .fr-close').click();
+    return top;
+  });
+  await expect(column).toBeHidden();
+  await page.reload();
+  await expect(page.locator('#flow-result')).toBeVisible();
+  await expect(column).toBeHidden();
+  await handle.click();
+  await expect(column).toBeVisible();
+  await expectScroll(closedTop);
+  // 没有异色形态的精灵不出现异色开关。
+  await chooseTarget(page, '棋棋（白子）');
+  await expect(page.locator('#target-shiny-control')).toBeHidden();
+  await expectScroll(closedTop);
+  // 手机隐藏时读到的 scrollTop=0，不能覆盖桌面的浏览位置。
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(column).toBeHidden();
+  await expect(handle).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(column).toBeVisible();
+  await expectScroll(closedTop);
 });

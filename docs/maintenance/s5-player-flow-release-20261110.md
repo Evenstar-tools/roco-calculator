@@ -30,3 +30,9 @@
 - 旧 Service Worker 上下文正常升级至 `rock-calculator-webapp-v2.3.17-20261110-player-flow-r1`；只加载一个合并 CSS，初始 option 总量为 215。
 - 首次云端检查 https://github.com/Evenstar-tools/roco-calculator/actions/runs/42826181326 的旧存档用例存在 fixture 竞态：直接写 localStorage 后，旧文档尚未完成的输入自动保存会覆盖它。现改为在新文档初始化前装载 fixture，所有原断言保留；生产页连续三次回归通过。此次跟进仅改测试与交接，国服 pin 和运行时代码保持不变。
 - 后续主线检查结果以 GitHub Actions 当前提交状态为准；资源检查及浏览器日志位于 `output/s5-player-flow-release/production-resources.log`、`production-e2e.log`、`archive-fixture-recheck.log`。
+
+## 第二批 · 2026-11-11
+
+用户授权：“提交并上线”。国服源码 pin 由 `f2dfee93` 更新为 `8c36311a1f7c103b23a4667ffd305a4b6dc803e6`（分支 `fix/s5-css-budget-20261111`，基于功能分支 `44482326`，功能提交 `b67c19f9`）。首次构建 CSS gzip 97.41 KiB 超过 96 KiB 硬上限；未调整预算，改为删除 210 条在各状态下都不改变计算样式的工具规则，47 张状态截图逐像素一致，构建后为 95.89 KiB。主线仅更新国服 pin、Web 缓存版本、S5 浏览器回归、更新日志与本记录；国际服及小程序 pin 不变。
+
+本批内容：设置区左右两列与“⋯”菜单、“清空读数”、宽屏异色目标栏（可收起、记住滚动位置，手机不提供）、44 张头像栏立绘（`public/assets/spirits/roster/`，来源见同目录 `manifest.json`）、复核三项修复（读数随来招恢复、生命判读统一口径、删除配置清理旧记录）、骰子提示精简、样式清理。上一批记录的三项待办中，前两项已由本批修复；生命冲突时的预测格高亮也已统一到反推口径。
