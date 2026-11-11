@@ -237,6 +237,19 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.22",
+    date: "2026.11.11",
+    seasonId: "S5",
+    title: "S5 判读界面与说明书同步",
+    whatsNew: S5_FEATURE_INTRO,
+    features: ["新增性格计算文字说明书，返回后保留配置与实测读数。"],
+    fixes: [
+      "伤害命中与余血判读分开显示，生命冲突仅标记对应输入和属性。",
+      "目标属性全部满足时显示已满足，保留具体性格与数量。",
+      "清空读数保留我方骰子和配置；没有可清内容时按钮禁用。",
+    ],
+  }),
+  createRelease({
     version: "v2.3.21",
     date: "2026.11.11",
     seasonId: "S5",
