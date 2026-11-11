@@ -1,14 +1,16 @@
 # S5 性格计算 UI · Claude 接手说明
 
-更新：2026-11-10。本文是本次 UI 工作的统一接手入口，覆盖用户意图、现有实现、目录、未完成项和验证方法。接手时先核对真实 Git 状态，再按用户接下来的要求推进。
+更新：2026-11-11。本文是本次 UI 工作的统一接手入口，覆盖用户意图、现有实现、目录、未完成项和验证方法。接手时先核对真实 Git 状态，再按用户接下来的要求推进。
 
-**当前阶段：2026-11-10 已按用户“先把新ui推上线试试”授权上线。生产地址：https://rococalc.top/tools/s5-nature/index.html 。发布源码固定到 `f2dfee93`，主线发布提交 `bb7453b2`；桌面、手机和旧缓存升级已验收。后文标明的早期本地状态为历史记录，当前发布结论见第 10 节。**
+**当前阶段：2026-11-11 第二批已按用户“提交并上线”授权上线。生产地址：https://rococalc.top/tools/s5-nature/index.html 。国服源码固定到 `8c36311a`（分支 `fix/s5-css-budget-20261111`），主线发布提交 `e323a1a9`，验收记录提交 `c71d2549`。第一批（`f2dfee93` / `bb7453b2`）见第 10 节，第二批见第 11 节；后文标明的早期本地状态为历史记录。**
 
 ## 1. 从哪里接手
 
 | 位置 | 用途与状态 |
 | --- | --- |
-| `D:/codex/worktrees/roco-s5-player-flow-20261110` | **当前实施工作树，继续开发用这里。** 分支 `feature/s5-player-flow-20261110`。方案 A、复核修复、启动优化和旧样式清理已提交并推送。发布源码为 `f2dfee93`，后续交接和测试修正不改变产品 pin。 |
+| `D:/codex/worktrees/roco-s5-player-flow-20261110` | **功能工作树。** 分支 `feature/s5-player-flow-20261110`，远端头 `44482326`。2026-11-11 时另有会话在此进行未提交的 evil-exchange 功能（改动 `matchup-preview.mjs`、`matchup-ui.mjs`、`player-flow.mjs`、`player-flow.css`、`ui.mjs` 与本文），不在已上线范围。 |
+| `D:/codex/worktrees/roco-s5-css-budget-20261111` | 分支 `fix/s5-css-budget-20261111`（`8c36311a` + 本文更新），基于 `44482326`，只含 CSS 预算清理。**线上国服 pin 指向这里的 `8c36311a`。** 需合入功能分支，见第 11 节。 |
+| `D:/codex/worktrees/roco-s5-player-flow-release-20261110` | 发布工作树，分支 `release/s5-player-flow-20261110` 跟踪 `origin/main`；两批发布、更新日志与发布记录均从这里推送。 |
 | `http://127.0.0.1:8843/tools/s5-nature/index.html` | 当前真实源码预览，Vite 服务；交接时仍在运行。 |
 | `D:/codex/rock-calculator-public` | 主仓库、发布编排及其他工作。已有未提交文档改动，勿 reset、清理或整体覆盖。 |
 | `D:/codex/rock-calculator-public/artifacts/web-ux-s5-player-flow-20261109` | 旧 UI 示意稿与迭代截图，`proposal.html / proposal.js / proposal.css`；用于理解设计过程。 |
@@ -196,7 +198,7 @@ index → web-startup.startTool → ui
 
 预设读取是另一条通道：`own-presets.mjs` 只读主计算器的 `rock-calculator.servers.cn.spirit-configs.v2`，不写回。罗隐／迪莫优先专用预设；其他精灵先个人配置，再内置配置库。本工具已支持另存、改名和删除 1–12 套配置，存入自身会话的 `profiles[]`。
 
-## 5.1 方案 A 落地（Claude · 2026-11-10，未提交）
+## 5.1 方案 A 落地与后续迭代（Claude · 2026-11-10～11，已上线，见第 11 节）
 
 用户在两套重做方案中选定“以 A 为主”：桌面四招对照表 + 读数旁直接给结论，手机单招查询。改动范围：
 
@@ -348,3 +350,39 @@ npx playwright test tests/e2e/s5-nature.spec.js --config artifacts/s5-player-flo
 - 首次云端检查有一条旧存档用例被输入后的自动保存抢先覆盖；已将旧存档 fixture 改为新文档初始化前装载，在生产页连续三次通过。该修正只涉及测试，不改变线上产品代码；最终云端状态可从主线 Actions 回查。
 - 继续保留的待办：无技能上下文的旧预览受击记录兼容、反复删除配置产生孤立暂存、生命冲突时预测格高亮细化。具体复现见 `s5-ui-claude-review-20261110.md`，本批未处理。
 - 发布编排及证据位于 `D:/codex/worktrees/roco-s5-player-flow-release-20261110`；记录为 `docs/maintenance/s5-player-flow-release-20261110.md`，线上桌面／手机截图位于 `output/playwright/s5-live-desktop.png` 与 `s5-live-mobile.png`。
+
+## 11. 第二批上线 · 2026-11-11
+
+用户授权：“提交并上线”。范围为 5.1 节 v7～v13 的全部内容：我方／野怪两列对齐与“⋯”配置菜单、“清空读数”、宽屏可收起的异色目标栏（44 张立绘，记住展开状态与滚动位置，手机不提供）、复核三项修复、生命判读与对照表高亮统一反推口径、骰子提示精简、搜索范围不截字、样式清理。
+
+### 提交与指向
+
+| 项 | 值 |
+| --- | --- |
+| 功能提交 | `b67c19f9`（代码、测试、`public/assets/spirits/roster/` 立绘）；交接 `44482326`；均在 `feature/s5-player-flow-20261110` |
+| CSS 预算清理 | `8c36311a`，分支 `fix/s5-css-budget-20261111`（基于 `44482326`） |
+| 国服 pin | `config/preview-release.json` → `8c36311a1f7c103b23a4667ffd305a4b6dc803e6` |
+| 主线 | 发布 `e323a1a9`，验收记录 `c71d2549`；缓存版本 `rock-calculator-webapp-v2.3.17-20261111-player-flow-r2` |
+| 国际服 / 小程序 | pin 未变 |
+
+### CSS 预算
+
+首次构建 CSS gzip 97.41 KiB，超过 96 KiB 硬上限。未调预算，改为浏览器累积判定：5 种状态 × 9 种宽度及菜单、弹窗、异色栏交互下，按层叠顺序逐条停用规则，命中元素计算值不变才删除（交互态选择器保留），五个工具样式共删 210 条；47 张状态截图逐像素一致，构建后 95.89 KiB。**余量仅约 0.1 KiB**，后续新增 S5 样式时需同步删减，或先和用户确认预算。脚本：`artifacts/s5-player-flow/css-redundancy.mjs`、`clean-css-redundant.py`、`state-shots.mjs`（本机产物）。
+
+### 验证
+
+- 发布前：发布单测 2948 项、正式聚合构建、发布浏览器回归 66 项通过。
+- 线上：部署资源检查 81 项；生产站 S5 回归 5 项；1440 桌面异色栏、立绘加载与点选，390 手机无异色栏、无横向溢出；控制台无错误、无失败请求。截图与日志在发布工作树 `output/playwright/s5-live-r2-*.png`、`output/s5-player-flow-release/r2-*.log`。
+- 手机真机软键盘仍未测。
+
+### 运行注意
+
+- 正式构建和 CLI 发布测试需在 **PowerShell** 运行；Git Bash 的 GNU tar 会把 `D:` 盘符当远程主机，报 `Cannot connect to D:`。
+- 改样式后用 `state-shots.mjs`（清理前后各拍一组）逐像素比对；单条停用检测不到“两条规则设同值”的情况，必须用累积式脚本。
+
+### 待办
+
+1. **合并分支**：把 `fix/s5-css-budget-20261111` 合入 `feature/s5-player-flow-20261110`。功能工作树的未提交改动也改了 `player-flow.css`（末尾追加新样式），合并时保留其新增、采用本分支删除；合并后先跑构建预算再继续开发。
+2. 合并完成后可删除工作树 `roco-s5-css-budget-20261111`（8844 预览服务已关闭）。
+3. S5 异色立绘：BWIKI 与 Candymo 尚未收录，S5 组与热团团、新月鹭、地银链、沉金兽、云梦豚暂用普通立绘；来源上线后按 `public/assets/spirits/roster/manifest.json` 的方式补齐。
+4. 隐藏的旧 `#versus-grid` DOM 仍被 `ui.mjs` 引用，未删除。
