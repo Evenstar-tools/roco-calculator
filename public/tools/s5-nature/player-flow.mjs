@@ -44,7 +44,7 @@ export function outgoingReadingVerdict(row, obs, rawObs, format = 'game0', categ
   if (!obs) return single('flat', '余血 0%，不能判断');
   if (row?.status !== 'estimated' || !row.predictions?.length) return single('bad', '这一招无法计算');
   const defense = category==='physical' ? 'physicalDefense' : 'magicalDefense';
-  const parts = [], axes = {};
+  const parts = [], axes = {}, conflicts = {};
   if (obs.damage != null) {
     const damageHits = row.predictions.filter(p=>observationMatch(p,{damage:obs.damage},format));
     if (!damageHits.length) return single('bad', observationDifference(row,{damage:obs.damage},format) || '与计算不符');
@@ -59,11 +59,12 @@ export function outgoingReadingVerdict(row, obs, rawObs, format = 'game0', categ
       const comparison = compareObservedHp({ outgoing:[row], observed:{0:obs}, format, hpPredictions });
       if (comparison.status === 'conflict') {
         const range = comparison.ranges.map(r=>r.max===null?`≥${r.min}`:r.min===r.max?`${r.min}`:`${r.min}–${r.max}`).join('／');
+        conflicts.hp = true;
         parts.push({tone:'bad', text: range ? `生命对不上（推算 ${range}）` : '生命对不上'});
       } else matched = comparison.matchedPredictions;
     } else matched = row.predictions.filter(p=>observationMatch(p,obs,format));
     if (matched) {
-      if (!matched.length) parts.push({tone:'bad', text:'余血对不上'});
+      if (!matched.length) { conflicts.hp = true; parts.push({tone:'bad', text:'余血对不上'}); }
       else {
         const state = sameState(matched, 'hp');
         parts.push({tone:state?'good':'flat', text:state ? phrase('hp',state) : '生命待分'});
@@ -73,7 +74,7 @@ export function outgoingReadingVerdict(row, obs, rawObs, format = 'game0', categ
   }
   const tones = new Set(parts.map(part=>part.tone));
   const tone = tones.size===1 ? [...tones][0] : tones.has('bad') ? 'mixed' : 'good';
-  return {tone, text:parts.map(part=>part.text).join(' · '), parts, axes};
+  return {tone, text:parts.map(part=>part.text).join(' · '), parts, axes, conflicts};
 }
 export function incomingReadingVerdict(row, obs, format = 'game0', category = 'physical') {
   if (!obs) return null;
@@ -105,6 +106,17 @@ function nextTarget() {
     delete s.preview.incomingByDefender;
     s.playerFlow=structuredClone(layout);
   });
+}
+const hasReading = value => value != null && (typeof value !== 'string' || value.trim() !== '');
+function hasClearableState(s) {
+  const values = entries => Object.values(entries ?? {}).some(hasReading);
+  const incoming = entry => values(entry?.damages) || values(entry?.picks);
+  return Boolean(s.observations?.length || layout.hp || layout.exchange.healing.trim() || layout.exchange.percent!==10
+    || (s.preview?.diceId ?? 'none')!=='none' || Object.keys(s.preview?.diceEffects ?? {}).length
+    || values(s.preview?.incomingDamages) || values(s.preview?.incomingPicks)
+    || Object.values(s.preview?.incomingByDefender ?? {}).some(incoming)
+    || s.profiles.some(p=>values(p.preview?.picked)
+      || Object.values(p.preview?.observed ?? {}).some(obs=>hasReading(obs?.damage) || hasReading(obs?.remainingPercent))));
 }
 function goalNature() { return catalog.natures.find(n=>n.id===layout.goal); }
 function goalMatches(n) { return layout.goal.startsWith('stat:') ? n.upStat===layout.goal.slice(5) : n.id===layout.goal; }
@@ -195,6 +207,8 @@ function render() {
     const b=$(`flow-check-${side}`);b.textContent=layout.checked[side]?'已核对':'未核对';b.setAttribute('aria-pressed',String(layout.checked[side]));
   }
   saveLayout(false);
+  const clearDisabled=!hasClearableState(s);
+  for(const button of document.querySelectorAll('.flow-next')) button.disabled=clearDisabled;
   const level=s.level==='all'?'41–43':s.level;
   const wildLabel=`${target?.name||'野怪'} · ${level}级${s.preview.shiny?' · 异色':''}`;
   $('flow-hp-name').textContent=wildLabel;
@@ -245,6 +259,9 @@ function render() {
   for(let i=0;i<4;i++) {
     const raw=p.preview?.observed?.[i], row=result.outgoing?.[i];
     const verdict=outgoingReadingVerdict(row,outObserved[i],raw,format,category(row),hpPredictions);
+    const hpInput=$(`preview-remaining-${i}`), hpConflict=Boolean(verdict?.conflicts?.hp);
+    hpInput.closest('.pobs').classList.toggle('is-conflict',hpConflict);
+    hpInput.setAttribute('aria-invalid',String(hpConflict));
     const holder=$(`flow-row-verdict-out-${i}`);
     holder.className=`flow-row-verdict${verdict?` ${verdict.tone}`:''}`;
     holder.innerHTML=verdict ? verdict.parts.map(part=>`<span class="${part.tone}">${esc(part.text)}</span>`).join('<span class="sep"> · </span>') : '';
@@ -285,11 +302,11 @@ function render() {
   if(layout.goal) {
     const label=n?.name || `加${names[goalStat]}`;
     const hasConflict=invalid||incomplete||(used>0&&!matched.length)||axesEvidence.hp.conflict;
-    const state=!used?'待实测':hasConflict?'待复核':matched.some(goalMatches)?matched.length===1?'就是它':'还在候选':'已排除';
+    const goalSatisfied=layout.goal.startsWith('stat:') && matched.length>0 && matched.every(goalMatches);
+    const state=!used?'待实测':hasConflict?'待复核':goalSatisfied?'已满足':matched.some(goalMatches)?matched.length===1?'就是它':'还在候选':'已排除';
     const tone=!used||hasConflict?'':matched.some(goalMatches)?' good':' bad';
     goal=`<div class="flow-goal-result${tone}"><span>目标 ${esc(label)}</span><b>${state}</b></div>`;
   }
-  const hasReading = value => value != null && (typeof value !== 'string' || value.trim() !== '');
   const outgoingCount = Array.from({length:4},(_,i)=>p.preview?.observed?.[i])
     .filter(observation=>observation && (hasReading(observation.damage) || hasReading(observation.remainingPercent))).length;
   const incomingCount = Array.from({length:2},(_,i)=>s.preview?.incomingDamages?.[i]).filter(hasReading).length;
@@ -319,7 +336,7 @@ function render() {
   const title=ready?(matched.length===1?matched[0].name:`剩 ${matched.length} 种`)
     :confirmedCount?`已判断 ${confirmedCount} 项`:!used&&!invalid&&!incomplete?'待实测'
     :invalid?'输入有误':incomplete?'有读数未计算':combinedConflict?'读数对不上':'待复核';
-  const titleTone=ready?'':!used&&!invalid&&!incomplete?' empty'
+  const titleTone=ready||confirmedCount?'':!used&&!invalid&&!incomplete?' empty'
     :(invalid||incomplete||combinedConflict||axisStates.some(entry=>entry.conflict))?' bad':' pending';
   const axes = axisStates.map(({key,value,conflict,confirmed})=>{
     const cls=conflict?'conflict':value==='加'?'up':value==='减'?'down':confirmed?'neutral':'none';
@@ -400,7 +417,7 @@ export function mountPlayerFlow(options) {
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!menuList.hidden){closeMenu();menuButton.focus();}});
   const dice=(side,ui,select)=>{const holder=document.createElement('span');holder.className='flow-dice';holder.append($(ui),$(select));holder.insertAdjacentHTML('beforeend',`<button type="button" class="flow-check" id="flow-check-${side}" aria-pressed="false">未核对</button>`);return holder;};
   const wrap=(cls,...ids)=>{const holder=document.createElement('span');holder.className=cls;holder.append(...ids.map(id=>typeof id==='string'?$(id):id));return holder;};
-  const next=document.createElement('button');next.type='button';next.id='flow-next';next.className='flow-next';next.textContent='清空读数';next.title='清掉这只野怪的全部读数，野怪和我方配置保留';
+  const next=document.createElement('button');next.type='button';next.id='flow-next';next.className='flow-next';next.textContent='清空读数';next.title='清空本场读数、标记和野怪骰子，保留我方配置';
   fill('target',wrap('flow-spirit','target-image','target-picker'));fill('level',$('level-seg'),$('target-level'));fill('shiny',$('target-shiny-control'));fill('hp',$('target-hp-range'));fill('next',next);
   fill('wild-dice',dice('target','target-dice-ui','target-dice'));fill('wild-trait',$('wild-trait-row'));fill('filter',$('target-filter'));
   fill('wild-extra',wrap('flow-extra','target-dice-custom','target-dice-note','use-initial-form'));
@@ -562,7 +579,7 @@ export function mountPlayerFlow(options) {
   workspace.addEventListener('focusout',()=>requestAnimationFrame(()=>document.body.classList.toggle('flow-input-focus',workspace.contains(document.activeElement)&&document.activeElement.matches('input,select'))));
   next.onclick=nextTarget;
   // 手机把“清空读数”放在顶栏，野怪区留给精灵、等级和生命。
-  const topNext=Object.assign(document.createElement('button'),{type:'button',id:'flow-next-top',className:'flow-next flow-next-top',textContent:'清空读数',title:'清掉这只野怪的全部读数，野怪和我方配置保留'});
+  const topNext=Object.assign(document.createElement('button'),{type:'button',id:'flow-next-top',className:'flow-next flow-next-top',textContent:'清空读数',title:'清空本场读数、标记和野怪骰子，保留我方配置'});
   topNext.onclick=nextTarget;
   document.querySelector('.app-header')?.insertBefore(topNext,$('open-manual'));
   for(const b of document.querySelectorAll('[data-flow-tab]')) b.onclick=()=>setTab(b.dataset.flowTab);

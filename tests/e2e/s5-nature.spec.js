@@ -53,6 +53,13 @@ function resultAxis(page, label) {
   return page.locator(`#flow-result [data-axis="${AXIS_KEYS[label]}"] > b`);
 }
 
+async function expectClearState(page, enabled) {
+  for (const id of ['flow-next', 'flow-next-top']) {
+    if (enabled) await expect(page.locator(`#${id}`)).toBeEnabled();
+    else await expect(page.locator(`#${id}`)).toBeDisabled();
+  }
+}
+
 async function calculationPreview(page) {
   return page.evaluate(() => {
     const { uiVerdict: _uiVerdict, ...calculation } = window.pveNatureUi.getPreview();
@@ -1222,6 +1229,83 @@ test('S5 nature plan A keeps named configs, per-config incoming readings and one
   await page.screenshot({ path: 'artifacts/s5-player-flow/screenshots/s5-plan-a-390.png' });
 });
 
+test('S5 nature plan A clear keeps own dice and clears marks and readings in every config', async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await openTool(page);
+  await expectClearState(page, false);
+  const ownDice = page.getByRole('checkbox', { name: '我方骰子', exact: true });
+  const wildDice = page.getByRole('checkbox', { name: '敌方骰子', exact: true });
+  await ownDice.check();
+  await expectClearState(page, false);
+  // 仅有野怪骰子时也可清空；我方骰子属于保留的配置。
+  await wildDice.check();
+  await expectClearState(page, true);
+  await page.locator('#flow-next').click();
+  await expect(ownDice).toBeChecked();
+  await expect(wildDice).not.toBeChecked();
+  await expectClearState(page, false);
+  // 仅标记预测格也有可清内容，不能让按钮提前置灰。
+  await page.locator('#preview-cells-0 .pcell').first().click();
+  await expect(page.locator('#preview-cells-0 .picked')).toHaveCount(1);
+  await expectClearState(page, true);
+  await page.locator('#flow-next').click();
+  await expect(page.locator('#preview-cells-0 .picked')).toHaveCount(0);
+  await expectClearState(page, false);
+  // 切回没有读数的配置后，仍能清除另一配置的出招、受击与标记。
+  await selectProfile(page, 'dimo');
+  await page.locator('#preview-observed-0').fill('51');
+  await page.locator('#preview-observed-0').press('Enter');
+  await page.locator('#preview-remaining-0').fill('50');
+  await page.locator('#preview-remaining-0').press('Enter');
+  await page.locator('#preview-incoming-damage-0').fill('22');
+  await page.locator('#preview-incoming-damage-0').press('Enter');
+  await page.locator('#preview-cells-1 .pcell').first().click();
+  await selectProfile(page, 'luoyin');
+  await expect(page.locator('#preview-observed-0')).toHaveValue('');
+  await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('');
+  await expectClearState(page, true);
+  await page.locator('#flow-next').click();
+  await expect(ownDice).toBeChecked();
+  await expectClearState(page, false);
+  await selectProfile(page, 'dimo');
+  await expect(page.locator('#preview-observed-0')).toHaveValue('');
+  await expect(page.locator('#preview-remaining-0')).toHaveValue('');
+  await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('');
+  await expect(page.locator('#preview-outgoing .picked')).toHaveCount(0);
+  await page.reload();
+  await expectClearState(page, false);
+  await selectProfile(page, 'luoyin');
+  await expect(ownDice).toBeChecked();
+});
+
+test('S5 nature plan A distinguishes a satisfied attribute goal from a unique nature', async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await openTool(page);
+  await chooseTarget(page, '锤头鹳');
+  await page.locator('#level-seg button').filter({ hasText: /^41$/ }).click();
+  await page.locator('#target-shiny').uncheck();
+  await page.locator('#flow-goal').selectOption('stat:physicalAttack');
+  const incoming = page.getByRole('combobox', { name: '敌方技能 1', exact: true });
+  await incoming.fill('风矢'); await incoming.press('Enter');
+  await page.locator('#preview-incoming-damage-0').fill('19');
+  await page.locator('#preview-incoming-damage-0').press('Enter');
+  await expect(resultAxis(page, '物攻')).toHaveText('加');
+  await expect(page.locator('#flow-result .fm-cell.on')).toHaveCount(5);
+  await expect(page.locator('#flow-result .flow-verdict')).toHaveText('剩 5 种');
+  await expect(page.locator('#flow-result .flow-goal-result b')).toHaveText('已满足');
+  // 属性达成不等于具体性格确定；再测魔攻才唯一收敛到固执。
+  await page.locator('#flow-goal').selectOption('adamant');
+  await expect(page.locator('#flow-result .flow-goal-result b')).toHaveText('还在候选');
+  const magic = page.getByRole('combobox', { name: '敌方技能 2', exact: true });
+  await magic.fill('升龙咆哮'); await magic.press('Enter');
+  const damage = await page.evaluate(() => window.pveNatureUi.getPreview().incomingList[1].predictions
+    .find(row => row.upStat === 'physicalAttack' && row.downStat === 'magicalAttack').damage);
+  await page.locator('#preview-incoming-damage-1').fill(String(damage));
+  await page.locator('#preview-incoming-damage-1').press('Enter');
+  await expect(page.locator('#flow-result .fm-cell.on')).toHaveCount(1);
+  await expect(page.locator('#flow-result .flow-goal-result b')).toHaveText('就是它');
+});
+
 test('S5 nature plan A review: readings keep their own move, HP verdict matches the rail, deleting a config keeps the save', async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 900 });
   await openTool(page);
@@ -1291,10 +1375,15 @@ test('S5 nature plan A review: readings keep their own move, HP verdict matches 
   // 对照表同一口径：163 吻合物防不变那格，但 64% 不再标成任何生命档吻合。
   await expect(page.locator('#preview-cells-0 [data-defense-band="neutral"]')).toHaveClass(/\bhit\b/);
   await expect(page.locator('#preview-cells-0 .hp-reading.matches')).toHaveCount(0);
+  const hpInput = page.locator('#preview-remaining-0').locator('..');
+  await expect(hpInput).toHaveClass(/\bis-conflict\b/);
+  await expect(page.locator('#preview-observed-0').locator('..')).not.toHaveClass(/\bis-conflict\b/);
+  await expect(page.locator('#flow-result .flow-verdict')).not.toHaveClass(/\bbad\b/);
   // 反推与三档一致时照常标出：162 / 64% → 440 血，减生命。
   await page.locator('#preview-observed-0').fill('162'); await page.locator('#preview-observed-0').press('Enter');
   await expect(page.locator('#preview-cells-0 [data-defense-band="neutral"] [data-hp-nature="down"]')).toHaveClass(/\bmatches\b/);
   await expect(page.locator('#flow-row-verdict-out-0')).toHaveText('物防不变 · 减生命');
+  await expect(hpInput).not.toHaveClass(/\bis-conflict\b/);
   await expect(resultAxis(page, '生命')).toHaveText('减');
   await page.locator('#preview-observed-0').fill('163'); await page.locator('#preview-observed-0').press('Enter');
 
@@ -1375,6 +1464,18 @@ test('S5 nature shiny target column collapses to an edge handle on wide screens 
   await expect(picker).toHaveValue('恶魔叮');
   await expect(page.locator('#target-shiny')).toBeChecked();
   await expect(column.locator('.fr-item[title^="恶魔叮"]')).toHaveAttribute('aria-pressed', 'true');
+  // 900px 桌面展开异色栏时，三档 HP 仍完整可读，不能被异色开关盖住。
+  await page.setViewportSize({ width: 900, height: 900 });
+  await expect(column).toBeVisible();
+  await expect(page.locator('#target-hp-range > [data-hp-nature]')).toHaveCount(3);
+  await expect.poll(() => page.evaluate(() => {
+    const toggle = document.querySelector('#target-shiny-control').getBoundingClientRect();
+    return [...document.querySelectorAll('#target-hp-range > [data-hp-nature]')].every(entry => {
+      const hp = entry.getBoundingClientRect();
+      return hp.right <= toggle.left || hp.left >= toggle.right || hp.bottom <= toggle.top || hp.top >= toggle.bottom;
+    });
+  })).toBe(true);
+  await page.setViewportSize({ width: 1440, height: 900 });
   const scroller = column.locator('.fr-scroll');
   const expectScroll = async top => {
     await expect.poll(async () => Math.abs(await scroller.evaluate(el => el.scrollTop) - top)).toBeLessThan(1);
@@ -1495,6 +1596,7 @@ test('S5 nature Evil Exchange fifth row keeps an independent exact HP observatio
   await expect(resultAxis(page,'生命')).toHaveText('加');
   await toggle.uncheck();
   await expect(row).toBeHidden();
+  await expectClearState(page, true);
   await expect(resultAxis(page,'生命')).toHaveText('待测');
   await page.reload();
   await expect(toggle).not.toBeChecked();
@@ -1520,6 +1622,18 @@ test('S5 nature Evil Exchange fifth row keeps an independent exact HP observatio
   await expect(heal).toHaveValue('');
   await expect(page.locator('#flow-hp-value')).toHaveValue('');
   await expect(toggle).toBeChecked();
+  await expectClearState(page, false);
+  // 隐藏第五行后，手填百分比仍可清除，不能因为没有可见读数置灰。
+  await page.locator('#flow-exchange-condition-gear').click();
+  await page.locator('#flow-exchange-percent').fill('25');
+  await page.locator('#flow-exchange-percent').press('Enter');
+  await toggle.uncheck();
+  await expectClearState(page, true);
+  await page.locator('#flow-next').click();
+  await expectClearState(page, false);
+  await expect(toggle).not.toBeChecked();
+  await toggle.check();
+  await expect(page.locator('#flow-exchange-condition-label')).toHaveText('破盾10%');
   await heal.fill('235');
   const picker=page.getByRole('combobox',{name:'选择野生目标',exact:true});
   await picker.fill('可爱猿');
