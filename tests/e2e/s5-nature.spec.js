@@ -443,7 +443,7 @@ test("S5 nature CN toolbox opens encounter HP with shiny and responsive assets",
   for (const level of [41, 42, 43]) {
     await levelButtons.getByRole("button", { name: String(level), exact: true }).click();
     for (const value of await page.locator(".pcell .dmg").all()) await expect(value).toHaveText(/^\d+$/);
-    for (const value of await page.locator("#preview-outgoing .hp-reading:not(.impossible) b").all()) await expect(value).toHaveText(/^\d+%$/);
+    for (const value of await page.locator("#preview-outgoing .hp-readings .hp-reading:not(.impossible) b").all()) await expect(value).toHaveText(/^\d+%$/);
   }
   await shiny.check();
   await levelButtons.getByRole("button", { name: "41–43级全部", exact: true }).click();
@@ -717,13 +717,13 @@ test("S5 nature presets share calculator configurations and preserve saved manua
   const picked = await active();
   expect(picked.natureId).toBe(shared.natureId);
   expect(picked.displayIvs).toEqual(shared.displayIvs);
-  expect(picked.preview.skillIds).toEqual(shared.skills);
+  expect(picked.preview.skillIds.slice(0,4)).toEqual(shared.skills);
   await page.evaluate(entry => localStorage.setItem('rock-calculator.servers.cn.spirit-configs.v2', JSON.stringify({
     schemaVersion: 2, configs: { [entry.spiritId]: { ...entry, natureId: 'rash', skills: { four: entry.skills.map(skillId => ({skillId})) } } },
   })), shared);
   await loadPreset(page);
   expect((await active()).natureId).toBe('rash');
-  expect((await active()).preview.skillIds).toEqual(shared.skills);
+  expect((await active()).preview.skillIds.slice(0,4)).toEqual(shared.skills);
   await page.reload();
   await expect(page.locator('#flow-result')).toBeVisible();
   await openConfig(page);
@@ -735,7 +735,7 @@ test("S5 nature presets share calculator configurations and preserve saved manua
     await picker.click();
     await picker.fill(name);
     await page.getByRole('option').getByText(name, { exact: true }).click();
-    expect((await active()).preview.skillIds).toEqual(expected.skills);
+    expect((await active()).preview.skillIds.slice(0,4)).toEqual(expected.skills);
     await expect(page.locator('#load-own-preset')).toBeEnabled();
   }
 });
@@ -926,7 +926,7 @@ test('S5 nature defense calibration renders stage-three rollout and Dimo trait t
       incomingSkillIds: [], incomingOverridesList: [], incomingDamages: [] };
     window.pveNatureUi.setSession(session);
   }, { name, moves, panel });
-  const damages = () => page.evaluate(() => window.pveNatureUi.getPreview().outgoing.filter(row => row?.skillId)
+  const damages = () => page.evaluate(() => window.pveNatureUi.getPreview().outgoing.filter(row => row?.status === 'estimated')
     .map(row => row.predictions.find(p => p.upStat === 'physicalAttack' && p.downStat === 'speed').damage));
   await configure('罗隐', ['地刺','火焰切割','彼岸之手'],
     { hp:403, physicalAttack:312, magicalAttack:136, physicalDefense:183, magicalDefense:137, speed:176 });
@@ -1117,7 +1117,8 @@ test('S5 nature player flow compares defense independently from HP and preserves
   for (const [width,height] of [[390,844],[320,740]]) {
     await page.setViewportSize({ width, height });
     await page.evaluate(() => window.scrollTo(0,0));
-    await expect(page.locator('[data-flow-skill]')).toHaveCount(4);
+    await expect(page.locator('[data-flow-skill]:visible')).toHaveCount(4);
+    await page.locator('#flow-outgoing-card').scrollIntoViewIfNeeded();
     await expect(damage).toBeInViewport({ ratio: 1 });
     await expect(remaining).toBeInViewport({ ratio: 1 });
     for (const cell of await cells.locator('.defense-pcell').all()) await expect(cell).toBeInViewport({ ratio: 1 });
@@ -1440,7 +1441,7 @@ test('S5 nature lightweight pickers retain keyboard choices and return saved evo
   await expect(page.locator('#preview-incoming-damage-0')).toHaveValue('50');
 });
 
-test('S5 nature shiny target column collapses to an edge handle on wide screens and is absent on phones', async ({ page }) => {
+test('S5 nature shiny target column collapses on wide screens and frees space in narrow windows', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openTool(page);
   const column = page.locator('#flow-roster'), handle = page.locator('#flow-roster-tab');
@@ -1464,9 +1465,10 @@ test('S5 nature shiny target column collapses to an edge handle on wide screens 
   await expect(picker).toHaveValue('恶魔叮');
   await expect(page.locator('#target-shiny')).toBeChecked();
   await expect(column.locator('.fr-item[title^="恶魔叮"]')).toHaveAttribute('aria-pressed', 'true');
-  // 900px 桌面展开异色栏时，三档 HP 仍完整可读，不能被异色开关盖住。
+  // 900px 隐藏异色栏和把手，保留三档 HP；放宽后恢复原栏位状态。
   await page.setViewportSize({ width: 900, height: 900 });
-  await expect(column).toBeVisible();
+  await expect(column).toBeHidden();
+  await expect(handle).toBeHidden();
   await expect(page.locator('#target-hp-range > [data-hp-nature]')).toHaveCount(3);
   await expect.poll(() => page.evaluate(() => {
     const toggle = document.querySelector('#target-shiny-control').getBoundingClientRect();
@@ -1646,14 +1648,44 @@ test('S5 nature Evil Exchange fifth row remains usable on desktop and narrow mob
   test.setTimeout(60000);
   await selectExchangeWhale(page);
   await page.locator('#flow-exchange-healing').fill('257');
-  for(const [width,height] of [[1440,1000],[900,900],[390,844],[320,740]]) {
+  for(const [width,height] of [[1440,1000],[1100,900],[900,900],[821,900],[390,844],[320,740]]) {
     await page.setViewportSize({width,height});
     const row=page.locator('#flow-exchange-row');
-    await row.scrollIntoViewIfNeeded();
+    if(width<=820) {
+      await expect(page.locator('[data-flow-skill="4"]')).toHaveText('恶念交换');
+      await page.locator('[data-flow-skill="4"]').click();
+    }
+    await page.locator('#flow-exchange-healing').scrollIntoViewIfNeeded();
     await expect(row).toBeVisible();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
     expect(await row.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+    const rail=await page.locator('#flow-result').boundingBox();
+    const reference=await page.locator('#flow-exchange-reference').boundingBox();
+    expect(Math.abs(reference.x-rail.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(reference.width-rail.width)).toBeLessThanOrEqual(1);
+    expect(reference.height).toBeLessThan(105);
+    await expect(page.locator('#flow-exchange-reference')).not.toContainText('我方满血');
+    const captions=await page.locator('#flow-result > .flow-result-cap, #flow-exchange-reference > .flow-result-cap').evaluateAll(items=>items.map(el=>el.getBoundingClientRect().left));
+    expect(Math.abs(captions[0]-captions[1])).toBeLessThanOrEqual(1);
+    if(width>820 && width<=1100) {
+      await expect(page.locator('#flow-roster')).toBeHidden();
+      await expect(page.locator('#flow-roster-tab')).toBeHidden();
+      const work=await page.locator('#preview-workspace').boundingBox();
+      expect(work.width).toBeGreaterThanOrEqual(width-48);
+      expect(rail.y).toBeGreaterThanOrEqual(work.y+work.height);
+      const readings=page.locator('#preview-cells-0 .hp-readings');
+      expect(await readings.evaluateAll(items=>items.every(el=>{
+        const boxes=[...el.children].map(x=>x.getBoundingClientRect());
+        return boxes.every(b=>b.width>=30) && boxes.every((b,i)=>i===0 || b.left-boxes[i-1].right>=7);
+      }))).toBe(true);
+      expect(await page.locator('#preview-cells-0 .dmg').evaluateAll(items=>items.every(el=>parseFloat(getComputedStyle(el).fontSize)>=23))).toBe(true);
+    }
     await page.screenshot({path:`artifacts/s5-player-flow/screenshots/s5-evil-exchange-${width}.png`});
+    if(width===900 || width===821) {
+      await page.evaluate(()=>window.scrollTo(0,0));
+      await expect(page.locator('body')).not.toHaveClass(/flow-past-config/);
+      await page.screenshot({path:`artifacts/s5-player-flow/screenshots/s5-narrow-full-${width}.png`,fullPage:true});
+    }
     await page.locator('#flow-exchange-healing').fill('235');
     await expect(page.locator('#flow-exchange-verdict')).toHaveText('生命不变');
     await page.locator('#flow-exchange-healing').fill('257');
@@ -1700,4 +1732,71 @@ test('S5 nature text manual stays reachable and returns to saved readings on des
     await expect(page.locator('#flow-exchange-healing')).toHaveValue('257');
     await expect(resultAxis(page,'生命')).toHaveText('加');
   }
+});
+
+
+test('S5 nature custom wild level calculates and restores HP, damage and exchange reference', async({page})=>{
+  await selectExchangeWhale(page);
+  const level=page.getByRole('spinbutton',{name:'野怪自定义等级'});
+  const previous=await page.locator('#preview-cells-0 .dmg').allTextContents();
+  await level.fill('50');await level.press('Enter');
+  await expect(page.locator('#target-hp-range b')).toHaveText(['522','576','630']);
+  await expect(page.locator('#flow-exchange-reference-values b')).toHaveText(['235','260','284']);
+  expect(await page.locator('#preview-cells-0 .dmg').allTextContents()).not.toEqual(previous);
+  await page.locator('#flow-hp-value').fill('576');await page.locator('#flow-hp-value').press('Enter');
+  await expect(resultAxis(page,'生命')).toHaveText('不变');
+  await page.reload();await expect(level).toHaveValue('50');
+  await expect(page.locator('#target-hp-range b')).toHaveText(['522','576','630']);
+  for(const value of ['0','61','42.5']) {
+    await level.fill(value);await level.press('Enter');
+    await expect(level).toHaveAttribute('aria-invalid','true');
+    await expect(page.locator('#target-hp-range b')).toHaveText(['522','576','630']);
+  }
+  await page.locator('#level-seg [data-level="41"]').click();
+  await expect(level).toHaveValue('41');
+  await expect(page.locator('#target-hp-range b')).toHaveText(['462','508','554']);
+  await page.locator('#level-seg [data-level="all"]').click();
+  await expect(level).toHaveValue('');
+  await expect(page.locator('#target-hp-range b')).toHaveText(['462–474','508–522','554–570']);
+});
+
+test('S5 nature fifth skill searches, edits normal power and aligns exchange HP with the ordinary columns',async({page})=>{
+  await page.setViewportSize({width:1440,height:1000});
+  await selectExchangeWhale(page);
+  const row=page.locator('#flow-exchange-row'),picker=page.getByRole('combobox',{name:'我方技能 5',exact:true});
+  const first=page.locator('[data-preview-row="0"]');
+  const firstPicker=await first.locator('.picker-anchor').boundingBox();
+  const fifthPicker=await row.locator('.picker-anchor').boundingBox();
+  expect(Math.abs(firstPicker.x-fifthPicker.x)).toBeLessThan(1);
+  expect(Math.abs(firstPicker.width-fifthPicker.width)).toBeLessThan(1);
+  const firstCells=await page.locator('#preview-cells-0 .pcell').all();
+  const fifthCells=await page.locator('#flow-exchange-values .pcell').all();
+  for(let i=0;i<3;i++) {
+    const a=await firstCells[i].boundingBox(),b=await fifthCells[i].boundingBox();
+    expect(Math.abs(a.x-b.x)).toBeLessThan(1);
+    expect(Math.abs(a.width-b.width)).toBeLessThan(1);
+  }
+  await picker.fill('先发制人');await picker.press('Enter');
+  await expect(row.locator('.dmg')).toHaveCount(3);
+  await expect(page.locator('#flow-exchange-healing')).toBeHidden();
+  await expect(page.locator('#flow-exchange-reference-values b')).toHaveText(['214','235','257']);
+  await page.locator('#preview-condition-4-gear').click();
+  await page.locator('#preview-condition-4-displayedPower').fill('30');
+  await page.locator('#preview-condition-4-hitCount').click();
+  await expect(page.locator('#preview-skill-meta-4')).toContainText('显示威力 30');
+  await page.keyboard.press('Escape');
+  const damage=(await row.locator('.dmg').allTextContents())[1];
+  await page.locator('#preview-observed-4').fill(damage);await page.locator('#preview-observed-4').press('Tab');
+  await expect(page.locator('#flow-row-verdict-out-4')).toContainText('物防不变');
+  await page.reload();await expect(picker).toHaveValue('先发制人');
+  await expect(page.locator('#preview-observed-4')).toHaveValue(damage);
+  await page.getByRole('switch',{name:'恶念交换第五行'}).uncheck();
+  await expect(row).toBeHidden();await expect(resultAxis(page,'物防')).toHaveText('待测');
+  await expect(page.locator('#flow-exchange-reference')).toBeVisible();
+  await page.getByRole('switch',{name:'恶念交换第五行'}).check();
+  await picker.fill('恶念交换');await picker.press('Enter');
+  await expect(page.locator('#preview-observed-4')).toBeHidden();
+  await expect(page.locator('#flow-exchange-values b')).toHaveText(['214','235','257']);
+  await page.locator('#flow-exchange-healing').fill('257');
+  await expect(resultAxis(page,'生命')).toHaveText('加');
 });
