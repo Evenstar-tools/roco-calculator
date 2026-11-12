@@ -1555,7 +1555,34 @@ async function selectExchangeWhale(page) {
   await page.locator('#level-seg button').filter({hasText:/^43$/}).click();
 }
 
-test('S5 nature Evil Exchange fifth row keeps an independent exact HP observation across profiles and refresh',async({page})=>{
+test('S5 nature Evil Exchange accepts bird149 and preserves overlapping HP bands',async({page})=>{
+  await selectExchangeWhale(page);
+  const target=page.getByRole('combobox',{name:'选择野生目标',exact:true});
+  await target.fill('犀角鸟');
+  await page.locator('#target-picker-listbox [role="option"]').filter({hasText:'犀角鸟'}).click();
+  await page.locator('#level-seg button').filter({hasText:/^42$/}).click();
+  const heal=page.locator('#flow-exchange-healing');
+  await heal.fill('149');
+  await expect(page.locator('#flow-exchange-values b')).toHaveText(['130–137','143–150','155–162']);
+  await expect(page.locator('#flow-exchange-verdict')).toHaveText('生命不变');
+  await expect(resultAxis(page,'生命')).toHaveText('不变');
+  await page.reload();
+  await expect(heal).toHaveValue('149');
+  await expect(resultAxis(page,'生命')).toHaveText('不变');
+  await page.locator('#flow-exchange-condition-gear').click();
+  await page.locator('#flow-exchange-percent').fill('85');
+  await page.locator('#flow-exchange-percent').press('Enter');
+  await heal.fill('24');
+  await expect(resultAxis(page,'生命')).toHaveText('待区分');
+  await page.locator('#flow-exchange-condition-gear').click();
+  await page.locator('#flow-exchange-percent-mode').selectOption('exact');
+  await page.locator('#flow-exchange-percent').fill('12.5');
+  await page.locator('#flow-exchange-percent').press('Enter');
+  await page.reload();
+  await expect(page.locator('#flow-exchange-condition-label')).toHaveText('精确12.5%');
+});
+
+test('S5 nature Evil Exchange fifth row keeps an independent HP observation with talent and display ranges across profiles and refresh',async({page})=>{
   test.setTimeout(60000);
   await openTool(page);
   const toggle=page.getByRole('switch',{name:'恶念交换第五行'});
@@ -1564,9 +1591,9 @@ test('S5 nature Evil Exchange fifth row keeps an independent exact HP observatio
   await expect(row).toBeHidden();
   await selectExchangeWhale(page);
   await expect(toggle).toBeChecked();
-  await expect(page.locator('#flow-exchange-values b')).toHaveText(['214','235','257']);
+  await expect(page.locator('#flow-exchange-values b')).toHaveText(['214–221','235–243','257–266']);
   await page.locator('#target-shiny').check();
-  await expect(page.locator('#flow-exchange-values b')).toHaveText(['214','235','257']);
+  await expect(page.locator('#flow-exchange-values b')).toHaveText(['214–221','235–243','257–266']);
   await heal.fill('257');
   await expect(page.locator('#flow-exchange-verdict')).toHaveText('加生命');
   await expect(page.locator('#flow-exchange-condition-label')).toHaveText('破盾10%');
@@ -1574,13 +1601,13 @@ test('S5 nature Evil Exchange fifth row keeps an independent exact HP observatio
   await page.locator('#flow-exchange-percent').fill('25');
   await page.locator('#flow-exchange-percent').press('Enter');
   await expect(page.locator('#flow-exchange-condition-pop')).toBeHidden();
-  await expect(page.locator('#flow-exchange-condition-label')).toHaveText('余血25% · 手填');
-  await expect(page.locator('#flow-exchange-values b')).toHaveText(['178','196','214']);
+  await expect(page.locator('#flow-exchange-condition-label')).toHaveText('血条25%');
+  await expect(page.locator('#flow-exchange-values b')).toHaveText(['178–184','196–203','214–222']);
   await expect(heal).toHaveValue('257');
   await heal.fill('214');
   await expect(resultAxis(page,'生命')).toHaveText('加');
   await page.reload();
-  await expect(page.locator('#flow-exchange-condition-label')).toHaveText('余血25% · 手填');
+  await expect(page.locator('#flow-exchange-condition-label')).toHaveText('血条25%');
   await expect(heal).toHaveValue('214');
   await page.locator('#flow-exchange-condition-gear').click();
   await page.locator('#flow-exchange-reset').click();
@@ -1741,7 +1768,7 @@ test('S5 nature custom wild level calculates and restores HP, damage and exchang
   const previous=await page.locator('#preview-cells-0 .dmg').allTextContents();
   await level.fill('50');await level.press('Enter');
   await expect(page.locator('#target-hp-range b')).toHaveText(['522','576','630']);
-  await expect(page.locator('#flow-exchange-reference-values b')).toHaveText(['235','260','284']);
+  await expect(page.locator('#flow-exchange-reference-values b')).toHaveText(['235–243','260–268','284–293']);
   expect(await page.locator('#preview-cells-0 .dmg').allTextContents()).not.toEqual(previous);
   await page.locator('#flow-hp-value').fill('576');await page.locator('#flow-hp-value').press('Enter');
   await expect(resultAxis(page,'生命')).toHaveText('不变');
@@ -1779,7 +1806,7 @@ test('S5 nature fifth skill searches, edits normal power and aligns exchange HP 
   await picker.fill('先发制人');await picker.press('Enter');
   await expect(row.locator('.dmg')).toHaveCount(3);
   await expect(page.locator('#flow-exchange-healing')).toBeHidden();
-  await expect(page.locator('#flow-exchange-reference-values b')).toHaveText(['214','235','257']);
+  await expect(page.locator('#flow-exchange-reference-values b')).toHaveText(['214–221','235–243','257–266']);
   await page.locator('#preview-condition-4-gear').click();
   await page.locator('#preview-condition-4-displayedPower').fill('30');
   await page.locator('#preview-condition-4-hitCount').click();
@@ -1796,7 +1823,7 @@ test('S5 nature fifth skill searches, edits normal power and aligns exchange HP 
   await page.getByRole('switch',{name:'恶念交换第五行'}).check();
   await picker.fill('恶念交换');await picker.press('Enter');
   await expect(page.locator('#preview-observed-4')).toBeHidden();
-  await expect(page.locator('#flow-exchange-values b')).toHaveText(['214','235','257']);
+  await expect(page.locator('#flow-exchange-values b')).toHaveText(['214–221','235–243','257–266']);
   await page.locator('#flow-exchange-healing').fill('257');
   await expect(resultAxis(page,'生命')).toHaveText('加');
 });
