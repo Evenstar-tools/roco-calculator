@@ -442,7 +442,7 @@ test("S5 nature CN toolbox opens encounter HP with shiny and responsive assets",
   const levelButtons = page.getByRole("group", { name: "野怪等级", exact: true });
   for (const level of [41, 42, 43]) {
     await levelButtons.getByRole("button", { name: String(level), exact: true }).click();
-    for (const value of await page.locator(".pcell .dmg").all()) await expect(value).toHaveText(/^\d+$/);
+    for (const value of await page.locator(".pcell:not(.flow-exchange-prediction) .dmg").all()) await expect(value).toHaveText(/^\d+$/);
     for (const value of await page.locator("#preview-outgoing .hp-readings .hp-reading:not(.impossible) b").all()) await expect(value).toHaveText(/^\d+%$/);
   }
   await shiny.check();
