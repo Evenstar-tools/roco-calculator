@@ -21,7 +21,7 @@ export function PluginAccess({ enabled, children }) {
       const input = event.target;
       if (event.key !== "Enter" || event.repeat || event.isComposing || event.keyCode === 229 ||
           !(input instanceof HTMLInputElement) || input.disabled || input.readOnly ||
-          !input.matches(SEARCH_INPUTS) || input.value !== "龙骑士") return;
+          !input.matches(SEARCH_INPUTS) || !["龙骑士", "龙棋士"].includes(input.value)) return;
       event.preventDefault();
       event.stopPropagation();
       setUnlocks(count => count + 1);
