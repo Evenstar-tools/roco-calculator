@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
-import { compareEvilExchange, evilExchangeHealing } from '../../public/tools/s5-nature/evil-exchange.mjs';
+import { compareEvilExchange, evilExchangeHealing, evilExchangeHealingRange } from '../../public/tools/s5-nature/evil-exchange.mjs';
+import { calculateWildBodyHpCandidates, calculateWildHp } from '../../public/tools/s5-nature/wild-hp.mjs';
 
 const natures = [
   { id: 'hp-down', upStat: 'physicalDefense', downStat: 'hp' },
@@ -22,7 +23,7 @@ test.each([[208, 'hp-down', 231], [229, 'neutral', 254], [250, 'hp-up', 277]])(
     expect(result).toMatchObject({ used: true, invalid: false, status: 'matched', candidates: [`41:${natureId}`] });
     expect(result.matching).toEqual(natures.filter(nature => nature.id === natureId));
     expect(result.predictions).toHaveLength(3);
-    expect(result.predictions.find(prediction => prediction.natureId === natureId)).toEqual({
+    expect(result.predictions.find(prediction => prediction.natureId === natureId)).toMatchObject({
       targetLevel: 41, natureId, upStat: result.matching[0].upStat,
       downStat: result.matching[0].downStat, hpMax, healing,
     });
@@ -145,7 +146,7 @@ test('Par selection enables the fifth row while explicit off and other-profile p
   const first=normalizePlayerFlow({},'whale',catalog,par);
   expect(first.exchange.enabled).toBe(true);
   const off=normalizePlayerFlow({...first,exchange:{...first.exchange,enabled:false,healing:'257'}},'whale',catalog,par);
-  expect(off.exchange).toEqual({enabled:false,healing:'257',percent:10,ownSpiritId:par});
+  expect(off.exchange).toEqual({enabled:false,healing:'257',percent:10,percentMode:'display',ownSpiritId:par});
   expect(normalizePlayerFlow(first,'whale',catalog,'dimo').exchange.enabled).toBe(true);
   expect(normalizePlayerFlow({...off,exchange:{...off.exchange,ownSpiritId:'dimo'}},'whale',catalog,par).exchange.enabled).toBe(true);
 });
@@ -154,4 +155,75 @@ test('custom-level exchange uses the same body HP and exact healing observation'
   const result=compare(260,[{level:50,down:261,neutral:288,up:315}]);
   expect(result.status).toBe('matched');
   expect(result.candidates).toEqual(['50:neutral']);
+});
+
+const bodyRow = (race, level) => ({ level, ...Object.fromEntries(natures.map((nature, i) =>
+  [['down', 'neutral', 'up'][i], calculateWildBodyHpCandidates(race, level, nature)])) });
+
+// Battle/capture frames, not the creators' estimated tables. See the source
+// timestamps and the distinct observation/model boundaries in the audit doc.
+test.each([
+  ['BV1WiW96DEKP', 63, 42, 149, 'neutral'], // 7s green149; 46s 慎重.
+  ['BV1JnWn6XEmi/first', 87, 41, 170, 'neutral'], // 34s; 63s 聪明.
+  ['BV1JnWn6XEmi/second', 87, 42, 172, 'neutral'], // 74.2s; 91s 莽撞.
+  ['BV1osWE63EcY', 137, 43, 257, 'hp-up'], // 21s; 76s 粗心.
+])('%s green healing and captured HP nature agree', (_source, race, level, healing, natureId) => {
+  const result = compareEvilExchange({ healing, hpByLevel: [bodyRow(race, level)], natures, percentMode: 'display' });
+  expect(result.status).toBe('matched');
+  expect(result.candidates).toEqual([`${level}:${natureId}`]);
+});
+
+test('bird149 fails the old shield/2 assumption; the two-sided reading supports body164, remaining15', () => {
+  const oldHp = calculateWildHp(63, 42, natures[1]) / 2;
+  expect(oldHp).toBe(158);
+  expect(evilExchangeHealing(oldHp)).toBe(143);
+  expect(evilExchangeHealingRange(oldHp)).toEqual({ min: 143, max: 143 });
+  expect(calculateWildBodyHpCandidates(63, 42, natures[1])).toContain(164);
+  expect(evilExchangeHealingRange(164)).toEqual({ min: 148, max: 149 });
+  expect(164 - 15).toBe(149);
+  expect(Math.ceil(100 * 15 / 164)).toBe(10);
+  expect(Math.floor(442 * 15 / 164)).toBe(40);
+  expect(442 - 40).toBe(402);
+});
+
+test('display percentage is inverted at every integer HP, including the special99/100 boundary', () => {
+  for (const hp of [9, 100, 158, 164, 254, 285, 1001]) {
+    const byDisplay = new Map();
+    for (let current = 0; current <= hp; current++) {
+      // The package UI consumer rounds up except above99%, where it floors.
+      const ratio = 100 * current / hp;
+      const display = ratio > 99 ? Math.floor(ratio) : Math.ceil(ratio);
+      const values = byDisplay.get(display) || [];
+      values.push(hp - current); byDisplay.set(display, values);
+    }
+    for (let percent = 0; percent <= 100; percent++) {
+      const values = byDisplay.get(percent);
+      expect(evilExchangeHealingRange(hp, percent)).toEqual(values ? {
+        min: Math.min(...values), max: Math.max(...values),
+      } : null);
+    }
+  }
+});
+
+test('unknown talents and rounded percentage retain overlapping natures without duplicate cases', () => {
+  const input = { healing: 22, hpByLevel: [bodyRow(63, 42)], natures, targetPercent: 85, percentMode: 'display' };
+  const result = compareEvilExchange(input);
+  expect(result.candidates).toEqual(['42:hp-down']);
+  const overlap = compareEvilExchange({ ...input, healing: 24 });
+  expect(overlap.candidates).toEqual(['42:hp-down', '42:neutral']);
+  expect(new Set(overlap.candidates).size).toBe(overlap.candidates.length);
+});
+
+test('display mode rejects decimals; legacy custom percentages keep their exact meaning', () => {
+  expect(compareEvilExchange({ healing: 149, hpByLevel: [bodyRow(63, 42)], natures,
+    targetPercent: 10.5, percentMode: 'display' })).toMatchObject({ invalid: true, reason: 'invalid-target-percent' });
+  const saved = normalizePlayerFlow({ exchange: { percent: 12.5, healing: '223' } }, 'whale', { natures }, 'par');
+  expect(saved.exchange).toMatchObject({ percentMode: 'exact', percent: 12.5, healing: '223' });
+  const integer = normalizePlayerFlow({ exchange: { percent: 85, healing: '24' } }, 'bird', { natures }, 'par');
+  expect(integer.exchange).toMatchObject({ percentMode: 'exact', percent: 85, healing: '24' });
+  expect(compareEvilExchange({ healing: Number(integer.exchange.healing), hpByLevel: [bodyRow(63, 42)], natures,
+    targetPercent: integer.exchange.percent, percentMode: integer.exchange.percentMode }).candidates).toEqual(['42:neutral']);
+  expect(normalizePlayerFlow({ exchange: { percent: 85, percentMode: 'display' } }, 'bird', { natures }, 'par').exchange.percentMode).toBe('display');
+  expect(normalizePlayerFlow({ exchange: { percent: 10 } }, 'whale', { natures }, 'par').exchange.percentMode).toBe('display');
+  expect(normalizePlayerFlow({ exchange: { percent: 10, percentMode: 'exact' } }, 'whale', { natures }, 'par').exchange.percentMode).toBe('exact');
 });

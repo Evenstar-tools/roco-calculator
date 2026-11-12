@@ -165,9 +165,13 @@ test('Evil Exchange uses post-shield body HP for all levels, independently of sh
   const expected=[{level:41,neutral:254,up:277,down:231},{level:42,neutral:258,up:282,down:234},{level:43,neutral:261,up:285,down:237}];
   assert.deepEqual(normal.targetBodyHpByLevel,expected);
   assert.deepEqual(shiny.targetBodyHpByLevel,expected);
+  assert.deepEqual(shiny.targetBodyHpCandidatesByLevel,normal.targetBodyHpCandidatesByLevel);
+  assert.deepEqual(normal.targetBodyHpCandidatesByLevel[0].neutral,[254,255,256,257,258,259,260]);
+  assert.deepEqual(normal.targetBodyHpCandidatesByLevel[2].up,[285,286,287,288,289,290,292,293]);
   assert.equal(shiny.targetHpByLevel[2].up,855);
   // A shield-pool override is not proof of an equal post-shield body change.
   const custom=previewMatchup({...inputFor('深蓝鲸',43,true),targetDiceEffects:{hpMultiplier:1.3}},catalog,dice);
   assert.deepEqual(custom.targetBodyHpByLevel,[expected[2]]);
+  assert.deepEqual(custom.targetBodyHpCandidatesByLevel,[normal.targetBodyHpCandidatesByLevel[2]]);
   assert.match(custom.evilExchangeUnavailableReason,/生命倍率/);
 });

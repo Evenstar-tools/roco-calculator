@@ -1,5 +1,5 @@
 import { intersectNatureCases, compareObservedHp } from './measurement-comparison.mjs';
-import { compareEvilExchange, evilExchangeHealing, EVIL_EXCHANGE_SKILL_ID, exchangeRowEnabled } from './evil-exchange.mjs';
+import { compareEvilExchange, evilExchangeHealingRange, EVIL_EXCHANGE_SKILL_ID, exchangeRowEnabled } from './evil-exchange.mjs';
 import { observationMatch, observationDifference, readOutgoingObservations, readIncomingObservation } from './matchup-ui.mjs';
 
 // 方案 A · 对照表速查：野怪一行、出战一行；桌面两种测法同页，每招读数旁直接给结论；
@@ -22,6 +22,8 @@ export function normalizePlayerFlow(value, targetId, catalog, ownSpiritId) {
     exchange:{enabled:exchangeRowEnabled(saved.exchange,ownSpiritId),
       healing:['string','number'].includes(typeof saved.exchange?.healing)?String(saved.exchange.healing).slice(0,20):'',
       percent:typeof saved.exchange?.percent==='number' && Number.isFinite(saved.exchange.percent)?saved.exchange.percent:10,
+      percentMode:saved.exchange?.percentMode==='exact' || (saved.exchange?.percentMode == null
+        && Number.isFinite(saved.exchange?.percent) && saved.exchange.percent!==10)?'exact':'display',
       ownSpiritId},
     checked:{own:saved.checked?.own===true,target:saved.checked?.target===true},
     targetId:typeof saved.targetId==='string'?saved.targetId:targetId,
@@ -97,7 +99,7 @@ function clearCard(direction) {
   });
 }
 function nextTarget() {
-  layout.hp='';layout.exchange.healing='';layout.exchange.percent=10;layout.checked.target=false;
+  layout.hp='';layout.exchange.healing='';layout.exchange.percent=10;layout.exchange.percentMode='display';layout.checked.target=false;
   commit(s=>{
     s.observations=[];
     for(const p of s.profiles) if(p.preview) {p.preview.observed={};p.preview.picked={};}
@@ -110,7 +112,7 @@ const hasReading = value => value != null && (typeof value !== 'string' || value
 function hasClearableState(s) {
   const values = entries => Object.values(entries ?? {}).some(hasReading);
   const incoming = entry => values(entry?.damages) || values(entry?.picks);
-  return Boolean(s.observations?.length || layout.hp || layout.exchange.healing.trim() || layout.exchange.percent!==10
+  return Boolean(s.observations?.length || layout.hp || layout.exchange.healing.trim() || layout.exchange.percent!==10 || layout.exchange.percentMode!=='display'
     || (s.preview?.diceId ?? 'none')!=='none' || Object.keys(s.preview?.diceEffects ?? {}).length
     || values(s.preview?.incomingDamages) || values(s.preview?.incomingPicks)
     || Object.values(s.preview?.incomingByDefender ?? {}).some(incoming)
@@ -140,7 +142,7 @@ function natureMatrix(candidateIds, state) {
 }
 
 function exchangeMessage(exchange, unavailableReason) {
-  if(exchange.reason==='invalid-target-percent') return '剩余比例需为 0–100%，最多两位小数';
+  if(exchange.reason==='invalid-target-percent') return layout.exchange.percentMode==='display'?'血条显示值需为 0–100 的整数':'精确比例需为 0–100%，最多两位小数';
   if(exchange.reason==='no-healing') return '野怪已满血，无法通过回血判断';
   if(exchange.status==='invalid') return '填写正整数回血量';
   if(exchange.status==='unavailable') return unavailableReason || '当前目标缺少本体生命数据';
@@ -167,18 +169,20 @@ function renderExchange(exchange, result, isExchange) {
   $('flow-exchange-verdict').hidden=!isExchange;
   if(document.activeElement!==$('flow-exchange-healing')) $('flow-exchange-healing').value=layout.exchange.healing;
   $('flow-exchange-healing').setAttribute('aria-invalid',String(exchange.invalid));
-  const percent=layout.exchange.percent;
-  const percentValid=percent>=0 && percent<=100 && Math.abs(percent*100-Math.round(percent*100))<1e-8;
-  const custom=percent!==10;
+  const percent=layout.exchange.percent,percentMode=layout.exchange.percentMode;
+  const percentValid=percent>=0 && percent<=100 && (percentMode==='display'?Number.isInteger(percent):Math.round(percent*100)/100===percent);
+  const custom=percent!==10 || percentMode!=='display';
   $('flow-exchange-condition-gear').classList.toggle('is-set',custom);
   if(document.activeElement!==$('flow-exchange-percent')) $('flow-exchange-percent').value=percent;
-  $('flow-exchange-condition-label').textContent=custom?`余血${percent}% · 手填`:'破盾10%';
-  const hpRows=result.evilExchangeUnavailableReason || !percentValid?[]:result.targetBodyHpByLevel || [];
+  $('flow-exchange-percent-mode').value=percentMode;
+  $('flow-exchange-percent').step=percentMode==='display'?'1':'0.01';
+  $('flow-exchange-condition-label').textContent=custom?`${percentMode==='display'?'血条':'精确'}${percent}%`:'破盾10%';
+  const hpRows=result.evilExchangeUnavailableReason || !percentValid?[]:result.targetBodyHpCandidatesByLevel || [];
   const hitStates=new Set(exchange.matching.map(n=>natureState(n,'hp')));
   const values=['down','neutral','up'].map(state=>{
-    const amounts=hpRows.map(row=>evilExchangeHealing(row[state],percent));
-    const min=Math.min(...amounts),max=Math.max(...amounts);
-    const text=amounts.length ? min===max?`${min}`:`${min}–${max}` : '—';
+    const ranges=hpRows.flatMap(row=>row[state].map(hp=>evilExchangeHealingRange(hp,percent,percentMode))).filter(Boolean);
+    const min=Math.min(...ranges.map(range=>range.min)),max=Math.max(...ranges.map(range=>range.max));
+    const text=ranges.length ? min===max?`${min}`:`${min}–${max}` : '—';
     return `<div class="flow-exchange-prediction pcell paxis hp-reading${hitStates.has(state)?' matches':''}" data-exchange-hp="${state}"><span class="hit-formula">${state==='neutral'?'普通':phrase('hp',state)}</span><b class="dmg">${text}</b></div>`;
   }).join('');
   if(isExchange) $('preview-cells-4').innerHTML=`<div id="flow-exchange-values" class="pcells" aria-label="恶念交换三档回血">${values}</div>`;
@@ -193,7 +197,7 @@ function render() {
   const s=ui.getSession(), p=own(s), result=ui.getPreview(), v=result.uiVerdict;
   if(!v) return;
   layout=normalizePlayerFlow(s.playerFlow,s.targetId,catalog,p.spiritId);
-  if(layout.targetId!==s.targetId) {layout.hp='';layout.exchange.healing='';layout.exchange.percent=10;layout.checked.target=false;}
+  if(layout.targetId!==s.targetId) {layout.hp='';layout.exchange.healing='';layout.exchange.percent=10;layout.exchange.percentMode='display';layout.checked.target=false;}
   layout.targetId=s.targetId;
   if(!layout.exchange.enabled && layout.skill===4) layout.skill=0;
   const slotCount=layout.exchange.enabled?5:4;
@@ -298,7 +302,8 @@ function render() {
   const direct=layout.hp!=='' && Number.isInteger(Number(layout.hp)) && Number(layout.hp)>0;
   const hpHits=direct?hpRows.flatMap(row=>catalog.natures.filter(n=>row[n.upStat==='hp'?'up':n.downStat==='hp'?'down':'neutral']===Number(layout.hp)).map(n=>({...n,targetLevel:row.level}))):[];
   const exchange=compareEvilExchange({healing:layout.exchange.enabled && isExchange?layout.exchange.healing:'',
-    hpByLevel:result.evilExchangeUnavailableReason?[]:result.targetBodyHpByLevel,natures:catalog.natures,targetPercent:layout.exchange.percent});
+    hpByLevel:result.evilExchangeUnavailableReason?[]:result.targetBodyHpCandidatesByLevel,natures:catalog.natures,
+    targetPercent:layout.exchange.percent,percentMode:layout.exchange.percentMode});
   renderExchange(exchange,result,isExchange);
   const exchangeComparable=['matched','conflict'].includes(exchange.status);
   const combinedGroups=[v.candidates];
@@ -543,7 +548,7 @@ export function mountPlayerFlow(options) {
   exchangeRow.id='flow-exchange-row';exchangeRow.setAttribute('aria-label','第五招');exchangeRow.hidden=true;
   exchangeRow.querySelector('.pskill-line').insertAdjacentHTML('beforeend','<button type="button" id="flow-exchange-condition-gear" class="pskill-gear" aria-label="恶念交换条件" aria-expanded="false" aria-controls="flow-exchange-condition-pop"><span class="flow-gear-icon" aria-hidden="true">⚙</span><span class="flow-gear-text">条件</span></button>');
   exchangeRow.querySelector('.pskill-body').insertAdjacentHTML('beforeend',`<div id="flow-exchange-condition-label" class="pskill-meta">破盾10%</div>
-    <div id="flow-exchange-condition-pop" class="pskill-pop" role="dialog" aria-label="恶念交换条件" hidden><label class="flow-dialog-field">野怪剩余血量 %<input id="flow-exchange-percent" type="number" min="0" max="100" step="0.01" inputmode="decimal" aria-label="恶念交换野怪剩余血量百分比"/></label><p class="flow-dialog-message">我方满血，读野怪绿色回血；期间无额外扣血、回血或生命上限变化。</p><div class="pskill-pop-foot"><span>默认 10% · 按精确比例算</span><button type="button" id="flow-exchange-reset" class="text-button">恢复默认</button></div></div>`);
+    <div id="flow-exchange-condition-pop" class="pskill-pop" role="dialog" aria-label="恶念交换条件" hidden><label class="flow-dialog-field">血量口径<select id="flow-exchange-percent-mode" aria-label="恶念交换血量口径"><option value="display">游戏血条（整数）</option><option value="exact">精确比例</option></select></label><label class="flow-dialog-field">野怪剩余血量 %<input id="flow-exchange-percent" type="number" min="0" max="100" step="1" inputmode="decimal" aria-label="恶念交换野怪剩余血量百分比"/></label><p class="flow-dialog-message">我方满血，读野怪绿色回血；期间无额外扣血、回血或生命上限变化。</p><div class="pskill-pop-foot"><span>含天分范围 · 按血量口径计算</span><button type="button" id="flow-exchange-reset" class="text-button">恢复默认</button></div></div>`);
   exchangeRow.querySelector('.pobservations').insertAdjacentHTML('beforeend','<label class="pobs"><span>野怪回血</span><input id="flow-exchange-healing" type="text" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="绿色数字" aria-label="恶念交换野怪绿色回血" aria-describedby="flow-exchange-verdict"/></label><div id="flow-exchange-verdict" class="flow-row-verdict" aria-live="polite"></div>');
   for(const [k,row] of [...document.querySelectorAll('#preview-incoming [data-incoming-row]')].entries())
     row.querySelector('.pobservations').insertAdjacentHTML('beforeend',`<div class="flow-row-verdict" id="flow-row-verdict-in-${k}" aria-live="polite"></div>`);
@@ -567,9 +572,10 @@ export function mountPlayerFlow(options) {
       if(box.top<60 || box.bottom>innerHeight-16) exchangePop.scrollIntoView({block:'center',behavior:'instant'});
     }
   };
+  $('flow-exchange-percent-mode').onchange=()=>{layout.exchange.percentMode=$('flow-exchange-percent-mode').value;saveLayout();render();};
   $('flow-exchange-percent').onchange=()=>{const value=$('flow-exchange-percent').value;layout.exchange.percent=value===''?10:Number(value);saveLayout();render();};
   $('flow-exchange-percent').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();$('flow-exchange-percent').dispatchEvent(new Event('change'));exchangePop.hidden=true;exchangeGear.setAttribute('aria-expanded','false');exchangeGear.focus();}};
-  $('flow-exchange-reset').onclick=()=>{layout.exchange.percent=10;saveLayout();render();};
+  $('flow-exchange-reset').onclick=()=>{layout.exchange.percent=10;layout.exchange.percentMode='display';saveLayout();render();};
   const saveExchange=()=>{layout.exchange.healing=$('flow-exchange-healing').value.trim();saveLayout();render();};
   $('flow-exchange-healing').addEventListener('input',saveExchange);
   $('flow-exchange-healing').addEventListener('keydown',event=>{if(event.key==='Enter'){saveExchange();event.target.blur();}});
