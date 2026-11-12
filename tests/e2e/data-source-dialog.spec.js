@@ -4,7 +4,8 @@ import { resetUiuxStorage, selectSpirit, waitForAppReady } from "./helpers/uiux-
 
 const [latestRelease] = USER_RELEASE_NOTES;
 
-test("CN web plugin opens releases download in a new tab and preserves calculator at 320px", async ({ page }) => {
+for (const keyword of ["龙骑士", "龙棋士"]) {
+test(`CN web plugin ${keyword} opens platform downloads and preserves calculator at 320px`, async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 720 });
   await resetUiuxStorage(page);
   await page.goto("/cn/");
@@ -16,7 +17,7 @@ test("CN web plugin opens releases download in a new tab and preserves calculato
   await expect(menu.getByRole("region", { name: "插件工具", exact: true })).toHaveCount(0);
   await page.keyboard.press("Escape");
   const search = page.getByRole("combobox", { name: "攻击方精灵", exact: true });
-  await search.fill("龙骑士");
+  await search.fill(keyword);
   await expect(page.getByText("某处的大门已开启", { exact: true })).toHaveCount(0);
   await search.press("Enter");
   await expect(page.getByRole("status").filter({ hasText: "某处的大门已开启" })).toBeVisible();
@@ -31,12 +32,17 @@ test("CN web plugin opens releases download in a new tab and preserves calculato
   await intro.waitForLoadState("domcontentloaded");
   await expect(intro).toHaveURL(/\/plugins\/wild-spirit-detector\/$/);
   await expect(intro.getByRole("heading", { name: "野生精灵检测器", exact: true })).toBeVisible();
-  await expect(intro.locator(".actions").getByRole("link")).toHaveCount(1);
-  const download = intro.locator(".actions").getByRole("link", { name: "下载工具", exact: true });
-  await expect(download).toBeVisible();
-  await expect(download).toHaveAttribute("href", "https://github.com/Evenstar-tools/roco-pve-viewer/releases");
-  await expect(download).toHaveAttribute("target", "_blank");
-  await expect(download).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(intro.locator(".actions").getByRole("link")).toHaveCount(2);
+  for (const [name, asset] of [
+    ["PC 下载", "v0.1.16/YeGuaiTanCeQi-v0.1.16-Setup.exe"],
+    ["安卓下载", "android-v0.1.6/YeShengJingLing-Android-v0.1.6-arm64.apk"],
+  ]) {
+    const download = intro.locator(".actions").getByRole("link", { name, exact: true });
+    await expect(download).toBeInViewport();
+    await expect(download).toHaveAttribute("href", `https://github.com/Evenstar-tools/roco-pve-viewer/releases/download/${asset}`);
+    await expect(download).toHaveAttribute("target", "_blank");
+    await expect(download).toHaveAttribute("rel", "noopener noreferrer");
+  }
   await expect(intro.locator(".availability")).toHaveCount(0);
   await expect(intro.locator("body")).not.toContainText("源码预览版");
   await expect(intro.locator("body")).not.toContainText("尚未提供可直接安装的完整程序包");
@@ -63,6 +69,7 @@ test("CN web plugin opens releases download in a new tab and preserves calculato
   await page.getByRole("button", { name: "工具箱", exact: true }).click();
   await expect(menu.getByRole("region", { name: "插件工具", exact: true })).toHaveCount(0);
 });
+}
 
 test("CN web plugin rejects independent URLs including index and query variants", async ({ page }) => {
   for (const suffix of ["", "/", "/index.html", "/?unlocked=1#龙骑士"]) {
