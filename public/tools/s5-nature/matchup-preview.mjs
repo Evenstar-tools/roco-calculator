@@ -1,3 +1,4 @@
+import { isWildLevel } from './wild-levels.mjs';
 import { calculateDamage } from './vendor/damage.mjs';
 import { getAwakeningBonuses, resolveAwakeningType } from './awakening.mjs';
 import { wildPanel, targetLevels } from './engine.mjs';
@@ -344,14 +345,14 @@ export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
       targetHpByLevel, targetHpByNature, targetBodyHpByLevel: results.flatMap(result => result.targetBodyHpByLevel),
       targetHpRange: targetHpByNature ? { min: Math.min(...Object.values(targetHpByNature).map(row => row.min)), max: Math.max(...Object.values(targetHpByNature).map(row => row.max)) } : null };
   }
-  const skillIds = Array.isArray(input?.skillIds) ? input.skillIds.slice(0, 4) : [];
+  const skillIds = Array.isArray(input?.skillIds) ? input.skillIds.slice(0, 5) : [];
   const incomingIds = Array.isArray(input?.incomingSkillIds) ? input.incomingSkillIds.slice(0, 4) : input?.incomingSkillId ? [input.incomingSkillId] : [];
   const initial = { calibrationStatus: 'unverified', outgoing: [], incoming: null, incomingList: [], warnings: [], targetHpByNature: null, targetHpRange: null, targetHpByLevel: [], targetBodyHpByLevel: [], targetLevels: [] };
   try {
     if (!isObject(input)) throw new RangeError('请先选择双方精灵与技能。');
     if (input.skillIds !== undefined && !Array.isArray(input.skillIds)) throw new RangeError('技能选择须为数组。');
     if (!Array.isArray(catalog?.spirits) || !Array.isArray(catalog?.skills) || !Array.isArray(catalog?.natures)) throw new RangeError('计算资料尚未就绪。');
-    if (!integer(input.level, 41, 43)) throw new RangeError('野生等级须为41至43。');
+    if (!isWildLevel(input.level)) throw new RangeError('野怪等级须为1至60的整数。');
     if (!isObject(input.profile) || !integer(input.profile.level, 1, 60) || !integer(input.profile.awakening, 0, 5)) throw new RangeError('请填写我方1至60级及0至5次觉醒。');
     if (has(input.profile, 'panelIncludesDice') && typeof input.profile.panelIncludesDice !== 'boolean') throw new RangeError('profile.panelIncludesDice 须为布尔值，表示我方面板是否已含骰子属性加成。');
     if (catalog.natures.length !== 30 || new Set(catalog.natures.map(row => row?.id)).size !== 30) throw new RangeError('需要完整且不重复的30种性格资料。');
@@ -379,7 +380,8 @@ export function previewMatchup(input, catalog, diceCatalog, traitCatalog) {
     if (input.skillOverrides !== undefined && input.skillOverrides !== null && !isObject(input.skillOverrides)) throw new RangeError('技能覆盖值须按技能编号分别填写。');
     const ownTrait = traitInfo(traitCatalog, ownSpirit.traitName);
     const ownTraitState = isObject(input.ownTrait) ? input.ownTrait : {};
-    const ownSkillTypes = skillIds.map(id => catalog.skills.find(row => row.id === id)?.type).filter(Boolean);
+    // The optional fifth row is a comparison slot, not an extra equipped skill.
+    const ownSkillTypes = skillIds.slice(0, 4).map(id => catalog.skills.find(row => row.id === id)?.type).filter(Boolean);
     const context = { input, catalog, ownSpirit, target, ownDice, targetDice, ownPanel, candidates, ownTrait, ownTraitState, ownSkillTypes };
     const outgoing = skillIds.map(id => damageEntry(id, isObject(input.skillOverrides) && has(input.skillOverrides, id) ? input.skillOverrides[id] : undefined, 'outgoing', context));
     const incomingOverrides = index => Array.isArray(input.incomingOverridesList) ? input.incomingOverridesList[index] : index === 0 ? input.incomingOverrides : undefined;

@@ -1,3 +1,4 @@
+import { isWildLevel } from './wild-levels.mjs';
 import { mountPlayerFlow } from "./player-flow.mjs";
 import { restoreS5RuntimeRelations } from "./vendor/s5-runtime-relations.js";
 import { loadToolData } from "./load-data.mjs";
@@ -227,7 +228,13 @@ function renderSpiritOptions(select, query, currentId, filter = "all") {
 function renderTargetPicker() {
   const spirit = spiritMap.get(session.targetId);
   $("target-name").textContent = spirit?.name ?? "未知精灵";
+  $("target-level").innerHTML = Array.from({length:60}, (_,i) => `<option value="${i+1}">${i+1} 级</option>`).join("") + '<option value="all">41–43级全部</option>';
   $("target-level").value = session.level;
+  if(document.activeElement !== $("target-level-custom")) {
+    $("target-level-custom").value = session.level === "all" ? "" : session.level;
+    $("target-level-custom").setCustomValidity("");
+    $("target-level-custom").removeAttribute("aria-invalid");
+  }
   $("target-filter").value = targetFilter;
   const { count, outside } = renderSpiritOptions(
     $("target-species"),
@@ -856,14 +863,14 @@ function validateImport(value) {
   if (
     !incoming ||
     !spiritMap.has(incoming.targetId) ||
-    ![41, 42, 43, "all"].includes(incoming.level) ||
+    !(incoming.level === "all" || isWildLevel(incoming.level)) ||
     !Array.isArray(incoming.profiles) ||
     incoming.profiles.length < 1 ||
     incoming.profiles.length > MAX_PROFILES ||
     !Array.isArray(incoming.observations) ||
     incoming.observations.length > 1000
   )
-    throw new Error("需要本工具的 41–43 级记录，且精灵必须在当前目录中。");
+    throw new Error("需要本工具的 1–60 级记录，且精灵必须在当前目录中。");
   for (const profile of incoming.profiles) {
     if (
       typeof profile.id !== "string" ||
@@ -986,6 +993,26 @@ function attachEvents() {
     if (!button) return;
     $("target-level").value = button.dataset.level;
     $("target-level").dispatchEvent(new Event("change"));
+  });
+  const customLevel = $("target-level-custom");
+  const applyCustomLevel = () => {
+    const value = customLevel.value.trim();
+    if (!value) {
+      customLevel.value = session.level === "all" ? "" : session.level;
+      customLevel.setCustomValidity("");
+      customLevel.removeAttribute("aria-invalid");
+      return;
+    }
+    const valid = isWildLevel(Number(value));
+    customLevel.setCustomValidity(valid ? "" : "等级须为1至60的整数");
+    customLevel.setAttribute("aria-invalid", String(!valid));
+    if (!valid) return;
+    $("target-level").value = String(Number(value));
+    $("target-level").dispatchEvent(new Event("change"));
+  };
+  customLevel.addEventListener("change", applyCustomLevel);
+  customLevel.addEventListener("keydown", event => {
+    if(event.key === "Enter") { event.preventDefault(); applyCustomLevel(); customLevel.reportValidity(); }
   });
   $("use-initial-form").addEventListener("click", () => {
     const form = fieldData.formMappings.find(row => row.sourceId === session.targetId);
@@ -1330,7 +1357,7 @@ function attachEvents() {
   });
   $("target-level").addEventListener("change", () => {
     const level = $("target-level").value === "all" ? "all" : readNumber("target-level");
-    if (level === session.level) return;
+    if ((level !== "all" && !isWildLevel(level)) || level === session.level) return;
     remember();
     session.level = level;
     persist();

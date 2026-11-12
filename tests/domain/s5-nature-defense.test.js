@@ -298,7 +298,7 @@ test('defense rounds base, nature and final stages separately and rejects missin
   assert(Number.isInteger(calculateWildDefense(69, 41, nature, PD, 2)));
   assert.throws(() => calculateWildDefense(undefined, 41, nature, PD, 2), /防御种族值/);
   assert.throws(() => calculateWildDefense(69, 41, nature, PD, null), /强度阶段/);
-  assert.throws(() => calculateWildDefense(69, 40, nature, PD, 2), /野生等级/);
+  assert.throws(() => calculateWildDefense(69, 0, nature, PD, 2), /野怪等级/);
   assert.throws(() => calculateWildDefense(69, 41, nature, 'physicalAttack', 2), /物防或魔防/);
 });
 

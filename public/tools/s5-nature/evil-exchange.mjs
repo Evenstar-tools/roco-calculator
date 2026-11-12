@@ -1,3 +1,9 @@
+import { isWildLevel } from './wild-levels.mjs';
+export const EVIL_EXCHANGE_SKILL_ID = 'skill_34907641b22d0f70';
+export function exchangeRowEnabled(saved, ownSpiritId) {
+  return saved?.enabled === true || (ownSpiritId === 'spirit_684f5cd1fec1df27' && saved?.ownSpiritId !== ownSpiritId);
+}
+
 const STATS = new Set(['hp', 'physicalAttack', 'magicalAttack', 'physicalDefense', 'magicalDefense', 'speed']);
 const positiveInteger = value => Number.isSafeInteger(value) && value > 0;
 
@@ -31,7 +37,7 @@ function modelPredictions(hpByLevel, natures, targetPercent) {
   if (!Array.isArray(hpByLevel) || hpByLevel.length === 0 || !Array.isArray(natures) || natures.length === 0) return [];
   const levels = new Set(), natureIds = new Set();
   for (const row of hpByLevel) {
-    if (![41, 42, 43].includes(row?.level) || levels.has(row.level)
+    if (!isWildLevel(row?.level) || levels.has(row.level)
       || !['down', 'neutral', 'up'].every(band => positiveInteger(row[band]))) return [];
     levels.add(row.level);
   }

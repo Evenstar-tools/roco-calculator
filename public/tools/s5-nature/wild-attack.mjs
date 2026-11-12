@@ -1,3 +1,4 @@
+import { isWildLevel } from './wild-levels.mjs';
 // User-authorized empirical S5 attack fit across the three strength stages.
 // The caller supplies the selected form's own race stat and explicit stage.
 // This is a field-sample fit, not a recovered original-game calculation.
@@ -23,7 +24,7 @@ export function resolveWildAttack(raceAttack, level, nature, stat, strengthStage
   if (!Number.isInteger(raceAttack) || raceAttack < 1 || raceAttack > 1000) {
     throw new RangeError('攻击种族值缺失或超出范围。');
   }
-  if (![41, 42, 43].includes(level)) throw new RangeError('野生等级仅支持41、42、43。');
+  if (!isWildLevel(level)) throw new RangeError('野怪等级须为1至60的整数。');
   if (!ATTACK_STATS.includes(stat)) throw new RangeError('野怪攻击仅支持物攻或魔攻。');
   if (!STATS.includes(nature?.upStat) || !STATS.includes(nature?.downStat) || nature.upStat === nature.downStat) {
     throw new RangeError('性格的增强项和削弱项必须是不同的六维属性。');

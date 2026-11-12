@@ -1,3 +1,4 @@
+import { isWildLevel } from './wild-levels.mjs';
 // All three strength stages use the selected form's own defense races.
 // Round the base, nature-adjusted base and final divisor separately. These are
 // empirical coefficients, not recovered game constants. Archived inverse points
@@ -219,7 +220,7 @@ export function resolveWildDefense(raceDefense, level, nature, stat, strengthSta
   if (!Number.isInteger(raceDefense) || raceDefense < 1 || raceDefense > 1000) {
     throw new RangeError('防御种族值缺失或超出范围。');
   }
-  if (![41, 42, 43].includes(level)) throw new RangeError('野生等级仅支持41、42、43。');
+  if (!isWildLevel(level)) throw new RangeError('野怪等级须为1至60的整数。');
   if (!DEFENSE_STATS.includes(stat)) throw new RangeError('野怪防御仅支持物防或魔防。');
   if (!STATS.includes(nature?.upStat) || !STATS.includes(nature?.downStat) || nature.upStat === nature.downStat) {
     throw new RangeError('性格的增强项和削弱项必须是不同的六维属性。');

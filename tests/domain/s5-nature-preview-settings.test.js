@@ -349,3 +349,11 @@ test('matching damage with a different remaining percentage identifies only the 
     .toBe('伤害吻合，计算余血 27–30%');
   expect(observationDifference(row, { damage: 311, remainingPercent: 27 })).toBe('');
 });
+
+test('fifth comparison skill readings survive import and can be excluded when hidden', () => {
+  const own={skillIds:['a','b','c','d','e'],observed:{4:{damage:111,remainingPercent:73}},picked:{4:'physicalDefense:base'},observedUnits:{4:'damage'}};
+  expect(()=>validatePreviewSettings({profiles:[{preview:own}],preview:{}})).not.toThrow();
+  expect(readOutgoingObservations(own).observed[4]).toEqual({damage:111,remainingPercent:73});
+  expect(readOutgoingObservations(own,'game0',4).observed).toEqual({});
+  expect(()=>validatePreviewSettings({profiles:[{preview:{...own,skillIds:[...own.skillIds,'f']}}],preview:{}})).toThrow();
+});

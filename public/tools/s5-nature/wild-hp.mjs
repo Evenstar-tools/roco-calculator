@@ -1,3 +1,4 @@
+import { isWildLevel } from './wild-levels.mjs';
 // Calibrated from the user-confirmed S5 whale absolute-HP table. This is a
 // shared empirical HP formula, not a recovered original-game implementation.
 export const WILD_HP_MODEL = Object.freeze({
@@ -23,7 +24,7 @@ export function wildTargetShiny(input) {
 
 export function calculateWildHp(raceHp, level, nature, { shiny = false } = {}) {
   if (!Number.isInteger(raceHp) || raceHp < 1 || raceHp > 1000) throw new RangeError('生命种族值缺失或超出范围。');
-  if (![41, 42, 43].includes(level)) throw new RangeError('野生等级仅支持41、42、43。');
+  if (!isWildLevel(level)) throw new RangeError('野怪等级须为1至60的整数。');
   if (!STATS.includes(nature?.upStat) || !STATS.includes(nature?.downStat) || nature.upStat === nature.downStat) throw new RangeError('性格的增强项和削弱项必须是不同的六维属性。');
   if (typeof shiny !== 'boolean') throw new RangeError('异色标记必须为布尔值。');
   const base = halfUp((10 + level) * 100 + raceHp * (50 + 2 * level), 100);

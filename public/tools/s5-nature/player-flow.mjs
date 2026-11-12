@@ -1,5 +1,5 @@
 import { intersectNatureCases, compareObservedHp } from './measurement-comparison.mjs';
-import { compareEvilExchange, evilExchangeHealing } from './evil-exchange.mjs';
+import { compareEvilExchange, evilExchangeHealing, EVIL_EXCHANGE_SKILL_ID, exchangeRowEnabled } from './evil-exchange.mjs';
 import { observationMatch, observationDifference, readOutgoingObservations, readIncomingObservation } from './matchup-ui.mjs';
 
 // 方案 A · 对照表速查：野怪一行、出战一行；桌面两种测法同页，每招读数旁直接给结论；
@@ -8,7 +8,6 @@ const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const names = {hp:'生命',physicalAttack:'物攻',magicalAttack:'魔攻',physicalDefense:'物防',magicalDefense:'魔防',speed:'速度'};
 const STAT_ORDER = ['hp','physicalAttack','magicalAttack','physicalDefense','magicalDefense','speed'];
-const PAR_ID = 'spirit_684f5cd1fec1df27';
 const AXES = ['hp','physicalDefense','magicalDefense','physicalAttack','magicalAttack'];
 const WORD = {up:'加',down:'减',neutral:'不变'};
 let ui, catalog, layout, commit, saveState;
@@ -18,9 +17,9 @@ export function normalizePlayerFlow(value, targetId, catalog, ownSpiritId) {
   const goal = typeof saved.goal === 'string' && (catalog.natures.some(n=>n.id===saved.goal) || Object.keys(names).filter(key=>key!=='speed').some(key=>saved.goal===`stat:${key}`)) ? saved.goal : '';
   return {tab:saved.tab==='incoming'?'incoming':'outgoing',goal,roster:saved.roster!==false,
     rosterScrollTop:Number.isFinite(saved.rosterScrollTop)&&saved.rosterScrollTop>=0?saved.rosterScrollTop:0,
-    skill:Number.isInteger(saved.skill)&&saved.skill>=0&&saved.skill<4?saved.skill:0,
+    skill:Number.isInteger(saved.skill)&&saved.skill>=0&&saved.skill<5?saved.skill:0,
     hp:['string','number'].includes(typeof saved.hp)&&Number.isSafeInteger(Number(saved.hp))&&Number(saved.hp)>0?String(Number(saved.hp)):'',
-    exchange:{enabled:saved.exchange?.enabled===true || (ownSpiritId===PAR_ID && saved.exchange?.ownSpiritId!==ownSpiritId),
+    exchange:{enabled:exchangeRowEnabled(saved.exchange,ownSpiritId),
       healing:['string','number'].includes(typeof saved.exchange?.healing)?String(saved.exchange.healing).slice(0,20):'',
       percent:typeof saved.exchange?.percent==='number' && Number.isFinite(saved.exchange.percent)?saved.exchange.percent:10,
       ownSpiritId},
@@ -152,10 +151,20 @@ function exchangeMessage(exchange, unavailableReason) {
   }
   return '';
 }
-function renderExchange(exchange, result) {
+function renderExchange(exchange, result, isExchange) {
   const enabled=layout.exchange.enabled;
   $('flow-exchange-enabled').checked=enabled;
-  $('flow-exchange-row').hidden=!enabled;
+  const row=$('flow-exchange-row');
+  row.hidden=!enabled;
+  row.classList.toggle('is-exchange',isExchange);
+  $('preview-condition-4-gear').hidden=isExchange || !result.outgoing?.[4]?.skillId;
+  $('flow-exchange-condition-gear').hidden=!isExchange;
+  $('flow-exchange-condition-label').hidden=!isExchange;
+  $('preview-skill-meta-4').hidden=isExchange;
+  for(const id of ['preview-observed-4','preview-remaining-4']) $(id).closest('.pobs').hidden=isExchange;
+  $('flow-row-verdict-out-4').hidden=isExchange;
+  $('flow-exchange-healing').closest('.pobs').hidden=!isExchange;
+  $('flow-exchange-verdict').hidden=!isExchange;
   if(document.activeElement!==$('flow-exchange-healing')) $('flow-exchange-healing').value=layout.exchange.healing;
   $('flow-exchange-healing').setAttribute('aria-invalid',String(exchange.invalid));
   const percent=layout.exchange.percent;
@@ -166,12 +175,14 @@ function renderExchange(exchange, result) {
   $('flow-exchange-condition-label').textContent=custom?`余血${percent}% · 手填`:'破盾10%';
   const hpRows=result.evilExchangeUnavailableReason || !percentValid?[]:result.targetBodyHpByLevel || [];
   const hitStates=new Set(exchange.matching.map(n=>natureState(n,'hp')));
-  $('flow-exchange-values').innerHTML=['down','neutral','up'].map(state=>{
+  const values=['down','neutral','up'].map(state=>{
     const amounts=hpRows.map(row=>evilExchangeHealing(row[state],percent));
     const min=Math.min(...amounts),max=Math.max(...amounts);
     const text=amounts.length ? min===max?`${min}`:`${min}–${max}` : '—';
     return `<div class="flow-exchange-prediction pcell paxis hp-reading${hitStates.has(state)?' matches':''}" data-exchange-hp="${state}"><span class="hit-formula">${state==='neutral'?'普通':phrase('hp',state)}</span><b class="dmg">${text}</b></div>`;
   }).join('');
+  if(isExchange) $('preview-cells-4').innerHTML=`<div id="flow-exchange-values" class="pcells" aria-label="恶念交换三档回血">${values}</div>`;
+  $('flow-exchange-reference-values').innerHTML=values;
   const note=$('flow-exchange-verdict');
   note.className=`flow-row-verdict${exchange.used?exchange.status==='matched'?' good':' bad':''}`;
   note.textContent=exchangeMessage(exchange,result.evilExchangeUnavailableReason);
@@ -184,13 +195,16 @@ function render() {
   layout=normalizePlayerFlow(s.playerFlow,s.targetId,catalog,p.spiritId);
   if(layout.targetId!==s.targetId) {layout.hp='';layout.exchange.healing='';layout.exchange.percent=10;layout.checked.target=false;}
   layout.targetId=s.targetId;
+  if(!layout.exchange.enabled && layout.skill===4) layout.skill=0;
+  const slotCount=layout.exchange.enabled?5:4;
+  const isExchange=p.preview?.skillIds?.[4]===EVIL_EXCHANGE_SKILL_ID;
   const format=s.preview?.percentFormat ?? 'game0';
   const category=row=>categoryOf(row,catalog.skills);
   document.body.dataset.testTab=layout.tab;
   for(const button of document.querySelectorAll('[data-flow-tab]')) button.setAttribute('aria-selected',String(button.dataset.flowTab===layout.tab));
   if(document.activeElement!==$('flow-goal')) $('flow-goal').value=layout.goal;
   const target=catalog.spirits.find(x=>x.id===s.targetId);
-  const defenseStats=new Set((result.outgoing||[]).filter(row=>row.status==='estimated').map(row=>category(row)==='physical'?'物防':'魔防'));
+  const defenseStats=new Set((result.outgoing||[]).slice(0,slotCount).filter(row=>row.status==='estimated').map(row=>category(row)==='physical'?'物防':'魔防'));
   const defenseName=defenseStats.size===1?[...defenseStats][0]:'防御';
   const heads=[...$('preview-outgoing').querySelectorAll(':scope > .pth')];
   const hpLegend=[['down','↓','生命降低'],['neutral','＝','生命不变'],['up','↑','生命提高']].map(([key,symbol,label])=>`<span class="hp-state-label" data-hp-state="${key}" title="${label}时的剩余血量" aria-label="${label}时的剩余血量"><img src="./assets/hp-outline.svg" alt=""/><span aria-hidden="true">${symbol}</span></span>`).join('');
@@ -233,8 +247,9 @@ function render() {
   if(ownImage?.getAttribute('src')) $('flow-own-summary-image').src=ownImage.getAttribute('src');
 
   for(const [i,button] of [...document.querySelectorAll('[data-flow-skill]')].entries()) {
+    button.hidden=i>=slotCount;
     const has=p.preview?.observed?.[i] && (p.preview.observed[i].damage!=null || p.preview.observed[i].remainingPercent!=null);
-    button.innerHTML=`${esc(result.outgoing?.[i]?.skillName || '选择技能')}${has?'<i class="flow-dot" aria-label="已填读数"></i>':''}`;
+    button.innerHTML=`${esc(catalog.skills.find(skill=>skill.id===p.preview?.skillIds?.[i])?.name || '选择技能')}${has?'<i class="flow-dot" aria-label="已填读数"></i>':''}`;
     button.setAttribute('aria-selected',String(i===layout.skill));
     document.querySelector(`[data-preview-row="${i}"]`).classList.toggle('flow-active-row',i===layout.skill);
   }
@@ -252,11 +267,11 @@ function render() {
 
   // 每招读数旁的即时结论，并记下各属性的来源。
   const sources=Object.fromEntries(AXES.map(key=>[key,[]]));
-  const {observed:outObserved}=readOutgoingObservations(p.preview ?? {},format);
+  const {observed:outObserved}=readOutgoingObservations(p.preview ?? {},format,slotCount);
   const hpPredictions=(result.targetHpByLevel ?? []).flatMap(row=>catalog.natures.map(n=>({
     targetLevel:row.level, natureId:n.id, upStat:n.upStat, downStat:n.downStat,
     hpMax:row[n.upStat==='hp'?'up':n.downStat==='hp'?'down':'neutral'] })));
-  for(let i=0;i<4;i++) {
+  for(let i=0;i<slotCount;i++) {
     const raw=p.preview?.observed?.[i], row=result.outgoing?.[i];
     const verdict=outgoingReadingVerdict(row,outObserved[i],raw,format,category(row),hpPredictions);
     const hpInput=$(`preview-remaining-${i}`), hpConflict=Boolean(verdict?.conflicts?.hp);
@@ -282,9 +297,9 @@ function render() {
   const hpRows=result.targetHpByLevel || [];
   const direct=layout.hp!=='' && Number.isInteger(Number(layout.hp)) && Number(layout.hp)>0;
   const hpHits=direct?hpRows.flatMap(row=>catalog.natures.filter(n=>row[n.upStat==='hp'?'up':n.downStat==='hp'?'down':'neutral']===Number(layout.hp)).map(n=>({...n,targetLevel:row.level}))):[];
-  const exchange=compareEvilExchange({healing:layout.exchange.enabled?layout.exchange.healing:'',
+  const exchange=compareEvilExchange({healing:layout.exchange.enabled && isExchange?layout.exchange.healing:'',
     hpByLevel:result.evilExchangeUnavailableReason?[]:result.targetBodyHpByLevel,natures:catalog.natures,targetPercent:layout.exchange.percent});
-  renderExchange(exchange,result);
+  renderExchange(exchange,result,isExchange);
   const exchangeComparable=['matched','conflict'].includes(exchange.status);
   const combinedGroups=[v.candidates];
   if(direct) combinedGroups.push(hpHits.map(h=>`${h.targetLevel}:${h.id}`));
@@ -307,7 +322,7 @@ function render() {
     const tone=!used||hasConflict?'':matched.some(goalMatches)?' good':' bad';
     goal=`<div class="flow-goal-result${tone}"><span>目标 ${esc(label)}</span><b>${state}</b></div>`;
   }
-  const outgoingCount = Array.from({length:4},(_,i)=>p.preview?.observed?.[i])
+  const outgoingCount = Array.from({length:slotCount},(_,i)=>p.preview?.observed?.[i])
     .filter(observation=>observation && (hasReading(observation.damage) || hasReading(observation.remainingPercent))).length;
   const incomingCount = Array.from({length:2},(_,i)=>s.preview?.incomingDamages?.[i]).filter(hasReading).length;
   const recordCount = outgoingCount + incomingCount + (direct ? 1 : 0) + (exchange.used ? 1 : 0);
@@ -382,7 +397,7 @@ export function mountPlayerFlow(options) {
   <div class="flow-card flow-wild-card" id="flow-wild-card">
     <div class="flow-head"><span class="flow-role flow-role-wild">野怪</span><i data-slot="target"></i><span class="flow-filter-slot" id="flow-filter-head"><i data-slot="filter"></i></span><button type="button" id="flow-wild-more" class="flow-more" aria-expanded="false" aria-controls="flow-wild-sub">条件</button><i data-slot="next"></i></div>
     ${row('等级','<i data-slot="level"></i>')}
-    ${row('血量','<i data-slot="hp"></i><i data-slot="shiny"></i><label class="flow-field flow-direct-hp"><input id="flow-hp-value" type="number" min="1" step="1" inputmode="numeric" autocomplete="off" placeholder="读到 HP" aria-label="读到的最大生命"/></label>','flow-hp-field')}
+    ${row('血量','<i data-slot="hp"></i><i data-slot="shiny"></i><label class="flow-field flow-direct-hp"><input id="flow-hp-value" type="number" min="1" step="1" inputmode="numeric" autocomplete="off" placeholder="HP" aria-label="读到的最大生命"/></label>','flow-hp-field')}
     <div class="flow-wild-sub" id="flow-wild-sub">
       ${row('目标',`<select id="flow-goal" aria-label="目标性格" title="选你想抓的性格：表里会标出相关格子，结论栏显示它是否还在候选；不影响计算"><option value="">不限定</option><optgroup label="属性">${Object.entries(names).filter(([k])=>k!=='speed').map(([k,n])=>`<option value="stat:${k}">加${n}</option>`).join('')}</optgroup><optgroup label="性格">${catalog.natures.map(n=>`<option value="${n.id}">${n.name} · ${names[n.upStat]}↑ ${names[n.downStat]}↓</option>`).join('')}</optgroup></select>`)}
       ${row('骰子','<i data-slot="wild-dice"></i>')}
@@ -418,7 +433,7 @@ export function mountPlayerFlow(options) {
   const dice=(side,ui,select)=>{const holder=document.createElement('span');holder.className='flow-dice';holder.append($(ui),$(select));holder.insertAdjacentHTML('beforeend',`<button type="button" class="flow-check" id="flow-check-${side}" aria-pressed="false">未核对</button>`);return holder;};
   const wrap=(cls,...ids)=>{const holder=document.createElement('span');holder.className=cls;holder.append(...ids.map(id=>typeof id==='string'?$(id):id));return holder;};
   const next=document.createElement('button');next.type='button';next.id='flow-next';next.className='flow-next';next.textContent='清空读数';next.title='清空本场读数、标记和野怪骰子，保留我方配置';
-  fill('target',wrap('flow-spirit','target-image','target-picker'));fill('level',$('level-seg'),$('target-level'));fill('shiny',$('target-shiny-control'));fill('hp',$('target-hp-range'));fill('next',next);
+  fill('target',wrap('flow-spirit','target-image','target-picker'));fill('level',$('level-seg'),$('target-level-custom'),$('target-level'));fill('shiny',$('target-shiny-control'));fill('hp',$('target-hp-range'));fill('next',next);
   fill('wild-dice',dice('target','target-dice-ui','target-dice'));fill('wild-trait',$('wild-trait-row'));fill('filter',$('target-filter'));
   fill('wild-extra',wrap('flow-extra','target-dice-custom','target-dice-note','use-initial-form'));
   fill('configs',$('profile-tabs'));fill('own',wrap('flow-spirit','own-image','own-picker'));fill('own-level',levelInput);
@@ -429,7 +444,7 @@ export function mountPlayerFlow(options) {
   hpRow.remove();
   document.querySelector('.calculator-layout').prepend(setup);
 
-  // ---- 异色目标栏：桌面是左侧一列（无外框、透明底），可收起成左侧边缘中间的把手；手机为滑出浮层 ----
+  // ---- 异色目标栏：宽屏可收起；1100px及以下隐藏，保留宽屏展开状态和滚动位置。 ----
   // 名单：S5 → S2 → 通行证 → 火红尾、云梦豚，均取初始形态；只收有异色形态的精灵。
   const spiritById=new Map(catalog.spirits.map(x=>[x.id,x]));
   const groupRoots=id=>((catalog.targetGroups ?? []).find(g=>g.id===id)?.families ?? []).map(f=>f.spiritIds?.[0]).filter(id=>spiritById.get(id)?.hasShinyForm===true);
@@ -441,7 +456,7 @@ export function mountPlayerFlow(options) {
   handle.setAttribute('aria-controls','flow-roster');handle.setAttribute('aria-expanded','false');handle.title='展开异色目标栏';
   handle.innerHTML='<span class="fr-handle-text">异色</span><span class="fr-handle-arrow" aria-hidden="true">›</span>';
   document.querySelector('.calculator-layout').prepend(drawer);document.body.append(handle);
-  const scroller=drawer.querySelector('.fr-scroll'), overlay=matchMedia('(max-width:820px)');
+  const scroller=drawer.querySelector('.fr-scroll'), overlay=matchMedia('(max-width:1100px)');
   const isOpen=()=>document.body.classList.contains('flow-roster-open');
   let rosterScrollTop=layout.rosterScrollTop, scrollTimer;
   const saveRosterScroll=()=>{
@@ -461,7 +476,7 @@ export function mountPlayerFlow(options) {
   const setDrawer=(open,{remember=true}={})=>{
     if(isOpen())saveRosterScroll();
     document.body.classList.toggle('flow-roster-open',open);handle.setAttribute('aria-expanded',String(open));drawer.setAttribute('aria-hidden',String(!open));
-    // 桌面的展开状态记住；手机浮层每次默认收起。
+    // 宽屏展开状态独立记住；窄屏隐藏不覆盖该设置。
     if(remember&&!overlay.matches){layout.roster=open;saveLayout();}
     if(open)scroller.scrollTo({top:rosterScrollTop,behavior:'instant'});
   };
@@ -509,7 +524,7 @@ export function mountPlayerFlow(options) {
   cards[1].querySelector('h2').insertAdjacentHTML('beforeend','<small class="flow-reading-key">测物攻 · 魔攻</small>');
   for(const [i,card] of cards.entries()) { const b=document.createElement('button');b.className='flow-clear';b.type='button';b.textContent='清空';b.setAttribute('aria-label',i?'清空它打我的读数':'清空我打它的读数');b.onclick=()=>clearCard(i?'incoming':'outgoing');card.querySelector('.preview-heading').append(b); }
   workspace.insertAdjacentHTML('afterbegin',`<div class="flow-test-bar"><div role="tablist" aria-label="测法" class="flow-tabs"><button type="button" role="tab" data-flow-tab="outgoing">我打它<small>生命 · 双防</small></button><button type="button" role="tab" data-flow-tab="incoming">它打我<small>双攻</small></button></div></div>`);
-  const skills=document.createElement('div');skills.className='flow-mobile-skills';skills.setAttribute('role','tablist');skills.setAttribute('aria-label','四个技能');skills.innerHTML=Array.from({length:4},(_,i)=>`<button type="button" role="tab" data-flow-skill="${i}"></button>`).join('');cards[0].querySelector('.preview-heading').after(skills);
+  const skills=document.createElement('div');skills.className='flow-mobile-skills';skills.setAttribute('role','tablist');skills.setAttribute('aria-label','我方技能');skills.innerHTML=Array.from({length:5},(_,i)=>`<button type="button" role="tab" data-flow-skill="${i}"></button>`).join('');cards[0].querySelector('.preview-heading').after(skills);
   $('preview-incoming').insertAdjacentHTML('afterbegin','<div class="pth pth-skill">技能</div><div class="pth">攻击↓</div><div class="pth">攻击不变</div><div class="pth">攻击↑</div><div class="pth">实测</div>');
   for(const [i,row] of [...document.querySelectorAll('#preview-outgoing [data-preview-row]')].entries()) {
     row.querySelector('.pobservations').insertAdjacentHTML('beforeend',`<div class="flow-row-verdict" id="flow-row-verdict-out-${i}" aria-live="polite"></div>`);
@@ -524,21 +539,21 @@ export function mountPlayerFlow(options) {
   exchangeToggle.title='打开后常驻第五行；选择龙息帕尔会自动打开';
   exchangeToggle.innerHTML='<input id="flow-exchange-enabled" class="switch" type="checkbox" role="switch" aria-label="恶念交换第五行" aria-controls="flow-exchange-row"/><span>恶念交换</span>';
   cards[0].querySelector('.flow-clear').before(exchangeToggle);
-  const exchangeRow=document.createElement('section');exchangeRow.id='flow-exchange-row';exchangeRow.className='preview-grid';exchangeRow.setAttribute('aria-label','第五招恶念交换测生命');exchangeRow.hidden=true;
-  exchangeRow.innerHTML=`<div class="flow-exchange-skill pskill-body"><div class="flow-exchange-title pskill-line"><span class="muted">5</span><b class="pskill-body">恶念交换</b><span class="pskill-meta">测生命</span><button type="button" id="flow-exchange-condition-gear" class="pskill-gear" aria-label="恶念交换条件" aria-expanded="false" aria-controls="flow-exchange-condition-pop">⚙</button></div>
-    <div id="flow-exchange-condition-label" class="pskill-meta">破盾10%</div>
-    <div id="flow-exchange-condition-pop" class="pskill-pop" role="dialog" aria-label="恶念交换条件" hidden><label class="flow-dialog-field">野怪剩余血量 %<input id="flow-exchange-percent" type="number" min="0" max="100" step="0.01" inputmode="decimal" aria-label="恶念交换野怪剩余血量百分比"/></label><p class="flow-dialog-message">我方满血，读野怪绿色回血；期间无额外扣血、回血或生命上限变化。</p><div class="pskill-pop-foot"><span>默认 10% · 按精确比例算</span><button type="button" id="flow-exchange-reset" class="text-button">恢复默认</button></div></div></div>
-    <div id="flow-exchange-values" class="hp-column-legend" aria-label="恶念交换三档回血"></div>
-    <div class="pobservations"><label class="pobs"><span>野怪回血</span><input id="flow-exchange-healing" type="text" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="绿色数字" aria-label="恶念交换野怪绿色回血" aria-describedby="flow-exchange-verdict"/></label><div id="flow-exchange-verdict" class="flow-row-verdict" aria-live="polite"></div></div>`;
-  $('preview-outgoing').after(exchangeRow);
+  const exchangeRow=document.querySelector('[data-preview-row="4"]');
+  exchangeRow.id='flow-exchange-row';exchangeRow.setAttribute('aria-label','第五招');exchangeRow.hidden=true;
+  exchangeRow.querySelector('.pskill-line').insertAdjacentHTML('beforeend','<button type="button" id="flow-exchange-condition-gear" class="pskill-gear" aria-label="恶念交换条件" aria-expanded="false" aria-controls="flow-exchange-condition-pop"><span class="flow-gear-icon" aria-hidden="true">⚙</span><span class="flow-gear-text">条件</span></button>');
+  exchangeRow.querySelector('.pskill-body').insertAdjacentHTML('beforeend',`<div id="flow-exchange-condition-label" class="pskill-meta">破盾10%</div>
+    <div id="flow-exchange-condition-pop" class="pskill-pop" role="dialog" aria-label="恶念交换条件" hidden><label class="flow-dialog-field">野怪剩余血量 %<input id="flow-exchange-percent" type="number" min="0" max="100" step="0.01" inputmode="decimal" aria-label="恶念交换野怪剩余血量百分比"/></label><p class="flow-dialog-message">我方满血，读野怪绿色回血；期间无额外扣血、回血或生命上限变化。</p><div class="pskill-pop-foot"><span>默认 10% · 按精确比例算</span><button type="button" id="flow-exchange-reset" class="text-button">恢复默认</button></div></div>`);
+  exchangeRow.querySelector('.pobservations').insertAdjacentHTML('beforeend','<label class="pobs"><span>野怪回血</span><input id="flow-exchange-healing" type="text" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="绿色数字" aria-label="恶念交换野怪绿色回血" aria-describedby="flow-exchange-verdict"/></label><div id="flow-exchange-verdict" class="flow-row-verdict" aria-live="polite"></div>');
   for(const [k,row] of [...document.querySelectorAll('#preview-incoming [data-incoming-row]')].entries())
     row.querySelector('.pobservations').insertAdjacentHTML('beforeend',`<div class="flow-row-verdict" id="flow-row-verdict-in-${k}" aria-live="polite"></div>`);
   rail.insertAdjacentHTML('beforeend','<section id="flow-result" class="rail-card" aria-live="polite" tabindex="-1"></section>');
+  rail.insertAdjacentHTML('beforeend','<section id="flow-exchange-reference" class="rail-card" aria-label="恶念交换回血参考"><div class="flow-result-cap"><b>恶念交换 · 回血</b></div><div id="flow-exchange-reference-values"></div></section>');
   document.body.insertAdjacentHTML('beforeend','<div id="flow-mobile-result"><span id="flow-result-brief">待实测</span><button type="button" id="flow-result-jump">看结果</button></div>');
 
   // ---- 事件 ----
   for(const side of ['own','target']) $(`flow-check-${side}`).onclick=()=>{layout.checked[side]=!layout.checked[side];saveLayout();render();};
-  $('flow-exchange-enabled').onchange=()=>{layout.exchange.enabled=$('flow-exchange-enabled').checked;saveLayout();render();};
+  $('flow-exchange-enabled').onchange=()=>{const enabled=$('flow-exchange-enabled').checked;commit(s=>{layout.exchange.enabled=enabled;if(!enabled && layout.skill===4) layout.skill=0;s.playerFlow=structuredClone(layout);});};
   const exchangePop=$('flow-exchange-condition-pop'), exchangeGear=$('flow-exchange-condition-gear');
   exchangeGear.onclick=event=>{
     event.stopPropagation();const open=exchangePop.hidden;
@@ -546,7 +561,11 @@ export function mountPlayerFlow(options) {
       pop.hidden=true;$(pop.id.replace(/-pop$/,'-gear'))?.setAttribute('aria-expanded','false');
     }
     exchangePop.hidden=!open;exchangeGear.setAttribute('aria-expanded',String(open));
-    if(open) { $('flow-exchange-percent').focus();exchangePop.scrollIntoView({block:'nearest'}); }
+    if(open) {
+      $('flow-exchange-percent').focus({preventScroll:true});
+      const box=exchangePop.getBoundingClientRect();
+      if(box.top<60 || box.bottom>innerHeight-16) exchangePop.scrollIntoView({block:'center',behavior:'instant'});
+    }
   };
   $('flow-exchange-percent').onchange=()=>{const value=$('flow-exchange-percent').value;layout.exchange.percent=value===''?10:Number(value);saveLayout();render();};
   $('flow-exchange-percent').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();$('flow-exchange-percent').dispatchEvent(new Event('change'));exchangePop.hidden=true;exchangeGear.setAttribute('aria-expanded','false');exchangeGear.focus();}};

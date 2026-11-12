@@ -127,3 +127,36 @@ test('all-level health calibration retains the actual level matching measured HP
   assert.equal(health.naturePreview.length, 5);
   assert(health.naturePreview.every(row => row.upStat === 'hp' && row.levels.join(',') === '41' && row.hpByLevel[0].hp === 554));
 });
+
+// Outside the former 41-43-only gate: raw whale HP at 50 is 266,
+// so neutral body HP is 288, shield HP 576, broken-shield healing 260.
+test('custom levels calculate HP, both damage directions and exact HP matching', () => {
+  for (const [level, down, neutral, up] of [[1,192,208,224],[50,522,576,630],[60,590,650,710]]) {
+    const result=previewMatchup(previewInput(level),catalog);
+    assert.deepEqual(result.targetLevels,[level]);
+    assert.deepEqual(result.targetHpByLevel,[{level,down,neutral,up}]);
+    assert.equal(result.outgoing[0].status,'estimated');
+    assert.equal(result.incomingList[0].status,'estimated');
+    for(const row of [...result.outgoing,...result.incomingList])
+      assert(row.predictions.every(p=>p.targetLevel===level && Number.isFinite(p.damage)));
+  }
+  const observation={id:'hp50',direction:'hp',damage:576,beforeFull:true,beforePercent:100,afterPercent:0,percentDigits:0,percentMode:'game',context:'clean',defeated:true,reduction:1};
+  const session={targetId:species('深蓝鲸').id,level:50,profiles:[],observations:[observation]};
+  const solved=solve(session,catalog);
+  assert(solved.candidates.length>0);
+  assert(solved.candidates.every(row=>row.nature.upStat!=='hp' && row.nature.downStat!=='hp' && row.levels.join(',')==='50'));
+  for(const invalid of [0,61,42.5,NaN]) assert.equal(previewMatchup(previewInput(invalid),catalog).status,'unsupported');
+});
+
+test('the fifth comparison skill never changes automatic stacks from four equipped skills', () => {
+  const ownId=profile.spiritId;
+  const source={...catalog,spirits:catalog.spirits.map(s=>s.id===ownId?{...s,traitName:'test-types'}:s)};
+  const traits={traits:{'test-types':{damage:'applied',attacker:{kind:'attack_percent',effect:20,stack:{min:0,max:10},automaticStack:{skillTypes:['火']}}}}};
+  const input={...previewInput(43),skillIds:['火焰切割','地刺','彼岸之手','鸣沙陷阱'].map(name=>skill(name).id)};
+  const four=previewMatchup(input,source,undefined,traits);
+  const five=previewMatchup({...input,skillIds:[...input.skillIds,fire.id]},source,undefined,traits);
+  assert.equal(five.outgoing.length,5);
+  assert.deepEqual(five.outgoing.slice(0,4),four.outgoing);
+  assert.deepEqual(five.outgoing[4],four.outgoing[0]);
+  assert.deepEqual(five.incomingList,four.incomingList);
+});

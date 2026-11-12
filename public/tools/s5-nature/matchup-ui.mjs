@@ -1,3 +1,4 @@
+import { EVIL_EXCHANGE_SKILL_ID, exchangeRowEnabled } from './evil-exchange.mjs';
 import { createPicker } from './picker.mjs';
 import { previewMatchup, canPreviewBasePower, defaultSkillHitCount, firstActionPowerBonus } from './matchup-preview.mjs';
 import { traitControls, traitPanelPercents } from './own-trait.mjs';
@@ -103,24 +104,24 @@ export function validatePreviewSettings(session, target) {
   for (const holder of [...session.profiles.map(p=>p.preview),session.preview]) {
     if (holder === undefined) continue;
     if (!object(holder)) fail();
-    if (holder.skillIds !== undefined && (!Array.isArray(holder.skillIds) || holder.skillIds.length > 4 || holder.skillIds.some(id=>typeof id !== 'string'))) fail();
+    if (holder.skillIds !== undefined && (!Array.isArray(holder.skillIds) || holder.skillIds.length > 5 || holder.skillIds.some(id=>typeof id !== 'string'))) fail();
     if (holder.skillOverrides !== undefined) {
       if (!object(holder.skillOverrides)) fail();
       for (const value of Object.values(holder.skillOverrides)) overrides(value);
     }
     if (holder.incomingOverrides !== undefined) overrides(holder.incomingOverrides);
     if (holder.observed !== undefined) {
-      if (!object(holder.observed) || Object.keys(holder.observed).some(key=>!['0','1','2','3'].includes(key))) fail();
+      if (!object(holder.observed) || Object.keys(holder.observed).some(key=>!['0','1','2','3','4'].includes(key))) fail();
       for (const obs of Object.values(holder.observed)) {
         if (!object(obs)) fail();
         for(const key of ['damage','remainingPercent']) if(obs[key]!=null && (!Number.isFinite(obs[key]) || obs[key]<0 || obs[key]>(key==='damage'?1000000:100))) fail();
         if(obs.damage!=null && !Number.isInteger(obs.damage)) fail();
       }
     }
-    if (holder.observedUnits !== undefined && (!object(holder.observedUnits) || Object.entries(holder.observedUnits).some(([key,v])=>!['0','1','2','3'].includes(key)||!['damage','percent'].includes(v)))) fail();
+    if (holder.observedUnits !== undefined && (!object(holder.observedUnits) || Object.entries(holder.observedUnits).some(([key,v])=>!['0','1','2','3','4'].includes(key)||!['damage','percent'].includes(v)))) fail();
     const statKeys = ['hp','physicalAttack','magicalAttack','physicalDefense','magicalDefense','speed','other'];
     const validPick = value => typeof value === 'string' && statKeys.includes(value.split(':')[0]) && /^[^:]+(?::(?:base|down)(?::(?:neutral|up|down))?)?$/.test(value);
-    if (holder.picked !== undefined && (!object(holder.picked) || Object.entries(holder.picked).some(([key,v])=>!['0','1','2','3'].includes(key)||!validPick(v)))) fail();
+    if (holder.picked !== undefined && (!object(holder.picked) || Object.entries(holder.picked).some(([key,v])=>!['0','1','2','3','4'].includes(key)||!validPick(v)))) fail();
     if (holder.incomingPicks !== undefined && (!Array.isArray(holder.incomingPicks)||holder.incomingPicks.length>4||holder.incomingPicks.some(v=>v!=null&&!validPick(v)))) fail();
     if (holder.shiny !== undefined && typeof holder.shiny !== 'boolean') fail();
     if (holder.trait !== undefined) {
@@ -196,9 +197,9 @@ export function observationMatch(prediction, obs, format = 'game0') {
     && Math.abs(prediction.damage - obs.damage) <= (prediction.damage > 50 ? 1 : 0)))
     && (obs.remainingPercent == null || percentDisplay(format)(prediction.remainingPercent) === obs.remainingPercent);
 }
-export function readOutgoingObservations(own, format = 'game0') {
+export function readOutgoingObservations(own, format = 'game0', slotCount = 5) {
   const observed = {}; let invalid = false;
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < slotCount; i++) {
     const obs = own.observed?.[i];
     if (!obs || (obs.damage == null && obs.remainingPercent == null)) continue;
     const { damage, remainingPercent } = obs;
@@ -311,7 +312,8 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       own.picked = {};
       own.trait = { stacks: 0, active: false };
     }
-    own.skillIds = Array.from({length:4},(_,i) => available.some(s => s.id === own.skillIds[i]) ? own.skillIds[i] : '');
+    own.skillIds = Array.from({length:5},(_,i) => i === 4 && (!own.skillIds[i] || own.skillIds[i] === EVIL_EXCHANGE_SKILL_ID)
+      ? EVIL_EXCHANGE_SKILL_ID : available.some(s => s.id === own.skillIds[i]) ? own.skillIds[i] : '');
     if (!object(own.skillOverrides)) own.skillOverrides = {};
     if (!object(own.observed)) own.observed = {};
     if (!object(own.observedUnits)) own.observedUnits = {};
@@ -382,7 +384,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     return `<div id="${prefix}-pop" class="pskill-pop" role="dialog" aria-label="本招条件" hidden><div class="pskill-pop-grid"><label>显示威力<input id="${prefix}-displayedPower" type="number" min="0" max="100000" step="any" placeholder="自动"/></label><label>命中次数<input id="${prefix}-hitCount" type="number" min="1" max="100" step="1" placeholder="1"/></label><label>威力倍率<input id="${prefix}-powerMultiplier" type="number" min="0.01" max="100" step="0.01" placeholder="1"/></label></div><label id="${prefix}-firstAction-row" class="pskill-first-action" hidden><input id="${prefix}-firstAction" type="checkbox"/><span id="${prefix}-firstAction-label">入场首次行动 · 迸发 +30</span></label><div class="pskill-pop-foot"><span id="${prefix}-auto" class="pskill-auto"></span><span id="${prefix}-legacyPower" class="preview-legacy-power" hidden><span id="${prefix}-legacyPower-label"></span></span><button id="${prefix}-resetPower" type="button" class="text-button">恢复自动</button></div><details class="preview-final-power"><summary>已知最终威力</summary><label>最终威力<input id="${prefix}-effectivePower" type="number" min="0" max="100000" step="any" placeholder="未填写"/></label><p>已含系别与极化/钝化，不含临场攻防加成；与显示威力互斥。</p></details></div>`;
   }
   const heading = (columns, last) => `<div class="pth pth-skill">技能</div>${columns.map(([key,label])=>`<div class="pth">${catalog.assets?.stats?.[key]?`<img src="${html(catalog.assets.stats[key])}" alt=""/>`:''}${label}${key==='other'?'':'<span class="up-arrow">↑</span>'}</div>`).join('')}<div class="pth">${last}</div>`;
-  $('preview-outgoing').innerHTML = heading(OUT_COLUMNS,'实测<button id="preview-reset-observed" type="button" class="text-button pth-action">清空</button>') + Array.from({length:4},(_,i) =>
+  $('preview-outgoing').innerHTML = heading(OUT_COLUMNS,'实测<button id="preview-reset-observed" type="button" class="text-button pth-action">清空</button>') + Array.from({length:5},(_,i) =>
     `<div class="prow" data-preview-row="${i}">${skillControl(`preview-skill-${i}`,`preview-skill-picker-${i}`,`preview-skill-meta-${i}`,`preview-condition-${i}`,i+1)}<div class="pcells" id="preview-cells-${i}"></div><div class="pobservations"><label class="pobs"><span>伤害</span><input id="preview-observed-${i}" inputmode="numeric" autocomplete="off" aria-label="技能 ${i+1} 实测伤害"/></label><label class="pobs"><span>剩余 %</span><input id="preview-remaining-${i}" inputmode="decimal" autocomplete="off" aria-label="技能 ${i+1} 实测剩余百分比"/></label></div></div>`).join('');
   $('preview-incoming').innerHTML = Array.from({length:INCOMING_SLOTS},(_,k) =>
     `<div class="prow" data-incoming-row="${k}">${skillControl(`preview-incoming-skill-${k}`,`preview-incoming-picker-${k}`,`preview-incoming-meta-${k}`,`preview-incoming-condition-${k}`,'敌')}<div class="pcells" id="preview-incoming-cells-${k}"></div><div class="pobservations"><label class="pobs"><span id="preview-incoming-unit-label-${k}">总伤</span><input id="preview-incoming-damage-${k}" type="number" min="0" max="1000000" step="1" inputmode="numeric" aria-label="敌方技能 ${k+1} 我方掉血"/></label><select id="preview-incoming-unit-${k}" class="incoming-unit" aria-label="敌方技能 ${k+1} 伤害口径" hidden><option value="total">录入总伤</option><option value="perHit">录入单段</option></select></div></div>`).join('');
@@ -443,7 +445,8 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const anchor = incoming ? `preview-incoming-picker-${index}` : `preview-skill-picker-${index}`;
     pickers.push(createPicker({anchor,trigger:`${id}-input`,source:id,label:incoming?`敌方技能 ${index+1}`:`我方技能 ${index+1}`,rows:()=>{
       const {profile,session}=state(), rows = incoming ? incomingSkillOptions(catalog, session.targetId) : ownLearnset(profile.spiritId);
-      return rows.filter(s => damaging(s) || s.id === $(id).value);
+      const choices = !incoming && index === 4 ? [...rows.filter(s => s.id !== EVIL_EXCHANGE_SKILL_ID), skills.get(EVIL_EXCHANGE_SKILL_ID)].filter(Boolean) : rows;
+      return choices.filter(s => damaging(s) || s.id === $(id).value || (!incoming && index === 4 && s.id === EVIL_EXCHANGE_SKILL_ID));
     },image:s=>s.iconUrl ?? catalog.assets?.elements?.[s.type],describe:s=>{
       const {profile,session}=state(), user=spirits.get(incoming?session.targetId:profile.spiritId);
       return [category(s), `威力 ${s.basePower ?? '—'}`, user?.types?.includes(s.type) ? '本系' : '', !incoming && knockout(index, s.id) ? '一击倒' : ''].filter(Boolean).join(' · ');
@@ -451,7 +454,9 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     $(id).addEventListener('change',()=>commit(()=>{
       const {own,encounter}=state();
       if(incoming) {encounter.incomingSkillIds[index]=$(id).value;encounter.incomingOverridesList[index]={};encounter.incomingDamages[index]=null;encounter.incomingDamageUnits[index]='total';encounter.incomingPicks[index]=null;}
-      else {own.skillIds[index]=$(id).value;delete own.observed[index];delete own.picked[index];}
+      else {own.skillIds[index]=$(id).value;delete own.observed[index];delete own.picked[index];
+        if(index === 4 && getSession().playerFlow?.exchange) getSession().playerFlow.exchange.healing='';
+      }
     }));
     const prefix=incoming?`preview-incoming-condition-${index}`:`preview-condition-${index}`;
     for (const key of ['powerMultiplier','hitCount','displayedPower','effectivePower']) $(`${prefix}-${key}`).addEventListener('change',()=>commit(()=>{
@@ -487,9 +492,9 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   }
   document.addEventListener('click',event=>{ if(!event.target.closest('.pskill-pop,.pskill-gear')) closePops(); });
   document.addEventListener('keydown',event=>{ if(event.key==='Escape') closePops(); });
-  for(let i=0;i<4;i++) configureSkill(i,false);
+  for(let i=0;i<5;i++) configureSkill(i,false);
   for(let k=0;k<INCOMING_SLOTS;k++) configureSkill(k,true);
-  for(let i=0;i<4;i++) {
+  for(let i=0;i<5;i++) {
     for (const [prefix,key] of [['preview-observed','damage'],['preview-remaining','remainingPercent']]) {
       $(`${prefix}-${i}`).addEventListener('change',()=>commit(()=>{
         const {own}=state(), value=number($(`${prefix}-${i}`));
@@ -728,7 +733,8 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     return `<details class="nature-details coefficient-details"><summary>阶位与系数</summary><p>强度阶位 ${stage} · ${verified ? '包体字段已核对' : '尚无包体确认'}</p>${lines.size ? `<ul>${[...lines].map(line => `<li>${html(line)}</li>`).join('')}</ul>` : ''}<p>攻防沿用经验模型，原始伤害公式尚未还原。</p></details>`;
   }
   function renderVerdict(result, own, encounter, target, format) {
-    const { observed, invalid: outgoingInvalid } = readOutgoingObservations(own, format);
+    const slotCount = exchangeRowEnabled(getSession().playerFlow?.exchange, getProfile().spiritId) ? 5 : 4;
+    const { observed, invalid: outgoingInvalid } = readOutgoingObservations(own, format, slotCount);
     const incomingObserved = Array.from({length:INCOMING_SLOTS},(_,k)=>readIncomingObservation(encounter,k,result.incomingList?.[k]));
     const invalid = outgoingInvalid || incomingObserved.some(obs=>obs?.invalid);
     const hpPredictions = (result.targetHpByLevel ?? []).flatMap(row=>catalog.natures.map(n=>({
@@ -764,7 +770,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
         obs.remainingPercent == null ? '' : `余 ${obs.remainingPercent}%`].filter(Boolean).join(' · ');
       evidence.push({ label: `${row.skillName} ${values}`, matched: hits.length > 0, incoming, ...(incoming ? axisEvidence(row, obs) : evidenceTag(row, OUT_COLUMNS, false, obs, format)) });
     };
-    for (let i=0;i<4;i++) addEvidence(result.outgoing?.[i], observed[i], false);
+    for (let i=0;i<slotCount;i++) addEvidence(result.outgoing?.[i], observed[i], false);
     for (let k=0;k<INCOMING_SLOTS;k++) addEvidence(result.incomingList?.[k], incomingObserved[k], true);
     if (hpComparison.status !== 'empty') {
       const hpCases = hpComparison.matchedPredictions.map(caseId);
@@ -826,7 +832,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   }
   function renderTraits(ownSpirit, target, own) {
     const info = ownTraitInfo(ownSpirit), controls = traitControls(info);
-    const skillTypes = own.skillIds.map(id => skills.get(id)?.type).filter(Boolean);
+    const skillTypes = own.skillIds.slice(0,4).map(id => skills.get(id)?.type).filter(Boolean);
     let inner = '';
     if (info.damage === 'none') inner = '<span class="trait-none">不影响伤害</span>';
     else if (info.damage === 'unsupported') inner = '<span class="trait-none">未接入伤害结算</span>';
@@ -849,7 +855,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   }
   function renderPanel(profile, ownSpirit, info, own) {
     const nature = natures.get(profile.natureId);
-    const skillTypes = own.skillIds.map(id => skills.get(id)?.type).filter(Boolean);
+    const skillTypes = own.skillIds.slice(0,4).map(id => skills.get(id)?.type).filter(Boolean);
     const pct = traitPanelPercents(info, own.trait, skillTypes);
     const stacks = traitControls(info).stack ? own.trait.stacks ?? 0 : 0;
     const head = `${html(profile.name)}${own.panelIncludesDice?'战斗':'基础'}面板 · ${(profile.awakening ?? 0) + 5}★ ${html(nature?.name ?? '普通')}${stacks?` · 特性 ${stacks} 层`:''}`;
@@ -883,7 +889,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     const {session,profile,own,encounter}=state();
     const ownSpirit = spirits.get(profile.spiritId), target = spirits.get(session.targetId);
     const format = encounter.percentFormat ?? 'game0';
-    for(let i=0;i<4;i++) {
+    for(let i=0;i<5;i++) {
       renderSkillControl(`preview-skill-${i}`,`preview-skill-meta-${i}`,`preview-condition-${i}`,own.skillIds[i],own.skillOverrides[own.skillIds[i]]);
       const obs=own.observed[i];
       $(`preview-observed-${i}`).value=obs?.damage ?? '';
@@ -934,7 +940,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       skillOverrides:Object.fromEntries(Object.entries(input.skillOverrides ?? {}).map(([id,override])=>[id,actionOnly(override)])),
       incomingOverridesList:input.incomingOverridesList.map(actionOnly)},catalog,diceCatalog,traitCatalog); } catch { autoPreview = {}; }
     const { observed } = readOutgoingObservations(own, format);
-    for(let i=0;i<4;i++) {
+    for(let i=0;i<5;i++) {
       const obs = observed[i]?.invalid ? null : observed[i];
       renderDisplayedPower(`preview-skill-meta-${i}`, `preview-condition-${i}`, currentPreview.outgoing?.[i], autoPreview.outgoing?.[i]);
       $(`preview-cells-${i}`).innerHTML=cellsMarkup(own.skillIds[i]?currentPreview.outgoing?.[i]:null,OUT_COLUMNS,false,obs,format,own.picked[i]);

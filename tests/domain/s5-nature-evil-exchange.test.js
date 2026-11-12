@@ -82,7 +82,7 @@ test.each([0, -1, 1.5, '0', '-1', '229.0', '1.5', 'abc', '229hp', '0xe5', '2.29e
 
 test('a supplied integer without a complete HP model stays unavailable rather than matched/conflict', () => {
   for (const hpByLevel of [undefined, null, [], [{}], [{ level: 42, down: 224, neutral: null, up: 268 }],
-    [{ level: 40, down: 224, neutral: 246, up: 268 }], [...whale41, ...whale41]]) {
+    [{ level: 0, down: 224, neutral: 246, up: 268 }], [...whale41, ...whale41]]) {
     expect(compareEvilExchange({ healing: 229, hpByLevel, natures })).toEqual({ used: true, invalid: false,
       status: 'unavailable', candidates: [], matching: [], predictions: [] });
   }
@@ -148,4 +148,10 @@ test('Par selection enables the fifth row while explicit off and other-profile p
   expect(off.exchange).toEqual({enabled:false,healing:'257',percent:10,ownSpiritId:par});
   expect(normalizePlayerFlow(first,'whale',catalog,'dimo').exchange.enabled).toBe(true);
   expect(normalizePlayerFlow({...off,exchange:{...off.exchange,ownSpiritId:'dimo'}},'whale',catalog,par).exchange.enabled).toBe(true);
+});
+
+test('custom-level exchange uses the same body HP and exact healing observation', () => {
+  const result=compare(260,[{level:50,down:261,neutral:288,up:315}]);
+  expect(result.status).toBe('matched');
+  expect(result.candidates).toEqual(['50:neutral']);
 });

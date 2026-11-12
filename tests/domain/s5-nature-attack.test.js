@@ -405,9 +405,9 @@ test('42 whale water hits calibrate 10-star Luoyin together and match observatio
     const matches = entry.predictions.filter(row => observationMatch(row, { damage: expected[2] }));
     assert.equal(matches.length, 5, name);
     assert(matches.every(row => row.upStat === 'magicalAttack'), name);
-    for (const difference of [-1, 1]) {
-      assert.equal(entry.predictions.some(row => observationMatch(row, { damage: expected[2] + difference })), false,
-        `${name}: no accepted damage tolerance`);
+    for (const difference of [-2, -1, 1, 2]) {
+      assert.equal(entry.predictions.some(row => observationMatch(row, { damage: expected[2] + difference })), Math.abs(difference) === 1,
+        `${name}: one-point tolerance above 50`);
     }
   }
   assert.deepEqual(result.incoming, result.incomingList[0]);

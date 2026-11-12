@@ -1,3 +1,4 @@
+import { isWildLevel } from './wild-levels.mjs';
 import { calculateDamage } from './vendor/damage.mjs';
 import { getAwakeningBonuses } from './awakening.mjs';
 import { calculateWildHp, wildTargetShiny } from './wild-hp.mjs';
@@ -15,8 +16,8 @@ const halfUp = (numerator, denominator) => Math.floor((numerator + denominator /
 
 export function targetLevels(level) {
   if (level === 'all') return [41, 42, 43];
-  if ([41, 42, 43].includes(level)) return [level];
-  throw new RangeError('野生等级仅支持41、42、43或41–43级全部。');
+  if (isWildLevel(level)) return [level];
+  throw new RangeError('野怪等级须为1至60的整数，或选择41–43级全部。');
 }
 
 function checkNature(nature) {
@@ -27,7 +28,7 @@ function checkNature(nature) {
 
 /** HP and attacks use the selected form; the legacy attack mapping gates data availability. */
 export function wildPanel(raceStats, level, nature, options = {}) {
-  if (![41, 42, 43].includes(level)) throw new RangeError('野生等级仅支持41、42、43。');
+  if (!isWildLevel(level)) throw new RangeError('野怪等级须为1至60的整数。');
   checkNature(nature);
   // Preserve the mapping completeness gate even though its evolved race values
   // are retained only as provenance. Missing mappings must not silently acquire
@@ -65,7 +66,7 @@ export function wildPanel(raceStats, level, nature, options = {}) {
 
 function prepare(session, catalog) {
   if (!session || typeof session !== 'object') throw new RangeError('请建立一组观测记录。');
-  if (![41, 42, 43].includes(session.level)) throw new RangeError('野生等级仅支持41、42、43。');
+  if (!isWildLevel(session.level)) throw new RangeError('野怪等级须为1至60的整数。');
   if (!catalog || !Array.isArray(catalog.spirits) || !Array.isArray(catalog.natures)) throw new RangeError('精灵或性格数据未就绪。');
   const target = resolveWildTarget(catalog.spirits.find(row => row.id === session.targetId), session.wildStatFormId);
   if (!target) throw new RangeError('请选择数据中已收录的野生精灵。');
