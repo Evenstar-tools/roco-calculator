@@ -171,6 +171,7 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
 /* v6: comparison grids, compact mobile editing and evidence hierarchy. */
 :root { --ink:#20352c; --muted:#627269; --line:#d1dcd5; }
 .pcell .dmg { font-weight:600; font-variant-numeric:tabular-nums; }
+.pcell.paxis .dmg { font-size:22px; line-height:1.25; white-space:normal; }
 .hp-reading b { font-size:14px; font-weight:400; }
 .hp-state-label img { width:16px; height:16px; }
 .hp-reading.matches b { font-weight:600; text-decoration:underline; text-underline-offset:3px; }
@@ -199,11 +200,9 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
   .pth { font-weight:500; }
 
   .pcell-stack { padding:3px 0; }
-  .pcell .dmg { font-weight:600; }
   .pobservations,.preview-grid--out .pobservations { padding:2px 0; align-content:center; }
   .pcell.paxis { align-self:stretch; margin:0; padding:5px 3px; align-items:center; justify-content:center; text-align:center; border:1px solid transparent; border-radius:7px; background:transparent; }
   .paxis .axis-label { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
-  .pcell.paxis .dmg { font-size:22px; line-height:1.25; white-space:normal; }
   .pcell.paxis .hit-formula { line-height:1.4; }
   #preview-incoming .prow > .pskill,#preview-incoming .prow > .pobservations { align-self:stretch; }
 
@@ -242,7 +241,6 @@ body[data-workspace-mode="preview"] #app { width:100%; margin:0 auto; padding:14
 
   .mobile-measure-labels > div { padding-bottom:11px; }
   .pcell.paxis { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:8px 3px; border-color:#e3eae5; background:#fafcfb; text-align:center; }
-  .pcell.paxis .dmg { font-size:22px; font-weight:600; white-space:normal; line-height:1.25; }
   .paxis .axis-label { order:-1; font-size:12px; font-weight:400; margin:0 0 4px; color:var(--muted); }
   .paxis .hit-formula { flex-basis:auto; font-size:12px; line-height:1.4; }
   #flow-result-brief { font-weight:500; color:var(--ink); }
@@ -787,7 +785,7 @@ body.flow-roster-open .fr-handle { left:132px; }
 }
 
 #flow-exchange-row [hidden] { display:none; }
-.flow-exchange-prediction.pcell { align-items:center; text-align:center; cursor:default; }
+.flow-exchange-prediction.pcell { cursor:default; }
 #flow-exchange-reference { margin-top:12px; padding:10px 14px; border-radius:12px; }
 #flow-exchange-reference-values { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
 #flow-exchange-reference .pcell { min-height:48px; padding:4px 2px; }
