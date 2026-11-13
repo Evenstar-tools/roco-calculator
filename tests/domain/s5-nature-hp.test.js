@@ -5,6 +5,7 @@ import { wildPanel, solve, predictObservation } from '../../public/tools/s5-natu
 import { previewMatchup } from '../../public/tools/s5-nature/matchup-preview.mjs';
 import { analyzeHealth, compareFieldSamples } from '../../public/tools/s5-nature/calibration.mjs';
 import { formatGamePercent } from '../../public/tools/s5-nature/hp-inverse.mjs';
+import { compareEvilExchange, evilExchangeHealing } from '../../public/tools/s5-nature/evil-exchange.mjs';
 import { WILD_HP_MODEL, wildTargetShiny } from '../../public/tools/s5-nature/wild-hp.mjs';
 
 const catalog=JSON.parse(readFileSync('public/tools/s5-nature/data/catalog.json','utf8'));
@@ -165,13 +166,27 @@ test('Evil Exchange uses post-shield body HP for all levels, independently of sh
   const expected=[{level:41,neutral:254,up:277,down:231},{level:42,neutral:258,up:282,down:234},{level:43,neutral:261,up:285,down:237}];
   assert.deepEqual(normal.targetBodyHpByLevel,expected);
   assert.deepEqual(shiny.targetBodyHpByLevel,expected);
-  assert.deepEqual(shiny.targetBodyHpCandidatesByLevel,normal.targetBodyHpCandidatesByLevel);
-  assert.deepEqual(normal.targetBodyHpCandidatesByLevel[0].neutral,[254,255,256,257,258,259,260]);
-  assert.deepEqual(normal.targetBodyHpCandidatesByLevel[2].up,[285,286,287,288,289,290,292,293]);
   assert.equal(shiny.targetHpByLevel[2].up,855);
   // A shield-pool override is not proof of an equal post-shield body change.
   const custom=previewMatchup({...inputFor('深蓝鲸',43,true),targetDiceEffects:{hpMultiplier:1.3}},catalog,dice);
   assert.deepEqual(custom.targetBodyHpByLevel,[expected[2]]);
-  assert.deepEqual(custom.targetBodyHpCandidatesByLevel,[normal.targetBodyHpCandidatesByLevel[2]]);
   assert.match(custom.evilExchangeUnavailableReason,/生命倍率/);
+});
+
+// User correction: 170–174 spans levels41/42/43, not unknown HP talent at one level.
+test('Evil Exchange keeps one value per level and rejects the withdrawn whale266 upper bound',()=>{
+  const combined=previewMatchup(inputFor('沉金兽','all'),catalog,dice);
+  assert.deepEqual(combined.targetBodyHpByLevel.map(row=>[row.level,evilExchangeHealing(row.neutral)]),[[41,170],[42,172],[43,174]]);
+  for(const [level,healing] of [[41,170],[42,172],[43,174]]) {
+    const single=previewMatchup(inputFor('沉金兽',level),catalog,dice);
+    assert.equal(single.targetBodyHpByLevel.length,1);
+    const result=compareEvilExchange({healing,hpByLevel:single.targetBodyHpByLevel,natures:catalog.natures});
+    assert.equal(result.status,'matched');
+    assert.ok(result.matching.every(n=>n.upStat!=='hp'&&n.downStat!=='hp'));
+    assert.deepEqual([...new Set(result.predictions.filter(p=>p.upStat!=='hp'&&p.downStat!=='hp').map(p=>p.healing))],[healing]);
+  }
+  assert.equal(compareEvilExchange({healing:171,hpByLevel:combined.targetBodyHpByLevel,natures:catalog.natures}).status,'conflict');
+  const whale=previewMatchup(inputFor('深蓝鲸',43),catalog,dice);
+  assert.equal(evilExchangeHealing(whale.targetBodyHpByLevel[0].up),257);
+  assert.equal(compareEvilExchange({healing:266,hpByLevel:whale.targetBodyHpByLevel,natures:catalog.natures}).status,'conflict');
 });
