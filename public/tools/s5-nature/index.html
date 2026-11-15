@@ -13,7 +13,10 @@
     <link rel="icon" href="/assets/spirits/spirit_4e7acb9d14c8f373.png" />
   </head>
   <body data-workspace-mode="preview" style="visibility: hidden">
-    <p id="tool-startup-status" role="status" style="visibility: visible; margin: 24px; font: 16px/1.5 system-ui; color: #374151">正在加载工具…</p>
+    <div id="tool-startup" role="status" style="visibility: visible; margin: 24px; font: 16px/1.5 system-ui; color: #374151">
+      <p id="tool-startup-status">正在加载工具…</p>
+      <a id="tool-startup-retry" href="./index.html" hidden>重新加载</a>
+    </div>
     <header class="app-header">
       <div class="web-brand">
         <a class="web-back" href="/" aria-label="返回国服计算器">← <span>返回计算器</span></a>
@@ -427,12 +430,23 @@
       </form>
     </dialog>
     <script type="module">
+      const showLoadFailure = error => {
+        const status = document.getElementById('tool-startup-status');
+        if (!status) return;
+        status.textContent = error.message === '缓存更新尚未完成，请刷新重试。' || error.message.includes('加载超时')
+          ? error.message : '加载失败，请刷新重试。';
+        document.getElementById('tool-startup-retry').hidden = false;
+      };
+      // Also cover a stalled bootstrap import, before startTool can run.
+      const deadline = setTimeout(() => showLoadFailure(new Error('加载超时，请重新加载。')), 15000);
       try {
-        const { startTool } = await import('./web-startup.mjs?sw-policy=3');
+        const { startTool } = await import('./web-startup.mjs?sw-policy=4');
+        clearTimeout(deadline);
         await startTool();
       } catch (error) {
-        document.getElementById('tool-startup-status').textContent = error.message === '缓存更新尚未完成，请刷新重试。'
-          ? error.message : '加载失败，请刷新重试。';
+        showLoadFailure(error);
+      } finally {
+        clearTimeout(deadline);
       }
     </script>
   </body>

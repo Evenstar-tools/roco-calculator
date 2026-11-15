@@ -1,7 +1,7 @@
 import { isWildLevel } from './wild-levels.mjs';
 import { mountPlayerFlow } from "./player-flow.mjs";
 import { restoreS5RuntimeRelations } from "./vendor/s5-runtime-relations.js";
-import { loadToolData } from "./load-data.mjs";
+import { loadToolData, readToolJson } from "./load-data.mjs";
 import { createMatchupUi, normalizeDiceSettings, validatePreviewSettings } from "./matchup-ui.mjs";
 import { solve, resolveObservationPower } from "./engine.mjs";
 import { calculateOwnPanel } from "./own-panel.mjs";
@@ -1472,11 +1472,8 @@ try {
     ? catalog.targetGroups
     : [];
   try {
-    const seasonResponse = seasonGroups.length
-      ? null
-      : await fetch("./data/season-targets.json");
-    if (!seasonGroups.length && seasonResponse?.ok) {
-      const seasons = await seasonResponse.json();
+    if (!seasonGroups.length) {
+      const seasons = await readToolJson("./data/season-targets.json", { timeoutMs: 1000 });
       seasonGroups = Array.isArray(seasons) ? seasons : (seasons.groups ?? []);
     }
   } catch {
@@ -1544,6 +1541,12 @@ try {
   playerFlow=mountPlayerFlow({ui:window.pveNatureUi,catalog,
     commit:mutation=>{remember();mutation(session);render();persist();},
     saveState:(value,shouldPersist=true)=>{if(JSON.stringify(session.playerFlow)!==JSON.stringify(value)){session.playerFlow=value;if(shouldPersist)persist();}},
+  });
+  // Recommendations may arrive after first paint; never reapply them over edits.
+  void data.presetLibraryReady.then(library => {
+    presetLibrary = library;
+    const profile = session.profiles.find(item => item.id === activeProfile) ?? session.profiles[0];
+    $("load-own-preset").disabled = !resolveOwnPreset(profile.spiritId, catalog, presetLibrary, traitCatalog);
   });
 } catch (error) {
   $("app").innerHTML =

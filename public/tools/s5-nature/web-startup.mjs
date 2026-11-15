@@ -27,7 +27,7 @@ export async function prepareToolWorker(serviceWorker = globalThis.navigator?.se
       cleanup.push(() => settle(false));
       responseTimer = setTimeout(() => settle(false), 400);
       channel.port1.onmessage = ({ data }) => settle(data?.type === 'S5_TOOL_CACHE_POLICY'
-        && data?.policy === 'network-first-v1' && data?.path === '/tools/s5-nature/');
+        && data?.policy === 'network-first-v2' && data?.path === '/tools/s5-nature/');
       try { worker.postMessage({ type: 'GET_S5_TOOL_CACHE_POLICY' }, [channel.port2]); }
       catch { settle(false); }
     });
@@ -60,7 +60,7 @@ export async function prepareToolWorker(serviceWorker = globalThis.navigator?.se
       const activateWaiting = async pending => {
         if (!pending || pending.state !== 'installed') return;
         if (await confirmPolicy(pending, () => registration.waiting === pending)) {
-          try { pending.postMessage({ type: 'ACTIVATE_S5_TOOL_CACHE_POLICY', policy: 'network-first-v1' }); }
+          try { pending.postMessage({ type: 'ACTIVATE_S5_TOOL_CACHE_POLICY', policy: 'network-first-v2' }); }
           catch { /* A superseded worker must still pass the controller check. */ }
         }
       };
@@ -115,6 +115,7 @@ export async function startTool({ serviceWorker = globalThis.navigator?.serviceW
     }
     const cleanup = [];
     let timer;
+    let loadTimer;
     let result;
     try {
       const styles = [...document.querySelectorAll('link[data-tool-style]')].map(stylesheet => new Promise((resolve, reject) => {
@@ -134,19 +135,27 @@ export async function startTool({ serviceWorker = globalThis.navigator?.serviceW
       })]);
       // The worker gate has passed. Fetch code/data alongside CSS, but reveal
       // the form only once both its styles and initialization have completed.
-      [result] = await Promise.all([loadUI(), stylesReady]);
+      [result] = await Promise.race([
+        Promise.all([loadUI(), stylesReady]),
+        new Promise((_, reject) => {
+          loadTimer = setTimeout(() => reject(new Error('加载超时，请重新加载。')), 15000);
+        }),
+      ]);
     } finally {
       clearTimeout(timer);
+      clearTimeout(loadTimer);
       for (const dispose of cleanup) dispose();
     }
-    document.getElementById('tool-startup-status')?.remove();
+    (document.getElementById('tool-startup') ?? document.getElementById('tool-startup-status'))?.remove();
     document.body.style.removeProperty('visibility');
     await cacheReady;
     return result;
   } catch (error) {
     const status = document.getElementById('tool-startup-status');
-    if (status) status.textContent = error.message === '缓存更新尚未完成，请刷新重试。'
+    if (status) status.textContent = error.message === '缓存更新尚未完成，请刷新重试。' || error.message.includes('加载超时')
       ? error.message : '加载失败，请刷新重试。';
+    const retry = document.getElementById('tool-startup-retry');
+    if (retry) retry.hidden = false;
     throw error;
   }
 }

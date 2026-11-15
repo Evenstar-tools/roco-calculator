@@ -89,7 +89,7 @@ describe("service worker cache policy", () => {
   test("a verified S5 startup can activate the installed policy worker", async () => {
     const harness = createHarness();
     let activation;
-    harness.listeners.message({ data: { type: "ACTIVATE_S5_TOOL_CACHE_POLICY", policy: "network-first-v1" },
+    harness.listeners.message({ data: { type: "ACTIVATE_S5_TOOL_CACHE_POLICY", policy: "network-first-v2" },
       waitUntil(value) { activation = value; } });
     await activation;
     expect(harness.self.skipWaiting).toHaveBeenCalledOnce();
@@ -101,7 +101,7 @@ describe("service worker cache policy", () => {
     const harness = createHarness();
     const reply = vi.fn();
     harness.listeners.message({ data: { type: "GET_S5_TOOL_CACHE_POLICY" }, ports: [{ postMessage: reply }] });
-    expect(reply).toHaveBeenCalledWith({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v1", path: "/tools/s5-nature/" });
+    expect(reply).toHaveBeenCalledWith({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v2", path: "/tools/s5-nature/" });
   });
 
   test.each(["/tools/s5-nature/ui.mjs", "/tools/s5-nature/matchup.css", "/tools/s5-nature/data/catalog.json"])(

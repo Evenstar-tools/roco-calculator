@@ -79,6 +79,10 @@ export async function buildS5NatureUi({ root, outDir }) {
       bundledHtml = bundledHtml.replace(tag, index === 0
         ? `<link rel="stylesheet" data-tool-style="./${styles[0].fileName}" />` : "");
     }
+    // Content-addressed assets can download while the old worker is updating.
+    // Unversioned code/data still wait for the confirmed cache policy.
+    bundledHtml = bundledHtml.replace('</head>',
+      `  <link rel="modulepreload" href="./${bundleName}" />\n    <link rel="preload" as="style" href="./${styles[0].fileName}" />\n  </head>`);
     await writeFile(htmlFile, bundledHtml, "utf8");
     for (const [, name] of styleTags) await unlink(path.join(toolDir, name));
   }

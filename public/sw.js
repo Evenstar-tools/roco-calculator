@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.3.17-20261109-native-defense-r6";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.19-20261115-s5-loading-r1";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 const APP_SHELL = [
   "/manifest.webmanifest",
@@ -87,12 +87,12 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  if (event.data?.type === "ACTIVATE_S5_TOOL_CACHE_POLICY" && event.data?.policy === "network-first-v1") {
+  if (event.data?.type === "ACTIVATE_S5_TOOL_CACHE_POLICY" && event.data?.policy === "network-first-v2") {
     event.waitUntil(self.skipWaiting());
     return;
   }
   if (event.data?.type === "GET_S5_TOOL_CACHE_POLICY") {
-    event.ports?.[0]?.postMessage({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v1", path: "/tools/s5-nature/" });
+    event.ports?.[0]?.postMessage({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v2", path: "/tools/s5-nature/" });
     return;
   }
   if (event.data?.type !== "CACHE_VISITED_ASSETS" || !Array.isArray(event.data.urls)) return;

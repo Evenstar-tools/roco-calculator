@@ -73,6 +73,9 @@ test("production tool publishes one UI and stylesheet while retaining calculatio
   const bundledHtml = await readFile(path.join(toolDir, "index.html"), "utf8");
   const styleReferences = [...bundledHtml.matchAll(/data-tool-style="\.\/([^"]+\.css)"/gu)];
   expect(styleReferences).toHaveLength(1);
+  expect(bundledHtml).toContain(`<link rel="modulepreload" href="./${bundleName}" />`);
+  expect(bundledHtml).toContain(`<link rel="preload" as="style" href="./${styleReferences[0][1]}" />`);
+  expect(bundledHtml).not.toMatch(/rel="(?:modulepreload|preload)"[^>]*href="\.\/[^"\s]*\.(?:mjs|json)"/u);
   expect(bundledHtml).not.toMatch(/<link\b[^>]*rel="stylesheet"[^>]*\shref=/u);
   const bundledCss = await readFile(path.join(toolDir, styleReferences[0][1]), "utf8");
   expect(bundledCss).toContain(".flow-card");

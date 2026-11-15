@@ -29,8 +29,8 @@ function events(properties = {}) {
 function harness() {
   const old = events({ scriptURL: `${location.origin}/sw.js`, state: 'activated' });
   const next = events({ scriptURL: `${location.origin}/sw.js`, state: 'installing' });
-  old.postMessage = vi.fn((_, ports) => ports[0].postMessage({ type: 'S5_TOOL_CACHE_POLICY', policy: 'legacy' }));
-  next.postMessage = vi.fn((_, ports) => ports?.[0]?.postMessage({ type: 'S5_TOOL_CACHE_POLICY', policy: 'network-first-v1', path: '/tools/s5-nature/' }));
+  old.postMessage = vi.fn((_, ports) => ports[0].postMessage({ type: 'S5_TOOL_CACHE_POLICY', policy: 'network-first-v1' }));
+  next.postMessage = vi.fn((_, ports) => ports?.[0]?.postMessage({ type: 'S5_TOOL_CACHE_POLICY', policy: 'network-first-v2', path: '/tools/s5-nature/' }));
   const registration = events({ scope: `${location.origin}/`, active: old, installing: null, waiting: null,
     update: vi.fn(async () => undefined) });
   const serviceWorker = events({ controller: old, getRegistration: vi.fn(async () => registration),
@@ -53,7 +53,7 @@ afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 test('S5 HTML defers all tool CSS and the UI module until the worker gate finishes', () => {
   const html = readFileSync('public/tools/s5-nature/index.html', 'utf8');
   expect(html).not.toMatch(/<script[^>]+src=["']\.\/ui\.mjs/);
-  expect(html).toContain("await import('./web-startup.mjs?sw-policy=3')");
+  expect(html).toContain("await import('./web-startup.mjs?sw-policy=4')");
   expect(html).toContain('await startTool()');
   expect(html.match(/data-tool-style=/g)).toHaveLength(5);
   expect(html).not.toMatch(/<link\b[^>]*rel="stylesheet"[^>]*\shref=/);
@@ -177,7 +177,7 @@ test('a verified waiting worker is asked to activate, but UI still waits for con
   h.next.state = 'installed';
   h.registration.waiting = h.next;
   const started = startTool({ ...h, location });
-  await vi.waitFor(() => expect(h.next.postMessage).toHaveBeenCalledWith({ type: 'ACTIVATE_S5_TOOL_CACHE_POLICY', policy: 'network-first-v1' }));
+  await vi.waitFor(() => expect(h.next.postMessage).toHaveBeenCalledWith({ type: 'ACTIVATE_S5_TOOL_CACHE_POLICY', policy: 'network-first-v2' }));
   expect(h.stylesheet.setAttribute).not.toHaveBeenCalled();
   expect(h.loadUI).not.toHaveBeenCalled();
   h.registration.waiting = null;
@@ -268,6 +268,22 @@ test('a stalled stylesheet becomes a visible failure and removes load listeners'
   await failed;
   expect(h.status.textContent).toBe('加载失败，请刷新重试。');
   expect(h.loadUI).toHaveBeenCalledOnce();
+  expectClean(h.stylesheet);
+  expect(vi.getTimerCount()).toBe(0);
+});
+
+test('a pending UI import stops loading and exposes retry even after CSS has loaded', async () => {
+  vi.useFakeTimers();
+  const h = harness();
+  const retry = { hidden: true };
+  h.document.getElementById.mockImplementation(id => id === 'tool-startup-retry' ? retry : h.status);
+  h.loadUI.mockReturnValue(new Promise(() => {}));
+  const failed = expect(startTool({ ...h, serviceWorker: null, location })).rejects.toThrow('加载超时');
+  await vi.advanceTimersByTimeAsync(15000);
+  await failed;
+  expect(h.status.textContent).toContain('加载超时');
+  expect(retry.hidden).toBe(false);
+  expect(h.document.body.style.removeProperty).not.toHaveBeenCalled();
   expectClean(h.stylesheet);
   expect(vi.getTimerCount()).toBe(0);
 });
