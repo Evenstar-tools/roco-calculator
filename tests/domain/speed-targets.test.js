@@ -166,6 +166,7 @@ test("速度线特殊情况使用当前技能、特性和血脉数值", () => {
     ["白金独角兽", "positive-max", "折射·电", 261],
     ["迷迷箱怪", "positive-max", "啮合", 237],
     ["陨星虫", "positive-max", "绝缘球", 284],
+    ["陨星虫", "positive-max", "国王球", 267],
     ["权杖-V", "positive-max", "啮合", 231],
     ["混乱鱿彩", "positive-max", "啮合", 224],
     ["女王蜂", "positive-max", "虫群突袭3层", 223],
@@ -192,7 +193,20 @@ test("速度线特殊情况使用当前技能、特性和血脉数值", () => {
     ["古钟蛇", "positive-max", "示弱", 337],
     ["寒音蛇", "positive-max", "示弱", 364],
   ]));
-  expect(actual).toHaveLength(37);
+  expect(actual).toHaveLength(38);
+  const meteor = snapshot.spirits.find(spirit => spirit.fullName === "陨星虫");
+  const legacyId = `special:${meteor.id}:positive-max:契约的形状:`;
+  expect(targets.find(target => target.id === legacyId)).toMatchObject({ specialLabel: "绝缘球", speed: 284 });
+  expect(targets.find(target => target.id === `${legacyId}king`)).toMatchObject({ specialLabel: "国王球", speed: 267 });
+  expect(createSpeedTargets({ spirits: [meteor] })).toEqual([
+    expect.objectContaining({ speed: 234 }),
+  ]);
+  const matching = createSpeedRanking({ snapshot, profiles: ["special"], query: "267", queryMode: "auto" })
+    .flatMap(group => group.targets);
+  expect(matching).toContainEqual(expect.objectContaining({
+    id: `${legacyId}king`, name: "陨星虫", specialLabel: "国王球", speed: 267,
+  }));
+  expect(targets.some(target => target.name === "陨星虫" && target.speed === 269)).toBe(false);
   expect(actual.some(([, , label]) => label.includes("+80") || label.includes("+100")))
     .toBe(false);
 });

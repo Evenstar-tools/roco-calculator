@@ -550,6 +550,8 @@ export const calculatorMessages = Object.fromEntries([
   ["普通球｜攻防速 +5%", "Pod effect: Attack/Defense/SPD +5%", "オーブ効果：攻防・速さ+5%"],
   ["高级球｜攻防速 +10%", "Advanced Pod: Attack/Defense/SPD +10%", "アドバンスオーブ：攻防・速さ+10%"],
   ["国王球｜攻防速 +15%", "King’s Pod: Attack/Defense/SPD +15%", "キングオーブ：攻防・速さ+15%"],
+  ["国王球｜攻防 +15% · 速度 +5%×3", "King’s Pod: Attack/Defense +15% · SPD +5% ×3", "キングオーブ：攻防+15% · 速さ+5%×3"],
+  ["国王球｜攻防 +15% · 速度 +5%×3（逐项取整）", "King’s Pod: Attack/Defense +15% · SPD +5% ×3 (round down each increase)", "キングオーブ：攻防+15% · 速さ+5%×3（各回切り捨て）"],
   ["美妙球｜对方双攻 -30% · 威力 +20", "Pod effect: opponent’s attacks −30% · Power +20", "オーブ効果：相手の物攻・魔攻−30% · 威力+20"],
   ["调温球｜对方灼烧 ×4 · 冻结 ×1", "Pod effect: opponent Burn ×4 · Freeze ×1", "オーブ効果：相手に燃焼4層 · 凍結1層"],
   ["光合球｜回复 9% · 魔攻 +40%", "Pod effect: restore 9% HP · M. ATK +40%", "オーブ効果：HP9%回復 · 魔攻+40%"],

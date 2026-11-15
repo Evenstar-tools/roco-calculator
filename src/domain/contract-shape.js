@@ -5,7 +5,7 @@ export const CONTRACT_SHAPE_TRAIT_NAME = "契约的形状";
 export const CONTRACT_BALLS = Object.freeze([
   { value: "normal", label: "普通球", summary: "攻防速 +5%" },
   { value: "advanced", label: "高级球", summary: "攻防速 +10%" },
-  { value: "king", label: "国王球", summary: "攻防速 +15%" },
+  { value: "king", label: "国王球", summary: "攻防 +15% · 速度 +5%×3" },
   { value: "beautiful", label: "美妙球", summary: "对方双攻 -30% · 威力 +20" },
   { value: "temperature", label: "调温球", summary: "对方灼烧 ×4 · 冻结 ×1" },
   { value: "photosynthesis", label: "光合球", summary: "回复 9% · 魔攻 +40%" },
@@ -75,6 +75,16 @@ export function isContractBall(value) {
   return BALLS_BY_VALUE.has(value);
 }
 
+export function contractShapeSpeed(baseSpeed, contract = {}) {
+  const speed = Number(baseSpeed);
+  // CN in-game observation: 234 + floor(234 * 5 / 100) * 3 = 267.
+  // Only the directly selected King's Ball has confirmed per-increase rounding.
+  const adjusted = contract.active && contract.ballType === "king"
+    ? speed + Math.floor(speed * 5 / 100) * 3
+    : speed * (contract.ownerSpeedMultiplier ?? 1);
+  return adjusted + (contract.ownerSpeedFlat ?? 0);
+}
+
 export function resolveContractShape({
   ballType = null,
   prismEffect = null,
@@ -120,7 +130,9 @@ export function resolveContractShape({
         ballType,
         effectiveEntry,
         ownerRole,
-        text: `${prefix}｜攻防速 +${level * 10}%`,
+        text: ballType === "king"
+          ? `${prefix}｜攻防 +15% · 速度 +5%×3（逐项取整）`
+          : `${prefix}｜攻防速 +${level * 10}%`,
       });
       break;
     }

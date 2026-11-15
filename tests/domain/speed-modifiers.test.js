@@ -81,10 +81,10 @@ test("携带折射和电系技能时提供当前20点速度情景", () => {
   }));
 });
 
-test("契约的形状提供绝缘球速度情景", () => {
+test.each([[234, 33], [239, 33], [240, 36]])("契约的形状国王球按三个5%分别取整，绝缘球保留50点：%s", (currentSpeed, kingBonus) => {
   const modifiers = createSpeedModifiers({
     configuration: { skills: { four: [] } },
-    currentSpeed: 234,
+    currentSpeed,
     snapshot: {
       skills: [],
       traits: [{ id: "contract", name: "契约的形状" }],
@@ -94,7 +94,18 @@ test("契约的形状提供绝缘球速度情景", () => {
 
   expect(modifiers).toContainEqual(expect.objectContaining({
     amount: 50,
+    ballType: "insulation",
+    id: "trait:contract:insulation",
     label: "契约的形状（绝缘球）",
     source: "trait",
   }));
+  expect(modifiers).toContainEqual(expect.objectContaining({
+    amount: kingBonus,
+    ballType: "king",
+    id: "trait:contract:king",
+    label: "契约的形状（国王球）",
+    source: "trait",
+  }));
+  expect(modifiers).toHaveLength(2);
+  expect(modifiers[0].groupId).toBe(modifiers[1].groupId);
 });

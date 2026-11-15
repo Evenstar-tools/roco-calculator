@@ -61,6 +61,7 @@ const SPEED_SPECIAL_CASES = Object.freeze([
   ["白金独角兽", "positive-max", "折射"],
   ["迷迷箱怪", "positive-max", "啮合传递"],
   ["陨星虫", "positive-max", "契约的形状"],
+  ["陨星虫", "positive-max", "契约的形状", undefined, { ballType: "king" }],
   ["权杖-V", "positive-max", "啮合传递"],
   ["混乱鱿彩", "positive-max", "啮合传递"],
   ["女王蜂", "positive-max", "虫群突袭", 3],
@@ -92,9 +93,9 @@ function speedProfile(profileId) {
   throw error;
 }
 
-function specialLabel(sourceName, stack) {
+function specialLabel(sourceName, stack, options) {
   if (sourceName === "啮合传递") return "啮合";
-  if (sourceName === "契约的形状") return "绝缘球";
+  if (sourceName === "契约的形状") return options.ballType === "king" ? "国王球" : "绝缘球";
   if (sourceName === "折射") return "折射·电";
   return `${sourceName}${stack ? `${stack}层` : ""}`;
 }
@@ -194,14 +195,15 @@ export function createSpeedSpecialTargets({ profileId = "positive-max", snapshot
             traitStackLimit: Math.max(5, Number(stack) || 0),
           }).find((entry) =>
             entry.label.startsWith(sourceName) &&
+            (sourceName !== "契约的形状" || entry.ballType === (options.ballType ?? "insulation")) &&
             (stack === undefined || entry.stack === stack),
           );
       if (!modifier) return [];
 
-      const label = specialLabel(sourceName, stack);
+      const label = specialLabel(sourceName, stack, options);
       return [{
         formRole: form.formRole,
-        id: `special:${spirit.id}:${profileId}:${sourceName}:${stack ?? ""}`,
+        id: `special:${spirit.id}:${profileId}:${sourceName}:${options.ballType ?? stack ?? ""}`,
         name: spirit.fullName,
         profileId: profile.id,
         profileLabel: profile.label,

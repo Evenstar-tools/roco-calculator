@@ -109,6 +109,11 @@ test("real Global ranking qualifiers and Drive traces render whole English phras
   const targets = createSpeedTargetCatalog({ snapshot, profiles: ["positive-max", "special"] });
   const labels = [...new Set(targets.flatMap(target => [target.qualifier, target.specialLabel, target.profileLabel]).filter(Boolean))];
   expect(labels.filter(label => chinese.test(localizeToolText(label, "en")))).toEqual([]);
+  for (const [locale, label] of [["en", "King’s Pod"], ["ja", "キングオーブ"]]) {
+    expect(localizeToolText("国王球", locale)).toBe(label);
+    expect(localizeToolText("100种族·极速·国王球", locale)).toContain(label);
+    expect(localizeToolText("{name}（国王球）", locale, { name: "契约的形状" })).toContain(label);
+  }
   expect(localizeToolText("{slot} 号位-{layers}", "en", { slot: 1, layers: 0 })).toBe("Slot 1 · 0");
   expect(localizeToolText("第 2 回合 · 轮班 · 额外传动 · 使用后", "en")).toBe("Turn 2 · Gear Shift · Extra Drive · After use");
   expect(localizeToolText("啮合传递：自身 1 + 向心力 1 = 2 层", "en")).toBe("Gear Transfer: base 1 + Centripetal Force 1 = 2 Drive");

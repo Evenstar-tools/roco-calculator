@@ -4,6 +4,7 @@ import {
 } from "../baron-greed.js";
 import { resolveBloodlineMagicHealing } from "../bloodline-magic.js";
 import { resolveClownTrickDamage } from "../clown-trick.js";
+import { contractShapeSpeed } from "../contract-shape.js";
 import {
   calculateDamage,
   floorEffectiveSkillPower,
@@ -238,18 +239,16 @@ export function calculateSkillResult({
     skill,
   });
   const attackerSpeed =
-    Number(attacker.panelStats.speed) * attackerContract.ownerSpeedMultiplier +
+    contractShapeSpeed(attacker.panelStats.speed, attackerContract) +
     (finiteNumber(directionOverrides.attackerSpeedFlat) ?? 0) +
     attackerBloodline.ownerSpeedFlat +
     defenderBloodline.targetSpeedFlat +
-    attackerContract.ownerSpeedFlat +
     defenderContract.targetSpeedFlat;
   const defenderSpeed =
-    Number(defender.panelStats.speed) * defenderContract.ownerSpeedMultiplier +
+    contractShapeSpeed(defender.panelStats.speed, defenderContract) +
     (finiteNumber(directionOverrides.defenderSpeedFlat) ?? 0) +
     defenderBloodline.ownerSpeedFlat +
     attackerBloodline.targetSpeedFlat +
-    defenderContract.ownerSpeedFlat +
     attackerContract.targetSpeedFlat;
   const markedAttackerSpeed =
     attackerSpeed -

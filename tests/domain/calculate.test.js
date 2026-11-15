@@ -1348,6 +1348,25 @@ describe("calculateMatchup", () => {
     expect(defenderKing.totalDamage).toBeLessThan(base.totalDamage);
   });
 
+  test.each(["physical", "status"])("国王球三个5％逐项取整同步双方%s技能面板速度", category => {
+    const fixture = contractShapeSnapshot({ skill: { ...snapshot.skills[0], category } });
+    fixture.spirits = fixture.spirits.map(spirit => ({
+      ...spirit, raceStats: { ...spirit.raceStats, speed: 100 },
+    }));
+    const input = battleInput({
+      sides: {
+        attacker: { ...side("spirit_sonic_dog", "skill_wind", ["skill_wind"]), natureMultipliers: { speed: 1.2 } },
+        defender: { ...side("spirit_water", "skill_water", ["skill_water"]), natureMultipliers: { speed: 1.2 } },
+      },
+      directions: { forward: { context: {
+        ...contractContext("attacker", "king"), ...contractContext("defender", "king"),
+      } } },
+    });
+    const result = calculateMatchup(fixture, input).forward.selectedResult;
+    expect(result.combatPanel.attacker.speed).toBe(267);
+    expect(result.combatPanel.defender.speed).toBe(267);
+  });
+
   test("契约的形状网兜与淘沙只修正声明连击的技能", () => {
     const fixture = contractShapeSnapshot({ combo: true });
     const net = calculateMatchup(fixture, battleInput({

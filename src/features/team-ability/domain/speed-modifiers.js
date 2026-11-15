@@ -1,4 +1,8 @@
-import { CONTRACT_SHAPE_TRAIT_NAME } from "../../../domain/contract-shape.js";
+import {
+  CONTRACT_SHAPE_TRAIT_NAME,
+  contractShapeSpeed,
+  resolveContractShape,
+} from "../../../domain/contract-shape.js";
 import { getSnapshotIndexes } from "../../../domain/snapshot-indexes.js";
 import {
   getSkillStatusEffectInputs,
@@ -66,13 +70,17 @@ function traitSpeedModifiers(spirit, traitsById, currentSpeed, traitStackLimit) 
     const trait = traitsById[traitId];
     if (!trait) return [];
     if (trait.name === CONTRACT_SHAPE_TRAIT_NAME) {
-      return [{
-        amount: 50,
-        groupId: `trait:${trait.id}`,
-        id: `trait:${trait.id}:insulation`,
-        label: `${trait.name}（绝缘球）`,
-        source: "trait",
-      }];
+      return ["insulation", "king"].map((ballType) => {
+        const contract = resolveContractShape({ ballType, skill: {} });
+        return {
+          amount: contractShapeSpeed(currentSpeed, contract) - currentSpeed,
+          ballType,
+          groupId: `trait:${trait.id}`,
+          id: `trait:${trait.id}:${ballType}`,
+          label: `${trait.name}（${contract.label}）`,
+          source: "trait",
+        };
+      });
     }
 
     if (trait.previewIdentity?.mechanicKey === "boss-ice-bruce") {

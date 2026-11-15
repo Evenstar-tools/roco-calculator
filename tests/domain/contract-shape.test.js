@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   CONTRACT_BALLS,
+  contractShapeSpeed,
   isContractBall,
   resolveContractShape,
 } from "../../src/domain/contract-shape.js";
@@ -17,11 +18,29 @@ const magicalSingle = {
 };
 
 describe("契约的形状", () => {
+  it.each([[234, 267], [229, 262]])("国王球基础速度%s按三个5％逐项取整得到%s", (base, expected) => {
+    const contract = resolveContractShape({ ballType: "king", skill: physicalCombo });
+    expect(contractShapeSpeed(base, contract)).toBe(expected);
+    expect(contract).toMatchObject({
+      attackLevelBonusByCategory: { physical: 1.5, magical: 1.5 },
+      defenseLevelBonusByCategory: { physical: 1.5, magical: 1.5 },
+    });
+    expect(contract.settlement.text).toContain("速度 +5%×3（逐项取整）");
+  });
+
+  it.each([
+    ["normal", null, 245.7], ["advanced", null, 257.4],
+    ["prism", "king", 251.55], ["insulation", null, 284],
+  ])("%s球保留已有速度规则", (ballType, prismEffect, expected) => {
+    expect(contractShapeSpeed(234, resolveContractShape({ ballType, prismEffect, skill: physicalCombo })))
+      .toBeCloseTo(expected);
+  });
+
   it("提供 14 种互不重复且效果对应正确的咕噜球", () => {
     expect(CONTRACT_BALLS.map(({ label, summary }) => `${label}｜${summary}`)).toEqual([
       "普通球｜攻防速 +5%",
       "高级球｜攻防速 +10%",
-      "国王球｜攻防速 +15%",
+      "国王球｜攻防 +15% · 速度 +5%×3",
       "美妙球｜对方双攻 -30% · 威力 +20",
       "调温球｜对方灼烧 ×4 · 冻结 ×1",
       "光合球｜回复 9% · 魔攻 +40%",
