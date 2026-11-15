@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.20",
+    date: "2026.11.15",
+    seasonId: "S5",
+    title: "S5 国王球速度修正",
+    whatsNew: S5_FEATURE_INTRO,
+    fixes: ["国王球速度按三个5%加成分别取整后相加；陨星虫极速为267，速度线与特性结算同步修正。", "保留陨星虫绝缘球284速度线；国际服S3季中沿用原版。"],
+  }),
+  createRelease({
     version: "v2.3.19",
     date: "2026.11.15",
     seasonId: "S5",
