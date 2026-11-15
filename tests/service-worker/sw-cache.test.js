@@ -57,6 +57,9 @@ function createHarness({ cached = {}, cachedRequestHeaders = {}, fetchImpl, clie
   };
   vm.runInNewContext(serviceWorkerSource, {
     URL,
+    AbortController,
+    setTimeout,
+    clearTimeout,
     Request,
     Response,
     caches,
@@ -92,11 +95,13 @@ describe("service worker cache policy", () => {
   test("a verified S5 startup can activate the installed policy worker", async () => {
     const harness = createHarness();
     let activation;
-    harness.listeners.message({ data: { type: "ACTIVATE_S5_TOOL_CACHE_POLICY", policy: "network-first-v1" },
+    harness.listeners.message({ data: { type: "ACTIVATE_S5_TOOL_CACHE_POLICY", policy: "network-first-v2" },
       waitUntil(value) { activation = value; } });
     await activation;
     expect(harness.self.skipWaiting).toHaveBeenCalledOnce();
-    harness.listeners.message({ data: { type: "ACTIVATE_S5_TOOL_CACHE_POLICY", policy: "unknown" } });
+    for (const policy of ["network-first-v1", "unknown"]) {
+      harness.listeners.message({ data: { type: "ACTIVATE_S5_TOOL_CACHE_POLICY", policy } });
+    }
     expect(harness.self.skipWaiting).toHaveBeenCalledOnce();
   });
 
@@ -105,7 +110,7 @@ describe("service worker cache policy", () => {
     const reply = vi.fn();
     const waitUntil = vi.fn();
     harness.listeners.message({ data: { type: "GET_S5_TOOL_CACHE_POLICY" }, ports: [{ postMessage: reply }], waitUntil });
-    expect(reply).toHaveBeenCalledWith({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v1", path: "/tools/s5-nature/" });
+    expect(reply).toHaveBeenCalledWith({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v2", path: "/tools/s5-nature/" });
     expect(waitUntil).not.toHaveBeenCalled();
     expect(harness.caches.open).not.toHaveBeenCalled();
   });
@@ -331,7 +336,7 @@ describe("service worker cache policy", () => {
       await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
       expect(settled).toBe(false);
       expect(event.background).toEqual([]);
-      expect(fetchImpl).toHaveBeenCalledWith(expect.objectContaining({ url: key }), { cache: "no-cache" });
+      expect(fetchImpl).toHaveBeenCalledWith(expect.objectContaining({ url: key }), { cache: "no-cache", signal: expect.any(AbortSignal) });
 
       network.resolve(new Response("current S5 revision"));
       await expect((await event.responsePromise).text()).resolves.toBe("current S5 revision");
@@ -352,6 +357,114 @@ describe("service worker cache policy", () => {
       expect(harness.cacheApi.put).not.toHaveBeenCalled();
       expect(event.background).toEqual([]);
     });
+
+  test.each(["/tools/s5-nature/ui-Ab12_cd9.js", "/tools/s5-nature/assets/ui-Ab12_cd9.css"])(
+    "S5 content-addressed %s reuses the exact cached revision without networking", async (path) => {
+      const cachedResponse = new Response("cached S5 bundle");
+      const fetchImpl = vi.fn();
+      const harness = createHarness({ cached: { [`https://calculator.test${path}`]: cachedResponse }, fetchImpl });
+      await expect(dispatchFetch(harness.listeners.fetch, path).responsePromise).resolves.toBe(cachedResponse);
+      expect(fetchImpl).not.toHaveBeenCalled();
+      expect(harness.cacheApi.put).not.toHaveBeenCalled();
+    });
+
+  test.each([
+    ["cached", true, 4000],
+    ["uncached", false, 12000],
+  ])("a truly pending %s S5 request reaches its deadline and never caches a late response", async (_, hasCached, deadline) => {
+    vi.useFakeTimers();
+    try {
+      const path = "/tools/s5-nature/data/catalog.json?v=current";
+      const key = `https://calculator.test${path}`;
+      const cached = hasCached ? { [key]: new Response("current cached data") } : {};
+      const network = deferred();
+      const fetchImpl = vi.fn(() => network.promise);
+      const harness = createHarness({ cached, fetchImpl });
+      const event = dispatchFetch(harness.listeners.fetch, path);
+      let settled = false;
+      event.responsePromise.then(() => { settled = true; });
+      await vi.advanceTimersByTimeAsync(deadline - 1);
+      expect(fetchImpl).toHaveBeenCalledOnce();
+      expect(settled).toBe(false);
+      expect(fetchImpl.mock.calls[0][1].signal.aborted).toBe(false);
+      await vi.advanceTimersByTimeAsync(1);
+      const response = await event.responsePromise;
+      if (hasCached) await expect(response.text()).resolves.toBe("current cached data");
+      else expect(response.type).toBe("error");
+      expect(fetchImpl.mock.calls[0][1].signal.aborted).toBe(true);
+      network.resolve(new Response("late data must be discarded"));
+      await vi.advanceTimersByTimeAsync(0);
+      expect(harness.cacheApi.put).not.toHaveBeenCalled();
+      expect(harness.caches.match).not.toHaveBeenCalled();
+      expect(event.background).toEqual([]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  test("S5 also reaches its cached deadline when response headers arrive but the body hangs", async () => {
+    vi.useFakeTimers();
+    let body;
+    try {
+      const path = "/tools/s5-nature/data/catalog.json?v=current";
+      const networkResponse = new Response(new ReadableStream({ start(controller) { body = controller; } }));
+      const harness = createHarness({ cached: { [`https://calculator.test${path}`]: new Response("complete cached data") },
+        fetchImpl: vi.fn(async () => networkResponse) });
+      const event = dispatchFetch(harness.listeners.fetch, path);
+      await vi.advanceTimersByTimeAsync(4000);
+      await expect((await event.responsePromise).text()).resolves.toBe("complete cached data");
+      expect(harness.cacheApi.put).not.toHaveBeenCalled();
+      body.enqueue(new TextEncoder().encode("late body"));
+      body.close();
+      body = null;
+      await networkResponse.arrayBuffer();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(harness.cacheApi.put).not.toHaveBeenCalled();
+    } finally {
+      body?.close();
+      vi.useRealTimers();
+    }
+  });
+
+  test("an uncached S5 bundle is stored only after its body is complete and reused on the next visit", async () => {
+    const path = "/tools/s5-nature/ui-Ab12_cd9.js";
+    let body;
+    const networkResponse = new Response(new ReadableStream({ start(controller) { body = controller; } }));
+    const fetchImpl = vi.fn(async () => networkResponse);
+    const harness = createHarness({ fetchImpl });
+    const event = dispatchFetch(harness.listeners.fetch, path);
+    await vi.waitFor(() => expect(fetchImpl).toHaveBeenCalledOnce());
+    expect(harness.cacheApi.put).not.toHaveBeenCalled();
+    body.enqueue(new TextEncoder().encode("complete bundle"));
+    body.close();
+    await expect((await event.responsePromise).text()).resolves.toBe("complete bundle");
+    await expect((await dispatchFetch(harness.listeners.fetch, path).responsePromise).text()).resolves.toBe("complete bundle");
+    expect(fetchImpl).toHaveBeenCalledOnce();
+    expect(harness.cacheApi.put).toHaveBeenCalledOnce();
+  });
+
+  test.each([
+    ["/tools/s5-nature/data/catalog.json?v=new", "/tools/s5-nature/data/catalog.json?v=old"],
+    ["/tools/s5-nature/ui-NewBuild.js", "/tools/s5-nature/ui-OldBuild.js"],
+  ])("S5 %s never borrows a different revision at %s", async (path, previous) => {
+    const harness = createHarness({ cached: { [`https://calculator.test${previous}`]: new Response("previous revision") },
+      fetchImpl: vi.fn(async () => { throw new Error("offline"); }) });
+    expect((await dispatchFetch(harness.listeners.fetch, path).responsePromise).type).toBe("error");
+    expect(harness.cacheApi.match.mock.calls).toEqual([[expect.objectContaining({ url: `https://calculator.test${path}` })]]);
+    expect(harness.caches.match).not.toHaveBeenCalled();
+  });
+
+  test("a S5 HTTP 404 remains visible and neither reads back nor overwrites successful cached data", async () => {
+    const path = "/tools/s5-nature/data/catalog.json?v=current";
+    const cachedResponse = new Response("cached data");
+    const harness = createHarness({ cached: { [`https://calculator.test${path}`]: cachedResponse },
+      fetchImpl: vi.fn(async () => new Response("missing resource", { status: 404 })) });
+    const response = await dispatchFetch(harness.listeners.fetch, path).responsePromise;
+    expect(response.status).toBe(404);
+    await expect(response.text()).resolves.toBe("missing resource");
+    expect(harness.cacheApi.put).not.toHaveBeenCalled();
+    await expect(cachedResponse.text()).resolves.toBe("cached data");
+  });
 
   test.each(["/tools/other-tool/ui.mjs", "/tools/s5-nature-other/ui.mjs"])(
     "S5 network-first rule leaves the existing stale-while-revalidate policy for %s", async (path) => {

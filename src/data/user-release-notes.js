@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.19",
+    date: "2026.11.15",
+    seasonId: "S5",
+    title: "S5 奇遇加载优化",
+    whatsNew: S5_FEATURE_INTRO,
+    fixes: ["奇遇页提前下载固定版本脚本与样式，重复打开直接复用缓存；推荐配置后台加载，保留手调。", "加载卡住时显示原因和重新加载入口；特性、骰子与形态数据完整校验后才开始计算。", "国际服S3季中沿用原版。"],
+  }),
+  createRelease({
     version: "v2.3.17",
     date: "2026.11.12",
     seasonId: "S5",

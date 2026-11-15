@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.3.17-20261113-exchange-fixed-r1";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.19-20261115-s5-loading-r1";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 // 图片长期缓存不随发布清空；摘要由 scripts/stamp-image-cache.mjs 按图片内容写入。
 const IMAGE_CACHE_PREFIX = "rock-calculator-images-";
@@ -119,12 +119,12 @@ function drainVisitedAssets() {
 }
 
 self.addEventListener("message", (event) => {
-  if (event.data?.type === "ACTIVATE_S5_TOOL_CACHE_POLICY" && event.data?.policy === "network-first-v1") {
+  if (event.data?.type === "ACTIVATE_S5_TOOL_CACHE_POLICY" && event.data?.policy === "network-first-v2") {
     event.waitUntil(self.skipWaiting());
     return;
   }
   if (event.data?.type === "GET_S5_TOOL_CACHE_POLICY") {
-    event.ports?.[0]?.postMessage({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v1", path: "/tools/s5-nature/" });
+    event.ports?.[0]?.postMessage({ type: "S5_TOOL_CACHE_POLICY", policy: "network-first-v2", path: "/tools/s5-nature/" });
     return;
   }
   if (event.data?.type !== "CACHE_VISITED_ASSETS" || !Array.isArray(event.data.urls)) return;
@@ -164,6 +164,9 @@ self.addEventListener("message", (event) => {
 
 // 构建指纹随内容变化；图标由当前发布缓存隔离，发布时更新 CACHE_NAME。
 const IMMUTABLE_ASSET_RE = /^\/(?:global-assets\/)?assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(?:js|css)$/;
+const S5_IMMUTABLE_ASSET_RE = /^\/tools\/s5-nature\/(?:ui-[A-Za-z0-9_-]{8,}\.js|assets\/ui-[A-Za-z0-9_-]{8,}\.css)$/;
+const S5_CACHED_NETWORK_TIMEOUT_MS = 4000;
+const S5_UNCACHED_NETWORK_TIMEOUT_MS = 12000;
 const RELEASE_ASSETS = new Set(["/app-icon-192.png", "/app-icon-512.png"]);
 const STATIC_DATA_PATHS = new Set([
   "/data/runtime.json",
@@ -265,6 +268,55 @@ async function refreshCache(cache, request, fetchOptions) {
   }
 }
 
+async function s5ToolResponse(request) {
+  let cache;
+  let cached;
+  try {
+    cache = await caches.open(CACHE_NAME);
+    const response = await cache.match(request);
+    if (response?.ok) cached = response;
+  } catch { /* 缓存不可用时仍尝试网络。 */ }
+  if (cached && S5_IMMUTABLE_ASSET_RE.test(new URL(request.url).pathname)) return cached;
+
+  const controller = new AbortController();
+  const abortClient = () => controller.abort();
+  request.signal?.addEventListener("abort", abortClient, { once: true });
+  if (request.signal?.aborted) controller.abort();
+  let timer;
+  const deadline = new Promise((resolve) => {
+    timer = setTimeout(() => {
+      controller.abort();
+      resolve(null);
+    }, cached ? S5_CACHED_NETWORK_TIMEOUT_MS : S5_UNCACHED_NETWORK_TIMEOUT_MS);
+  });
+  try {
+    const transfer = (async () => {
+      try {
+        const response = await fetch(request, { cache: "no-cache", signal: controller.signal });
+        // S5 JSON/模块须完整下载；仅收到响应头但正文挂起也必须按时回退。
+        // 克隆保留原 Response 的 URL/响应头，不改变模块相对路径解析。
+        if (response.ok) await response.clone().arrayBuffer();
+        return response;
+      } catch {
+        return null;
+      }
+    })();
+    const response = await Promise.race([transfer, deadline]);
+    clearTimeout(timer);
+    if (!response) return cached ?? Response.error();
+    // 只有截止前完整取得的成功内容才能写缓存，迟到的网络回调没有写权限。
+    // 404 等 HTTP 错误直接透传，不以旧内容掩盖缺失资源。
+    if (response.ok && cache) {
+      try { await cache.put(request, response.clone()); }
+      catch { /* 存储失败不影响已完整取得的在线内容。 */ }
+    }
+    return response;
+  } finally {
+    clearTimeout(timer);
+    request.signal?.removeEventListener("abort", abortClient);
+  }
+}
+
 async function staleWhileRevalidate(event, request, fallbackRequest = request) {
   const cache = await caches.open(CACHE_NAME);
   let cached = await cache.match(fallbackRequest);
@@ -317,14 +369,10 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // S5 工具的模块、样式和数据没有文件指纹，必须和当前 HTML 一起更新。
-  // 同时重验证 HTTP 缓存；断网时仍使用这个 URL 最近一次成功加载的内容。
+  // S5 带内容指纹的脚本/样式可直接复用；HTML、bootstrap 和数据继续联网更新。
+  // 网络挂起时仅回退当前发布缓存中精确 URL（含版本参数）的成功内容。
   if (url.pathname === "/tools/s5-nature" || url.pathname.startsWith("/tools/s5-nature/")) {
-    event.respondWith(
-      networkFirst(event.request, [], { cache: "no-cache" }).then(
-        (response) => response ?? Response.error(),
-      ),
-    );
+    event.respondWith(s5ToolResponse(event.request));
     return;
   }
 
