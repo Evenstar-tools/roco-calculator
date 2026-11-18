@@ -941,7 +941,10 @@
         "spirit_preview_s5_little-scissor",
         "spirit_preview_s5_shadow-papercut",
         "spirit_preview_s5_diliutun",
-        "spirit_preview_s5_diniantun"
+        "spirit_preview_s5_diniantun",
+        "spirit_preview_s5_daidailing",
+        "spirit_preview_s5_tiaotiaoling",
+        "spirit_preview_s5_lily-of-valley"
       ],
       "families": [
         {
@@ -1791,6 +1794,69 @@
             "sourceField": null,
             "sourceFile": null
           }
+        },
+        {
+          "name": "呆呆铃",
+          "nativeFamilyRootId": 3822,
+          "spiritIds": [
+            "spirit_preview_s5_daidailing",
+            "spirit_preview_s5_tiaotiaoling",
+            "spirit_preview_s5_lily-of-valley"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_preview_s5_daidailing",
+              "name": "呆呆铃",
+              "types": [
+                "萌",
+                "草"
+              ],
+              "nativePetbaseId": 3822,
+              "nativeName": "呆呆铃",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_tiaotiaoling",
+              "name": "跳跳铃",
+              "types": [
+                "萌",
+                "草"
+              ],
+              "nativePetbaseId": 3823,
+              "nativeName": "跳跳铃",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_lily-of-valley",
+              "name": "铃兰夫人",
+              "types": [
+                "萌",
+                "草"
+              ],
+              "nativePetbaseId": 3824,
+              "nativeName": "铃兰夫人",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "呆呆铃 → 跳跳铃 → 铃兰夫人",
+          "chainPaths": [
+            [
+              3822,
+              3823,
+              3824
+            ]
+          ],
+          "evidence": {
+            "kind": "user_requested_upcoming_s5_shiny_family",
+            "status": "upcoming",
+            "sourceId": "s5-lily-user-request-20261118"
+          }
         }
       ],
       "evidenceStatus": "candidate-pending-complete-game-pool-verification",
@@ -1947,6 +2013,11 @@
       "id": "battlepass-initial-forms",
       "path": "D:/codex/worktrees/roco-plugin-web-release-20261105/output/local-package-lists-20261105/spirits/combined-local-spirit-lists.json",
       "selection": "battlepass_families 的 family_root_id / family_root_name 与当前 catalog 对应；S1–S4 有 BATTLE_PASS_THEME_CONF 核对，S5 沿用已核奖励资料与本地进化链对应。"
+    },
+    {
+      "id": "s5-lily-user-request-20261118",
+      "date": "2026-11-18",
+      "scope": "用户要求将即将开放异色的铃兰夫人家族加入 S5 奇遇；沿用现有家族、数值、学习面和初始形态映射。"
     }
   ],
   "unresolved": [

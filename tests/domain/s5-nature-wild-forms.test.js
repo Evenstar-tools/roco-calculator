@@ -12,6 +12,21 @@ const inputFor = target => ({ targetId: target.id, level: 42,
     panel: { hp: 403, physicalAttack: 312, magicalAttack: 176, physicalDefense: 216, magicalDefense: 163, speed: 143 } },
   skillIds: [skill('猛烈撞击').id], incomingSkillIds: [skill('抓挠').id, skill('甩水').id] });
 
+test('S5 shiny scope includes the Lily of the Valley family and keeps its initial target', () => {
+  const family = ['呆呆铃', '跳跳铃', '铃兰夫人'].map(species);
+  const ids = family.map(row => row.id);
+  const group = catalog.targetGroups.find(row => row.id === 'S5');
+  const fallback = JSON.parse(readFileSync('public/tools/s5-nature/data/season-targets.json', 'utf8'));
+  expect(group).toEqual(fallback.groups.find(row => row.id === 'S5'));
+  expect(group.spiritIds).toEqual(expect.arrayContaining(ids));
+  expect(group.families.find(row => row.nativeFamilyRootId === 3822).spiritIds).toEqual(ids);
+  for (const member of family) {
+    expect(member.initialFormId ?? member.id).toBe(ids[0]);
+    expect(member.prioritySeasons).toContain('S5');
+    expect(member.hasShinyForm).toBe(true);
+  }
+});
+
 test('Lele Shark works without a branch and uses its own 94/37 race stats at stage2', () => {
   const target = species('乐乐鲨');
   expect(target.wildStatForms).toBeUndefined();
