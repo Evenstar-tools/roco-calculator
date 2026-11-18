@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.3.20-20261115-king-ball-speed-r1";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.20-20261118-transmission-shift-r1";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 // 图片长期缓存不随发布清空；摘要由 scripts/stamp-image-cache.mjs 按图片内容写入。
 const IMAGE_CACHE_PREFIX = "rock-calculator-images-";

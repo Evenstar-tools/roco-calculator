@@ -11,6 +11,7 @@ export default defineConfig(base, {
     "skill-query.spec.js",
     "skill-query-progressive.spec.js",
     "transmission-visual-regression.spec.js",
+    "transmission-shift.spec.js",
     "data-source-dialog.spec.js",
     "seo-entry.spec.js",
     "global-preset-notice.spec.js",
@@ -18,5 +19,5 @@ export default defineConfig(base, {
     "balance-history.spec.js",
     "s5-nature.spec.js",
   ],
-  grep: /works offline|stays within cold warm and skill search budgets|actual user QR.*390$|old pending roster.*390$|recalculates current stacked|persists single-skill state|keeps portrait mode switch styling stable|uses negative-status skills|detailed skill actions aligned through use and undo|final speed, explicit apply.*(?:1424 light|390 dark)$|双向查询与完整学习面 320px light$|技能库滚动续载可达末尾|failed catalog can retry|utility dialogs keep keyboard focus 320|application access bottom close stays reachable in a short viewport|readable skill menus and keyboard bounds 390 dark$|SEO|compact conditions|starfall thresholds|Global preset updates|balance history|CN web plugin|S5 nature/,
+  grep: /轮班暗第10回合|works offline|stays within cold warm and skill search budgets|actual user QR.*390$|old pending roster.*390$|recalculates current stacked|persists single-skill state|keeps portrait mode switch styling stable|uses negative-status skills|detailed skill actions aligned through use and undo|final speed, explicit apply.*(?:1424 light|390 dark)$|双向查询与完整学习面 320px light$|技能库滚动续载可达末尾|failed catalog can retry|utility dialogs keep keyboard focus 320|application access bottom close stays reachable in a short viewport|readable skill menus and keyboard bounds 390 dark$|SEO|compact conditions|starfall thresholds|Global preset updates|balance history|CN web plugin|S5 nature/,
 });
