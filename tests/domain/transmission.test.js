@@ -49,61 +49,58 @@ test("杠杆置换首尾相邻，并阻断固定槽冲突", () => {
   expect(blocked.slots).toBeUndefined();
   expect(blocked.steps).toBeUndefined();
 });
-test("轮班加威不在行动时再结算基础传动，额外传动按层移动到正确位置", () => {
-  const slots = [named("轮班"), ...plain.slice(1)];
-  expect(resolveAction(slots, 0, "", "power").slots).toBe(slots);
-  expect(order(resolveAction(slots, 0, "", "drive"))).toBe("B" + named("轮班").name + "CD");
-  expect(resolveAction(slots, 0, "有求必应", "power").executions.map((entry) => entry.branch)).toEqual(["power", "drive"]);
-  expect(order(resolveAction(slots, 0, "有求必应", "power"))).toBe("B" + named("轮班").name + "CD");
-  expect(resolveAction(slots, 0, "一意孤行", "drive").executions.map((entry) => entry.branch)).toEqual(["drive", "drive"]);
-  expect(order(resolveAction(slots, 0, "一意孤行", "drive"))).toBe("BC" + named("轮班").name + "D");
-});
-
-test("某一回合使用轮班额外传动后，下回合开始传动落在正确槽位", () => {
-  const initial = [named("轮班"), named("金属噪音"), named("齿轮扭矩"), named("倾泻")];
-  const afterStart = startRound(initial, "翼轴");
-  expect(afterStart.slots.map((skill) => skill.name)).toEqual(["金属噪音", "齿轮扭矩", "轮班", "倾泻"]);
-  const afterAction = resolveAction(afterStart.slots, 2, "翼轴", "drive");
-  expect(afterAction.issue).toBeUndefined();
-  expect(afterAction.slots.map((skill) => skill.name)).toEqual(["金属噪音", "齿轮扭矩", "倾泻", "轮班"]);
-  const nextRound = startRound(afterAction.slots, "翼轴");
-  expect(nextRound.slots.map((skill) => skill.name)).toEqual(["轮班", "金属噪音", "倾泻", "齿轮扭矩"]);
-});
-
 test.each([
-  ["", "power", []],
-  ["", "drive", [[1, 0, 2, 3]]],
-  ["有求必应", "power", [[1, 0, 2, 3]]],
-  ["有求必应", "drive", [[1, 0, 2, 3]]],
-  ["一意孤行", "power", []],
-  ["一意孤行", "drive", [[1, 0, 2, 3], [1, 2, 0, 3]]],
-])("%s 轮班 %s 轨迹身份始终对应本次行动输入", (trait, branch, keys) => {
+  ["", "power", ["power"], 0, [[1, 0, 2, 3]]],
+  ["", "drive", ["drive"], 1, [[1, 0, 2, 3], [1, 2, 0, 3]]],
+  ["有求必应", "power", ["power", "drive"], 1, [[1, 0, 2, 3], [1, 2, 0, 3]]],
+  ["有求必应", "drive", ["drive", "power"], 1, [[1, 0, 2, 3], [1, 2, 0, 3]]],
+  ["一意孤行", "power", ["power", "power"], 0, [[1, 0, 2, 3]]],
+  ["一意孤行", "drive", ["drive", "drive"], 2, [[1, 0, 2, 3], [1, 2, 0, 3], [1, 2, 3, 0]]],
+])("%s 轮班 %s 只追加层数，与基础传动合并一次结算", (trait, branch, branches, bonus, keys) => {
   const slots = Object.freeze([named("轮班"), ...plain.slice(1)]);
-  const result = resolveAction(slots, 0, trait, branch);
+  const action = resolveAction(slots, 0, trait, branch);
+  expect(action.executions.map((entry) => entry.branch)).toEqual(branches);
+  expect(action.slots).toBe(slots);
+  expect(action.steps).toEqual([]);
+  expect(action.bonusLayers).toEqual([bonus, 0, 0, 0]);
+  const result = startRound(action.slots, trait, action.bonusLayers);
   expect(result.steps.map((step) => step.keys)).toEqual(keys);
-  for (const step of result.steps) {
-    expect(step.slots).toEqual(step.keys.map((key) => slots[key]));
-    expect(step.remaining).toEqual([0, 0, 0, 0]);
-  }
-  expect(result.slots).toEqual(keys.length ? keys.at(-1).map((key) => slots[key]) : slots);
+  expect(roundDriveTotal(result.sources)).toBe(1 + bonus);
+  for (const step of result.steps) expect(step.slots).toEqual(step.keys.map((key) => slots[key]));
+  expect(result.slots).toEqual(keys.at(-1).map((key) => slots[key]));
+  // 额外层只用于此次结算，不改快照或延续到下一回合。
+  expect(startRound(result.slots, trait).sources.map((source) => source.bonus)).toEqual([0, 0, 0, 0]);
+  expect(baseDrive(slots[0])).toBe(1);
 });
 
-test("相同技能 ID 的轮班只移动选中实例，追加效果继续追踪它", () => {
+test("轮班与翼轴按同一轮初始位置加层，先移动再领特性会算错", () => {
+  const slots = ["传感器", "加固", "轮班", "钢铁洪流"].map(named);
+  const action = resolveAction(slots, 2, "翼轴", "drive");
+  const result = startRound(action.slots, "翼轴", action.bonusLayers);
+  expect(result.sources.map((source) => source.total)).toEqual([2, 0, 2, 2]);
+  expect(result.steps.map((step) => step.keys)).toEqual([[3, 0, 1, 2], [2, 3, 0, 1]]);
+  expect(result.slots.map((skill) => skill.name)).toEqual(["轮班", "钢铁洪流", "传感器", "加固"]);
+});
+
+test("相同技能 ID 的轮班只给选中实例加层，轨迹仍区分两张技能", () => {
   const shift = named("轮班");
   const slots = Object.freeze([shift, plain[1], plain[2], shift]);
-  const result = resolveAction(slots, 3, "一意孤行", "drive");
-  expect(result.steps.map((step) => step.keys)).toEqual([[3, 1, 2, 0], [1, 3, 2, 0]]);
-  expect(result.slots).toEqual([plain[1], shift, plain[2], shift]);
+  const action = resolveAction(slots, 3, "一意孤行", "drive");
+  expect(action.bonusLayers).toEqual([0, 0, 0, 2]);
+  const result = startRound(action.slots, "一意孤行", action.bonusLayers);
+  expect(result.steps.map((step) => step.keys)).toEqual([[3, 0, 2, 1], [0, 3, 2, 1], [0, 2, 3, 1]]);
+  expect(result.slots).toEqual([shift, plain[2], shift, plain[1]]);
 });
 
-test("行动轨迹遵守固定槽，只有一个可动槽时不伪造位移", () => {
+test("轮班合并传动遵守固定槽，只有一个可动槽时没有位移", () => {
   const slots = [named("轮班"), named("主轴"), plain[2], named("锁芯")];
-  const result = resolveAction(slots, 0, "一意孤行", "drive");
-  expect(result.steps.map((step) => step.keys)).toEqual([[2, 1, 0, 3], [0, 1, 2, 3]]);
-  expect(result.slots).toEqual(slots);
+  const action = resolveAction(slots, 0, "一意孤行", "drive");
+  const result = startRound(action.slots, "一意孤行", action.bonusLayers);
+  expect(result.steps.map((step) => step.keys)).toEqual([[2, 1, 0, 3], [0, 1, 2, 3], [2, 1, 0, 3]]);
   const single = [named("轮班"), named("主轴"), named("锁芯"), named("主轴")];
-  const unchanged = resolveAction(single, 0, "", "drive");
-  expect(unchanged.steps).toEqual([{ slots: single, keys: [0, 1, 2, 3], remaining: [0, 0, 0, 0] }]);
+  const singleAction = resolveAction(single, 0, "", "drive");
+  const unchanged = startRound(singleAction.slots, "", singleAction.bonusLayers);
+  expect(unchanged.steps.map((step) => step.keys)).toEqual([[0, 1, 2, 3], [0, 1, 2, 3]]);
   expect(unchanged.slots).toEqual(single);
 });
 

@@ -113,7 +113,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
   }
   function roundDetails(result) {
     return [
-      ...result.sources.map((source) => `${source.name}：自身 ${source.own}${source.extra ? ` + ${effectiveTrait} ${source.extra}` : ""}${source.fixed ? "；位置固定" : ` = ${source.total} 层`}`),
+      ...result.sources.map((source) => `${source.name}：自身 ${source.own}${source.extra ? ` + ${effectiveTrait} ${source.extra}` : ""}${source.bonus ? ` + 轮班额外 ${source.bonus}` : ""}${source.fixed ? "；位置固定" : ` = ${source.total} 层`}`),
       ...result.steps.map((step, i) => `第 ${i + 1} 层：${names(step.slots)}`),
       ...(result.steps.length ? [] : ["没有传动，槽位不变。"]),
     ];
@@ -136,7 +136,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
     if (selectedIssue) { setIssue(selectedIssue); return; }
     const action = round ? resolveAction(slots, selected, effectiveTrait, branch) : null;
     if (action?.issue) { setIssue(action.issue); return; }
-    const result = startRound(action?.slots ?? slots, effectiveTrait);
+    const result = startRound(action?.slots ?? slots, effectiveTrait, action?.bonusLayers);
     if (result.issue) {
       setIssue(result.issue);
       return;
@@ -151,13 +151,11 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
     saveRound();
     const entries = [{ round: round + 1, title: `第 ${round + 1} 回合 · 开始`, slots: result.slots, details: roundDetails(result) }];
     if (action) entries.unshift({ title: `第 ${round} 回合 · ${action.label}${selected >= 0 ? " · 使用后" : ""}`, slots: action.slots,
-      details: action.executions.map((execution, i) => `第 ${i + 1} 次效果：${execution.branch === "drive" ? "额外传动" : execution.branch === "power" ? "1号位加威" : "当前技能"}${i > 0 ? `（${effectiveTrait}）` : ""}`) });
-    const actionDrive = action?.executions.filter((execution) => execution.branch === "drive").length ?? 0;
+      details: action.executions.map((execution, i) => `第 ${i + 1} 次效果：${execution.branch === "drive" ? "额外传动 +1（与回合传动合并）" : execution.branch === "power" ? "1号位加威" : "当前技能"}${i > 0 ? `（${effectiveTrait}）` : ""}`) });
     const roundDrive = roundDriveTotal(result.sources);
-    const nextDrive = driveAccum + actionDrive + roundDrive;
+    const nextDrive = driveAccum + roundDrive;
     if (effectiveTrait === "风速仪") {
       const cumulativeDetail = (gained, total) => `累计传动 +${gained} → ${total}（风起印记 ×${windStacksFromDrive(total)}）`;
-      if (actionDrive) entries[0].details.push(cumulativeDetail(actionDrive, driveAccum + actionDrive));
       if (roundDrive) entries.at(-1).details.push(cumulativeDetail(roundDrive, nextDrive));
     }
     setHistory((previous) => [...previous, ...entries]);

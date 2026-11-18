@@ -30,9 +30,9 @@ export function settleLayers(slots, layers) {
   return { slots: order.map((entry) => entry.skill), steps };
 }
 
-/** 本回合携带技能计入累计的传动层数（自身传动 + 特性追加）。 */
+/** 本回合携带技能计入累计的传动层数（自身传动 + 特性追加 + 本次技能追加）。 */
 export function roundDriveTotal(sources = []) {
-  return sources.reduce((sum, source) => sum + Number(source.own || 0) + Number(source.extra || 0), 0);
+  return sources.reduce((sum, source) => sum + Number(source.own || 0) + Number(source.extra || 0) + Number(source.bonus || 0), 0);
 }
 
 export function windStacksFromDrive(driveTotal) {
@@ -59,7 +59,7 @@ export function isSlotUsable(traitName, index) {
   return true;
 }
 
-export function startRound(slots, traitName = "") {
+export function startRound(slots, traitName = "", bonusLayers = []) {
   if (slots.some((skill) => !skill)) return { issue: "请先配置四个技能。" };
   if (slots.some((skill) => ["借用", "取念", "复写"].includes(skill.name))) return { issue: "随机变招需要记录实际技能身份及与传动的先后顺序；请先按实战技能重新配置，当前不能自动推演。" };
   if (traitName === "盲拧") return { issue: "盲拧在回合开始随机重排，与传动的先后顺序未确认。当前不支持自动推演。" };
@@ -68,7 +68,8 @@ export function startRound(slots, traitName = "") {
   const sources = slots.map((skill, i) => {
     const own = baseDrive(skill);
     const extra = (traitName === "向心力" && i < 2) || (["翼轴", "贪心算法"].includes(traitName) && i === 0) ? 1 : 0;
-    return { name: skill.name, own, extra, fixed: isFixed(skill), total: isFixed(skill) ? 0 : own + extra };
+    const bonus = bonusLayers[i] ?? 0;
+    return { name: skill.name, own, extra, bonus, fixed: isFixed(skill), total: isFixed(skill) ? 0 : own + extra + bonus };
   });
   return { ...settleLayers(slots, sources.map((source) => source.total)), sources };
 }
@@ -82,20 +83,11 @@ export function resolveAction(slots, index, traitName, branch = "power") {
   const label = `${skill.name}${skill.name === "轮班" ? ` · ${branch === "drive" ? "额外传动" : "1号位加威"}` : ""}`;
   if (REPLACEMENT_SKILLS.includes(skill.name)) return { issue: `${skill.name}涉及技能身份变化或全队跨精灵移动，当前四槽无法自动结算。请按实战技能重新配置；不能用原四槽的排列代替。`, label, executions: sequence.executions };
   if (skill.name === "轮班") {
-    let next = slots;
-    let keys = slots.map((_, slotIndex) => slotIndex);
-    const steps = [];
-    const driveRuns = sequence.executions.filter((execution) => execution.branch === "drive");
-    for (const _ of driveRuns) {
-      const at = keys.indexOf(index);
-      if (at < 0) return { issue: "轮班已不在当前四槽，无法结算额外传动。", label, executions: sequence.executions };
-      const result = settleLayers(next, next.map((_, slotIndex) => (slotIndex === at ? 1 : 0)));
-      // 每次追加以新顺序结算；轨迹身份仍相对本次行动输入，不能用技能 ID 合并重复实例。
-      for (const step of result.steps) steps.push({ ...step, keys: step.keys.map((key) => keys[key]) });
-      if (result.steps.length) keys = steps.at(-1).keys;
-      next = result.slots;
-    }
-    return { slots: next, label, executions: sequence.executions, steps };
+    // 轮班暗把 +1 加入本次基础传动；不能先单独移动，再重新领取号位特性。
+    // 按槽位实例携带追加层数，重复技能 ID 也只作用于本次选中的那一张。
+    const bonus = sequence.executions.filter((execution) => execution.branch === "drive").length;
+    const bonusLayers = slots.map((_, slotIndex) => slotIndex === index ? bonus : 0);
+    return { slots, label, executions: sequence.executions, steps: [], bonusLayers };
   }
   if (/交换两侧技能位置/.test(skill.description)) {
     const next = [...slots], left = (index + 3) % 4, right = (index + 1) % 4;

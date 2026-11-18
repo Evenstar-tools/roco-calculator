@@ -238,7 +238,7 @@ test("轮班两分支直接选择，一次推进并清除行动选择", () => {
 });
 
 test.each([
-  ["drive", ["倾泻", "轮班", "轴承支撑", "钢铁洪流"], ["倾泻", "钢铁洪流", "轮班", "轴承支撑"]],
+  ["drive", ["轮班", "倾泻", "轴承支撑", "钢铁洪流"], ["倾泻", "钢铁洪流", "轴承支撑", "轮班"]],
   ["power", ["轮班", "倾泻", "轴承支撑", "钢铁洪流"], ["倾泻", "钢铁洪流", "轮班", "轴承支撑"]],
 ])("帕帕斯卡翼轴轮班 %s 一次推进保存两步，撤回完整恢复行动选择", (branch, afterAction, nextRound) => {
   render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: nativeSide("帕帕斯卡", ["钢铁洪流", "倾泻", "轴承支撑", "轮班"]) }} onClose={vi.fn()} />);
@@ -265,6 +265,30 @@ test.each([
   expect(historyEntries()).toHaveLength(3);
 });
 
+test("视频复现：翼轴第1、9回合轮班暗，第10回合合并传动后轮班在1号位", () => {
+  render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: nativeSide("帕帕斯卡", ["钢铁洪流", "轮班", "加固", "传感器"]) }} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  advance();
+  expect(currentOrder()).toEqual(["传感器", "轮班", "加固", "钢铁洪流"]);
+  selectAction("1:drive");
+  advance();
+  expect(currentOrder()).toEqual(["加固", "钢铁洪流", "传感器", "轮班"]);
+  while (!screen.queryByRole("heading", { name: "第 9 回合 · 传动后顺序" })) advance();
+  expect(currentOrder()).toEqual(["传感器", "加固", "轮班", "钢铁洪流"]);
+  selectAction("2:drive");
+  advance();
+  expect(currentOrder()).toEqual(["轮班", "钢铁洪流", "传感器", "加固"]);
+  expect(historyEntries().at(-1)).toHaveTextContent("轮班：自身 1 + 轮班额外 1 = 2 层");
+  fireEvent.click(screen.getByRole("button", { name: "回到上回合" }));
+  expect(currentOrder()).toEqual(["传感器", "加固", "轮班", "钢铁洪流"]);
+  expect(actionSelector()).toHaveValue("2:drive");
+  advance();
+  expect(currentOrder()).toEqual(["轮班", "钢铁洪流", "传感器", "加固"]);
+  fireEvent.click(screen.getByRole("button", { name: "重置推演" }));
+  advance();
+  expect(currentOrder()).toEqual(["传感器", "轮班", "加固", "钢铁洪流"]);
+});
+
 test("风速仪合并轮班与回合传动跨印记阈值，撤回累计和两步记录", () => {
   render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: nativeSide("测风蝉", ["广播", "无风", "齿轮切开", "轮班"]) }} onClose={vi.fn()} />);
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
@@ -274,15 +298,15 @@ test("风速仪合并轮班与回合传动跨印记阈值，撤回累计和两�
   selectAction(wheel());
   advance();
   expect(screen.getByText("已累计传动数 5，风起印记 ×0")).toBeInTheDocument();
-  expect(historyEntries()[1]).toHaveTextContent("累计传动 +1 → 3（风起印记 ×0）");
-  expect(historyEntries()[2]).toHaveTextContent("累计传动 +2 → 5（风起印记 ×0）");
+  expect(historyEntries()[1]).not.toHaveTextContent("累计传动");
+  expect(historyEntries()[2]).toHaveTextContent("累计传动 +3 → 5（风起印记 ×0）");
   const before = currentOrder(), selected = wheel();
   selectAction(selected);
   advance();
   expect(screen.getByText("已累计传动数 8，风起印记 ×1")).toBeInTheDocument();
   expect(historyEntries()).toHaveLength(5);
-  expect(historyEntries()[3]).toHaveTextContent("累计传动 +1 → 6（风起印记 ×0）");
-  expect(historyEntries()[4]).toHaveTextContent("累计传动 +2 → 8（风起印记 ×1）");
+  expect(historyEntries()[3]).not.toHaveTextContent("累计传动");
+  expect(historyEntries()[4]).toHaveTextContent("累计传动 +3 → 8（风起印记 ×1）");
   fireEvent.click(screen.getByRole("button", { name: "回到上回合" }));
   expect(currentOrder()).toEqual(before);
   expect(actionSelector()).toHaveValue(selected);
@@ -375,7 +399,7 @@ test.each([["加尔", "有求必应"], ["黑化加尔", "一意孤行"]])("%s原
   expect(option()).toBeEnabled();
 });
 
-test("重复轮班可以指定第二张，历史保留该张行动后的独立顺序", () => {
+test("重复轮班可以指定第二张，历史记录追加层数后合并传动", () => {
   render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: side(["轮班", "金属噪音", "齿轮扭矩", "轮班"]) }} onClose={vi.fn()} />);
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
   advance();
@@ -383,10 +407,10 @@ test("重复轮班可以指定第二张，历史保留该张行动后的独立�
   expect(within(actionSelector()).getAllByRole("option", { name: /轮班 · 额外传动/ })).toHaveLength(2);
   selectAction("1:drive");
   advance();
-  expect(historyEntries()[1].querySelector("p")).toHaveTextContent("1. 轮班 → 2. 齿轮扭矩 → 3. 轮班 → 4. 金属噪音");
+  expect(historyEntries()[1].querySelector("p")).toHaveTextContent("1. 轮班 → 2. 轮班 → 3. 齿轮扭矩 → 4. 金属噪音");
 });
 
-test("一意孤行重复轮班的行动与下回合动效串联保留实例身份，撤回不丢选项", async () => {
+test("一意孤行重复轮班合入回合动效并保留实例身份，撤回不丢选项", async () => {
   const motion = mockMotion();
   render(<TransmissionPanel snapshot={snapshot} sides={{ attacker: nativeSide("黑化加尔", ["轮班", "金属噪音", "齿轮扭矩", "轮班"]) }} onClose={vi.fn()} />);
   fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
@@ -398,10 +422,11 @@ test("一意孤行重复轮班的行动与下回合动效串联保留实例身�
   selectAction("1:drive");
   advance();
   expect(currentOrder()).toEqual(["轮班", "轮班", "金属噪音", "齿轮扭矩"]);
-  expect(historyEntries()[1].querySelector("p")).toHaveTextContent("1. 轮班 → 2. 齿轮扭矩 → 3. 金属噪音 → 4. 轮班");
+  expect(historyEntries()[1].querySelector("p")).toHaveTextContent("1. 轮班 → 2. 轮班 → 3. 齿轮扭矩 → 4. 金属噪音");
   expect(roundButton()).toBeDisabled();
   await motion.finish();
   const moves = motion.animations.slice(previousAnimations);
+  expect(moves.slice(0, 3).map((animation) => animation.instance)).toEqual([0, 1, 2]);
   expect(moves.filter((animation) => animation.instance === 1).map((animation) => animation.frames.map((frame) => frame.transform))).toEqual([
     ["translate(200px, 0px)", "translate(0px, 84px)"],
     ["translate(0px, 84px)", "translate(200px, 84px)"],
