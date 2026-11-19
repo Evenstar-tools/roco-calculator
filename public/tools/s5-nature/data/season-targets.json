@@ -908,6 +908,9 @@
       "id": "S5",
       "label": "S5奇遇异色",
       "spiritIds": [
+        "spirit_preview_s5_daidailing",
+        "spirit_preview_s5_tiaotiaoling",
+        "spirit_preview_s5_lily-of-valley",
         "spirit_96afa437f590cc96",
         "spirit_d6bf08644fc68f43",
         "spirit_d45d38fdc672b014",
@@ -941,12 +944,72 @@
         "spirit_preview_s5_little-scissor",
         "spirit_preview_s5_shadow-papercut",
         "spirit_preview_s5_diliutun",
-        "spirit_preview_s5_diniantun",
-        "spirit_preview_s5_daidailing",
-        "spirit_preview_s5_tiaotiaoling",
-        "spirit_preview_s5_lily-of-valley"
+        "spirit_preview_s5_diniantun"
       ],
       "families": [
+        {
+          "name": "呆呆铃",
+          "nativeFamilyRootId": 3822,
+          "spiritIds": [
+            "spirit_preview_s5_daidailing",
+            "spirit_preview_s5_tiaotiaoling",
+            "spirit_preview_s5_lily-of-valley"
+          ],
+          "members": [
+            {
+              "spiritId": "spirit_preview_s5_daidailing",
+              "name": "呆呆铃",
+              "types": [
+                "萌",
+                "草"
+              ],
+              "nativePetbaseId": 3822,
+              "nativeName": "呆呆铃",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_tiaotiaoling",
+              "name": "跳跳铃",
+              "types": [
+                "萌",
+                "草"
+              ],
+              "nativePetbaseId": 3823,
+              "nativeName": "跳跳铃",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            },
+            {
+              "spiritId": "spirit_preview_s5_lily-of-valley",
+              "name": "铃兰夫人",
+              "types": [
+                "萌",
+                "草"
+              ],
+              "nativePetbaseId": 3824,
+              "nativeName": "铃兰夫人",
+              "nativeForm": null,
+              "calculatorVariantName": null,
+              "mappingScope": "member-id-match"
+            }
+          ],
+          "chainText": "呆呆铃 → 跳跳铃 → 铃兰夫人",
+          "chainPaths": [
+            [
+              3822,
+              3823,
+              3824
+            ]
+          ],
+          "evidence": {
+            "kind": "user_requested_upcoming_s5_shiny_family",
+            "status": "upcoming",
+            "sourceId": "s5-lily-user-request-20261118"
+          }
+        },
         {
           "name": "锤头鹳",
           "nativeFamilyRootId": 3069,
@@ -1793,69 +1856,6 @@
             "rowId": null,
             "sourceField": null,
             "sourceFile": null
-          }
-        },
-        {
-          "name": "呆呆铃",
-          "nativeFamilyRootId": 3822,
-          "spiritIds": [
-            "spirit_preview_s5_daidailing",
-            "spirit_preview_s5_tiaotiaoling",
-            "spirit_preview_s5_lily-of-valley"
-          ],
-          "members": [
-            {
-              "spiritId": "spirit_preview_s5_daidailing",
-              "name": "呆呆铃",
-              "types": [
-                "萌",
-                "草"
-              ],
-              "nativePetbaseId": 3822,
-              "nativeName": "呆呆铃",
-              "nativeForm": null,
-              "calculatorVariantName": null,
-              "mappingScope": "member-id-match"
-            },
-            {
-              "spiritId": "spirit_preview_s5_tiaotiaoling",
-              "name": "跳跳铃",
-              "types": [
-                "萌",
-                "草"
-              ],
-              "nativePetbaseId": 3823,
-              "nativeName": "跳跳铃",
-              "nativeForm": null,
-              "calculatorVariantName": null,
-              "mappingScope": "member-id-match"
-            },
-            {
-              "spiritId": "spirit_preview_s5_lily-of-valley",
-              "name": "铃兰夫人",
-              "types": [
-                "萌",
-                "草"
-              ],
-              "nativePetbaseId": 3824,
-              "nativeName": "铃兰夫人",
-              "nativeForm": null,
-              "calculatorVariantName": null,
-              "mappingScope": "member-id-match"
-            }
-          ],
-          "chainText": "呆呆铃 → 跳跳铃 → 铃兰夫人",
-          "chainPaths": [
-            [
-              3822,
-              3823,
-              3824
-            ]
-          ],
-          "evidence": {
-            "kind": "user_requested_upcoming_s5_shiny_family",
-            "status": "upcoming",
-            "sourceId": "s5-lily-user-request-20261118"
           }
         }
       ],
