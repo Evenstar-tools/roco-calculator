@@ -2,7 +2,7 @@ export const SKILL_CATEGORY_LABELS = Object.freeze({
   defense: "防御",
   magical: "魔法",
   physical: "物理",
-  status: "变化",
+  status: "状态",
 });
 
 const CATEGORY_ORDER = Object.freeze([

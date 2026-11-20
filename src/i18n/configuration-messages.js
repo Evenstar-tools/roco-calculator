@@ -13,7 +13,7 @@ export const configurationMessages = Object.fromEntries([
   ["生命", "HP", "HP"], ["物攻", "Atk", "攻撃"], ["物防", "Def", "防御"],
   ["魔攻", "Sp. Atk", "特攻"], ["魔防", "Sp. Def", "特防"], ["速度", "Speed", "素早さ"],
   ["物理", "Physical", "物理"], ["魔法", "Magic", "魔法"], ["双攻", "Dual", "両攻撃"],
-  ["防御", "Defense", "防御"], ["变化", "Status", "変化"],
+  ["防御", "Defense", "防御"], ["状态", "Status", "変化"],
   ["个体加点", "IV allocation", "個体値の配分"], ["普通（无修正）", "Neutral (no modifier)", "補正なし"],
   ["普通（国服参考）", "Neutral (CN reference)", "補正なし（中国版参考）"],
   ["{label}快捷性格", "{label} quick nature", "{label}の簡易性格設定"],

@@ -19,7 +19,7 @@ const CATEGORY_LABELS = {
   dual: "双攻",
   magical: "魔法",
   physical: "物理",
-  status: "变化",
+  status: "状态",
 };
 
 const searchTextCache = new Map();

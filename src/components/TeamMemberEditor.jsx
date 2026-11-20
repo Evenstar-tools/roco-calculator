@@ -32,7 +32,7 @@ const SKILL_CATEGORIES = {
   magical: "魔法",
   dual: "双攻",
   defense: "防御",
-  status: "变化",
+  status: "状态",
 };
 
 const STAT_VIEW = [

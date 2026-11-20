@@ -410,14 +410,13 @@ test("成员重排保留顶部操作，个体与配招修改在切换成员后�
   for (const name of ["新建队伍", "导入阵容", "导出阵容"]) {
     expect(toolbar.getByRole("button", { name })).toBeVisible();
   }
-  expect(toolbar.getByRole("button", { name: "复制队伍" })).not.toBeVisible();
-  await user.click(toolbar.getByTitle("更多队伍操作"));
   for (const name of ["复制队伍", "删除队伍"]) {
-    expect(toolbar.getByRole("button", { name })).toBeVisible();
+    const action = toolbar.getByRole("button", { name });
+    expect(action).toBeVisible();
+    expect(action).toHaveAttribute("title", name);
+    expect(action).toHaveTextContent(/^$/);
   }
-  await user.keyboard("{Escape}");
-  expect(toolbar.getByRole("button", { name: "复制队伍" })).not.toBeVisible();
-  expect(screen.getByRole("dialog", { name: "队伍" })).toBeVisible();
+  expect(toolbar.queryByTitle("更多队伍操作")).not.toBeInTheDocument();
   await user.click(toolbar.getByRole("button", { name: "重命名队伍" }));
   const nameInput = screen.getByRole("textbox", { name: "队伍名称" });
   expect(nameInput).toHaveFocus();
@@ -608,8 +607,21 @@ test("applies a member as attack or defense and confirms deletion inline", async
     expect.objectContaining({ spiritId: "sonic-dog" }),
   );
 
-  await user.click(screen.getByRole("button", { name: "删除队伍" }));
+  const deleteButton = screen.getByRole("button", { name: "删除队伍" });
+  await user.click(deleteButton);
   expect(screen.getByText("删除当前队伍？")).toBeVisible();
+  expect(screen.getByRole("list", { name: "队伍成员" })).toBeVisible();
+  const cancel = screen.getByRole("button", { name: "取消", exact: true });
+  expect(cancel).toHaveFocus();
+  await user.click(cancel);
+  expect(screen.queryByRole("button", { name: "确认删除" })).not.toBeInTheDocument();
+  expect(deleteButton).toHaveFocus();
+  expect(screen.getByRole("list", { name: "队伍成员" })).toBeVisible();
+  await user.click(deleteButton);
+  await user.keyboard("{Escape}");
+  expect(screen.queryByRole("button", { name: "确认删除" })).not.toBeInTheDocument();
+  expect(deleteButton).toHaveFocus();
+  await user.click(deleteButton);
   await user.click(screen.getByRole("button", { name: "确认删除" }));
   expect(
     screen.queryByRole("list", { name: "队伍成员" }),
@@ -1041,7 +1053,7 @@ test("更换精灵清空搜索词但不清除已存成员，取消和连续更�
   }
 });
 
-test("phone width moves team actions into the menu and transposes the coverage matrix", async () => {
+test("phone width keeps duplicate and delete visible and transposes the coverage matrix", async () => {
   const original = window.matchMedia;
   window.matchMedia = (query) => ({ matches: query.includes("max-width: 719px"), media: query, addEventListener() {}, removeEventListener() {} });
   try {
@@ -1052,8 +1064,10 @@ test("phone width moves team actions into the menu and transposes the coverage m
     await user.click(screen.getByRole("option", { name: /音速犬/ }));
     const toolbar = within(screen.getByRole("dialog", { name: "队伍" }).querySelector(".team-drawer__toolbar"));
     expect(toolbar.getByRole("button", { name: "新建队伍" })).not.toBeVisible();
+    expect(toolbar.getByRole("button", { name: "复制队伍" })).toBeVisible();
+    expect(toolbar.getByRole("button", { name: "删除队伍" })).toBeVisible();
     await user.click(toolbar.getByTitle("更多队伍操作"));
-    for (const name of ["新建队伍", "导入阵容", "导出阵容", "复制队伍", "删除队伍"]) expect(toolbar.getByRole("button", { name })).toBeVisible();
+    for (const name of ["新建队伍", "导入阵容", "导出阵容"]) expect(toolbar.getByRole("button", { name })).toBeVisible();
     await user.click(screen.getByRole("button", { name: "属性覆盖" }));
     const matrix = screen.getByRole("table", { name: "队伍防守与打击面矩阵" });
     expect(matrix).toHaveClass("is-transposed");

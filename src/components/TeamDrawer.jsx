@@ -108,6 +108,7 @@ export function TeamDrawer({
   const wide = useMediaQuery("(min-width: 1280px)");
   const analysisAvailable = release.capabilities.calculate && (serverId !== "global" || Boolean(snapshot.meta?.id));
   const closeRef = useRef(null);
+  const deleteButtonRef = useRef(null);
   const closeActionRef = useRef(null);
   const drawerRef = useRef(null);
   const importedIndexRef = useRef(null);
@@ -273,6 +274,10 @@ export function TeamDrawer({
     setRenaming(false);
     if (activeTeam && nameDraft.trim() && nameDraft !== activeTeam.name) onRenameTeam(activeTeam.id, nameDraft);
     else setNameDraft(activeTeam?.name ?? "");
+  };
+  const cancelDelete = () => {
+    setDeletePending(false);
+    deleteButtonRef.current?.focus();
   };
   const primaryActions = (
     <>
@@ -463,33 +468,39 @@ export function TeamDrawer({
                 {t("已自动保存")}
               </small>
             ) : null}
-            {compact ? null : primaryActions}
-            <DrawerMenu
-              className="team-drawer__more"
-              label={t("更多队伍操作")}
-              summary={<DotsThree aria-hidden="true" size={22} weight="bold" />}
-            >
-              {compact ? primaryActions : null}
+            <div className="team-drawer__actions">
+              {compact ? (
+                <DrawerMenu
+                  className="team-drawer__more"
+                  label={t("更多队伍操作")}
+                  summary={<DotsThree aria-hidden="true" size={22} weight="bold" />}
+                >
+                  {primaryActions}
+                </DrawerMenu>
+              ) : primaryActions}
               <button
                 aria-label={t("复制队伍")}
+                className="team-drawer__toolbar-icon"
                 disabled={!activeTeam}
                 onClick={() => navigate(() => onDuplicateTeam(activeTeam.id))}
+                title={t("复制队伍")}
                 type="button"
               >
-                <Copy aria-hidden="true" size={17} />
-                <span className="team-drawer__toolbar-label">{t("复制队伍")}</span>
+                <Copy aria-hidden="true" size={18} />
               </button>
               <button
+                aria-expanded={deletePending}
                 aria-label={t("删除队伍")}
-                className="is-danger"
+                className="team-drawer__toolbar-icon is-danger"
                 disabled={!activeTeam}
                 onClick={() => setDeletePending(true)}
+                ref={deleteButtonRef}
+                title={t("删除队伍")}
                 type="button"
               >
-                <Trash aria-hidden="true" size={17} />
-                <span className="team-drawer__toolbar-label">{t("删除队伍")}</span>
+                <Trash aria-hidden="true" size={18} />
               </button>
-            </DrawerMenu>
+            </div>
           </div>
           <button
             aria-label={t("关闭队伍")}
@@ -527,23 +538,32 @@ export function TeamDrawer({
         </nav>
 
         {deletePending && activeTeam ? (
-          <div className="team-drawer__confirm" role="alert">
+          <div
+            className="team-drawer__confirm"
+            onKeyDown={(event) => {
+              if (event.key !== "Escape") return;
+              event.preventDefault();
+              cancelDelete();
+            }}
+            role="alert"
+          >
             <span>{t("删除当前队伍？")}</span>
+            <button autoFocus onClick={cancelDelete} type="button">
+              {t("取消")}
+            </button>
             <button
               onClick={() =>
                 navigate(() => {
                   const deleted = onDeleteTeam(activeTeam.id);
                   if (deleted === false) return false;
                   setDeletePending(false);
+                  closeRef.current?.focus();
                   return true;
                 })
               }
               type="button"
             >
               {t("确认删除")}
-            </button>
-            <button onClick={() => setDeletePending(false)} type="button">
-              {t("取消")}
             </button>
           </div>
         ) : null}

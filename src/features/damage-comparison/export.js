@@ -46,7 +46,7 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
   };
   const metadata = [
     ["攻击方", `${selection.spirit.fullName} · 60级 · ${getNature(side.nature).name} · ${allocation}`],
-    ["技能", `${selection.selected.skill.name} · ${selection.selected.skill.type} · ${{ physical: "物理", magical: "魔法", dual: "双攻", status: "变化", defense: "防御" }[selection.selected.skill.category] ?? "未知"} · 静态威力 ${resultRange("staticPower")} · 连击 ${resultRange("hitCount")}`],
+    ["技能", `${selection.selected.skill.name} · ${selection.selected.skill.type} · ${{ physical: "物理", magical: "魔法", dual: "双攻", status: "状态", defense: "防御" }[selection.selected.skill.category] ?? "未知"} · 静态威力 ${resultRange("staticPower")} · 连击 ${resultRange("hitCount")}`],
     ["特性／条件", `${trait?.name ?? "无"}${conditions.length ? `；${conditions.join("；")}` : ""}`],
     ["增益来源", model.gainSummary || "无额外增益"],
     ["耐久模板", describeDamageComparisonTemplate(model.template)],
@@ -82,7 +82,7 @@ export function buildDamageComparisonReport(snapshot, source, model, date = new 
   });
   translatedMetadata[1][1] = t("{name} · {type} · {category} · 静态威力 {power} · 连击 {hits}", {
     name: skillName, type: localizeType(selection.selected.skill.type, locale),
-    category: { physical: "物理", magical: "魔法", dual: "双攻", status: "变化", defense: "防御" }[selection.selected.skill.category] ?? "未知",
+    category: { physical: "物理", magical: "魔法", dual: "双攻", status: "状态", defense: "防御" }[selection.selected.skill.category] ?? "未知",
     power: t(resultRange("staticPower")), hits: t(resultRange("hitCount")),
   });
   const separator = locale === "en" ? "; " : "、";

@@ -2,7 +2,7 @@ import { isWildLevel } from './wild-levels.mjs';
 import { mountPlayerFlow } from "./player-flow.mjs";
 import { restoreS5RuntimeRelations } from "./vendor/s5-runtime-relations.js";
 import { loadToolData, readToolJson } from "./load-data.mjs";
-import { createMatchupUi, normalizeDiceSettings, validatePreviewSettings } from "./matchup-ui.mjs";
+import { createMatchupUi, normalizeDiceSettings, skillCategoryLabel, validatePreviewSettings } from "./matchup-ui.mjs";
 import { solve, resolveObservationPower } from "./engine.mjs";
 import { calculateOwnPanel } from "./own-panel.mjs";
 import { resolveOwnPreset } from "./own-presets.mjs";
@@ -413,7 +413,7 @@ function initializePickers() {
         .filter(Boolean),
     image: (row) => row.iconUrl ?? catalog.assets?.elements?.[row.type],
     describe: (row) =>
-      `${row.type} · ${row.category === "physical" ? "物攻" : row.category === "magical" ? "魔攻" : "变化"} ${row.basePower ?? ""}${skillSupport(row) ? " · 不参与伤害匹配" : ""}`,
+      `${row.type} · ${skillCategoryLabel(row)} ${row.basePower ?? ""}${skillSupport(row) ? " · 不参与伤害匹配" : ""}`,
     optionAttribute: "data-skill-id",
   });
   pickers.nature = createPicker({
@@ -560,7 +560,7 @@ function renderSkills(preferredId) {
     list
       .map(
         (skill) =>
-          `<option value="${escapeHtml(skill.id)}">${escapeHtml(skill.name)} · ${skill.category === "physical" ? "物攻" : skill.category === "magical" ? "魔攻" : "变化"} ${skill.basePower ?? ""}</option>`,
+          `<option value="${escapeHtml(skill.id)}">${escapeHtml(skill.name)} · ${skillCategoryLabel(skill)} ${skill.basePower ?? ""}</option>`,
       )
       .join("");
   $("record-skill").innerHTML = skills.length

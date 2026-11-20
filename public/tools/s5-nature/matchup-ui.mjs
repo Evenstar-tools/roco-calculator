@@ -243,9 +243,16 @@ export function observationDifference(row, obs, format = 'game0') {
 }
 const levelLabel = level => level === 'all' ? '41–43' : level;
 const caseId = prediction => `${prediction.targetLevel}:${prediction.natureId}`;
+const skillCategoryLabels = { physical: '物攻', magical: '魔攻', dual: '双攻', status: '状态', defense: '防御' };
 
-function shortReason(reason='') {
-  if (/没有明确的物理／魔法/.test(reason)) return '变化技能，无直接伤害';
+export function skillCategoryLabel(skill) {
+  return skillCategoryLabels[skill?.category] ?? '未知';
+}
+
+function shortReason(reason='', skill) {
+  if (/没有明确的物理／魔法/.test(reason) && ['status', 'defense'].includes(skill?.category)) {
+    return `${skillCategoryLabel(skill)}技能，无直接伤害`;
+  }
   if (/骰子|极化|钝化/.test(reason)) return reason;
   if (/种族|资料/.test(reason)) return '该精灵资料不足';
   return reason || '无法计算';
@@ -276,7 +283,6 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   const automatic = canPreviewBasePower;
   const damaging = skill => skill?.category === 'physical' || skill?.category === 'magical';
   let koCache = new Map();
-  const category = skill => skill?.category === 'physical' ? '物攻' : skill?.category === 'magical' ? '魔攻' : '变化';
   const typeFactor = (skill, target) => (target?.types ?? []).reduce((product, type) => product * (catalog.typeChart.matrix[catalog.typeChart.types.indexOf(skill.type)]?.[catalog.typeChart.types.indexOf(type)] ?? 1), 1);
   const ownTraitInfo = spirit => {
     const row = traitCatalog?.traits?.[spirit?.traitName];
@@ -449,7 +455,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
       return choices.filter(s => damaging(s) || s.id === $(id).value || (!incoming && index === 4 && s.id === EVIL_EXCHANGE_SKILL_ID));
     },image:s=>s.iconUrl ?? catalog.assets?.elements?.[s.type],describe:s=>{
       const {profile,session}=state(), user=spirits.get(incoming?session.targetId:profile.spiritId);
-      return [category(s), `威力 ${s.basePower ?? '—'}`, user?.types?.includes(s.type) ? '本系' : '', !incoming && knockout(index, s.id) ? '一击倒' : ''].filter(Boolean).join(' · ');
+      return [skillCategoryLabel(s), `威力 ${s.basePower ?? '—'}`, user?.types?.includes(s.type) ? '本系' : '', !incoming && knockout(index, s.id) ? '一击倒' : ''].filter(Boolean).join(' · ');
     }}));
     $(id).addEventListener('change',()=>commit(()=>{
       const {own,encounter}=state();
@@ -562,7 +568,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     $(`${prefix}-firstAction-label`).textContent=manual ? '迸发按手填威力，不额外叠加' : `入场首次行动 · 迸发 +${burst}`;
     $(`${prefix}-gear`).hidden = !skill;
     if(!skill) { $(metaId).innerHTML=''; $(metaId).title=''; return; }
-    $(metaId).innerHTML=`${typeIcon(skill)}${category(skill)} · 显示威力 —`;
+    $(metaId).innerHTML=`${typeIcon(skill)}${skillCategoryLabel(skill)} · 显示威力 —`;
     $(metaId).title=skill.description ?? '';
     $(`${prefix}-hitCount`).placeholder = String(legacy ? 1 : defaultSkillHitCount(skill));
   }
@@ -571,7 +577,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
     if (!skill) return;
     const manual = row.powerMode === 'displayed';
     const power = `<b class="pw${manual?' manual':''}">${powerNumber(row.displayedPower)}${manual?' 手填':''}</b>`;
-    $(metaId).innerHTML = `${typeIcon(skill)}${category(skill)} · 显示威力 ${power}${row.hitCount > 1 ? ` · ${row.hitCount}连击` : ''}`
+    $(metaId).innerHTML = `${typeIcon(skill)}${skillCategoryLabel(skill)} · 显示威力 ${power}${row.hitCount > 1 ? ` · ${row.hitCount}连击` : ''}`
       + skillPreviewNotices(row, skill).map(note=>`<span class="preview-model-note">${html(note)}</span>`).join('');
     const auto = autoRow?.skillId === row.skillId && Number.isFinite(autoRow.displayedPower) ? autoRow.displayedPower : null;
     $(`${prefix}-auto`).textContent = auto === null ? '' : `自动 ${powerNumber(auto)}`;
@@ -588,7 +594,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
   }
   function axisMarkup(row, obs, pickedKey) {
     if(!row) return `<div class="pcell-note">选择技能</div>`;
-    if(row.status!=='estimated' || !row.predictions?.length) return `<div class="pcell-note">${html(shortReason(row.reason))}</div>`;
+    if(row.status!=='estimated' || !row.predictions?.length) return `<div class="pcell-note">${html(shortReason(row.reason, skills.get(row.skillId)))}</div>`;
     const picked = pickedKey ? pickedKey.split(':').slice(0,2).join(':').replace(/^([^:]+)$/,'$1:base') : null;
     return axisGroups(row).map(({key,label,group,condition,items}) => {
       const mark = obs && !obs.invalid ? (items.some(p => observationMatch(p, obs)) ? ' hit' : ' miss') : '';
@@ -659,7 +665,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
 
   function cellsMarkup(row, columns, incoming, obs, format, pickedKey) {
     if(!row) return `<div class="pcell-note">选择技能</div>`;
-    if(row.status!=='estimated' || !row.predictions?.length) return `<div class="pcell-note">${html(shortReason(row.reason))}</div>`;
+    if(row.status!=='estimated' || !row.predictions?.length) return `<div class="pcell-note">${html(shortReason(row.reason, skills.get(row.skillId)))}</div>`;
     if (!incoming) return defenseCellsMarkup(row, obs, format, pickedKey);
     const skill = skills.get(row.skillId), same = sameAsOtherColumn(skill, incoming);
     if (!incoming && pickedKey?.split(':')[0] === 'other') pickedKey = pickedKey.replace('other', same);
@@ -753,7 +759,7 @@ export function createMatchupUi({ catalog, diceCatalog, traitCatalog, getSession
         : category === 'magical' ? (incoming ? 'magicalAttack' : 'magicalDefense') : null;
       const blockAxis = () => { if (stat) axisGroups[stat].push([]); };
       if (obs.invalid) { blockAxis(); evidence.push({ label: row?.skillName || (incoming ? '敌方出招' : '我方出招'), incoming, text:'输入格式有误', tone:'bad' }); return; }
-      if (row?.status !== 'estimated') { blockAxis(); evidence.push({ label: row?.skillName || '未选技能', incoming, unavailable:true, text:shortReason(row?.reason), tone:'bad' }); return; }
+      if (row?.status !== 'estimated') { blockAxis(); evidence.push({ label: row?.skillName || '未选技能', incoming, unavailable:true, text:shortReason(row?.reason, skills.get(row?.skillId)), tone:'bad' }); return; }
       const hits = row.predictions.filter(p => observationMatch(p, obs, format));
       // Outgoing knockout observations do not distinguish the target's HP.
       // Incoming displayed damage remains an attack-stat observation even when

@@ -40,8 +40,11 @@ for (const width of [1440, 390, 320]) for (const theme of ["light", "dark"]) {
     await expect(dialog.getByRole("textbox", { name: "阵容码或分享链接" })).toBeVisible();
     await dialog.getByRole("button", { name: "返回队伍", exact: true }).click();
     await dialog.getByRole("button", { name: "新建六人队伍", exact: true }).click();
-    // 复制、删除收在「⋯」菜单里，建队后变为可用。
-    await expect(dialog.getByRole("button", { name: "复制队伍", exact: true })).toBeEnabled();
+    for (const name of ["复制队伍", "删除队伍"]) {
+      const button = dialog.getByRole("button", { name, exact: true });
+      await expect(button).toBeVisible();
+      await expect(button).toBeEnabled();
+    }
     await page.keyboard.press("Escape");
     await expect(page.getByRole("button", { name: "打开队伍", exact: true })).toBeFocused();
 
