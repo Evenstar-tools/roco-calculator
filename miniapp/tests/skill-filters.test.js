@@ -69,7 +69,7 @@ describe("skill category filters", () => {
       { count: 5, key: "all", label: "全部" },
       { count: 1, key: "physical", label: "物理" },
       { count: 1, key: "magical", label: "魔法" },
-      { count: 1, key: "status", label: "变化" },
+      { count: 1, key: "status", label: "状态" },
       { count: 1, key: "defense", label: "防御" },
       { count: 1, key: "other", label: "其他" },
     ]);
@@ -122,7 +122,7 @@ describe("skill category filters", () => {
       { count: 53, key: "all", label: "全部" },
       { count: 24, key: "physical", label: "物理" },
       { count: 19, key: "magical", label: "魔法" },
-      { count: 8, key: "status", label: "变化" },
+      { count: 8, key: "status", label: "状态" },
       { count: 2, key: "defense", label: "防御" },
     ]);
   });
