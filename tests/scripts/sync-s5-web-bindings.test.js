@@ -6,8 +6,9 @@ import { readFileSync } from "node:fs";
 import { afterEach, expect, test, vi } from "vitest";
 import { createS5WebAssetPlan, downloadS5WebAssets, mergeS5LineupMapping, resolveS5AssetUrls } from "../../scripts/bwiki/sync-s5-web-bindings.mjs";
 import { applyS5Bwiki } from "../../scripts/bwiki/apply-s5-bwiki.mjs";
+import { applyS5Candymo } from "../../scripts/bwiki/apply-s5-candymo.mjs";
 import { withWebPreview } from "../../src/features/s5-preview/with-web-preview.js";
-import { encodeLineupCode, exportLineupCode, importLineupCode } from "../../src/state/lineup-code.js";
+import { decodeLineupCode, encodeLineupCode, exportLineupCode, importLineupCode } from "../../src/state/lineup-code.js";
 
 const roots = [];
 afterEach(async () => {
@@ -113,10 +114,16 @@ test("Web assets retain source pixels, reuse completed files, and never create a
 test("the actual S5 source IDs round-trip through the published local identity map", () => {
   const read = file => JSON.parse(readFileSync(file, "utf8"));
   const evidence = read("data/reviewed/nrc-s5-20261101.json");
+  const supplement = read("data/reviewed/candymo-s5-20261101.json");
   const base = read("data/snapshots/current.json");
-  const snapshot = applyS5Bwiki(withWebPreview(base), evidence);
+  const snapshot = applyS5Candymo(withWebPreview(applyS5Bwiki(withWebPreview(base), evidence)), supplement);
   const mapping = read("public/data/lineup-code-map.json");
-  const result = mergeS5LineupMapping(mapping, evidence, snapshot);
+  const seed = structuredClone(mapping);
+  for (const spirit of supplement.pets) delete seed.spirits[spirit.sourceId];
+  delete seed.skills[7100400];
+  delete seed.skillExportIds["skill_preview_s5_saint-dragon-slash"];
+  delete seed.sources.s5Candymo;
+  const result = mergeS5LineupMapping(seed, evidence, snapshot);
   expect(result.missing).toEqual([]);
   expect(result.mapping).toEqual(mapping);
   const plan = createS5WebAssetPlan(evidence, snapshot, base);
@@ -136,8 +143,17 @@ test("the actual S5 source IDs round-trip through the published local identity m
     expect(mapping.skillExportIds[skill.id], skill.name).toBe(skill.gameId);
     check({ skills: [skill.gameId, null, null, null] });
   }
-  for (const name of ["阿布", "圣龙阿布", "超能阿布", "铃兰"]) {
-    const placeholder = snapshot.spirits.find(spirit => spirit.fullName === name);
-    expect(Object.values(mapping.spirits), name).not.toContain(placeholder.id);
+  for (const spirit of supplement.pets) {
+    const native = { spriteId: spirit.sourceId, bloodlineId: spirit.isLeaderForm ? 19 : 1,
+      skills: spirit.defaultSkillSourceIds };
+    const code = encodeLineupCode({ members: [{ ...member, ...native }], magicId: null, mode: 5 });
+    const team = importLineupCode(code, snapshot, mapping);
+    expect(team.members[0].spiritId, spirit.name).toBe(spirit.localId);
+    expect(exportLineupCode(team, snapshot, mapping).code, spirit.name).toBe(code);
+    delete team.members[0].lineupSource;
+    const exported = decodeLineupCode(exportLineupCode(team, snapshot, mapping).code).members[0];
+    expect(exported, spirit.name).toMatchObject(native);
   }
+  expect(mapping.skills[7100400]).toBe("skill_preview_s5_saint-dragon-slash");
+  expect(Object.values(mapping.spirits)).not.toContain("spirit_preview_s5_boss-abu");
 });

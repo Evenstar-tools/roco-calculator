@@ -4,6 +4,7 @@ import { pathToFileURL } from "node:url";
 import { readImageDimensions } from "./sync-assets.mjs";
 
 const EVIDENCE = "data/reviewed/nrc-s5-20261101.json";
+const CANDYMO_EVIDENCE = "data/reviewed/candymo-s5-20261101.json";
 const BINDINGS = "data/reviewed/s5-bwiki-assets-20261101.json";
 const read = async file => JSON.parse(await readFile(file, "utf8"));
 const exists = file => access(file).then(() => true, () => false);
@@ -54,6 +55,16 @@ export function mergeS5LineupMapping(mapping, evidence, snapshot) {
   result.skillExportIds ??= {};
   const previouslyMappedSkills = new Set(Object.values(mapping.skills));
   const missing = [];
+  const bind = (kind, gameId, id) => {
+    const previous = result[kind][gameId];
+    if (previous && previous !== id && (kind !== "skills" || result.skillAliases[previous] !== id)) {
+      throw new Error(`游戏 ID 冲突：${kind} ${gameId} ${previous} / ${id}`);
+    }
+    result[kind][gameId] = id;
+    if (kind === "skills" && !result.skillExportIds[id] && !previouslyMappedSkills.has(id)) {
+      result.skillExportIds[id] = gameId;
+    }
+  };
   for (const [kind, records] of [["spirits", evidence.modules.Catalog], ["skills", evidence.modules.Skills]]) {
     const localFor = resolver(snapshot, kind);
     for (const [nrcId, raw] of Object.entries(records)) {
@@ -61,18 +72,27 @@ export function mergeS5LineupMapping(mapping, evidence, snapshot) {
       if (!Number.isSafeInteger(raw.game_id) || raw.game_id <= 0) continue;
       const local = localFor(nrcId, raw);
       if (!local) { missing.push({ kind, nrcId, name: raw.title ?? raw.name, gameId: raw.game_id }); continue; }
-      const previous = result[kind][raw.game_id];
-      if (previous && previous !== local.id && result.skillAliases[previous] !== local.id) {
-        throw new Error(`游戏 ID 冲突：${kind} ${raw.game_id} ${previous} / ${local.id}`);
-      }
-      result[kind][raw.game_id] = local.id;
-      if (kind === "skills" && !result.skillExportIds[local.id] && !previouslyMappedSkills.has(local.id)) {
-        result.skillExportIds[local.id] = raw.game_id;
-      }
+      bind(kind, raw.game_id, local.id);
     }
   }
   result.sources.s5Completion = { checkedAt: "2026-11-01", evidence: EVIDENCE,
     sources: { Catalog: evidence.moduleSources.Catalog, Skills: evidence.moduleSources.Skills } };
+  const supplement = snapshot.meta?.s5CandymoSync;
+  if (supplement) {
+    // The complete CN snapshot retains reviewed native IDs on the supplemented entities.
+    const reviewed = kind => snapshot[kind].filter(entity => {
+      const gameId = entity.provenance?.candymo?.id;
+      return Number.isSafeInteger(gameId) && gameId > 0;
+    });
+    const spirits = reviewed("spirits");
+    if (spirits.length !== supplement.counts?.spirits) {
+      throw new Error("阵容码需要包含已审阅补充 ID 的完整国服 S5 快照");
+    }
+    for (const [kind, entries] of [["spirits", spirits], ["skills", reviewed("skills")]]) {
+      for (const entry of entries) bind(kind, entry.provenance.candymo.id, entry.id);
+    }
+    result.sources.s5Candymo = { evidence: CANDYMO_EVIDENCE, reviewId: supplement.id };
+  }
   return { mapping: result, missing };
 }
 

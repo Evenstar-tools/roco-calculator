@@ -56,6 +56,10 @@
           }
         ]
       }
+    },
+    "s5Candymo": {
+      "evidence": "data/reviewed/candymo-s5-20261101.json",
+      "reviewId": "s5-candymo-20261101"
     }
   },
   "skillExportIds": {
@@ -91,7 +95,8 @@
     "skill_preview_s5_dragon-claws": 7100390,
     "skill_preview_s5_dragon-eye-dotting": 7100380,
     "skill_preview_s5_refill": 7050560,
-    "skill_preview_s5_curse-flame": 7100360
+    "skill_preview_s5_curse-flame": 7100360,
+    "skill_preview_s5_saint-dragon-slash": 7100400
   },
   "spirits": {
     "3001": "spirit_d345729d1593bff7",
@@ -242,6 +247,7 @@
     "3165": "spirit_0c057dc540477080",
     "3166": "spirit_615e3788c66e51a7",
     "3167": "spirit_14a25ce7b8d65623",
+    "3168": "spirit_preview_s5_abu",
     "3170": "spirit_6559cb4bdc43fc21",
     "3171": "spirit_6c627aa77d71cf89",
     "3172": "spirit_57cf990eab0a0502",
@@ -679,6 +685,9 @@
     "3819": "spirit_preview_s5_shadow-papercut",
     "3820": "spirit_preview_s5_diliutun",
     "3821": "spirit_preview_s5_diniantun",
+    "3822": "spirit_preview_s5_daidailing",
+    "3823": "spirit_preview_s5_tiaotiaoling",
+    "3824": "spirit_preview_s5_lily-of-valley",
     "3870": "spirit_4ba8f07d34a4e247",
     "3871": "spirit_58fba21fe70be498",
     "3872": "spirit_95aaf0ee94680c86",
@@ -754,6 +763,7 @@
     "5065": "spirit_59a68cf08569c4a7",
     "5066": "spirit_preview_s5_boss-glass-jellyfish",
     "5067": "spirit_preview_s5_boss-ice-bruce",
+    "5068": "spirit_preview_s5_super-abu",
     "5075": "spirit_576805f2cd1bbd11"
   },
   "skills": {
@@ -1108,6 +1118,7 @@
     "7100370": "skill_preview_s5_barren-devour",
     "7100380": "skill_preview_s5_dragon-eye-dotting",
     "7100390": "skill_preview_s5_dragon-claws",
+    "7100400": "skill_preview_s5_saint-dragon-slash",
     "7110010": "skill_55adc62bf618ebab",
     "7110180": "skill_50d37932783c1b9d",
     "7110190": "skill_f672fb0ad904722a",
