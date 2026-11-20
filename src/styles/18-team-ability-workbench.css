@@ -37,22 +37,6 @@
   background: var(--surface);
 }
 
-.team-workbench > .team-drawer__toolbar {
-  min-height: 64px;
-  padding: 10px 70px 10px 130px;
-  background: var(--surface);
-  grid-template-columns: minmax(190px, 228px) auto auto auto;
-  justify-content: start;
-  gap: 8px;
-}
-
-.team-workbench > .team-drawer__toolbar select,
-.team-workbench > .team-drawer__toolbar button {
-  height: 44px;
-  border-radius: 8px;
-  font-size: 12px;
-}
-
 .team-workbench > .team-drawer__pane-tabs {
   width: 100%;
   min-height: 50px;
@@ -2185,29 +2169,6 @@
     font-size: 17px;
   }
 
-  .team-workbench > .team-drawer__toolbar {
-    min-height: 58px;
-    padding: 7px 8px;
-    overflow: hidden;
-    grid-template-columns: minmax(0, 1fr) auto 44px 44px;
-    gap: 5px;
-  }
-
-  .team-workbench > .team-drawer__toolbar select,
-  .team-workbench > .team-drawer__toolbar button {
-    min-width: 0;
-    height: 44px;
-    padding: 0 8px;
-  }
-
-  .team-workbench > .team-drawer__toolbar button:nth-of-type(n + 2) {
-    padding: 0;
-  }
-
-  .team-workbench > .team-drawer__toolbar .team-drawer__toolbar-label {
-    display: none;
-  }
-
   .team-workbench > .team-drawer__pane-tabs {
     min-height: 48px;
     padding: 3px 5px 0;
@@ -2718,15 +2679,6 @@
 }
 
 @media (max-width: 420px) {
-  .team-workbench > .team-drawer__toolbar {
-    grid-template-columns: minmax(0, 1fr) 64px 44px 44px;
-  }
-
-  .team-workbench > .team-drawer__toolbar button:first-of-type {
-    padding: 0 5px;
-    gap: 3px;
-  }
-
   .team-workbench > .team-drawer__pane-tabs button svg {
     width: 15px;
     height: 15px;

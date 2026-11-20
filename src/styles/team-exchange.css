@@ -1,4 +1,3 @@
-.team-drawer.team-workbench > .team-drawer__toolbar { grid-template-columns: minmax(0, 228px) repeat(5, auto); }
 .team-exchange { flex: 1; min-height: 0; overflow-y: auto; padding: 20px; color: var(--text); }
 .team-exchange header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .team-exchange h3, .team-exchange__members p { margin: 0; }
@@ -48,7 +47,6 @@ html[data-theme="dark"] .team-exchange__actions button:first-child { color: var(
 .team-exchange__recommend small { display: block; color: var(--text-muted); font-size: 11px; }
 .team-exchange__members p.team-exchange__iv-values { color: var(--text-muted); font-size: 12px; }
 @media (max-width: 719px) {
-  .team-drawer.team-workbench > .team-drawer__toolbar { grid-template-columns: minmax(0, 1fr) repeat(5, 36px); gap: 4px; }
   .team-exchange__members { grid-template-columns: minmax(0, 1fr); gap: 0; }
   .team-exchange__members li { padding: 10px 0; gap: 10px; }
   .team-exchange__members p { margin-top: 4px; }
