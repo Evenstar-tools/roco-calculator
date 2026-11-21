@@ -23,7 +23,7 @@ import { getNatureMultipliers } from "../domain/natures.js";
 import { normalizeNegativeStatusSide } from "../domain/negative-status.js";
 import { getNegativeStatusInputs, hasNegativeStatusSkillApplication, resolveNegativeStatusApplications } from "../domain/negative-status-rules.js";
 import { linkedNegativeStatusContext } from "../domain/negative-status-context.js";
-import { advancePressureValveContext, getSkillStatusEffectInputs, resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
+import { addPowerPercentForType, advancePressureValveContext, getSkillStatusEffectInputs, resolveSkillStatusActivation } from "../domain/skill-status-effects.js";
 import { calculateAllPanelStats } from "../domain/stat.js";
 import { getS5SkillBattleLevelChange, getS5SkillBattleLevelControl, resolveS5PreviewBattleLevel } from "../domain/battle-level.js";
 import { getEffectiveTraits } from "../domain/effective-traits.js";
@@ -505,16 +505,6 @@ export function applyBattleActivation({
       Number(operations.powerPercentForAllAttacks),
     );
   }
-  if (operations.powerPercentForType) {
-    skillPowerPercentAddsBySlot = addBySlot(
-      next,
-      snapshot,
-      side,
-      skillPowerPercentAddsBySlot,
-      (candidate) => candidate.type === operations.powerPercentType,
-      Number(operations.powerPercentForType),
-    );
-  }
   const transientPowerPercent = Number(operations.transientPowerPercentForAllAttacks);
   const defenseReductionPercent = Number(operations.defenseReductionPercent);
   let additions = {};
@@ -574,6 +564,9 @@ export function applyBattleActivation({
         ...(operations.refractionStatuses ?? []),
       ],
       skillPowerPercentAddsBySlot,
+      ...(operations.powerPercentForType ? {
+        skillPowerPercentAddsByType: addPowerPercentForType(selfOverrides.skillPowerPercentAddsByType, operations),
+      } : {}),
     },
   });
   updateDirection(next, targetDirection, {

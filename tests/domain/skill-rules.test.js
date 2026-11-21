@@ -456,7 +456,7 @@ describe("resolveSkillPower", () => {
     });
   });
 
-  test("keeps Color Dispersion at 80 power and exposes its mixed-blood damage bonus", () => {
+  test("keeps Color Dispersion base power at 80 and resolves its +50% in the additive layer", () => {
     const colorDispersion = skill({
       category: "magical",
       description: "造成魔伤，对混血精灵造成伤害+50%。",
@@ -476,7 +476,7 @@ describe("resolveSkillPower", () => {
         enemyIsMixedBloodline: true,
       }),
     ).toMatchObject({
-      finalDamageMultiplier: 1.5,
+      powerPercentAdds: [0.5],
       status: "exact",
       value: 80,
     });
@@ -486,7 +486,7 @@ describe("resolveSkillPower", () => {
         enemyIsMixedBloodline: true,
       }),
     ).toMatchObject({
-      finalDamageMultiplier: 1.5,
+      powerPercentAdds: [0.5],
       status: "exact",
       value: 100,
     });
@@ -527,7 +527,7 @@ describe("resolveSkillPower", () => {
       resolveSkillPower(colorDispersion, {
         [control.id]: true,
       }),
-    ).toMatchObject({ finalDamageMultiplier: 1.5, status: "exact" });
+    ).toMatchObject({ powerPercentAdds: [0.5], status: "exact" });
   });
 
   test("resolves Flash Strike from the speed difference table", () => {

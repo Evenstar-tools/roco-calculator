@@ -554,11 +554,12 @@ const REVIEWED_EFFECTS = Object.freeze({
     inputs: [
       booleanInput("enemyIsMixedBloodline", "目标为混血精灵"),
     ],
-    ruleId: "boolean_damage_multiplier",
+    // The bonus stacks additively with light power buffs such as Sunny.
+    ruleId: "boolean_power_percent_add",
     ruleParams: {
+      add: 0.5,
       contextKey: "enemyIsMixedBloodline",
       label: "混血精灵伤害加成",
-      multiplier: 1.5,
     },
   },
   铁蒺藜: {

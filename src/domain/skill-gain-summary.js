@@ -64,6 +64,7 @@ function effectLabel(source, opposite) {
     fixedPowerAdd: `${prefix}威力`,
     fixedPowerAddsBySlot: `${prefix}第${source.slot}技能威力`,
     skillPowerPercentAddsBySlot: `${prefix}第${source.slot}技能威力`,
+    skillPowerPercentAddsByType: `${prefix}${source.slot}系技能威力`,
     attackLevelStage: `${prefix}攻击`,
     physicalAttackLevelStageAdd: `${prefix}物攻`,
     magicalAttackLevelStageAdd: `${prefix}魔攻`,
@@ -75,7 +76,7 @@ function effectLabel(source, opposite) {
     lifestealPercent: `${prefix}吸血`,
   }[field];
   if (!label) return null; // defenderSpeedFlat 是另一方向速度的镜像，不重复列出。
-  const percent = ["skillPowerPercentAddsBySlot", "hitCountPercentAdd"].includes(field);
+  const percent = ["skillPowerPercentAddsBySlot", "skillPowerPercentAddsByType", "hitCountPercentAdd"].includes(field);
   const stage = field.includes("LevelStage");
   return `${label}${signed(source.amount * (percent ? 100 : 1))}${stage ? "层" : percent || field === "lifestealPercent" ? "%" : ""}`;
 }

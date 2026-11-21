@@ -3092,7 +3092,7 @@ describe("calculateMatchup", () => {
     );
   });
 
-  test("applies Color Dispersion's mixed-blood bonus as final damage without changing power", () => {
+  test("adds Color Dispersion's mixed-blood bonus to the power percentage", () => {
     const base = calculateMatchup(
       snapshot,
       battleInput({
@@ -3124,19 +3124,19 @@ describe("calculateMatchup", () => {
         },
       }),
     ).forward.selectedResult;
-    const finalStep = boosted.formulaSteps.find(
-      ({ label }) => label === "减伤、连击与最终倍率",
-    );
-
     expect(base).toMatchObject({
       skillPower: 80,
       totalDamage: 63,
     });
     expect(boosted).toMatchObject({
-      skillPower: 80,
+      resolvedPower: 80,
+      skillPower: 120,
       totalDamage: 94,
     });
-    expect(finalStep.input.finalDamageMultiplier).toBe(1.5);
+    expect(boosted.formulaSteps.find(({ label }) => label === "技能威力百分比")?.input)
+      .toEqual([0.5]);
+    expect(boosted.formulaSteps.find(({ label }) => label === "减伤、连击与最终倍率")?.input.finalDamageMultiplier)
+      .toBe(1);
   });
 
   test("减压阀按使用次数增加相邻技能的固定威力", () => {

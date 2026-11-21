@@ -71,7 +71,7 @@ import {
   supportsChoiceTrait,
 } from "./domain/choice-skill-sequence.js";
 import { getBloodlineMagicOption } from "./domain/bloodline-magic.js";
-import { advancePressureValveContext, resolveSkillStatusActivation } from "./domain/skill-status-effects.js";
+import { addPowerPercentForType, advancePressureValveContext, resolveSkillStatusActivation } from "./domain/skill-status-effects.js";
 import { linkedNegativeStatusContext, negativeStatusInputUpdate } from "./domain/negative-status-context.js";
 import {
   hasNegativeStatusSkillApplication,
@@ -948,24 +948,6 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
     return next;
   }
 
-  function addPowerPercentToAttacksOfType(side, type, amount, current = {}) {
-    const next = { ...current };
-    for (const [index, entry] of stateRef.current.sides[side].skills.four.entries()) {
-      const carriedSkill = getSkill(snapshot, entry);
-      if (
-        !carriedSkill ||
-        carriedSkill.category === "status" ||
-        carriedSkill.category === "defense" ||
-        carriedSkill.type !== type
-      ) {
-        continue;
-      }
-      const slot = String(index + 1);
-      next[slot] = Number(next[slot] ?? 0) + amount;
-    }
-    return next;
-  }
-
   function addPowerPercentToAllAttacks(side, amount, current = {}) {
     const next = { ...current };
     for (const [index, entry] of stateRef.current.sides[side].skills.four.entries()) {
@@ -1333,14 +1315,6 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
       ownSkillPowerPercentAddsBySlot,
       transientPowerPercentAddsBySlot,
     );
-    if (operations.powerPercentForType) {
-      ownSkillPowerPercentAddsBySlot = addPowerPercentToAttacksOfType(
-        side,
-        operations.powerPercentType,
-        Number(operations.powerPercentForType),
-        ownSkillPowerPercentAddsBySlot,
-      );
-    }
     const ownSpeedFlat = doublePositive(
       Number(selfOverrides.attackerSpeedFlat ?? 0) + deltas.ownSpeedFlat,
     );
@@ -1388,6 +1362,9 @@ function CalculatorWorkspace({ snapshot, initialWorkspace, onOpenDeer, onOpenGlo
           fixedPowerAdd: ownFixedPower,
           fixedPowerAddsBySlot: ownFixedPowerAddsBySlot,
           skillPowerPercentAddsBySlot: ownSkillPowerPercentAddsBySlot,
+          ...(operations.powerPercentForType ? {
+            skillPowerPercentAddsByType: addPowerPercentForType(selfOverrides.skillPowerPercentAddsByType, operations),
+          } : {}),
           hitCountAdd: ownHitCountAdd,
           hitCountPercentAdd: ownHitCountPercentAdd,
           lifestealPercent:

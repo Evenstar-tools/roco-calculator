@@ -1,3 +1,7 @@
+import runtimeSnapshot from "../../public/data/runtime.json";
+import popularConfigs from "../../public/data/presets/pvp-popular-configs.json";
+import { getSkillStatusEffectInputs } from "../../src/domain/skill-status-effects.js";
+import { rememberSingleSkill, selectFourSkill, selectSingleSkill, updateMirroredTraitContext } from "../../src/state/calculator-session.js";
 import { getSkillEffectInputs } from "../../src/domain/skill-effects.js";
 import { describe, expect, test } from "vitest";
 import {
@@ -12,6 +16,69 @@ import {
   encodeShareState,
 } from "../../src/state/share.js";
 import { buildCalculatorViewModel, getTraitView } from "../../src/domain/calculator-view-model.js";
+
+test.each(["single", "four"].flatMap((mode) => [
+  [mode, false, false, 164],
+  [mode, false, true, 218],
+  [mode, true, false, 218],
+]))(
+  "霹雳迪迪对绒光优优：%s 放晴应对=%s、混血=%s，切换到色散后为 %i 伤害",
+  async (skillMode, counterDefenseSucceeded, mixedBloodline, expectedDamage) => {
+    const snapshot = runtimeSnapshot;
+    const state = createInitialState(snapshot);
+    state.mode = skillMode;
+    for (const [side, name] of [["attacker", "霹雳迪迪"], ["defender", "绒光优优"]]) {
+      const spirit = snapshot.spirits.find((item) => item.fullName === name);
+      const preset = popularConfigs.entries.find((entry) => entry.spiritId === spirit.id);
+      Object.assign(state.sides[side], {
+        spiritId: spirit.id, nature: preset.natureId, displayIvs: preset.displayIvs,
+        skills: { single: preset.skills[0], four: [...preset.skills] },
+      });
+    }
+    const skillId = (name) => snapshot.skills.find((skill) => skill.name === name).id;
+    const dispersion = skillId("色散");
+    const sunny = skillId("放晴");
+    const thunder = skillId("落雷");
+    const side = "attacker";
+    const direction = "forward";
+    const selection = { side, direction, snapshot };
+    const results = (current) => buildCalculatorViewModel({ activeDirection: direction, snapshot, state: current }).calculation.forward.results;
+    const damage = (current, id) => results(current).find((result) => result.skillId === id)?.totalDamage;
+    const choose = (current, id, index) => skillMode === "single"
+      ? selectSingleSkill(current, { ...selection, skillId: id }).state
+      : selectFourSkill(current, { ...selection, index, skillId: id }).state;
+    const baseline = choose(state, dispersion, 2);
+    expect(damage(baseline, dispersion)).toBe(109);
+    const thunderBase = damage(choose(state, thunder, 1), thunder);
+    // In four-skill mode, discard the light move's old slot and teach it in a new slot after casting.
+    let ready = choose(state, sunny, 3);
+    const sunnyControl = getSkillStatusEffectInputs(snapshot.skills.find((skill) => skill.id === sunny))
+      .find((control) => control.contextKey === "counterDefenseSucceeded");
+    if (skillMode === "single") {
+      ready = updateMirroredTraitContext(ready, { direction, key: sunnyControl.id, value: counterDefenseSucceeded }).state;
+    } else {
+      ready.sides.attacker.skills.four[3] = { skillId: sunny, context: { [sunnyControl.id]: counterDefenseSucceeded } };
+    }
+    const applied = applyBattleActivation({ side, skillIndex: skillMode === "single" ? 0 : 3, skillMode, snapshot, state: ready });
+    expect(applied.applied).toBe(true);
+    const withThunder = choose(applied.state, thunder, 1);
+    expect(damage(withThunder, thunder)).toBe(thunderBase);
+    let withDispersion = choose(withThunder, dispersion, 2);
+    if (mixedBloodline) {
+      const [mixedBloodlineControl] = getSkillEffectInputs(snapshot.skills.find((skill) => skill.id === dispersion));
+      const context = { [mixedBloodlineControl.id]: true };
+      if (skillMode === "single") {
+        withDispersion = updateMirroredTraitContext(withDispersion, { direction, key: mixedBloodlineControl.id, value: true }).state;
+        withDispersion = rememberSingleSkill(withDispersion, selection).state;
+      } else {
+        withDispersion.sides.attacker.skills.four[2] = { skillId: dispersion, context };
+      }
+    }
+    expect(damage(withDispersion, dispersion)).toBe(expectedDamage);
+    const reopened = await decodeShareState(await encodeShareState(withDispersion));
+    expect(damage(reopened, dispersion)).toBe(expectedDamage);
+  },
+);
 
 test.each(["attacker", "defender"])("矿物置换由%s使用后只提高该方魔攻，面板/伤害/分享一致", async side => {
   const snapshot = createSnapshot();

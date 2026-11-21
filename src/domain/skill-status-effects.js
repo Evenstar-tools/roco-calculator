@@ -801,6 +801,13 @@ export function getDefenseSkillReductionPercent(skill, context = {}) {
   return Math.min(100, Math.max(0, Number(match[1]) + poisonBonus));
 }
 
+// Permanent type buffs follow the attacking skill's type, even after a skill change.
+export function addPowerPercentForType(current, { powerPercentType, powerPercentForType }) {
+  const amount = Number(powerPercentForType);
+  if (!powerPercentType || !Number.isFinite(amount) || amount === 0) return current;
+  return { ...current, [powerPercentType]: Number(current?.[powerPercentType] ?? 0) + amount };
+}
+
 export function resolveSkillStatusActivation(skill, context = {}) {
   const refraction = resolveRefractionEffects({
     carriedSkills: context.carriedSkills,

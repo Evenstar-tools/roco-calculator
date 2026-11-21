@@ -2848,7 +2848,7 @@ test("Diffuse Reflection buffs only the first attacking skill of each type", asy
   expect(screen.getByRole("spinbutton", { name: "攻击方技能4静态威力" })).toHaveValue(95);
 });
 
-test("Sunny buffs light attacking skills without changing other types", async () => {
+test.each([[false, 150], [true, 200]])("Sunny counter=%s buffs only light attacks", async (counter, expectedPower) => {
   const user = userEvent.setup();
   render(<App initialSnapshot={snapshot} />);
   await selectDefaultSpirits(user);
@@ -2866,10 +2866,17 @@ test("Sunny buffs light attacking skills without changing other types", async ()
     await user.click(screen.getByRole("option", { name: new RegExp(name) }));
   }
 
+  if (counter) await user.click(screen.getByRole("checkbox", { name: "攻击方技能1应对防御成功" }));
   await user.click(screen.getByText("光系技能威力永久+50%，应对防御：改为永久+100%。"));
 
-  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(150);
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(expectedPower);
   expect(screen.getByRole("spinbutton", { name: "攻击方技能3静态威力" })).toHaveValue(80);
+
+  const picker = screen.getByRole("combobox", { name: "攻击方技能2" });
+  await user.clear(picker);
+  await user.type(picker, "风力冲击");
+  await user.click(screen.getByRole("option", { name: /风力冲击/ }));
+  expect(screen.getByRole("spinbutton", { name: "攻击方技能2静态威力" })).toHaveValue(80);
 });
 
 test("重组应对防御勾选后，切换到攻击技能会自动带入追加幻伤", async () => {

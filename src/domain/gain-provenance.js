@@ -4,6 +4,8 @@ const FIELDS = ["fixedPowerAdd", "attackLevelStage", "defenseLevelStage",
   "magicalDefenseLevelStageAdd", "physicalAttackLevelStageAdd", "magicalAttackLevelStageAdd", "hitCountAdd", "hitCountPercentAdd",
   "attackerSpeedFlat", "defenderSpeedFlat", "lifestealPercent"];
 const SLOTS = ["fixedPowerAddsBySlot", "skillPowerPercentAddsBySlot"];
+const TYPE_POWER = "skillPowerPercentAddsByType";
+const isTypePowerField = (field) => /^skillPowerPercentAddsByType\.[^.]+$/u.test(field);
 const number = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
 const close = (a, b) => Math.abs(a - b) < 1e-8;
 const unknown = (amount, kind = "unknown") => ({ kind, id: kind, name: kind === "manual" ? "手动" : "未记录", count: 0, amount });
@@ -15,13 +17,17 @@ function values(overrides = {}) {
       if (/^[1-9]\d*$/u.test(slot)) result[`${key}.${slot}`] = number(value);
     }
   }
+  for (const [type, value] of Object.entries(overrides[TYPE_POWER] ?? {})) {
+    const field = `${TYPE_POWER}.${type}`;
+    if (isTypePowerField(field)) result[field] = number(value);
+  }
   return result;
 }
 
 export function sanitizeGainSources(value) {
   const result = {};
   for (const [field, entry] of Object.entries(value ?? {})) {
-    if (!FIELDS.includes(field) && !SLOTS.some((key) => new RegExp(`^${key}\\.[1-9]\\d*$`, "u").test(field))) continue;
+    if (!FIELDS.includes(field) && !isTypePowerField(field) && !SLOTS.some((key) => new RegExp(`^${key}\\.[1-9]\\d*$`, "u").test(field))) continue;
     if (!entry || !Number.isFinite(entry.value) || !Array.isArray(entry.sources)) continue;
     const sources = entry.sources.filter((source) => source &&
       ["skill", "trait", "manual", "unknown"].includes(source.kind) &&

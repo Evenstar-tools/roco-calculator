@@ -677,11 +677,13 @@ export function calculateSkillResult({
   const skillPercentageAdds = asMultiplierList(
     powerResolution.powerPercentAdds,
   );
+  const typeStatusPercent = finiteNumber(directionOverrides.skillPowerPercentAddsByType?.[skill.type]) ?? 0;
   const statusPercentageAdds = [
     ...asMultiplierList(direction.skillPowerPercentAdds),
     ...asMultiplierList(directionOverrides.skillPowerPercentAdds),
     ...asMultiplierList(details.skillPowerPercentAdds),
     ...asMultiplierList(slotOverrides.skillPowerPercentAdds),
+    ...(typeStatusPercent === 0 ? [] : [typeStatusPercent]),
     ...asMultiplierList(
       directionOverrides.skillPowerPercentAddsBySlot?.[skillPosition],
     ),
@@ -1645,9 +1647,10 @@ export function calculateSkillResult({
   const scopedPercent = asMultiplierList(directionOverrides.skillPowerPercentAddsBySlot?.[skillPosition]).reduce((sum, value) => sum + Number(value || 0), 0);
   const staticPercentSources = [
     ...stateGains(`skillPowerPercentAddsBySlot.${skillPosition}`, scopedPercent),
+    ...stateGains(`skillPowerPercentAddsByType.${skill.type}`, typeStatusPercent),
     ...namedGain(skill.name, skillPercentageAdds.reduce((sum, value) => sum + value, 0), "skill"),
   ];
-  const extraStatusPercent = statusPercentageAdds.reduce((sum, value) => sum + value, 0) - scopedPercent;
+  const extraStatusPercent = statusPercentageAdds.reduce((sum, value) => sum + value, 0) - scopedPercent - typeStatusPercent;
   staticPercentSources.push(...namedGain("未记录", extraStatusPercent, "unknown"));
   const gainSources = {
     fixed: panelPowerOverride || staticPowerOverride ? [] : [
