@@ -89,7 +89,7 @@ test("竖排速度表按速度分档并收纳全部同速精灵", () => {
     .toBe(false);
 });
 
-test("支持 Excel 速度线的五种标准口径", () => {
+test("支持 Excel 速度线五种标准口径并保留真实精灵的速度边界", () => {
   expect(Object.keys(SPEED_TARGET_PROFILES)).toEqual([
     "positive-max",
     "neutral-max",
@@ -117,6 +117,24 @@ test("支持 Excel 速度线的五种标准口径", () => {
   expect(speedByProfile["neutral-zero"]).toBeGreaterThan(
     speedByProfile["negative-zero"],
   );
+
+  const snapshot = JSON.parse(readFileSync("data/snapshots/current.json", "utf8"));
+  const actualSpirits = snapshot.spirits.filter(spirit =>
+    ["罗隐", "锤头鹳"].includes(spirit.fullName),
+  );
+  expect(actualSpirits).toHaveLength(2);
+  for (const [profileId, luoyinSpeed, hammerstorkSpeed] of [
+    ["positive-max", 201, 241],
+    ["neutral-max", 176, 209],
+    ["positive-zero", 162, 200],
+    ["neutral-zero", 143, 175],
+    ["negative-zero", 134, 163],
+  ]) {
+    expect(createSpeedTargets({ profileId, spirits: actualSpirits })).toEqual([
+      expect.objectContaining({ name: "锤头鹳", level: 60, speed: hammerstorkSpeed }),
+      expect.objectContaining({ name: "罗隐", level: 60, speed: luoyinSpeed }),
+    ]);
+  }
 });
 
 test("速度排行榜按速度从高到低排列", () => {

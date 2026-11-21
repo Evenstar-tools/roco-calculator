@@ -161,8 +161,18 @@ test.each([
 test.each([
   ["hp",65,0,281],
   ["hp",105,0,349],
-  ["speed",75,60,176],
   ["speed",75,0,143],
 ])("双防校准不扩改未确认的HP和速度边界：%s/%s/%s", (kind,race,displayIv,expected) => {
   expect(calculatePanelStat({kind,race,displayIv})).toBe(expected);
+});
+
+test("60级基础速度同时保留罗隐176和锤头鹳175的半点边界", () => {
+  expect(calculatePanelStat({ kind: "speed", race: 75, displayIv: 60 })).toBe(176);
+  expect(calculatePanelStat({ kind: "speed", race: 105, displayIv: 0 })).toBe(175);
+  expect(calculatePanelStat({ kind: "speed", race: 105, displayIv: 60 })).toBe(209);
+  expect(calculatePanelStat({ kind: "speed", race: 105, displayIv: 0, natureMultiplier: 1.2 })).toBe(200);
+});
+
+test("60级速度校准保持非60级的既有计算顺序", () => {
+  expect(calculatePanelStat({ kind: "speed", race: 120, displayIv: 60, level: 89 })).toBe(268);
 });

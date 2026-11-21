@@ -14,7 +14,7 @@ export function statRound(value) {
   return Math.round(value);
 }
 
-// HP/速度沿用既有规则，不凭双防的新证据扩改未确认的半点边界。
+// HP与非60级速度沿用既有规则。
 function roundLegacyScaledStat(value, normalizedIv) {
   const floor = Math.floor(value);
   const isZeroIvHalfTie = normalizedIv === 0 &&
@@ -44,6 +44,14 @@ export function calculatePanelStat({
   }
   const normalizedIv = normalizeDisplayIv(displayIv);
   const isHp = kind === "hp";
+  if (kind === "speed" && numericLevel === 60) {
+    // 按60级实测校准：种族与个体分别缩放，保留相加前的单精度差异。
+    // 先合并两项会把罗隐75/60与锤头鹳105/0都进位成176。
+    const raceTerm = Math.fround(Math.fround(Number(race) / 100) * 110);
+    const ivTerm = Math.fround(Math.fround((3 * normalizedIv) / 100) * 110);
+    const scaled = statRound(Math.fround(raceTerm + ivTerm));
+    return statRound((scaled + 10) * Number(natureMultiplier)) + 50;
+  }
   if (isHp || kind === "speed") {
     const scaled = roundLegacyScaledStat(
       ((isHp ? 2 * numericLevel + 50 : numericLevel + 50) / 100) *

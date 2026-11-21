@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.3.20-20261118-transmission-shift-r1";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.21-20261121-speed-rounding-r1";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 const APP_SHELL = [
   "/manifest.webmanifest",
