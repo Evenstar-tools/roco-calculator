@@ -237,6 +237,14 @@ export const S5_FEATURE_INTRO = Object.freeze({
 
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
+    version: "v2.3.21",
+    date: "2026.11.21",
+    seasonId: "S5",
+    title: "S5 基础速度取整修正",
+    whatsNew: S5_FEATURE_INTRO,
+    fixes: ["修正60级速度取整：罗隐满个体176、锤头鹳零个体175；国际服S3季中保持原版。", "战斗面板和速度线共用修正后的基础速度。"],
+  }),
+  createRelease({
     version: "v2.3.20",
     date: "2026.11.15",
     seasonId: "S5",
