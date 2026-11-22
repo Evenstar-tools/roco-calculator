@@ -973,16 +973,6 @@ html[data-theme="dark"] .health-input__modes .health-input__mode[aria-pressed="t
   margin-top: 11px;
 }
 
-.team-member-editor__skills > label > span {
-  width: 22px;
-  height: 22px;
-  font-size: 11px;
-}
-
-.team-member-editor__skills > label {
-  grid-template-columns: 22px minmax(0, 1fr);
-}
-
 .toast,
 .share-dialog p,
 .share-dialog > label {

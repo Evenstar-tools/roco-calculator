@@ -781,25 +781,6 @@
   margin-top: 9px;
 }
 
-.team-member-editor__skills > label {
-  display: grid;
-  align-items: center;
-  gap: 6px;
-  grid-template-columns: 18px minmax(0, 1fr);
-}
-
-.team-member-editor__skills > label > span {
-  display: inline-grid;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  place-items: center;
-  color: var(--text-faint);
-  background: var(--surface-muted);
-  font-size: 9px;
-  font-weight: 800;
-}
-
 .team-member-editor__skills .skill-picker {
   height: 38px;
 }

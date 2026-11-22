@@ -2,6 +2,7 @@ import { ArrowCounterClockwise, ArrowsClockwise, DotsSixVertical, Pause } from "
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SkillPicker } from "../../components/SkillPicker.jsx";
 import { SkillIcon } from "../../components/SkillIcon.jsx";
+import { SkillSlotSwapPreview } from "../../components/SkillSlotSwapPreview.jsx";
 import { SpiritPicker } from "../../components/SpiritPicker.jsx";
 import { chooseDefaultSkillIds, getSkillChoices } from "../../domain/skill-loadout.js";
 import { prepareSpiritForView } from "../../data/search-index.js";
@@ -112,7 +113,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
     setHistory([]); setSelected(-1); setIssue(""); setCooldown(null); setBranch("power");
     setRoundUndo([]); setDriveAccum(0);
   }
-  const { listRef, handleProps, slotProps } = useSkillSlotSwap({
+  const { draggedIndex, listRef, handleProps, previewRef, slotProps } = useSkillSlotSwap({
     entries: initial,
     columns: layout === "grid" ? 2 : 1,
     onSwap(from, to) {
@@ -246,7 +247,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
           <button type="button" aria-label={t("重置推演")} onClick={() => reset()}>{t("重置")}</button>
           </div>
         </div>
-        {round === 0 ? <div className="transmission-config" ref={listRef}>{initial.map((skill, index) => {
+        {round === 0 ? <><div className="transmission-config" ref={listRef}>{initial.map((skill, index) => {
             const usable = isSlotUsable(effectiveTrait, index);
             return <div key={index} className={usable ? undefined : "is-unusable"} data-usable={usable ? "true" : "false"} {...slotProps(index)}>
               <div className="transmission-config-label">
@@ -258,7 +259,7 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
               </div>
               <SkillPicker readable menuBoundaryRef={body} ariaLabel={t("初始{v0}号位技能", { v0: index + 1 })} skills={skillChoices} selected={skill} onSelect={(next) => reset(initial.map((item, i) => i === index ? snapshot.skills.find((entry) => entry.id === next) ?? null : item))} />
             </div>;
-          })}</div> :
+          })}</div><SkillSlotSwapPreview skill={initial[draggedIndex]} name={initial[draggedIndex] ? t(initial[draggedIndex].name) : ""} previewRef={previewRef} /></> :
           <div className="transmission-board" data-playing={Boolean(playback)}><ol ref={board} className="transmission-slots" aria-label={t("当前技能槽位")} aria-live="polite" aria-busy={Boolean(playback)}>{slots.map((skill, index) => {
             const usable = isSlotUsable(effectiveTrait, index);
             return <li key={index} className={usable ? undefined : "is-unusable"} data-usable={usable ? "true" : "false"}>

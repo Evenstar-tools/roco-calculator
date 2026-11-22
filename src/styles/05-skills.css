@@ -1157,4 +1157,7 @@ html:is(:lang(en), :lang(ja)) .skill-slot__kind > span {
 }
 .skill-slot-swap-handle { display: inline-flex; align-items: center; padding: 0; border: 0; background: transparent; color: var(--text-muted); touch-action: none; cursor: grab; }
 .skill-slot-swap-handle:disabled { cursor: default; }
+[data-skill-swap-state="source"] { opacity: .42; }
+[data-skill-swap-state="source"] .skill-slot-swap-handle { cursor: grabbing; }
 [data-skill-swap-state="target"] { outline: 2px solid var(--accent); outline-offset: -2px; }
+.skill-slot-swap-preview { position: fixed; inset: 0 auto auto 0; z-index: 4000; display: flex; align-items: center; gap: 8px; padding: 6px 12px; max-width: 65vw; border: 1px solid var(--accent); border-radius: 8px; background: var(--surface); color: var(--text); box-shadow: var(--shadow); pointer-events: none; }

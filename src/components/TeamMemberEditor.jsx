@@ -2,6 +2,7 @@ import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
 import { useState } from "react";
 import { DotsSixVertical, Eye, EyeSlash } from "@phosphor-icons/react";
 import { useSkillSlotSwap } from "../hooks/useSkillSlotSwap.js";
+import { SkillSlotSwapPreview } from "./SkillSlotSwapPreview.jsx";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { localizeGlobalSkill } from "../runtime/global-entity-localization.js";
 import {
@@ -135,7 +136,7 @@ export function TeamMemberEditor({
     { length: Math.max(4, member?.skills?.four?.length ?? 0) },
     (_, skillIndex) => member?.skills?.four?.[skillIndex] ?? null,
   );
-  const { listRef, handleProps, slotProps } = useSkillSlotSwap({
+  const { draggedIndex, listRef, handleProps, previewRef, slotProps } = useSkillSlotSwap({
     entries: skillEntries,
     onSwap(from, to) {
       const four = [...skillEntries];
@@ -143,6 +144,7 @@ export function TeamMemberEditor({
       onChange({ ...member, skills: { ...member.skills, four } });
     },
   });
+  const draggedSkill = draggedIndex === undefined ? null : skillById.get(entryId(skillEntries[draggedIndex]));
 
   function selectSpirit(spiritId) {
     const personalConfiguration = getSpiritConfiguration(spiritId);
@@ -352,6 +354,7 @@ export function TeamMemberEditor({
                 );
               })}
             </div>
+            <SkillSlotSwapPreview skill={draggedSkill} name={draggedSkill ? t(draggedSkill.name) : ""} previewRef={previewRef} />
           </section>
         </div>
       ) : member && spirit ? (

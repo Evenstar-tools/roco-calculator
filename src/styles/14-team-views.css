@@ -12,10 +12,6 @@ html[data-theme="dark"] .team-workbench { --bloodline-warning: #e6cb8e; }
   line-height: 1.6;
 }
 
-.team-member-editor__skills > label.has-bloodline {
-  grid-template-columns: 18px minmax(0, 1fr) auto;
-}
-
 .team-member-editor__skill-source {
   color: var(--accent);
   font-size: 11px;
