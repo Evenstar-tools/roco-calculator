@@ -1,4 +1,4 @@
-const CACHE_NAME = "rock-calculator-webapp-v2.3.21-20261121-dispersion-sunny-r2";
+const CACHE_NAME = "rock-calculator-webapp-v2.3.21-20261122-skill-slot-swap-r3";
 const CACHE_PREFIX = "rock-calculator-webapp-";
 const APP_SHELL = [
   "/manifest.webmanifest",

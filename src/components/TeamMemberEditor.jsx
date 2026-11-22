@@ -1,6 +1,7 @@
 import { useToolLocale as useLocale } from "../i18n/useToolLocale.js";
 import { useState } from "react";
-import { Eye, EyeSlash } from "@phosphor-icons/react";
+import { DotsSixVertical, Eye, EyeSlash } from "@phosphor-icons/react";
+import { useSkillSlotSwap } from "../hooks/useSkillSlotSwap.js";
 import { useRuntime } from "../runtime/RuntimeContext.jsx";
 import { localizeGlobalSkill } from "../runtime/global-entity-localization.js";
 import {
@@ -129,6 +130,19 @@ export function TeamMemberEditor({
   const investmentValidation = enabled && member
     ? validateAbilityInvestment({ values: member.displayIvs })
     : null;
+
+  const skillEntries = Array.from(
+    { length: Math.max(4, member?.skills?.four?.length ?? 0) },
+    (_, skillIndex) => member?.skills?.four?.[skillIndex] ?? null,
+  );
+  const { listRef, handleProps, slotProps } = useSkillSlotSwap({
+    entries: skillEntries,
+    onSwap(from, to) {
+      const four = [...skillEntries];
+      [four[from], four[to]] = [four[to], four[from]];
+      onChange({ ...member, skills: { ...member.skills, four } });
+    },
+  });
 
   function selectSpirit(spiritId) {
     const personalConfiguration = getSpiritConfiguration(spiritId);
@@ -298,15 +312,24 @@ export function TeamMemberEditor({
               </p>
             ) : null}
 
-            <div className="team-member-editor__skills">
-              {Array.from({ length: Math.max(4, member.skills?.four?.length ?? 0) }, (_, skillIndex) => {
-                const skill = skillById.get(entryId(member.skills?.four?.[skillIndex]));
+            <div className="team-member-editor__skills" ref={listRef}>
+              {skillEntries.map((entry, skillIndex) => {
+                const skill = skillById.get(entryId(entry));
                 const description = global && skill ? localizeGlobalSkill(skill, locale).description : skill?.description;
                 const bloodline = bloodlineSkillIds.has(skill?.id);
                 const conflict = conflictIds.has(skill?.id);
                 return (
-                  <div key={skillIndex} className={`team-member-editor__skill${bloodline ? " has-bloodline" : ""}${conflict ? " has-bloodline-conflict" : ""}`}>
-                    <span className="team-member-editor__skill-number">{skillIndex + 1}</span>
+                  <div key={skillIndex} className={`team-member-editor__skill${bloodline ? " has-bloodline" : ""}${conflict ? " has-bloodline-conflict" : ""}`} {...slotProps(skillIndex)}>
+                    <button
+                      type="button"
+                      className="skill-slot-swap-handle team-member-editor__skill-number"
+                      {...handleProps(skillIndex)}
+                      aria-label={t("拖动技能{index}换位", { index: skillIndex + 1 })}
+                      title={t("拖动换位（Alt+方向键）")}
+                    >
+                      <span aria-hidden="true">{skillIndex + 1}</span>
+                      <DotsSixVertical aria-hidden="true" size={14} weight="bold" />
+                    </button>
                     <div className="team-member-editor__skill-body">
                       <SkillPicker
                         ariaLabel={t("成员技能{index}", { index: skillIndex + 1 })}

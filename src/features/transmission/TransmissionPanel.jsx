@@ -1,4 +1,4 @@
-import { ArrowCounterClockwise, ArrowsClockwise, Pause } from "@phosphor-icons/react";
+import { ArrowCounterClockwise, ArrowsClockwise, DotsSixVertical, Pause } from "@phosphor-icons/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SkillPicker } from "../../components/SkillPicker.jsx";
 import { SkillIcon } from "../../components/SkillIcon.jsx";
@@ -12,6 +12,7 @@ import "./transmission.css";
 import { useRuntime } from "../../runtime/RuntimeContext.jsx";
 import { useToolLocale as useLocale } from "../../i18n/useToolLocale.js";
 import { useModalFocus } from "../../hooks/useModalFocus.js";
+import { useSkillSlotSwap } from "../../hooks/useSkillSlotSwap.js";
 import { SpiritImage } from "../../components/SpiritImage.jsx";
 
 const SELECTABLE_TRAITS = ["向心力", "翼轴", "贪心算法", "盲拧", "机械变式", "风速仪", "正位宝剑", "宝剑王牌", "有求必应", "一意孤行"];
@@ -111,6 +112,16 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
     setHistory([]); setSelected(-1); setIssue(""); setCooldown(null); setBranch("power");
     setRoundUndo([]); setDriveAccum(0);
   }
+  const { listRef, handleProps, slotProps } = useSkillSlotSwap({
+    entries: initial,
+    columns: layout === "grid" ? 2 : 1,
+    onSwap(from, to) {
+      if (round !== 0) return;
+      const next = initial.slice();
+      [next[from], next[to]] = [next[to], next[from]];
+      reset(next);
+    },
+  });
   function roundDetails(result) {
     return [
       ...result.sources.map((source) => `${source.name}：自身 ${source.own}${source.extra ? ` + ${effectiveTrait} ${source.extra}` : ""}${source.bonus ? ` + 轮班额外 ${source.bonus}` : ""}${source.fixed ? "；位置固定" : ` = ${source.total} 层`}`),
@@ -235,10 +246,16 @@ function VerifiedTransmissionPanel({ snapshot, sides, getSpiritConfiguration, on
           <button type="button" aria-label={t("重置推演")} onClick={() => reset()}>{t("重置")}</button>
           </div>
         </div>
-        {round === 0 ? <div className="transmission-config">{initial.map((skill, index) => {
+        {round === 0 ? <div className="transmission-config" ref={listRef}>{initial.map((skill, index) => {
             const usable = isSlotUsable(effectiveTrait, index);
-            return <div key={index} className={usable ? undefined : "is-unusable"} data-usable={usable ? "true" : "false"}>
-              <label>{t("{slot} 号位-{layers}", { slot: index + 1, layers: driveLayers[index] })}{!usable ? t(" · 不可使用") : ""}</label>
+            return <div key={index} className={usable ? undefined : "is-unusable"} data-usable={usable ? "true" : "false"} {...slotProps(index)}>
+              <div className="transmission-config-label">
+                <span>{t("{slot} 号位-{layers}", { slot: index + 1, layers: driveLayers[index] })}{!usable ? t(" · 不可使用") : ""}</span>
+                <button type="button" className="skill-slot-swap-handle" {...handleProps(index)}
+                  aria-label={t("拖动技能{index}换位", { index: index + 1 })} title={t("拖动换位（Alt+方向键）")}>
+                  <DotsSixVertical aria-hidden="true" size={16} />
+                </button>
+              </div>
               <SkillPicker readable menuBoundaryRef={body} ariaLabel={t("初始{v0}号位技能", { v0: index + 1 })} skills={skillChoices} selected={skill} onSelect={(next) => reset(initial.map((item, i) => i === index ? snapshot.skills.find((entry) => entry.id === next) ?? null : item))} />
             </div>;
           })}</div> :

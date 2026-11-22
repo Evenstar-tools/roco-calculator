@@ -9,7 +9,8 @@
 .transmission-panel button,.transmission-panel summary { cursor: pointer; }.transmission-panel button:disabled { opacity: .5; cursor: not-allowed; }
 .transmission-panel .transmission-primary { background: var(--accent); color: white; border-color: var(--accent); }
 .transmission-panel :focus-visible:not(.spirit-picker__search input):not(.skill-picker input) { outline: 2px solid var(--accent); outline-offset: 2px; }
-.transmission-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }.transmission-config { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin: 14px 0; }.transmission-config>div { min-width: 0; }.transmission-config label { display: block; margin-bottom: 6px; color: var(--text-muted); }
+.transmission-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }.transmission-config { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin: 14px 0; }.transmission-config>div { min-width: 0; }.transmission-config-label { display: flex; align-items: center; justify-content: space-between; color: var(--text-muted); }
+.transmission-config-label .skill-slot-swap-handle { justify-content: center; min-width: 32px; min-height: 28px; cursor: grab; }
 .transmission-trait { display: flex; gap: 10px; align-items: center; }
 .transmission-trait-picker { position: relative; min-width: 0; flex: 1; }
 .transmission-trait-trigger { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 8px 10px; font: inherit; text-align: left; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
@@ -50,7 +51,6 @@
 .transmission-wind{margin:8px 0 12px;color:var(--text-muted);font-size:13px}
 .transmission-wind{color:var(--text)}
 .transmission-config>.is-unusable{border:1px dashed var(--border);border-radius:8px;padding:8px;background:var(--surface);opacity:1}
-.transmission-config>.is-unusable label{color:var(--text-muted)}
 
 /* Dialog menus use the available dialog width, never the half-width skill slot. */
 .transmission-panel > header { flex-shrink: 0; }

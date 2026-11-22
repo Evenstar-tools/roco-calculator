@@ -2905,9 +2905,9 @@
 .team-workbench .team-member-editor__durability b { font-size: 17px; }
 .team-workbench .team-member-editor__durability > div > span:last-child b { color: var(--accent-strong); }
 .team-workbench .team-member-editor__skills { display: grid; gap: 0; margin-top: 0; }
-.team-member-editor__skill { display: grid; grid-template-columns: 14px minmax(0, 1fr); align-items: start; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.team-member-editor__skill { display: grid; grid-template-columns: 30px minmax(0, 1fr); align-items: start; gap: 6px; padding: 6px 0; border-bottom: 1px solid var(--border); }
 .team-member-editor__skill:first-child { padding-top: 0; }
-.team-member-editor__skill-number { padding-top: 12px; color: var(--text-muted); font-size: 12px; }
+.team-member-editor__skill-number { min-height: 40px; font-size: 12px; }
 .team-member-editor__skill-body { min-width: 0; }
 .team-workbench .team-member-editor__skills .skill-picker { min-height: 40px; }
 .team-member-editor__skill-meta { display: flex; flex-wrap: wrap; gap: 3px 14px; margin-top: 6px; color: var(--text-muted); font-size: 12px; line-height: 1.5; }

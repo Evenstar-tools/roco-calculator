@@ -71,6 +71,25 @@ test("开始后复用同一个推进按钮，焦点移出弹层仍可Escape关�
   fireEvent.keyDown(document, { key: "Escape" });
   expect(onClose).toHaveBeenCalledOnce();
 });
+
+test("初始技能可移入空槽并与已有技能互换，首回合按换位后的顺序推演", () => {
+  const demo = { ...snapshot, skills: ["A", "B", "C", "D"].map((name) => ({ id: name, name, description: "传动1" })) };
+  render(<TransmissionPanel snapshot={demo} sides={{ attacker: { skills: { four: ["A", "B", null, "D"] } } }} onClose={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: "载入攻击方技能" }));
+  const handle = (index) => screen.getByRole("button", { name: `拖动技能${index}换位` });
+  expect(handle(3)).toBeDisabled();
+  fireEvent.keyDown(handle(1), { key: "ArrowDown", altKey: true });
+  expect(initialOrder()).toEqual(["", "B", "A", "D"]);
+  expect(roundButton()).toBeDisabled();
+  fireEvent.keyDown(handle(3), { key: "ArrowRight", altKey: true });
+  expect(initialOrder()).toEqual(["", "B", "D", "A"]);
+  fireEvent.change(screen.getByLabelText("初始1号位技能"), { target: { value: "C" } });
+  fireEvent.click(screen.getByRole("option", { name: /^C(?:\s|$)/ }));
+  advance();
+  expect(currentOrder()).toEqual(["A", "C", "B", "D"]);
+  expect(screen.queryByRole("button", { name: /拖动技能\d换位/ })).toBeNull();
+});
+
 test("相关特性列表反向选择最终形态，并重置旧推演", () => {
   render(<TransmissionPanel snapshot={snapshot} onClose={vi.fn()} />);
   const selector = traitSelector();

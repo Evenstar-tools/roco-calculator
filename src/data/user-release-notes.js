@@ -238,10 +238,11 @@ export const S5_FEATURE_INTRO = Object.freeze({
 export const USER_RELEASE_NOTES = Object.freeze([
   createRelease({
     version: "v2.3.21",
-    date: "2026.11.21",
+    date: "2026.11.22",
     seasonId: "S5",
-    title: "S5 基础速度取整修正",
+    title: "S5 配招拖动换位",
     whatsNew: S5_FEATURE_INTRO,
+    features: ["队伍配招和传动初始配置可拖动交换技能，也能拖进空槽。"],
     fixes: [
       "国服色散对混血的加成与放晴相加；常用配置下，迪迪一次普通放晴后打混血绒光优优为218。",
       "放晴和点亮的增益跟随光系技能，切换技能后仍然有效。",

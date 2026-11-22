@@ -2,7 +2,7 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import { TeamMemberEditor } from "../../src/components/TeamMemberEditor.jsx";
 import snapshot from "../../data/snapshots/current.json";
-import { createTeamMember, TEAM_BLOODLINE_OPTIONS } from "../../src/state/team-presets.js";
+import { createTeamMember, teamPresetsRepository, TEAM_BLOODLINE_OPTIONS } from "../../src/state/team-presets.js";
 import { LocaleProvider } from "../../src/i18n/LocaleContext.jsx";
 import { RuntimeProvider } from "../../src/runtime/RuntimeContext.jsx";
 import { translateUi } from "../../src/i18n/messages.js";
@@ -56,4 +56,44 @@ test("updates on loadout or team changes, ignores extra slots and hides for othe
   expect(within(region()).getByText("0 种")).toBeInTheDocument();
   rerender(<TeamMemberEditor {...props} member={make("加尔", [])} members={[member]} />);
   expect(screen.queryByRole("region", { name: "旧玩具队伍技能系别" })).not.toBeInTheDocument();
+});
+
+test("配招换位保存完整技能设置，支持空槽并保留单技能选择", () => {
+  const first = snapshot.skills.find((entry) => entry.name === "能量炮");
+  const second = snapshot.skills.find((entry) => entry.name === "许愿星");
+  const configured = { skillId: first.id, hitCount: 2, context: { energy: 3 } };
+  const member = {
+    ...createTeamMember(snapshot, spirit("加尔").id),
+    skills: { single: configured, four: [configured, second.id, null, null] },
+  };
+  const storage = new Map();
+  const repository = teamPresetsRepository({
+    storage: { getItem: (key) => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) },
+    idFactory: () => "swap-team",
+  });
+  let state = repository.create(repository.load(snapshot), "换位测试");
+  state = repository.updateMember(state, state.activeTeamId, 0, member);
+  const onChange = vi.fn((next) => {
+    state = repository.updateMember(state, state.activeTeamId, 0, next);
+  });
+  const renderMember = (value) =>
+    <TeamMemberEditor index={0} member={value} snapshot={snapshot} onChange={onChange} />;
+  const move = (slot) =>
+    fireEvent.keyDown(screen.getByRole("button", { name: `拖动技能${slot}换位` }), { key: "ArrowDown", altKey: true });
+  const readMember = () => repository.load(snapshot).teams[0].members[0];
+  const { rerender } = render(renderMember(member));
+
+  expect(screen.getByRole("button", { name: "拖动技能3换位" })).toBeDisabled();
+  move(1);
+  expect(readMember().skills).toEqual({ ...member.skills, four: [second.id, configured, null, null] });
+
+  rerender(renderMember(readMember()));
+  move(2);
+  const restored = readMember();
+  expect(restored.skills).toEqual({ ...member.skills, four: [second.id, null, configured, null] });
+  rerender(renderMember(restored));
+  expect(screen.getByRole("combobox", { name: "成员技能1" })).toHaveValue(second.name);
+  expect(screen.getByRole("combobox", { name: "成员技能2" })).toHaveValue("");
+  expect(screen.getByRole("combobox", { name: "成员技能3" })).toHaveValue(first.name);
+  expect(onChange).toHaveBeenCalledTimes(2);
 });
