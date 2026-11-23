@@ -1,7 +1,7 @@
 {
   "format": "rock-calculator.favorite-config-library",
   "schemaVersion": 1,
-  "exportedAt": "2026-11-01T00:00:00+08:00",
+  "exportedAt": "2026-11-23T00:00:00-05:00",
   "entryCount": 18,
   "entries": [
     {
@@ -38,26 +38,26 @@
         "skill_preview_s5_mineral-exchange",
         "skill_preview_s5_silver-shards",
         "skill_086497800410e7cd",
-        "skill_de14b645b3046425"
+        "skill_c2c67b82adee8c4f"
       ],
       "traitValues": {}
     },
     {
       "spiritId": "spirit_preview_s5_gold-vein-dragon",
-      "natureId": "adamant",
+      "natureId": "peaceful",
       "displayIvs": {
         "hp": 60,
         "physicalAttack": 60,
         "physicalDefense": 0,
         "magicalAttack": 0,
-        "magicalDefense": 0,
-        "speed": 60
+        "magicalDefense": 60,
+        "speed": 0
       },
       "skills": [
         "skill_preview_s5_overcharge",
-        "skill_preview_s5_restart",
-        "skill_d1c28ec80c85cf57",
-        "skill_0456e96011ecd42f"
+        "skill_eecbee3c980e6cf8",
+        "skill_be2ecc615bf1b487",
+        "skill_8014af7b31b97161"
       ],
       "traitValues": {}
     },
@@ -74,8 +74,8 @@
       },
       "skills": [
         "skill_preview_s5_spirit-disturbance",
-        "skill_preview_s5_earthbound-spirit",
-        "skill_b688da558b9ff2e8",
+        "skill_a9f8a2511af20079",
+        "skill_dfe7184d14b2edcb",
         "skill_4375736cdfafd6a1"
       ],
       "traitValues": {}
@@ -272,7 +272,7 @@
     },
     {
       "spiritId": "spirit_preview_s5_abu",
-      "natureId": "naughty",
+      "natureId": "cheerful",
       "displayIvs": {
         "hp": 60,
         "physicalAttack": 60,
@@ -282,20 +282,20 @@
         "magicalDefense": 0
       },
       "skills": [
+        "skill_8014af7b31b97161",
         "skill_preview_s5_saint-dragon-slash",
-        "skill_preview_s5_dragon-claws",
-        "skill_preview_s5_dragon-eye-dotting",
-        "skill_794ee1751d9411e8"
+        "skill_5de6dc05b8315c7d",
+        "skill_9403fd3a6850b653"
       ],
       "traitValues": {},
       "source": {
         "authority": "user",
-        "confirmedAt": "2026-11-01"
+        "confirmedAt": "2026-11-23"
       }
     },
     {
       "spiritId": "spirit_preview_s5_super-abu",
-      "natureId": "naughty",
+      "natureId": "cheerful",
       "displayIvs": {
         "hp": 60,
         "physicalAttack": 60,
@@ -305,15 +305,15 @@
         "magicalDefense": 0
       },
       "skills": [
+        "skill_8014af7b31b97161",
         "skill_preview_s5_saint-dragon-slash",
-        "skill_preview_s5_dragon-claws",
-        "skill_preview_s5_dragon-eye-dotting",
-        "skill_794ee1751d9411e8"
+        "skill_5de6dc05b8315c7d",
+        "skill_9403fd3a6850b653"
       ],
       "traitValues": {},
       "source": {
         "authority": "user",
-        "confirmedAt": "2026-11-01"
+        "confirmedAt": "2026-11-23"
       }
     },
     {

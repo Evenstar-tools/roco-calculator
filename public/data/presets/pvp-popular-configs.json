@@ -1,7 +1,7 @@
 {
   "format": "rock-calculator.favorite-config-library",
   "schemaVersion": 1,
-  "appVersion": "2.3.7",
+  "appVersion": "2.3.21",
   "versions": {
     "data": "s4-2026-09-10",
     "rules": "s4-2026-09-10"
@@ -4391,7 +4391,7 @@
     },
     {
       "spiritId": "spirit_8ac693cfd57fea1c",
-      "natureId": "peaceful",
+      "natureId": "brave",
       "displayIvs": {
         "hp": 60,
         "speed": 0,

@@ -21,7 +21,7 @@ const currentSnapshot = applyS5Candymo(withWebPreview(applyS5Bwiki(withWebPrevie
 const snapshot = currentSnapshot;
 const specs = [
   ["冥古龙", "固执", "HAS"], ["地绡银龙", "胆小", "HCS"],
-  ["龙嵴金脉", "固执", "HAS"], ["影子剪纸", "开朗", "HAS"],
+  ["龙嵴金脉", "平和", "HAD"], ["影子剪纸", "开朗", "HAS"],
   ["滴廿豚", "沉默", "HBD"], ["冬虫夏瓜", "沉默", "HBC"],
   ["刨雪鹅", "沉默", "HBD"], ["圆环鲸羽", "沉默", "HCS"],
   ["沙咔蟹", "固执", "HAS"], ["鸡麻麻", "平和", "HBD"],
@@ -29,6 +29,12 @@ const specs = [
   ["圣冠布鲁斯", "固执", "HAS"], ["琉璃君主", "沉默", "HBD"],
 ];
 const stats = { H: "hp", A: "physicalAttack", B: "physicalDefense", C: "magicalAttack", D: "magicalDefense", S: "speed" };
+const revisedSkills = {
+  冥古龙: ["撞鬼", "荒芜之噬", "力量增效", "偷袭"],
+  地绡银龙: ["矿物置换", "碎银", "扬尘", "强制重启"],
+  龙嵴金脉: ["过充电", "休息回复", "泥浆铠甲", "龙炮"],
+  影子剪纸: ["灵扰", "双星", "撞鬼", "力量增效"],
+};
 
 afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); });
 
@@ -43,9 +49,9 @@ test("14份用户推荐按精确形态、性格与三项60录入，未指定技�
     expect(getNature(entry.natureId).name).toBe(nature);
     expect(entry.displayIvs).toEqual(Object.fromEntries(Object.entries(stats)
       .map(([letter, stat]) => [stat, spread.includes(letter) ? 60 : 0])));
-    if (index === 0) {
-      expect(entry.skills.map(id => snapshot.skills.find(skill => skill.id === id)?.name))
-        .toEqual(["撞鬼", "荒芜之噬", "力量增效", "偷袭"]);
+    if (revisedSkills[name]) {
+      expect(entry.skills.map(id => currentSnapshot.skills.find(skill => skill.id === id)?.name))
+        .toEqual(revisedSkills[name]);
     } else if (index >= 12) {
       expect(entry.skills).toEqual([null, null, null, null]);
     } else {
@@ -108,6 +114,11 @@ test("BWIKI 刷新只修复系统热门模板的非法和空槽，保留性格�
   const old = buildS5PopularConfigLibrary();
   const library = buildS5PopularConfigLibrary(currentSnapshot);
   expect(library.entryCount).toBe(249);
+  const flame = currentSnapshot.spirits.find(spirit => spirit.fullName === "烈焰狂战士");
+  const flamePreset = library.entries.find(entry => entry.spiritId === flame.id);
+  expect(getNature(flamePreset.natureId).name).toBe("勇敢");
+  expect(flamePreset.skills.map(id => currentSnapshot.skills.find(skill => skill.id === id)?.name))
+    .toEqual(["撕咬", "双响炮", "先发制人", "力量增效"]);
   for (const entry of library.entries) {
     const previous = old.entries.find(candidate => candidate.spiritId === entry.spiritId);
     const legal = new Set([...getLegalSkillIds(currentSnapshot, entry.spiritId), ...chooseDefaultSkillIds(currentSnapshot, entry.spiritId)]);

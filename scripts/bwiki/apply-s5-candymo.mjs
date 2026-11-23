@@ -107,15 +107,21 @@ export function applyS5Candymo(snapshot, evidence) {
     const poolIndex = next.learnsets.findIndex(item => item.spiritId === spirit.id);
     if (poolIndex < 0) next.learnsets.push(pool); else next.learnsets[poolIndex] = pool;
   }
-  // User-selected defaults are configuration, not evidence of an unconfirmed form's learnset.
+  // Set the calculator defaults after importing the audited skill acquisitions.
   for (const key of ["abu", "super-abu", "boss-abu"]) {
     const spirit = next.spirits.find(item => item.id === `spirit_preview_s5_${key}`);
     const preset = recommendations.entries.find(item => item.spiritId === spirit?.id);
     required(preset?.source?.authority === "user" && preset.skills.length === 4 &&
       preset.skills.every(id => next.skills.some(skill => skill.id === id)), `用户默认配置不完整：${key}`);
+    const pending = spirit.previewIdentity?.formalIdPending === true;
     spirit.previewDefaults = { natureId: preset.natureId, displayIvs: { ...preset.displayIvs },
       authority: "user", confirmedAt: preset.source.confirmedAt,
-      ...(spirit.previewIdentity?.formalIdPending === true ? { skillIds: [...preset.skills] } : {}) };
+      ...(pending ? { skillIds: [...preset.skills] } : {}) };
+    if (!pending) {
+      const learnset = next.learnsets.find(item => item.spiritId === spirit.id);
+      required(preset.skills.every(id => learnset?.skillIds.includes(id)), `用户默认配置含不可学技能：${key}`);
+      learnset.defaultSkillIds = [...preset.skills];
+    }
   }
   next.currentPatchChanges = { ...next.currentPatchChanges,
     spirits: next.spirits.map(entity => entity.changeInfo).filter(Boolean),

@@ -23,7 +23,8 @@ import { withS5PreviewCalculationGuard } from "../../src/features/s5-preview/cal
 const read = file => JSON.parse(readFileSync(file, "utf8"));
 const evidence = read("data/reviewed/candymo-s5-20261101.json");
 const names = ["阿布", "超能阿布", "呆呆铃", "跳跳铃", "铃兰夫人"];
-const dragonDefaults = ["圣龙狂斩", "龙之爪牙", "画龙点睛", "光之矛"];
+const dragonDefaults = ["龙炮", "圣龙狂斩", "火焰切割", "先发制人"];
+const bossPlaceholderDefaults = ["圣龙狂斩", "龙之爪牙", "画龙点睛", "光之矛"];
 const lilyDefaults = ["维管束重构", "恋恋不舍", "筑梦", "根吸收"];
 
 describe("reviewed Candymo S5 gaps", () => {
@@ -119,12 +120,14 @@ describe("reviewed Candymo S5 gaps", () => {
     const ivs = { hp: 60, physicalAttack: 60, physicalDefense: 0, magicalAttack: 0, magicalDefense: 0, speed: 60 };
     for (const name of ["阿布", "超能阿布", "圣龙阿布"]) {
       const spirit = runtime.spirits.find(entry => entry.fullName === name);
+      const pending = name === "圣龙阿布";
       for (const side of ["attacker", "defender"]) {
         const initialState = createInitialState(runtime);
         const selected = selectSpirit(initialState, { initialState, side, snapshot: runtime, spiritId: spirit.id }).state;
-        expect(selected.sides[side]).toMatchObject({ nature: "naughty", displayIvs: ivs });
+        expect(selected.sides[side]).toMatchObject({ nature: pending ? "naughty" : "cheerful", displayIvs: ivs });
         const defaults = chooseDefaultSkillIds(runtime, spirit.id);
-        expect(defaults.map(id => runtime.skills.find(skill => skill.id === id).name)).toEqual(dragonDefaults);
+        expect(defaults.map(id => runtime.skills.find(skill => skill.id === id).name))
+          .toEqual(pending ? bossPlaceholderDefaults : dragonDefaults);
         expect(selected.sides[side].skills.four.map(entry => typeof entry === "string" ? entry : entry.skillId)).toEqual(defaults);
         const cleared = selectFourSkill(selected, { side, snapshot: runtime, index: 3, skillId: null }).state;
         expect(getRestorableDefaultSkills(cleared, { side, snapshot: runtime })).toEqual(defaults);
