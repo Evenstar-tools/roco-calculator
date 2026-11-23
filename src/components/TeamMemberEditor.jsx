@@ -302,7 +302,7 @@ export function TeamMemberEditor({
               >
                 {TEAM_BLOODLINE_OPTIONS.map(({ label, value }) => (
                   <option key={value} value={value}>
-                    {value === "boss" ? t(label) : typeName(label)}
+                    {value === "boss" || value === "exotic" ? t(label) : typeName(label)}
                   </option>
                 ))}
               </select>

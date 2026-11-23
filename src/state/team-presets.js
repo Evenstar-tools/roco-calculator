@@ -35,6 +35,7 @@ export const TEAM_BLOODLINE_OPTIONS = Object.freeze([
   { label: "机械", value: "machine" },
   { label: "幻", value: "phantom" },
   { label: "首领", value: "boss" },
+  { label: "奇异", value: "exotic" },
 ]);
 
 const TEAM_BLOODLINE_VALUES = new Set(

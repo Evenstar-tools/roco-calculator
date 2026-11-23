@@ -2,7 +2,11 @@ import { NATURES, normalizeNatureId } from "../domain/natures.js";
 import { inspectLineupIvs } from "./lineup-ivs.js";
 
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-const BLOODS = [null, "normal", "grass", "fire", "water", "light", "ground", "ice", "dragon", "electric", "poison", "bug", "martial", "wing", "moe", "ghost", "evil", "machine", "phantom", "boss"];
+const BLOODS = [
+  null, "normal", "grass", "fire", "water", "light", "ground", "ice", "dragon", "electric",
+  "poison", "bug", "martial", "wing", "moe", "ghost", "evil", "machine", "phantom", "boss",
+  null, null, null, null, "exotic", // 官方阵容血脉 ID 24；20–23 未接入。
+];
 const STATS = ["hp", "physicalAttack", "magicalAttack", "physicalDefense", "magicalDefense", "speed"];
 const OFFICIAL_URL = "https://rocom.qq.com/act/a20250703array/index.html";
 

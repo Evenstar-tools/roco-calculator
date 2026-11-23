@@ -44,11 +44,12 @@ test("已保存自动选择会重新计算，手动无共鸣和原导入值保�
   expect(screen.getByLabelText("共鸣魔法")).toHaveValue("104002");
 });
 
-test("new team defaults to one PVP option and actually copies a lineup containing duplicate-name skills", async () => {
+test("new team copies a PVP lineup containing an exotic bloodline and duplicate-name skills", async () => {
   const team = importLineupCode(fixture.code, snapshot, mapping);
   delete team.lineup;
   delete team.members[0].lineupSource;
   team.members[0].skills.four[0] = mapping.skills[7020860];
+  team.members[1].bloodlineType = "exotic";
   team.id = "test";
   const update = vi.fn(() => true);
   const writeText = vi.fn().mockResolvedValue(undefined);
@@ -59,6 +60,7 @@ test("new team defaults to one PVP option and actually copies a lineup containin
   expect(within(mode).getAllByRole("option").map(option => option.textContent)).toEqual(["PVP"]);
   const code = screen.getByLabelText("阵容代码").value;
   expect(decodeLineupCode(code).members[0].skills[0]).toBe(7020860);
+  expect(decodeLineupCode(code).members[1].bloodlineId).toBe(24);
   fireEvent.click(screen.getByText("复制阵容码"));
   expect(await screen.findByRole("status")).toHaveTextContent("阵容码已复制");
   expect(writeText).toHaveBeenCalledWith(code);

@@ -1,4 +1,5 @@
 export const teamMessages = Object.fromEntries([
+  ["奇异", "Exotic", "奇異"],
   ["能力值", "Stats", "能力値"],
   ["配招", "Moveset", "技構成"],
   ["点击数值切换个体 0 / 60", "Click a value to toggle IV 0 / 60", "数値を選んで個体値0／60を切替"],

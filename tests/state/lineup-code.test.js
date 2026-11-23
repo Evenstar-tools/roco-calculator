@@ -83,6 +83,25 @@ describe("game / Qiandao lineup exchange", () => {
     expect(() => exportLineupCode(team, snapshot)).toThrow("超过四个技能");
   });
 
+  test("奇异血脉与原阵容中的奇异技能在保存、刷新、导出后均保留", () => {
+    const raw = decodeLineupCode(fixture.code);
+    const member = raw.members[1];
+    member.bloodlineId = 24;
+    member.skills[0] = 7060270; // 色散：不在加油蟹的普通学习面中。
+    const code = encodeLineupCode(raw);
+    const imported = importLineupCode(code, snapshot);
+    const storage = new Map();
+    const repository = teamPresetsRepository({
+      storage: { getItem: (key) => storage.get(key), setItem: (key, value) => storage.set(key, value) },
+    });
+    repository.importTeam(repository.load(snapshot), imported);
+    const [saved] = repository.load(snapshot).teams;
+    expect(saved.members[1].bloodlineType).toBe("exotic");
+    const exported = exportLineupCode(saved, snapshot);
+    expect(exported.code).toBe(code);
+    expect(importLineupCode(exported.url, snapshot).members[1].skills.four[0]).toBe(mapping.skills[7060270]);
+  });
+
   test("exports a manually created member without inventing IV selections", () => {
     const team = importLineupCode(fixture.code, snapshot);
     delete team.members[0].lineupSource;
